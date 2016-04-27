@@ -9,7 +9,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{AFBA107A-3E0
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{D4A4769A-F440-44D7-B71F-317DB3FA7CF5}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Fooble.Test", "test\Fooble.Test\Fooble.Test.fsproj", "{F1D4FF61-3982-4605-8BAF-1E7F941165CD}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Fooble.Tests", "test\Fooble.Tests\Fooble.Tests.fsproj", "{F1D4FF61-3982-4605-8BAF-1E7F941165CD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
