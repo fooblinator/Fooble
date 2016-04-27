@@ -1,0 +1,36 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25123.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Fooble.Core", "src\Fooble.Core\Fooble.Core.fsproj", "{807E9944-9329-40C3-AC0E-74920A316CB6}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{AFBA107A-3E09-4144-9A81-98E9D0546E19}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{D4A4769A-F440-44D7-B71F-317DB3FA7CF5}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Fooble.Test", "test\Fooble.Test\Fooble.Test.fsproj", "{F1D4FF61-3982-4605-8BAF-1E7F941165CD}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{807E9944-9329-40C3-AC0E-74920A316CB6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{807E9944-9329-40C3-AC0E-74920A316CB6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{807E9944-9329-40C3-AC0E-74920A316CB6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{807E9944-9329-40C3-AC0E-74920A316CB6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F1D4FF61-3982-4605-8BAF-1E7F941165CD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F1D4FF61-3982-4605-8BAF-1E7F941165CD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F1D4FF61-3982-4605-8BAF-1E7F941165CD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F1D4FF61-3982-4605-8BAF-1E7F941165CD}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{807E9944-9329-40C3-AC0E-74920A316CB6} = {AFBA107A-3E09-4144-9A81-98E9D0546E19}
+		{F1D4FF61-3982-4605-8BAF-1E7F941165CD} = {D4A4769A-F440-44D7-B71F-317DB3FA7CF5}
+	EndGlobalSection
+EndGlobal
