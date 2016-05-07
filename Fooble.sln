@@ -11,6 +11,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{D4A4769A-F
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Fooble.Tests", "test\Fooble.Tests\Fooble.Tests.fsproj", "{F1D4FF61-3982-4605-8BAF-1E7F941165CD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fooble.Web", "src\Fooble.Web\Fooble.Web.csproj", "{B8E7F59F-08FE-48AB-9640-6A0B41083496}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -25,6 +27,10 @@ Global
 		{F1D4FF61-3982-4605-8BAF-1E7F941165CD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F1D4FF61-3982-4605-8BAF-1E7F941165CD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F1D4FF61-3982-4605-8BAF-1E7F941165CD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B8E7F59F-08FE-48AB-9640-6A0B41083496}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B8E7F59F-08FE-48AB-9640-6A0B41083496}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B8E7F59F-08FE-48AB-9640-6A0B41083496}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B8E7F59F-08FE-48AB-9640-6A0B41083496}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -32,5 +38,6 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{807E9944-9329-40C3-AC0E-74920A316CB6} = {AFBA107A-3E09-4144-9A81-98E9D0546E19}
 		{F1D4FF61-3982-4605-8BAF-1E7F941165CD} = {D4A4769A-F440-44D7-B71F-317DB3FA7CF5}
+		{B8E7F59F-08FE-48AB-9640-6A0B41083496} = {AFBA107A-3E09-4144-9A81-98E9D0546E19}
 	EndGlobalSection
 EndGlobal
