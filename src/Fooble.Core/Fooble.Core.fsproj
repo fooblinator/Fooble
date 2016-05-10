@@ -55,6 +55,8 @@
     <Compile Include="..\Common\GlobalAssemblyInfo.fs">
       <Link>GlobalAssemblyInfo.fs</Link>
     </Compile>
+    <Compile Include="Helper.fs" />
+    <Compile Include="Result.fs" />
     <Content Include="App.config" />
     <Content Include="packages.config" />
   </ItemGroup>
