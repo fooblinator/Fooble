@@ -57,6 +57,7 @@
     </Compile>
     <Compile Include="Helper.fs" />
     <Compile Include="ResultTests.fs" />
+    <Compile Include="MessageDisplayTests.fs" />
     <Content Include="App.config" />
     <Content Include="packages.config" />
   </ItemGroup>
