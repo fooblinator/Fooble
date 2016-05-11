@@ -8,32 +8,36 @@ open System
 [<TestFixture>]
 module ResultsTests = 
     [<Test>]
-    let ``Calling validate value, with null value, returns expected messages``() = 
+    let ``Calling validate value, with null value, returns expected result``() = 
+        let expectedParamName = "value"
         let expectedMessage = "Value should not be null"
-        let messages = Result.validateValue null
-        let messageCount = Seq.length messages
-        test <@ messageCount = 1 @>
-        let actualMessage = Seq.head messages
+        let result = Result.validateValue null
+        test <@ result.IsSome @>
+        let actualParamName = result.Value.ParamName
+        test <@ actualParamName = expectedParamName @>
+        let actualMessage = result.Value.Message
         test <@ actualMessage = expectedMessage @>
     
     [<Test>]
-    let ``Calling validate value, with valid value, returns no messages``() = 
-        let messages = Result.validateValue (Helper.randomGuidString())
-        test <@ Seq.isEmpty messages @>
+    let ``Calling validate value, with valid value, returns no message``() = 
+        let result = Result.validateValue (Helper.randomGuidString())
+        test <@ result.IsNone @>
     
     [<Test>]
-    let ``Calling validate status, with null status, returns expected messages``() = 
+    let ``Calling validate status, with null status, returns expected result``() = 
+        let expectedParamName = "status"
         let expectedMessage = "Status should not be null"
-        let messages = Result.validateStatus null
-        let messageCount = Seq.length messages
-        test <@ messageCount = 1 @>
-        let actualMessage = Seq.head messages
+        let result = Result.validateStatus null
+        test <@ result.IsSome @>
+        let actualParamName = result.Value.ParamName
+        test <@ actualParamName = expectedParamName @>
+        let actualMessage = result.Value.Message
         test <@ actualMessage = expectedMessage @>
     
     [<Test>]
-    let ``Calling validate status, with valid status, returns no messages``() = 
-        let messages = Result.validateStatus (Helper.randomGuidString())
-        test <@ Seq.isEmpty messages @>
+    let ``Calling validate status, with valid status, returns no message``() = 
+        let result = Result.validateStatus (Helper.randomGuidString())
+        test <@ result.IsNone @>
     
     [<Test>]
     let ``Calling success, with null value, raises expected exception``() = 

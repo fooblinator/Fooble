@@ -8,7 +8,7 @@
     <ProjectGuid>f1d4ff61-3982-4605-8baf-1e7f941165cd</ProjectGuid>
     <OutputType>Library</OutputType>
     <RootNamespace>Fooble.Test</RootNamespace>
-    <AssemblyName>Fooble.Test</AssemblyName>
+    <AssemblyName>Fooble.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <TargetFSharpCoreVersion>4.4.0.0</TargetFSharpCoreVersion>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -58,6 +58,8 @@
     <Compile Include="Helper.fs" />
     <Compile Include="ResultTests.fs" />
     <Compile Include="MessageDisplayTests.fs" />
+    <Compile Include="MemberTests.fs" />
+    <Compile Include="MemberDetailTests.fs" />
     <Content Include="App.config" />
     <Content Include="packages.config" />
   </ItemGroup>

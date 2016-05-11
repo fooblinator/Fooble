@@ -8,7 +8,7 @@ type IMessageDisplaySeverity =
 type IMessageDisplayReadModel = 
     abstract Heading : string
     abstract Severity : IMessageDisplaySeverity
-    abstract Messages : string seq
+    abstract Messages : seq<string>
 
 [<RequireQualifiedAccess>]
 module MessageDisplaySeverity = 
@@ -52,7 +52,7 @@ module MessageDisplayReadModel =
     type private Implementation = 
         { Heading : string
           Severity : IMessageDisplaySeverity
-          Messages : string seq }
+          Messages : seq<string> }
         interface IMessageDisplayReadModel with
             
             member this.Heading = 
@@ -69,26 +69,28 @@ module MessageDisplayReadModel =
     
     [<CompiledName("ValidateHeading")>]
     let validateHeading heading = 
-        seq { 
-            yield Helper.checkNotNull heading "Heading"
-            yield Helper.checkNotEmptyString heading "Heading"
-        }
-        |> Seq.concat
+        if Validation.isNullValue heading then 
+            Some(ValidationFailureInfo.make "heading" (sprintf "%s should not be null" "Heading"))
+        else if Validation.isEmptyString heading then 
+            Some(ValidationFailureInfo.make "heading" (sprintf "%s should not be empty" "Heading"))
+        else None
     
     [<CompiledName("ValidateMessages")>]
     let validateMessages messages = 
-        seq { 
-            yield Helper.checkNotNull messages "Message list"
-            yield Helper.checkNotEmptySequence messages "Message list"
-            yield Helper.checkSequenceOfNotNull messages "Message list item"
-            yield Helper.checkSequenceOfNotEmptyString messages "Message list item"
-        }
-        |> Seq.concat
+        if Validation.isNullValue messages then 
+            Some(ValidationFailureInfo.make "messages" (sprintf "%s should not be null" "Message list"))
+        else if Seq.isEmpty messages then 
+            Some(ValidationFailureInfo.make "messages" (sprintf "%s should not be empty" "Message list"))
+        else if Validation.containsNullValue messages then 
+            Some(ValidationFailureInfo.make "messages" (sprintf "%s should not be null" "Message list items"))
+        else if Validation.containsEmptyString messages then 
+            Some(ValidationFailureInfo.make "messages" (sprintf "%s should not be empty" "Message list items"))
+        else None
     
     [<CompiledName("Make")>]
     let make heading severity messages : IMessageDisplayReadModel = 
-        Helper.ensureValid validateHeading heading "heading"
-        Helper.ensureValid validateMessages messages "messages"
+        Validation.ensureValid validateHeading heading
+        Validation.ensureValid validateMessages messages
         match severity with
         | MessageDisplaySeverity.Informational -> 
             { Heading = heading

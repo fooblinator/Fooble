@@ -8,6 +8,10 @@ type IResult<'TSuccess, 'TFailure> =
 
 [<RequireQualifiedAccess>]
 module Result = 
+    let (|Success|Failure|) (result : IResult<'TSuccess, 'TFailure>) = 
+        if result.IsSuccess then Choice1Of2(result.Value)
+        else Choice2Of2(result.Status)
+    
     type private Implementation<'TSuccess, 'TFailure> = 
         | Success of 'TSuccess
         | Failure of 'TFailure
@@ -34,17 +38,28 @@ module Result =
                 | _ -> false
     
     [<CompiledName("ValidateValue")>]
-    let validateValue<'TSuccess> (value : 'TSuccess) = Helper.checkNotNull value "Value"
+    let validateValue value = 
+        if Validation.isNullValue value then 
+            Some(ValidationFailureInfo.make "value" (sprintf "%s should not be null" "Value"))
+        else None
     
     [<CompiledName("ValidateStatus")>]
-    let validateStatus<'TFailure> (status : 'TFailure) = Helper.checkNotNull status "Status"
+    let validateStatus status = 
+        if Validation.isNullValue status then 
+            Some(ValidationFailureInfo.make "status" (sprintf "%s should not be null" "Status"))
+        else None
     
     [<CompiledName("Success")>]
-    let success<'TSuccess, 'TFailure> (value : 'TSuccess) : IResult<_, 'TFailure> = 
-        Helper.ensureValid validateValue value "value"
-        Success value :> _
+    let success (value : 'T) = 
+        Validation.ensureValid validateValue value
+        Success value :> IResult<'T, _>
     
     [<CompiledName("Failure")>]
-    let failure<'TSuccess, 'TFailure> (status : 'TFailure) : IResult<'TSuccess, _> = 
-        Helper.ensureValid validateStatus status "status"
-        Failure status :> _
+    let failure (status : 'T) = 
+        Validation.ensureValid validateStatus status
+        Failure status :> IResult<_, 'T>
+    
+    let internal ofOption statusIfNone valueOption = 
+        match valueOption with
+        | Some v -> success v
+        | None -> failure statusIfNone

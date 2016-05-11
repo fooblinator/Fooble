@@ -79,68 +79,80 @@ module MessageDisplaySeverityTests =
 [<TestFixture>]
 module MessageDisplayReadModelTests = 
     [<Test>]
-    let ``Calling validate heading, with null heading, returns expected messages``() = 
+    let ``Calling validate heading, with null heading, returns expected result``() = 
+        let expectedParamName = "heading"
         let expectedMessage = "Heading should not be null"
-        let messages = MessageDisplayReadModel.validateHeading null
-        let messageCount = Seq.length messages
-        test <@ messageCount = 1 @>
-        let actualMessage = Seq.head messages
+        let result = MessageDisplayReadModel.validateHeading null
+        test <@ result.IsSome @>
+        let actualParamName = result.Value.ParamName
+        test <@ actualParamName = expectedParamName @>
+        let actualMessage = result.Value.Message
         test <@ actualMessage = expectedMessage @>
     
     [<Test>]
-    let ``Calling validate heading, with empty heading, returns expected messages``() = 
+    let ``Calling validate heading, with empty heading, returns expected result``() = 
+        let expectedParamName = "heading"
         let expectedMessage = "Heading should not be empty"
-        let messages = MessageDisplayReadModel.validateHeading ""
-        let messageCount = Seq.length messages
-        test <@ messageCount = 1 @>
-        let actualMessage = Seq.head messages
+        let result = MessageDisplayReadModel.validateHeading ""
+        test <@ result.IsSome @>
+        let actualParamName = result.Value.ParamName
+        test <@ actualParamName = expectedParamName @>
+        let actualMessage = result.Value.Message
         test <@ actualMessage = expectedMessage @>
     
     [<Test>]
     let ``Calling validate heading, with valid heading, returns no messages``() = 
-        let messages = MessageDisplayReadModel.validateHeading (Helper.randomGuidString())
-        test <@ Seq.isEmpty messages @>
+        let result = MessageDisplayReadModel.validateHeading (Helper.randomGuidString())
+        test <@ result.IsNone @>
     
     [<Test>]
-    let ``Calling validate messages, with null messages, returns expected messages``() = 
+    let ``Calling validate messages, with null messages, returns expected result``() = 
+        let expectedParamName = "messages"
         let expectedMessage = "Message list should not be null"
-        let messages = MessageDisplayReadModel.validateMessages null
-        let messageCount = Seq.length messages
-        test <@ messageCount = 1 @>
-        let actualMessage = Seq.head messages
+        let result = MessageDisplayReadModel.validateMessages null
+        test <@ result.IsSome @>
+        let actualParamName = result.Value.ParamName
+        test <@ actualParamName = expectedParamName @>
+        let actualMessage = result.Value.Message
         test <@ actualMessage = expectedMessage @>
     
     [<Test>]
-    let ``Calling validate messages, with empty messages, returns expected messages``() = 
+    let ``Calling validate messages, with empty messages, returns expected result``() = 
+        let expectedParamName = "messages"
         let expectedMessage = "Message list should not be empty"
-        let messages = MessageDisplayReadModel.validateMessages Seq.empty
-        let messageCount = Seq.length messages
-        test <@ messageCount = 1 @>
-        let actualMessage = Seq.head messages
+        let result = MessageDisplayReadModel.validateMessages Seq.empty
+        test <@ result.IsSome @>
+        let actualParamName = result.Value.ParamName
+        test <@ actualParamName = expectedParamName @>
+        let actualMessage = result.Value.Message
         test <@ actualMessage = expectedMessage @>
     
     [<Test>]
-    let ``Calling validate messages, with not empty messages containing null message, returns expected messages``() = 
-        let expectedMessage = "Message list item should not be null"
-        let messages = MessageDisplayReadModel.validateMessages (Seq.singleton null)
-        let messageCount = Seq.length messages
-        test <@ messageCount = 1 @>
-        let actualMessage = Seq.head messages
+    let ``Calling validate messages, with not empty messages containing null message, returns expected result``() = 
+        let expectedParamName = "messages"
+        let expectedMessage = "Message list items should not be null"
+        let result = MessageDisplayReadModel.validateMessages (Seq.singleton null)
+        test <@ result.IsSome @>
+        let actualParamName = result.Value.ParamName
+        test <@ actualParamName = expectedParamName @>
+        let actualMessage = result.Value.Message
         test <@ actualMessage = expectedMessage @>
     
     [<Test>]
-    let ``Calling validate messages, with not empty messages containing empty message, returns expected messages``() = 
-        let expectedMessage = "Message list item should not be empty"
-        let messages = MessageDisplayReadModel.validateMessages (Seq.singleton "")
-        let messageCount = Seq.length messages
-        test <@ messageCount = 1 @>
-        let actualMessage = Seq.head messages
+    let ``Calling validate messages, with not empty messages containing empty message, returns expected result``() = 
+        let expectedParamName = "messages"
+        let expectedMessage = "Message list items should not be empty"
+        let result = MessageDisplayReadModel.validateMessages (Seq.singleton "")
+        test <@ result.IsSome @>
+        let actualParamName = result.Value.ParamName
+        test <@ actualParamName = expectedParamName @>
+        let actualMessage = result.Value.Message
         test <@ actualMessage = expectedMessage @>
     
     [<Test>]
     let ``Calling validate messages, with valid messages, returns no messages``() = 
-        let messages = MessageDisplayReadModel.validateMessages (Seq.singleton (Helper.randomGuidString()))
-        test <@ Seq.isEmpty messages @>
+        let result = MessageDisplayReadModel.validateMessages (Seq.singleton (Helper.randomGuidString()))
+        test <@ result.IsNone @>
     
     [<Test>]
     let ``Calling make, with null heading, raises expected exception``() = 
@@ -183,7 +195,7 @@ module MessageDisplayReadModelTests =
     [<Test>]
     let ``Calling make, with not empty messages containing null message, raises expected exception``() = 
         let expectedParamName = "messages"
-        let expectedMessage = "Message list item should not be null"
+        let expectedMessage = "Message list items should not be null"
         raisesWith<ArgumentException> 
             <@ MessageDisplayReadModel.make (Helper.randomGuidString()) MessageDisplaySeverity.informational 
                    (Seq.singleton null) @> 
@@ -193,7 +205,7 @@ module MessageDisplayReadModelTests =
     [<Test>]
     let ``Calling make, with not empty messages containing empty message, raises expected exception``() = 
         let expectedParamName = "messages"
-        let expectedMessage = "Message list item should not be empty"
+        let expectedMessage = "Message list items should not be empty"
         raisesWith<ArgumentException> 
             <@ MessageDisplayReadModel.make (Helper.randomGuidString()) MessageDisplaySeverity.informational 
                    (Seq.singleton "") @> 
@@ -204,14 +216,14 @@ module MessageDisplayReadModelTests =
     let ``Calling make, with valid parameters, returns expected result``() = 
         let expectedHeading = Helper.randomGuidString()
         let expectedSeverity = MessageDisplaySeverity.informational
-        let expectedMessages = Seq.singleton (Helper.randomGuidString())
+        let expectedMessages = [ Helper.randomGuidString() ]
         let readModel = MessageDisplayReadModel.make expectedHeading expectedSeverity expectedMessages
         test <@ (box readModel) :? IMessageDisplayReadModel @>
         let actualHeading = readModel.Heading
         test <@ actualHeading = expectedHeading @>
         let actualSeverity = readModel.Severity
         test <@ actualSeverity = expectedSeverity @>
-        let actualMessages = readModel.Messages
+        let actualMessages = List.ofSeq readModel.Messages
         test <@ actualMessages = expectedMessages @>
     
     [<Test>]
@@ -234,9 +246,9 @@ module MessageDisplayReadModelTests =
     
     [<Test>]
     let ``Calling messages, returns expected messages``() = 
-        let expectedMessages = Seq.singleton (Helper.randomGuidString())
+        let expectedMessages = [ Helper.randomGuidString() ]
         let readModel = 
             MessageDisplayReadModel.make (Helper.randomGuidString()) MessageDisplaySeverity.informational 
                 expectedMessages
-        let actualMessages = readModel.Messages
+        let actualMessages = List.ofSeq readModel.Messages
         test <@ actualMessages = expectedMessages @>
