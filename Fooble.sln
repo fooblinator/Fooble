@@ -17,6 +17,7 @@ Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
+		Description = An online repository of information, where users can describe, utilize and share data.
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{807E9944-9329-40C3-AC0E-74920A316CB6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
