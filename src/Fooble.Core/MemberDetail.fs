@@ -32,8 +32,8 @@ module internal MemberDetailReadModel =
                 | { Id = _; Name = n } -> n
     
     let make id name : IMemberDetailReadModel = 
-        Validation.ensureValid Member.validateId id
-        Validation.ensureValid Member.validateName name
+        Validation.ensureIsValid Member.validateId id
+        Validation.ensureIsValid Member.validateName name
         { Id = id
           Name = name } :> _
 
@@ -62,20 +62,20 @@ module MemberDetailQuery =
     
     [<CompiledName("Make")>]
     let make id : IMemberDetailQuery = 
-        Validation.ensureValid Member.validateId id
+        Validation.ensureIsValid Member.validateId id
         { Id = id } :> _
 
 [<RequireQualifiedAccess>]
 module internal MemberDetailQueryHandler = 
     let validateQuery query = 
         if Validation.isNullValue query then 
-            Some(ValidationFailureInfo.make "query" (sprintf "%s should not be null" "Query"))
+            Some(Validation.makeFailureInfo "query" (sprintf "%s should not be null" "Query"))
         else None
     
     type private Implementation(context : IDataContext) = 
         interface IMemberDetailQueryHandler with
             member this.Handle(query) = 
-                Validation.ensureValid validateQuery query
+                Validation.ensureIsValid validateQuery query
                 box (context.Members.Find(query.Id))
                 |> Option.ofObj
                 |> Option.map unbox<MemberData>
@@ -84,11 +84,11 @@ module internal MemberDetailQueryHandler =
     
     let validateContext context = 
         if Validation.isNullValue context then 
-            Some(ValidationFailureInfo.make "context" (sprintf "%s should not be null" "Data context"))
+            Some(Validation.makeFailureInfo "context" (sprintf "%s should not be null" "Data context"))
         else None
     
     let make context : IMemberDetailQueryHandler = 
-        Validation.ensureValid validateContext context
+        Validation.ensureIsValid validateContext context
         Implementation(context) :> _
 
 [<Extension>]

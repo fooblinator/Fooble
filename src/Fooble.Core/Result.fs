@@ -40,23 +40,23 @@ module Result =
     [<CompiledName("ValidateValue")>]
     let validateValue value = 
         if Validation.isNullValue value then 
-            Some(ValidationFailureInfo.make "value" (sprintf "%s should not be null" "Value"))
+            Some(Validation.makeFailureInfo "value" (sprintf "%s should not be null" "Value"))
         else None
     
     [<CompiledName("ValidateStatus")>]
     let validateStatus status = 
         if Validation.isNullValue status then 
-            Some(ValidationFailureInfo.make "status" (sprintf "%s should not be null" "Status"))
+            Some(Validation.makeFailureInfo "status" (sprintf "%s should not be null" "Status"))
         else None
     
     [<CompiledName("Success")>]
     let success (value : 'T) = 
-        Validation.ensureValid validateValue value
+        Validation.ensureIsValid validateValue value
         Success value :> IResult<'T, _>
     
     [<CompiledName("Failure")>]
     let failure (status : 'T) = 
-        Validation.ensureValid validateStatus status
+        Validation.ensureIsValid validateStatus status
         Failure status :> IResult<_, 'T>
     
     let internal ofOption statusIfNone valueOption = 

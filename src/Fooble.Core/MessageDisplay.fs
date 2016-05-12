@@ -70,27 +70,27 @@ module MessageDisplayReadModel =
     [<CompiledName("ValidateHeading")>]
     let validateHeading heading = 
         if Validation.isNullValue heading then 
-            Some(ValidationFailureInfo.make "heading" (sprintf "%s should not be null" "Heading"))
+            Some(Validation.makeFailureInfo "heading" (sprintf "%s should not be null" "Heading"))
         else if Validation.isEmptyString heading then 
-            Some(ValidationFailureInfo.make "heading" (sprintf "%s should not be empty" "Heading"))
+            Some(Validation.makeFailureInfo "heading" (sprintf "%s should not be empty" "Heading"))
         else None
     
     [<CompiledName("ValidateMessages")>]
     let validateMessages messages = 
         if Validation.isNullValue messages then 
-            Some(ValidationFailureInfo.make "messages" (sprintf "%s should not be null" "Message list"))
+            Some(Validation.makeFailureInfo "messages" (sprintf "%s should not be null" "Message list"))
         else if Seq.isEmpty messages then 
-            Some(ValidationFailureInfo.make "messages" (sprintf "%s should not be empty" "Message list"))
+            Some(Validation.makeFailureInfo "messages" (sprintf "%s should not be empty" "Message list"))
         else if Validation.containsNullValue messages then 
-            Some(ValidationFailureInfo.make "messages" (sprintf "%s should not be null" "Message list items"))
+            Some(Validation.makeFailureInfo "messages" (sprintf "%s should not be null" "Message list items"))
         else if Validation.containsEmptyString messages then 
-            Some(ValidationFailureInfo.make "messages" (sprintf "%s should not be empty" "Message list items"))
+            Some(Validation.makeFailureInfo "messages" (sprintf "%s should not be empty" "Message list items"))
         else None
     
     [<CompiledName("Make")>]
     let make heading severity messages : IMessageDisplayReadModel = 
-        Validation.ensureValid validateHeading heading
-        Validation.ensureValid validateMessages messages
+        Validation.ensureIsValid validateHeading heading
+        Validation.ensureIsValid validateMessages messages
         match severity with
         | MessageDisplaySeverity.Informational -> 
             { Heading = heading

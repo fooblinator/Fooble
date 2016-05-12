@@ -7,8 +7,8 @@ type IValidationFailureInfo =
     abstract Message : string
 
 [<RequireQualifiedAccess>]
-module internal ValidationFailureInfo = 
-    type private Implementation = 
+module internal Validation = 
+    type private ValidationFailureInfoImplementation = 
         { ParamName : string
           Message : string }
         interface IValidationFailureInfo with
@@ -21,27 +21,7 @@ module internal ValidationFailureInfo =
                 match this with
                 | { ParamName = _; Message = x } -> x
     
-    let ensureParamName paramName = 
-        match paramName with
-        | x when isNull (box x) -> invalidArg "paramName" (sprintf "%s should not be null" "Param name")
-        | x when Seq.isEmpty x -> invalidArg "paramName" (sprintf "%s should not be empty" "Param name")
-        | _ -> ()
-    
-    let ensureMessage message = 
-        match message with
-        | x when isNull (box x) -> invalidArg "message" (sprintf "%s should not be null" "Message")
-        | x when Seq.isEmpty x -> invalidArg "message" (sprintf "%s should not be empty" "Message")
-        | _ -> ()
-    
-    let make paramName message : IValidationFailureInfo = 
-        ensureParamName paramName
-        ensureMessage message
-        { ParamName = paramName
-          Message = message } :> _
-
-[<RequireQualifiedAccess>]
-module internal Validation = 
-    let ensureValid (validator : 'T -> IValidationFailureInfo option) (value : 'T) = 
+    let ensureIsValid (validator : 'T -> IValidationFailureInfo option) (value : 'T) = 
         match validator value with
         | Some x -> invalidArg x.ParamName x.Message
         | None -> ()
@@ -51,3 +31,12 @@ module internal Validation =
     let isNotGuidString value = not (fst (Guid.TryParse(value)))
     let containsNullValue values = Option.isSome (Seq.tryFind (box >> isNull) values)
     let containsEmptyString values = Option.isSome (Seq.tryFind (fun x -> x = "") values)
+    
+    let makeFailureInfo paramName message : IValidationFailureInfo = 
+        if isNullValue paramName then invalidArg "paramName" (sprintf "%s should not be null" "Param name")
+        else if isEmptyString paramName then invalidArg "paramName" (sprintf "%s should not be empty" "Param name")
+        else if isNullValue message then invalidArg "message" (sprintf "%s should not be null" "Message")
+        else if isEmptyString message then invalidArg "message" (sprintf "%s should not be empty" "Message")
+        else 
+            { ParamName = paramName
+              Message = message } :> _
