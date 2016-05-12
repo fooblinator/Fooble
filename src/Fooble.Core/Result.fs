@@ -42,11 +42,11 @@ module internal Result =
                 | _ -> false
     
     let internal success<'TSuccess, 'TFailure> (value : 'TSuccess) = 
-        Validation.ensureNotNull value "value" "Value"
+        Validation.ensure (Validation.validateIsNotNullValue value "value" "Value")
         Success value :> IResult<'TSuccess, 'TFailure>
     
     let internal failure<'TSuccess, 'TFailure> (status : 'TFailure) = 
-        Validation.ensureNotNull status "status" "Status"
+        Validation.ensure (Validation.validateIsNotNullValue status "status" "Status")
         Failure status :> IResult<'TSuccess, 'TFailure>
     
     (* Misc *)

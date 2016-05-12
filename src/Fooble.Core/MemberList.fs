@@ -24,17 +24,6 @@ module MemberList =
 
     let internal (|IsNotFound|) (status : IMemberListQueryFailureStatus) = ()
     
-    (* Validators *)
-
-    let internal validateMembers (members : seq<IMemberListItemReadModel>) = 
-        if Validation.isNullValue members then 
-            Some(Validation.makeFailureInfo "members" (sprintf "%s should not be null" "Member list"))
-        else if Seq.isEmpty members then 
-            Some(Validation.makeFailureInfo "members" (sprintf "%s should not be empty" "Member list"))
-        else if Validation.containsNullValue members then 
-            Some(Validation.makeFailureInfo "members" (sprintf "%s should not be null" "Member list items"))
-        else None
-    
     (* Query *)
 
     type private MemberListQueryImplementation() = 
@@ -59,8 +48,8 @@ module MemberList =
                 | { Id = _; Name = n } -> n
     
     let internal makeItemReadModel id name = 
-        Validation.ensureIsValid Member.validateId id
-        Validation.ensureIsValid Member.validateName name
+        Validation.ensure (Member.validateId id)
+        Validation.ensure (Member.validateName name)
         { MemberListItemReadModelImplementation.Id = id
           Name = name } :> IMemberListItemReadModel
     
@@ -74,7 +63,9 @@ module MemberList =
                 | { Members = ms } -> ms
     
     let internal makeReadModel members = 
-        Validation.ensureIsValid validateMembers members
+        Validation.ensure (Validation.validateIsNotNullValue members "members" "Member list")
+        Validation.ensure (Validation.validateIsNotEmptyValue members "members" "Member list")
+        Validation.ensure (Validation.validateContainsNotNullValues members "members" "Member list items")
         { MemberListReadModelImplementation.Members = members } :> IMemberListReadModel
     
     (* Query Failure Status *)
@@ -94,7 +85,7 @@ module MemberList =
     type private MemberListQueryHandlerImplementation(context : IDataContext) = 
         interface IMemberListQueryHandler with
             member this.Handle(query : IMemberListQuery) = 
-                Validation.ensureNotNull query "query" "Query"
+                Validation.ensure (Validation.validateIsNotNullValue query "query" "Query")
                 match List.ofSeq context.Members with
                 | [] -> Result.failure notFoundQueryFailureStatus
                 | mds -> 
@@ -104,7 +95,7 @@ module MemberList =
                     |> Result.success
     
     let internal makeQueryHandler (context : IDataContext) = 
-        Validation.ensureNotNull context "context" "Data context"
+        Validation.ensure (Validation.validateIsNotNullValue context "context" "Data context")
         MemberListQueryHandlerImplementation(context) :> IMemberListQueryHandler
     
     (* Extensions *)

@@ -23,24 +23,19 @@ module MessageDisplay =
 
     [<CompiledName("ValidateHeading")>]
     let validateHeading heading = 
-        if Validation.isNullValue heading then 
-            Some(Validation.makeFailureInfo "heading" (sprintf "%s should not be null" "Heading"))
-        else if Validation.isEmptyString heading then 
-            Some(Validation.makeFailureInfo "heading" (sprintf "%s should not be empty" "Heading"))
-        else None
+        [ Validation.validateIsNotNullValue; Validation.validateIsNotEmptyString ] 
+        |> List.tryPick (fun fn -> fn heading "heading" "Heading")
     
     [<CompiledName("ValidateMessages")>]
     let validateMessages messages = 
-        if Validation.isNullValue messages then 
-            Some(Validation.makeFailureInfo "messages" (sprintf "%s should not be null" "Message list"))
-        else if Seq.isEmpty messages then 
-            Some(Validation.makeFailureInfo "messages" (sprintf "%s should not be empty" "Message list"))
-        else if Validation.containsNullValue messages then 
-            Some(Validation.makeFailureInfo "messages" (sprintf "%s should not be null" "Message list items"))
-        else if Validation.containsEmptyString messages then 
-            Some(Validation.makeFailureInfo "messages" (sprintf "%s should not be empty" "Message list items"))
-        else None
-    
+        seq { 
+            yield [ Validation.validateIsNotNullValue; Validation.validateIsNotEmptyValue ] 
+                  |> List.tryPick (fun fn -> fn messages "messages" "Message list")
+            yield [ Validation.validateContainsNotNullValues; Validation.validateContainsNotEmptyStrings ] 
+                  |> List.tryPick (fun fn -> fn messages "messages" "Message list items")
+        }
+        |> Seq.tryPick Operators.id
+
     (* Severity *)
 
     type private MessageDisplaySeverityImplementation = 
@@ -95,8 +90,8 @@ module MessageDisplay =
     
     [<CompiledName("MakeReadModel")>]
     let makeReadModel heading severity messages = 
-        Validation.ensureIsValid validateHeading heading
-        Validation.ensureIsValid validateMessages messages
+        Validation.ensure (validateHeading heading)
+        Validation.ensure (validateMessages messages)
         match severity with
         | IsInformational -> 
             { MessageDisplayReadModelImplementation.Heading = heading
