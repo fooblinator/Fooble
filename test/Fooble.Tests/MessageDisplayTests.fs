@@ -9,7 +9,7 @@ open System
 module MessageDisplaySeverityTests = 
     [<Test>]
     let ``Calling informational, returns expected severity``() = 
-        let severity = MessageDisplaySeverity.informational
+        let severity = MessageDisplay.informationalSeverity
         test <@ (box severity) :? IMessageDisplaySeverity @>
         test <@ severity.IsInformational @>
         test <@ not severity.IsWarning @>
@@ -17,7 +17,7 @@ module MessageDisplaySeverityTests =
     
     [<Test>]
     let ``Calling warning, returns expected severity``() = 
-        let severity = MessageDisplaySeverity.warning
+        let severity = MessageDisplay.warningSeverity
         test <@ (box severity) :? IMessageDisplaySeverity @>
         test <@ not severity.IsInformational @>
         test <@ severity.IsWarning @>
@@ -25,7 +25,7 @@ module MessageDisplaySeverityTests =
     
     [<Test>]
     let ``Calling error, returns expected severity``() = 
-        let severity = MessageDisplaySeverity.error
+        let severity = MessageDisplay.errorSeverity
         test <@ (box severity) :? IMessageDisplaySeverity @>
         test <@ not severity.IsInformational @>
         test <@ not severity.IsWarning @>
@@ -33,47 +33,47 @@ module MessageDisplaySeverityTests =
     
     [<Test>]
     let ``Calling is informational, with informational severity, returns true``() = 
-        let severity = MessageDisplaySeverity.informational
+        let severity = MessageDisplay.informationalSeverity
         test <@ severity.IsInformational @>
     
     [<Test>]
     let ``Calling is informational, with warning severity, returns false``() = 
-        let severity = MessageDisplaySeverity.warning
+        let severity = MessageDisplay.warningSeverity
         test <@ not severity.IsInformational @>
     
     [<Test>]
     let ``Calling is informational, with error severity, returns false``() = 
-        let severity = MessageDisplaySeverity.error
+        let severity = MessageDisplay.errorSeverity
         test <@ not severity.IsInformational @>
     
     [<Test>]
     let ``Calling is warning, with informational severity, returns false``() = 
-        let severity = MessageDisplaySeverity.informational
+        let severity = MessageDisplay.informationalSeverity
         test <@ not severity.IsWarning @>
     
     [<Test>]
     let ``Calling is warning, with warning severity, returns true``() = 
-        let severity = MessageDisplaySeverity.warning
+        let severity = MessageDisplay.warningSeverity
         test <@ severity.IsWarning @>
     
     [<Test>]
     let ``Calling is warning, with error severity, returns false``() = 
-        let severity = MessageDisplaySeverity.error
+        let severity = MessageDisplay.errorSeverity
         test <@ not severity.IsWarning @>
     
     [<Test>]
     let ``Calling is error, with informational severity, returns false``() = 
-        let severity = MessageDisplaySeverity.informational
+        let severity = MessageDisplay.informationalSeverity
         test <@ not severity.IsError @>
     
     [<Test>]
     let ``Calling is error, with warning severity, returns false``() = 
-        let severity = MessageDisplaySeverity.warning
+        let severity = MessageDisplay.warningSeverity
         test <@ not severity.IsError @>
     
     [<Test>]
     let ``Calling is error, with error severity, returns true``() = 
-        let severity = MessageDisplaySeverity.error
+        let severity = MessageDisplay.errorSeverity
         test <@ severity.IsError @>
 
 [<TestFixture>]
@@ -82,7 +82,7 @@ module MessageDisplayReadModelTests =
     let ``Calling validate heading, with null heading, returns expected result``() = 
         let expectedParamName = "heading"
         let expectedMessage = "Heading should not be null"
-        let result = MessageDisplayReadModel.validateHeading null
+        let result = MessageDisplay.validateHeading null
         test <@ result.IsSome @>
         let actualParamName = result.Value.ParamName
         test <@ actualParamName = expectedParamName @>
@@ -93,7 +93,7 @@ module MessageDisplayReadModelTests =
     let ``Calling validate heading, with empty heading, returns expected result``() = 
         let expectedParamName = "heading"
         let expectedMessage = "Heading should not be empty"
-        let result = MessageDisplayReadModel.validateHeading ""
+        let result = MessageDisplay.validateHeading ""
         test <@ result.IsSome @>
         let actualParamName = result.Value.ParamName
         test <@ actualParamName = expectedParamName @>
@@ -102,14 +102,14 @@ module MessageDisplayReadModelTests =
     
     [<Test>]
     let ``Calling validate heading, with valid heading, returns no messages``() = 
-        let result = MessageDisplayReadModel.validateHeading (Helper.randomGuidString())
+        let result = MessageDisplay.validateHeading (Helper.randomGuidString())
         test <@ result.IsNone @>
     
     [<Test>]
     let ``Calling validate messages, with null messages, returns expected result``() = 
         let expectedParamName = "messages"
         let expectedMessage = "Message list should not be null"
-        let result = MessageDisplayReadModel.validateMessages null
+        let result = MessageDisplay.validateMessages null
         test <@ result.IsSome @>
         let actualParamName = result.Value.ParamName
         test <@ actualParamName = expectedParamName @>
@@ -120,7 +120,7 @@ module MessageDisplayReadModelTests =
     let ``Calling validate messages, with empty messages, returns expected result``() = 
         let expectedParamName = "messages"
         let expectedMessage = "Message list should not be empty"
-        let result = MessageDisplayReadModel.validateMessages Seq.empty
+        let result = MessageDisplay.validateMessages Seq.empty
         test <@ result.IsSome @>
         let actualParamName = result.Value.ParamName
         test <@ actualParamName = expectedParamName @>
@@ -131,7 +131,7 @@ module MessageDisplayReadModelTests =
     let ``Calling validate messages, with not empty messages containing null message, returns expected result``() = 
         let expectedParamName = "messages"
         let expectedMessage = "Message list items should not be null"
-        let result = MessageDisplayReadModel.validateMessages (Seq.singleton null)
+        let result = MessageDisplay.validateMessages (Seq.singleton null)
         test <@ result.IsSome @>
         let actualParamName = result.Value.ParamName
         test <@ actualParamName = expectedParamName @>
@@ -142,7 +142,7 @@ module MessageDisplayReadModelTests =
     let ``Calling validate messages, with not empty messages containing empty message, returns expected result``() = 
         let expectedParamName = "messages"
         let expectedMessage = "Message list items should not be empty"
-        let result = MessageDisplayReadModel.validateMessages (Seq.singleton "")
+        let result = MessageDisplay.validateMessages (Seq.singleton "")
         test <@ result.IsSome @>
         let actualParamName = result.Value.ParamName
         test <@ actualParamName = expectedParamName @>
@@ -151,7 +151,7 @@ module MessageDisplayReadModelTests =
     
     [<Test>]
     let ``Calling validate messages, with valid messages, returns no messages``() = 
-        let result = MessageDisplayReadModel.validateMessages (Seq.singleton (Helper.randomGuidString()))
+        let result = MessageDisplay.validateMessages (Seq.singleton (Helper.randomGuidString()))
         test <@ result.IsNone @>
     
     [<Test>]
@@ -159,7 +159,7 @@ module MessageDisplayReadModelTests =
         let expectedParamName = "heading"
         let expectedMessage = "Heading should not be null"
         raisesWith<ArgumentException> 
-            <@ MessageDisplayReadModel.make null MessageDisplaySeverity.informational 
+            <@ MessageDisplay.makeReadModel null MessageDisplay.informationalSeverity 
                    (Seq.singleton (Helper.randomGuidString())) @> 
             (fun e -> 
             <@ e.ParamName = expectedParamName && (Helper.fixArgumentExceptionMessage e.Message) = expectedMessage @>)
@@ -169,7 +169,7 @@ module MessageDisplayReadModelTests =
         let expectedParamName = "heading"
         let expectedMessage = "Heading should not be empty"
         raisesWith<ArgumentException> 
-            <@ MessageDisplayReadModel.make "" MessageDisplaySeverity.informational 
+            <@ MessageDisplay.makeReadModel "" MessageDisplay.informationalSeverity 
                    (Seq.singleton (Helper.randomGuidString())) @> 
             (fun e -> 
             <@ e.ParamName = expectedParamName && (Helper.fixArgumentExceptionMessage e.Message) = expectedMessage @>)
@@ -179,7 +179,7 @@ module MessageDisplayReadModelTests =
         let expectedParamName = "messages"
         let expectedMessage = "Message list should not be null"
         raisesWith<ArgumentException> 
-            <@ MessageDisplayReadModel.make (Helper.randomGuidString()) MessageDisplaySeverity.informational null @> 
+            <@ MessageDisplay.makeReadModel (Helper.randomGuidString()) MessageDisplay.informationalSeverity null @> 
             (fun e -> 
             <@ e.ParamName = expectedParamName && (Helper.fixArgumentExceptionMessage e.Message) = expectedMessage @>)
     
@@ -188,7 +188,7 @@ module MessageDisplayReadModelTests =
         let expectedParamName = "messages"
         let expectedMessage = "Message list should not be empty"
         raisesWith<ArgumentException> 
-            <@ MessageDisplayReadModel.make (Helper.randomGuidString()) MessageDisplaySeverity.informational Seq.empty @> 
+            <@ MessageDisplay.makeReadModel (Helper.randomGuidString()) MessageDisplay.informationalSeverity Seq.empty @> 
             (fun e -> 
             <@ e.ParamName = expectedParamName && (Helper.fixArgumentExceptionMessage e.Message) = expectedMessage @>)
     
@@ -197,7 +197,7 @@ module MessageDisplayReadModelTests =
         let expectedParamName = "messages"
         let expectedMessage = "Message list items should not be null"
         raisesWith<ArgumentException> 
-            <@ MessageDisplayReadModel.make (Helper.randomGuidString()) MessageDisplaySeverity.informational 
+            <@ MessageDisplay.makeReadModel (Helper.randomGuidString()) MessageDisplay.informationalSeverity 
                    (Seq.singleton null) @> 
             (fun e -> 
             <@ e.ParamName = expectedParamName && (Helper.fixArgumentExceptionMessage e.Message) = expectedMessage @>)
@@ -207,7 +207,7 @@ module MessageDisplayReadModelTests =
         let expectedParamName = "messages"
         let expectedMessage = "Message list items should not be empty"
         raisesWith<ArgumentException> 
-            <@ MessageDisplayReadModel.make (Helper.randomGuidString()) MessageDisplaySeverity.informational 
+            <@ MessageDisplay.makeReadModel (Helper.randomGuidString()) MessageDisplay.informationalSeverity 
                    (Seq.singleton "") @> 
             (fun e -> 
             <@ e.ParamName = expectedParamName && (Helper.fixArgumentExceptionMessage e.Message) = expectedMessage @>)
@@ -215,9 +215,9 @@ module MessageDisplayReadModelTests =
     [<Test>]
     let ``Calling make, with valid parameters, returns expected result``() = 
         let expectedHeading = Helper.randomGuidString()
-        let expectedSeverity = MessageDisplaySeverity.informational
+        let expectedSeverity = MessageDisplay.informationalSeverity
         let expectedMessages = [ Helper.randomGuidString() ]
-        let readModel = MessageDisplayReadModel.make expectedHeading expectedSeverity (Seq.ofList expectedMessages)
+        let readModel = MessageDisplay.makeReadModel expectedHeading expectedSeverity (Seq.ofList expectedMessages)
         test <@ (box readModel) :? IMessageDisplayReadModel @>
         let actualHeading = readModel.Heading
         test <@ actualHeading = expectedHeading @>
@@ -230,16 +230,16 @@ module MessageDisplayReadModelTests =
     let ``Calling heading, returns expected heading``() = 
         let expectedHeading = Helper.randomGuidString()
         let readModel = 
-            MessageDisplayReadModel.make expectedHeading MessageDisplaySeverity.informational 
+            MessageDisplay.makeReadModel expectedHeading MessageDisplay.informationalSeverity 
                 (Seq.singleton (Helper.randomGuidString()))
         let actualHeading = readModel.Heading
         test <@ actualHeading = expectedHeading @>
     
     [<Test>]
     let ``Calling severity, returns expected severity``() = 
-        let expectedSeverity = MessageDisplaySeverity.informational
+        let expectedSeverity = MessageDisplay.informationalSeverity
         let readModel = 
-            MessageDisplayReadModel.make (Helper.randomGuidString()) expectedSeverity 
+            MessageDisplay.makeReadModel (Helper.randomGuidString()) expectedSeverity 
                 (Seq.singleton (Helper.randomGuidString()))
         let actualSeverity = readModel.Severity
         test <@ actualSeverity = expectedSeverity @>
@@ -248,7 +248,7 @@ module MessageDisplayReadModelTests =
     let ``Calling messages, returns expected messages``() = 
         let expectedMessages = [ Helper.randomGuidString() ]
         let readModel = 
-            MessageDisplayReadModel.make (Helper.randomGuidString()) MessageDisplaySeverity.informational 
+            MessageDisplay.makeReadModel (Helper.randomGuidString()) MessageDisplay.informationalSeverity 
                 expectedMessages
         let actualMessages = List.ofSeq readModel.Messages
         test <@ actualMessages = expectedMessages @>

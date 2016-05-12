@@ -116,12 +116,12 @@ module MemberListExtensions =
     [<CompiledName("ToMessageDisplayReadModel"); Extension>]
     let toMessageDisplayReadModel (result : IResult<IMemberListReadModel, IMemberListQueryFailureStatus>) = 
         let h = "Member List Query"
-        let ss = MessageDisplaySeverity.informational
+        let ss = MessageDisplay.informationalSeverity
         let sm = "Member list query was successful"
-        let fs = MessageDisplaySeverity.error
+        let fs = MessageDisplay.errorSeverity
         let fm = "Member list query was not successful and returned not found"
         match result with
-        | Result.Success _ -> MessageDisplayReadModel.make h ss (Seq.singleton sm)
+        | Result.Success _ -> MessageDisplay.makeReadModel h ss (Seq.singleton sm)
         | Result.Failure s -> 
             match s with
-            | MemberListQueryFailureStatus.NotFound -> MessageDisplayReadModel.make h fs (Seq.singleton fm)
+            | MemberListQueryFailureStatus.NotFound -> MessageDisplay.makeReadModel h fs (Seq.singleton fm)

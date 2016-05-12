@@ -159,7 +159,7 @@ module MemberDetailExtensionTests =
     [<Test>]
     let ``Calling to message display read model, with success result, returns expected result``() = 
         let expectedHeading = "Member Detail Query"
-        let expectedSeverity = MessageDisplaySeverity.informational
+        let expectedSeverity = MessageDisplay.informationalSeverity
         let expectedMessages = [ "Member detail query was successful" ]
         
         let readModel = 
