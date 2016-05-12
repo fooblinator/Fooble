@@ -61,6 +61,7 @@
     <Compile Include="MessageDisplay.fs" />
     <Compile Include="Member.fs" />
     <Compile Include="MemberDetail.fs" />
+    <Compile Include="MemberList.fs" />
     <Content Include="App.config" />
     <Content Include="packages.config" />
   </ItemGroup>

@@ -60,6 +60,7 @@
     <Compile Include="MessageDisplayTests.fs" />
     <Compile Include="MemberTests.fs" />
     <Compile Include="MemberDetailTests.fs" />
+    <Compile Include="MemberListTests.fs" />
     <Content Include="App.config" />
     <Content Include="packages.config" />
   </ItemGroup>
