@@ -144,6 +144,15 @@ module MemberDetailQueryHandlerTests =
         let handler = Mock<IDataContext>().Create() |> MemberDetailQueryHandler.make
         test <@ (box handler) :? IMemberDetailQueryHandler @>
 
+//    [<Test>]
+//    let ``Calling handle, with null query, raises expected exception``() = 
+//        let expectedParamName = "query"
+//        let expectedMessage = "Query should not be null"
+//        let handler = Mock<IDataContext>().Create() |> MemberDetailQueryHandler.make
+//        raisesWith<ArgumentException> <@ handler.Handle(null) @> 
+//            (fun e -> 
+//            <@ e.ParamName = expectedParamName && (Helper.fixArgumentExceptionMessage e.Message) = expectedMessage @>)
+//    
 [<TestFixture>]
 module MemberDetailExtensionTests = 
     [<Test>]

@@ -217,7 +217,7 @@ module MessageDisplayReadModelTests =
         let expectedHeading = Helper.randomGuidString()
         let expectedSeverity = MessageDisplaySeverity.informational
         let expectedMessages = [ Helper.randomGuidString() ]
-        let readModel = MessageDisplayReadModel.make expectedHeading expectedSeverity expectedMessages
+        let readModel = MessageDisplayReadModel.make expectedHeading expectedSeverity (Seq.ofList expectedMessages)
         test <@ (box readModel) :? IMessageDisplayReadModel @>
         let actualHeading = readModel.Heading
         test <@ actualHeading = expectedHeading @>
