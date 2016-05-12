@@ -1,8 +1,9 @@
 ﻿namespace Fooble.Tests
 
 open Fooble.Core
-open Foq
 open MediatR
+open Moq
+open Moq.FSharp.Extensions
 open NUnit.Framework
 open Swensen.Unquote
 open System
@@ -141,14 +142,14 @@ module MemberDetailQueryHandlerTests =
     
     [<Test>]
     let ``Calling make, with valid parameters, returns expected result``() = 
-        let handler = Mock<IDataContext>().Create() |> MemberDetailQueryHandler.make
+        let handler = MemberDetailQueryHandler.make (mock())
         test <@ (box handler) :? IMemberDetailQueryHandler @>
 
 //    [<Test>]
 //    let ``Calling handle, with null query, raises expected exception``() = 
 //        let expectedParamName = "query"
 //        let expectedMessage = "Query should not be null"
-//        let handler = Mock<IDataContext>().Create() |> MemberDetailQueryHandler.make
+//        let handler = MemberDetailQueryHandler.make (mock())
 //        raisesWith<ArgumentException> <@ handler.Handle(null) @> 
 //            (fun e -> 
 //            <@ e.ParamName = expectedParamName && (Helper.fixArgumentExceptionMessage e.Message) = expectedMessage @>)
