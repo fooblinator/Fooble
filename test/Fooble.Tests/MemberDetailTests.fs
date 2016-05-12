@@ -12,13 +12,13 @@ open System
 module MemberDetailQueryFailureStatusTests = 
     [<Test>]
     let ``Calling not found, returns expected status``() = 
-        let status = MemberDetailQueryFailureStatus.notFound
+        let status = MemberDetail.notFoundQueryFailureStatus
         test <@ (box status) :? IMemberDetailQueryFailureStatus @>
         test <@ status.IsNotFound @>
     
     [<Test>]
     let ``Calling is not found, with not found status, returns true``() = 
-        let status = MemberDetailQueryFailureStatus.notFound
+        let status = MemberDetail.notFoundQueryFailureStatus
         test <@ status.IsNotFound @>
 
 [<TestFixture>]
@@ -27,7 +27,7 @@ module MemberDetailReadModelTests =
     let ``Calling make, with null id, raises expected exception``() = 
         let expectedParamName = "id"
         let expectedMessage = "Id should not be null"
-        raisesWith<ArgumentException> <@ MemberDetailReadModel.make null (Helper.randomGuidString()) @> 
+        raisesWith<ArgumentException> <@ MemberDetail.makeReadModel null (Helper.randomGuidString()) @> 
             (fun e -> 
             <@ e.ParamName = expectedParamName && (Helper.fixArgumentExceptionMessage e.Message) = expectedMessage @>)
     
@@ -35,7 +35,7 @@ module MemberDetailReadModelTests =
     let ``Calling make, with empty id, raises expected exception``() = 
         let expectedParamName = "id"
         let expectedMessage = "Id should not be empty"
-        raisesWith<ArgumentException> <@ MemberDetailReadModel.make "" (Helper.randomGuidString()) @> 
+        raisesWith<ArgumentException> <@ MemberDetail.makeReadModel "" (Helper.randomGuidString()) @> 
             (fun e -> 
             <@ e.ParamName = expectedParamName && (Helper.fixArgumentExceptionMessage e.Message) = expectedMessage @>)
     
@@ -44,7 +44,7 @@ module MemberDetailReadModelTests =
         let expectedParamName = "id"
         let expectedMessage = "Id should be in the proper GUID format"
         raisesWith<ArgumentException> 
-            <@ MemberDetailReadModel.make (Helper.randomNonGuidString()) (Helper.randomGuidString()) @> 
+            <@ MemberDetail.makeReadModel (Helper.randomNonGuidString()) (Helper.randomGuidString()) @> 
             (fun e -> 
             <@ e.ParamName = expectedParamName && (Helper.fixArgumentExceptionMessage e.Message) = expectedMessage @>)
     
@@ -52,7 +52,7 @@ module MemberDetailReadModelTests =
     let ``Calling make, with null name, raises expected exception``() = 
         let expectedParamName = "name"
         let expectedMessage = "Name should not be null"
-        raisesWith<ArgumentException> <@ MemberDetailReadModel.make (Helper.randomGuidString()) null @> 
+        raisesWith<ArgumentException> <@ MemberDetail.makeReadModel (Helper.randomGuidString()) null @> 
             (fun e -> 
             <@ e.ParamName = expectedParamName && (Helper.fixArgumentExceptionMessage e.Message) = expectedMessage @>)
     
@@ -60,7 +60,7 @@ module MemberDetailReadModelTests =
     let ``Calling make, with empty name, raises expected exception``() = 
         let expectedParamName = "name"
         let expectedMessage = "Name should not be empty"
-        raisesWith<ArgumentException> <@ MemberDetailReadModel.make (Helper.randomGuidString()) "" @> 
+        raisesWith<ArgumentException> <@ MemberDetail.makeReadModel (Helper.randomGuidString()) "" @> 
             (fun e -> 
             <@ e.ParamName = expectedParamName && (Helper.fixArgumentExceptionMessage e.Message) = expectedMessage @>)
     
@@ -68,7 +68,7 @@ module MemberDetailReadModelTests =
     let ``Calling make, with valid parameters, returns expected result``() = 
         let expectedId = Helper.randomGuidString()
         let expectedName = Helper.randomGuidString()
-        let readModel = MemberDetailReadModel.make expectedId expectedName
+        let readModel = MemberDetail.makeReadModel expectedId expectedName
         test <@ (box readModel) :? IMemberDetailReadModel @>
         let actualId = readModel.Id
         test <@ actualId = expectedId @>
@@ -78,14 +78,14 @@ module MemberDetailReadModelTests =
     [<Test>]
     let ``Calling id, returns expected id``() = 
         let expectedId = Helper.randomGuidString()
-        let readModel = MemberDetailReadModel.make expectedId (Helper.randomGuidString())
+        let readModel = MemberDetail.makeReadModel expectedId (Helper.randomGuidString())
         let actualId = readModel.Id
         test <@ actualId = expectedId @>
     
     [<Test>]
     let ``Calling name, returns expected name``() = 
         let expectedName = Helper.randomGuidString()
-        let readModel = MemberDetailReadModel.make (Helper.randomGuidString()) expectedName
+        let readModel = MemberDetail.makeReadModel (Helper.randomGuidString()) expectedName
         let actualName = readModel.Name
         test <@ actualName = expectedName @>
 
@@ -95,7 +95,7 @@ module MemberDetailQueryTests =
     let ``Calling make, with null id, raises expected exception``() = 
         let expectedParamName = "id"
         let expectedMessage = "Id should not be null"
-        raisesWith<ArgumentException> <@ MemberDetailQuery.make null @> 
+        raisesWith<ArgumentException> <@ MemberDetail.makeQuery null @> 
             (fun e -> 
             <@ e.ParamName = expectedParamName && (Helper.fixArgumentExceptionMessage e.Message) = expectedMessage @>)
     
@@ -103,7 +103,7 @@ module MemberDetailQueryTests =
     let ``Calling make, with empty id, raises expected exception``() = 
         let expectedParamName = "id"
         let expectedMessage = "Id should not be empty"
-        raisesWith<ArgumentException> <@ MemberDetailQuery.make "" @> 
+        raisesWith<ArgumentException> <@ MemberDetail.makeQuery "" @> 
             (fun e -> 
             <@ e.ParamName = expectedParamName && (Helper.fixArgumentExceptionMessage e.Message) = expectedMessage @>)
     
@@ -111,14 +111,14 @@ module MemberDetailQueryTests =
     let ``Calling make, with invalid guid formatted id, raises expected exception``() = 
         let expectedParamName = "id"
         let expectedMessage = "Id should be in the proper GUID format"
-        raisesWith<ArgumentException> <@ MemberDetailQuery.make (Helper.randomNonGuidString()) @> 
+        raisesWith<ArgumentException> <@ MemberDetail.makeQuery (Helper.randomNonGuidString()) @> 
             (fun e -> 
             <@ e.ParamName = expectedParamName && (Helper.fixArgumentExceptionMessage e.Message) = expectedMessage @>)
     
     [<Test>]
     let ``Calling make, with valid parameters, returns expected result``() = 
         let expectedId = Helper.randomGuidString()
-        let query = MemberDetailQuery.make expectedId
+        let query = MemberDetail.makeQuery expectedId
         test <@ (box query) :? IMemberDetailQuery @>
         let actualId = query.Id
         test <@ actualId = expectedId @>
@@ -126,7 +126,7 @@ module MemberDetailQueryTests =
     [<Test>]
     let ``Calling id, returns expected id``() = 
         let expectedId = Helper.randomGuidString()
-        let query = MemberDetailQuery.make expectedId
+        let query = MemberDetail.makeQuery expectedId
         let actualId = query.Id
         test <@ actualId = expectedId @>
 
@@ -136,13 +136,13 @@ module MemberDetailQueryHandlerTests =
     let ``Calling make, with null context, raises expected exception``() = 
         let expectedParamName = "context"
         let expectedMessage = "Data context should not be null"
-        raisesWith<ArgumentException> <@ MemberDetailQueryHandler.make null @> 
+        raisesWith<ArgumentException> <@ MemberDetail.makeQueryHandler null @> 
             (fun e -> 
             <@ e.ParamName = expectedParamName && (Helper.fixArgumentExceptionMessage e.Message) = expectedMessage @>)
     
     [<Test>]
     let ``Calling make, with valid parameters, returns expected result``() = 
-        let handler = MemberDetailQueryHandler.make (mock())
+        let handler = MemberDetail.makeQueryHandler (mock())
         test <@ (box handler) :? IMemberDetailQueryHandler @>
 
 //    [<Test>]
@@ -163,9 +163,9 @@ module MemberDetailExtensionTests =
         let expectedMessages = [ "Member detail query was successful" ]
         
         let readModel = 
-            MemberDetailReadModel.make (Helper.randomGuidString()) (Helper.randomGuidString())
+            MemberDetail.makeReadModel (Helper.randomGuidString()) (Helper.randomGuidString())
             |> Result.success
-            |> MemberDetailExtensions.toMessageDisplayReadModel
+            |> MemberDetail.toMessageDisplayReadModel
         
         let actualHeading = readModel.Heading
         test <@ actualHeading = expectedHeading @>

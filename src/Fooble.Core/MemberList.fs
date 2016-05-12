@@ -18,9 +18,19 @@ type IMemberListQuery =
 
 type IMemberListQueryHandler = IRequestHandler<IMemberListQuery, IResult<IMemberListReadModel, IMemberListQueryFailureStatus>>
 
-[<RequireQualifiedAccess>]
-module internal MemberListItemReadModel = 
-    type private Implementation = 
+[<RequireQualifiedAccess; Extension>]
+module MemberList = 
+    (* Query *)
+
+    type private MemberListQueryImplementation() = 
+        interface IMemberListQuery
+    
+    [<CompiledName("MakeQuery")>]
+    let makeQuery() : IMemberListQuery = MemberListQueryImplementation() :> _
+    
+    (* Item Read Model *)
+
+    type private MemberListItemReadModelImplementation = 
         { Id : string
           Name : string }
         interface IMemberListItemReadModel with
@@ -33,22 +43,22 @@ module internal MemberListItemReadModel =
                 match this with
                 | { Id = _; Name = n } -> n
     
-    let make id name : IMemberListItemReadModel = 
+    let internal makeItemReadModel id name : IMemberListItemReadModel = 
         Validation.ensureIsValid Member.validateId id
         Validation.ensureIsValid Member.validateName name
-        { Id = id
+        { MemberListItemReadModelImplementation.Id = id
           Name = name } :> _
+    
+    (* Read Model *)
 
-[<RequireQualifiedAccess>]
-module internal MemberListReadModel = 
-    type private Implementation = 
+    type private MemberListReadModelImplementation = 
         { Members : IMemberListItemReadModel seq }
         interface IMemberListReadModel with
             member this.Members = 
                 match this with
                 | { Members = ms } -> ms
     
-    let validateMembers (members : IMemberListItemReadModel seq) = 
+    let internal validateMembers (members : IMemberListItemReadModel seq) = 
         if Validation.isNullValue members then 
             Some(Validation.makeFailureInfo "members" (sprintf "%s should not be null" "Member list"))
         else if Seq.isEmpty members then 
@@ -57,64 +67,46 @@ module internal MemberListReadModel =
             Some(Validation.makeFailureInfo "members" (sprintf "%s should not be null" "Member list items"))
         else None
     
-    let make members : IMemberListReadModel = 
+    let internal makeReadModel members : IMemberListReadModel = 
         Validation.ensureIsValid validateMembers members
-        { Members = members } :> _
-
-[<RequireQualifiedAccess>]
-module MemberListQueryFailureStatus = 
-    let (|NotFound|) (status : IMemberListQueryFailureStatus) = ()
+        { MemberListReadModelImplementation.Members = members } :> _
     
-    type private Implementation = 
+    (* Query Failure Status *)
+
+    type private MemberListQueryFailureStatusImplementation = 
         | NotFound
         interface IMemberListQueryFailureStatus with
             member this.IsNotFound = 
                 match this with
                 | NotFound -> true
     
-    [<CompiledName("NotFound")>]
-    let notFound : IMemberListQueryFailureStatus = NotFound :> _
-
-[<RequireQualifiedAccess>]
-module MemberListQuery = 
-    type private Implementation() = 
-        interface IMemberListQuery
+    [<CompiledName("NotFoundQueryFailureStatus")>]
+    let notFoundQueryFailureStatus : IMemberListQueryFailureStatus = NotFound :> _
     
-    [<CompiledName("Make")>]
-    let make() : IMemberListQuery = Implementation() :> _
-
-[<RequireQualifiedAccess>]
-module internal MemberListQueryHandler = 
-    let validateQuery query = 
-        if Validation.isNullValue query then 
-            Some(Validation.makeFailureInfo "query" (sprintf "%s should not be null" "Query"))
-        else None
+    let (|NotFound|) (status : IMemberListQueryFailureStatus) = ()
     
-    type private Implementation(context : IDataContext) = 
+    (* Query Handler *)
+
+    type private MemberListQueryHandlerImplementation(context : IDataContext) = 
         interface IMemberListQueryHandler with
             member this.Handle(query) = 
-                Validation.ensureIsValid validateQuery query
+                Validation.ensureNotNull query "query" "Query"
                 match List.ofSeq context.Members with
-                | [] -> Result.failure MemberListQueryFailureStatus.notFound
+                | [] -> Result.failure notFoundQueryFailureStatus
                 | mds -> 
-                    List.map (fun md -> MemberListItemReadModel.make md.Id md.Name) mds
+                    List.map (fun (md : MemberData) -> makeItemReadModel md.Id md.Name) mds
                     |> Seq.ofList
-                    |> MemberListReadModel.make
+                    |> makeReadModel
                     |> Result.success
     
-    let validateContext context = 
-        if Validation.isNullValue context then 
-            Some(Validation.makeFailureInfo "context" (sprintf "%s should not be null" "Data context"))
-        else None
+    let internal makeQueryHandler context : IMemberListQueryHandler = 
+        Validation.ensureNotNull context "context" "Data context"
+        MemberListQueryHandlerImplementation(context) :> _
     
-    let make context : IMemberListQueryHandler = 
-        Validation.ensureIsValid validateContext context
-        Implementation(context) :> _
+    (* Extensions *)
 
-[<Extension>]
-module MemberListExtensions = 
     [<CompiledName("ToMessageDisplayReadModel"); Extension>]
-    let toMessageDisplayReadModel (result : IResult<IMemberListReadModel, IMemberListQueryFailureStatus>) = 
+    let toMessageDisplayReadModel (result : IResult<IMemberListReadModel, IMemberListQueryFailureStatus>) : IMessageDisplayReadModel = 
         let h = "Member List Query"
         let ss = MessageDisplay.informationalSeverity
         let sm = "Member list query was successful"
@@ -124,4 +116,4 @@ module MemberListExtensions =
         | Result.Success _ -> MessageDisplay.makeReadModel h ss (Seq.singleton sm)
         | Result.Failure s -> 
             match s with
-            | MemberListQueryFailureStatus.NotFound -> MessageDisplay.makeReadModel h fs (Seq.singleton fm)
+            | NotFound -> MessageDisplay.makeReadModel h fs (Seq.singleton fm)

@@ -8,6 +8,16 @@ type IValidationFailureInfo =
 
 [<RequireQualifiedAccess>]
 module internal Validation = 
+    (* Common Checks *)
+
+    let internal isNullValue (value : 'T) = isNull (box value)
+    let internal isEmptyString value = value = ""
+    let internal isNotGuidString value = not (fst (Guid.TryParse(value)))
+    let internal containsNullValue (values : seq<'T>) = Option.isSome (Seq.tryFind (box >> isNull) values)
+    let internal containsEmptyString values = Option.isSome (Seq.tryFind (fun x -> x = "") values)
+    
+    (* Failure Info *)
+
     type private ValidationFailureInfoImplementation = 
         { ParamName : string
           Message : string }
@@ -21,22 +31,21 @@ module internal Validation =
                 match this with
                 | { ParamName = _; Message = x } -> x
     
-    let ensureIsValid (validator : 'T -> IValidationFailureInfo option) (value : 'T) = 
-        match validator value with
-        | Some x -> invalidArg x.ParamName x.Message
-        | None -> ()
-    
-    let isNullValue value = isNull (box value)
-    let isEmptyString value = value = ""
-    let isNotGuidString value = not (fst (Guid.TryParse(value)))
-    let containsNullValue values = Option.isSome (Seq.tryFind (box >> isNull) values)
-    let containsEmptyString values = Option.isSome (Seq.tryFind (fun x -> x = "") values)
-    
-    let makeFailureInfo paramName message : IValidationFailureInfo = 
+    let internal makeFailureInfo paramName message = 
         if isNullValue paramName then invalidArg "paramName" (sprintf "%s should not be null" "Param name")
         else if isEmptyString paramName then invalidArg "paramName" (sprintf "%s should not be empty" "Param name")
         else if isNullValue message then invalidArg "message" (sprintf "%s should not be null" "Message")
         else if isEmptyString message then invalidArg "message" (sprintf "%s should not be empty" "Message")
         else 
-            { ParamName = paramName
-              Message = message } :> _
+            { ValidationFailureInfoImplementation.ParamName = paramName
+              Message = message } :> IValidationFailureInfo
+    
+    (* Misc *)
+
+    let internal ensureIsValid (validator : 'T -> IValidationFailureInfo option) (value : 'T) = 
+        match validator value with
+        | Some x -> invalidArg x.ParamName x.Message
+        | None -> ()
+    
+    let internal ensureNotNull (value : 'T) paramName errorPrefix = 
+        if isNullValue value then invalidArg paramName (sprintf "%s should not be null" errorPrefix)

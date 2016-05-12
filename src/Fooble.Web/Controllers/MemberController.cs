@@ -21,7 +21,7 @@ namespace Fooble.Web.Controllers
         [HttpGet]
         public ActionResult Detail(string id)
         {
-            var query = MemberDetailQuery.Make(id);
+            var query = MemberDetail.MakeQuery(id);
             var result = _mediator.Send(query);
 
             Debug.Assert(result != null, "Result should not be null");
@@ -38,7 +38,7 @@ namespace Fooble.Web.Controllers
         [HttpGet]
         public ActionResult List()
         {
-            var query = MemberListQuery.Make();
+            var query = MemberList.MakeQuery();
             var result = _mediator.Send(query);
 
             Debug.Assert(result != null, "Result should not be null");
