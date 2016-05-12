@@ -8,7 +8,7 @@ type IValidationFailureInfo =
 
 [<RequireQualifiedAccess>]
 module internal Validation = 
-    (* Common Checks *)
+    (* Checks *)
 
     let internal isNullValue (value : 'T) = isNull (box value)
     let internal isEmptyString value = value = ""

@@ -7,12 +7,16 @@ type IResult<'TSuccess, 'TFailure> =
     abstract IsFailure : bool
 
 [<RequireQualifiedAccess>]
-module Result = 
-    let (|Success|Failure|) (result : IResult<'TSuccess, 'TFailure>) = 
+module internal Result = 
+    (* Active Patterns *)
+
+    let internal (|IsSuccess|IsFailure|) (result : IResult<'TSuccess, 'TFailure>) = 
         if result.IsSuccess then Choice1Of2(result.Value)
         else Choice2Of2(result.Status)
     
-    type private Implementation<'TSuccess, 'TFailure> = 
+    (* Result *)
+
+    type private ResultImplementation<'TSuccess, 'TFailure> = 
         | Success of 'TSuccess
         | Failure of 'TFailure
         interface IResult<'TSuccess, 'TFailure> with
@@ -37,29 +41,16 @@ module Result =
                 | Success _ -> true
                 | _ -> false
     
-    [<CompiledName("ValidateValue")>]
-    let validateValue value = 
-        if Validation.isNullValue value then 
-            Some(Validation.makeFailureInfo "value" (sprintf "%s should not be null" "Value"))
-        else None
+    let internal success<'TSuccess, 'TFailure> (value : 'TSuccess) = 
+        Validation.ensureNotNull value "value" "Value"
+        Success value :> IResult<'TSuccess, 'TFailure>
     
-    [<CompiledName("ValidateStatus")>]
-    let validateStatus status = 
-        if Validation.isNullValue status then 
-            Some(Validation.makeFailureInfo "status" (sprintf "%s should not be null" "Status"))
-        else None
+    let internal failure<'TSuccess, 'TFailure> (status : 'TFailure) = 
+        Validation.ensureNotNull status "status" "Status"
+        Failure status :> IResult<'TSuccess, 'TFailure>
     
-    [<CompiledName("Success")>]
-    let success (value : 'T) = 
-        Validation.ensureIsValid validateValue value
-        Success value :> IResult<'T, _>
-    
-    [<CompiledName("Failure")>]
-    let failure (status : 'T) = 
-        Validation.ensureIsValid validateStatus status
-        Failure status :> IResult<_, 'T>
-    
-    let internal ofOption statusIfNone valueOption = 
+    (* Misc *)
+    let internal ofOption (statusIfNone : 'TFailure) (valueOption : 'TSuccess option) = 
         match valueOption with
         | Some v -> success v
         | None -> failure statusIfNone

@@ -4,6 +4,8 @@ open System
 
 [<RequireQualifiedAccess>]
 module Member = 
+    (* Validators *)
+
     [<CompiledName("ValidateId")>]
     let validateId id = 
         if Validation.isNullValue id then Some(Validation.makeFailureInfo "id" (sprintf "%s should not be null" "Id"))

@@ -20,13 +20,28 @@ type IMemberListQueryHandler = IRequestHandler<IMemberListQuery, IResult<IMember
 
 [<RequireQualifiedAccess; Extension>]
 module MemberList = 
+    (* Active Patterns *)
+
+    let internal (|IsNotFound|) (status : IMemberListQueryFailureStatus) = ()
+    
+    (* Validators *)
+
+    let internal validateMembers (members : seq<IMemberListItemReadModel>) = 
+        if Validation.isNullValue members then 
+            Some(Validation.makeFailureInfo "members" (sprintf "%s should not be null" "Member list"))
+        else if Seq.isEmpty members then 
+            Some(Validation.makeFailureInfo "members" (sprintf "%s should not be empty" "Member list"))
+        else if Validation.containsNullValue members then 
+            Some(Validation.makeFailureInfo "members" (sprintf "%s should not be null" "Member list items"))
+        else None
+    
     (* Query *)
 
     type private MemberListQueryImplementation() = 
         interface IMemberListQuery
     
     [<CompiledName("MakeQuery")>]
-    let makeQuery() : IMemberListQuery = MemberListQueryImplementation() :> _
+    let makeQuery() = MemberListQueryImplementation() :> IMemberListQuery
     
     (* Item Read Model *)
 
@@ -43,11 +58,11 @@ module MemberList =
                 match this with
                 | { Id = _; Name = n } -> n
     
-    let internal makeItemReadModel id name : IMemberListItemReadModel = 
+    let internal makeItemReadModel id name = 
         Validation.ensureIsValid Member.validateId id
         Validation.ensureIsValid Member.validateName name
         { MemberListItemReadModelImplementation.Id = id
-          Name = name } :> _
+          Name = name } :> IMemberListItemReadModel
     
     (* Read Model *)
 
@@ -58,18 +73,9 @@ module MemberList =
                 match this with
                 | { Members = ms } -> ms
     
-    let internal validateMembers (members : IMemberListItemReadModel seq) = 
-        if Validation.isNullValue members then 
-            Some(Validation.makeFailureInfo "members" (sprintf "%s should not be null" "Member list"))
-        else if Seq.isEmpty members then 
-            Some(Validation.makeFailureInfo "members" (sprintf "%s should not be empty" "Member list"))
-        else if Validation.containsNullValue members then 
-            Some(Validation.makeFailureInfo "members" (sprintf "%s should not be null" "Member list items"))
-        else None
-    
-    let internal makeReadModel members : IMemberListReadModel = 
+    let internal makeReadModel members = 
         Validation.ensureIsValid validateMembers members
-        { MemberListReadModelImplementation.Members = members } :> _
+        { MemberListReadModelImplementation.Members = members } :> IMemberListReadModel
     
     (* Query Failure Status *)
 
@@ -81,15 +87,13 @@ module MemberList =
                 | NotFound -> true
     
     [<CompiledName("NotFoundQueryFailureStatus")>]
-    let notFoundQueryFailureStatus : IMemberListQueryFailureStatus = NotFound :> _
-    
-    let (|NotFound|) (status : IMemberListQueryFailureStatus) = ()
+    let notFoundQueryFailureStatus = NotFound :> IMemberListQueryFailureStatus
     
     (* Query Handler *)
 
     type private MemberListQueryHandlerImplementation(context : IDataContext) = 
         interface IMemberListQueryHandler with
-            member this.Handle(query) = 
+            member this.Handle(query : IMemberListQuery) = 
                 Validation.ensureNotNull query "query" "Query"
                 match List.ofSeq context.Members with
                 | [] -> Result.failure notFoundQueryFailureStatus
@@ -99,21 +103,21 @@ module MemberList =
                     |> makeReadModel
                     |> Result.success
     
-    let internal makeQueryHandler context : IMemberListQueryHandler = 
+    let internal makeQueryHandler (context : IDataContext) = 
         Validation.ensureNotNull context "context" "Data context"
-        MemberListQueryHandlerImplementation(context) :> _
+        MemberListQueryHandlerImplementation(context) :> IMemberListQueryHandler
     
     (* Extensions *)
 
     [<CompiledName("ToMessageDisplayReadModel"); Extension>]
-    let toMessageDisplayReadModel (result : IResult<IMemberListReadModel, IMemberListQueryFailureStatus>) : IMessageDisplayReadModel = 
+    let toMessageDisplayReadModel (result : IResult<IMemberListReadModel, IMemberListQueryFailureStatus>) = 
         let h = "Member List Query"
         let ss = MessageDisplay.informationalSeverity
         let sm = "Member list query was successful"
         let fs = MessageDisplay.errorSeverity
         let fm = "Member list query was not successful and returned not found"
         match result with
-        | Result.Success _ -> MessageDisplay.makeReadModel h ss (Seq.singleton sm)
-        | Result.Failure s -> 
+        | Result.IsSuccess _ -> MessageDisplay.makeReadModel h ss (Seq.singleton sm)
+        | Result.IsFailure s -> 
             match s with
-            | NotFound -> MessageDisplay.makeReadModel h fs (Seq.singleton fm)
+            | IsNotFound -> MessageDisplay.makeReadModel h fs (Seq.singleton fm)

@@ -32,47 +32,47 @@ module MessageDisplaySeverityTests =
         test <@ severity.IsError @>
     
     [<Test>]
-    let ``Calling is informational, with informational severity, returns true``() = 
+    let ``Calling is informational, as informational, returns true``() = 
         let severity = MessageDisplay.informationalSeverity
         test <@ severity.IsInformational @>
     
     [<Test>]
-    let ``Calling is informational, with warning severity, returns false``() = 
+    let ``Calling is informational, as warning, returns false``() = 
         let severity = MessageDisplay.warningSeverity
         test <@ not severity.IsInformational @>
     
     [<Test>]
-    let ``Calling is informational, with error severity, returns false``() = 
+    let ``Calling is informational, as error, returns false``() = 
         let severity = MessageDisplay.errorSeverity
         test <@ not severity.IsInformational @>
     
     [<Test>]
-    let ``Calling is warning, with informational severity, returns false``() = 
+    let ``Calling is warning, as informational, returns false``() = 
         let severity = MessageDisplay.informationalSeverity
         test <@ not severity.IsWarning @>
     
     [<Test>]
-    let ``Calling is warning, with warning severity, returns true``() = 
+    let ``Calling is warning, as warning, returns true``() = 
         let severity = MessageDisplay.warningSeverity
         test <@ severity.IsWarning @>
     
     [<Test>]
-    let ``Calling is warning, with error severity, returns false``() = 
+    let ``Calling is warning, as error, returns false``() = 
         let severity = MessageDisplay.errorSeverity
         test <@ not severity.IsWarning @>
     
     [<Test>]
-    let ``Calling is error, with informational severity, returns false``() = 
+    let ``Calling is error, as informational, returns false``() = 
         let severity = MessageDisplay.informationalSeverity
         test <@ not severity.IsError @>
     
     [<Test>]
-    let ``Calling is error, with warning severity, returns false``() = 
+    let ``Calling is error, as warning, returns false``() = 
         let severity = MessageDisplay.warningSeverity
         test <@ not severity.IsError @>
     
     [<Test>]
-    let ``Calling is error, with error severity, returns true``() = 
+    let ``Calling is error, as error, returns true``() = 
         let severity = MessageDisplay.errorSeverity
         test <@ severity.IsError @>
 
@@ -155,7 +155,7 @@ module MessageDisplayReadModelTests =
         test <@ result.IsNone @>
     
     [<Test>]
-    let ``Calling make, with null heading, raises expected exception``() = 
+    let ``Calling make read model, with null heading, raises expected exception``() = 
         let expectedParamName = "heading"
         let expectedMessage = "Heading should not be null"
         raisesWith<ArgumentException> 
@@ -165,7 +165,7 @@ module MessageDisplayReadModelTests =
             <@ e.ParamName = expectedParamName && (Helper.fixArgumentExceptionMessage e.Message) = expectedMessage @>)
     
     [<Test>]
-    let ``Calling make, with empty heading, raises expected exception``() = 
+    let ``Calling make read model, with empty heading, raises expected exception``() = 
         let expectedParamName = "heading"
         let expectedMessage = "Heading should not be empty"
         raisesWith<ArgumentException> 
@@ -175,7 +175,7 @@ module MessageDisplayReadModelTests =
             <@ e.ParamName = expectedParamName && (Helper.fixArgumentExceptionMessage e.Message) = expectedMessage @>)
     
     [<Test>]
-    let ``Calling make, with null messages, raises expected exception``() = 
+    let ``Calling make read model, with null messages, raises expected exception``() = 
         let expectedParamName = "messages"
         let expectedMessage = "Message list should not be null"
         raisesWith<ArgumentException> 
@@ -184,7 +184,7 @@ module MessageDisplayReadModelTests =
             <@ e.ParamName = expectedParamName && (Helper.fixArgumentExceptionMessage e.Message) = expectedMessage @>)
     
     [<Test>]
-    let ``Calling make, with empty messages, raises expected exception``() = 
+    let ``Calling make read model, with empty messages, raises expected exception``() = 
         let expectedParamName = "messages"
         let expectedMessage = "Message list should not be empty"
         raisesWith<ArgumentException> 
@@ -193,7 +193,7 @@ module MessageDisplayReadModelTests =
             <@ e.ParamName = expectedParamName && (Helper.fixArgumentExceptionMessage e.Message) = expectedMessage @>)
     
     [<Test>]
-    let ``Calling make, with not empty messages containing null message, raises expected exception``() = 
+    let ``Calling make read model, with not empty messages containing null message, raises expected exception``() = 
         let expectedParamName = "messages"
         let expectedMessage = "Message list items should not be null"
         raisesWith<ArgumentException> 
@@ -203,7 +203,7 @@ module MessageDisplayReadModelTests =
             <@ e.ParamName = expectedParamName && (Helper.fixArgumentExceptionMessage e.Message) = expectedMessage @>)
     
     [<Test>]
-    let ``Calling make, with not empty messages containing empty message, raises expected exception``() = 
+    let ``Calling make read model, with not empty messages containing empty message, raises expected exception``() = 
         let expectedParamName = "messages"
         let expectedMessage = "Message list items should not be empty"
         raisesWith<ArgumentException> 
@@ -213,7 +213,7 @@ module MessageDisplayReadModelTests =
             <@ e.ParamName = expectedParamName && (Helper.fixArgumentExceptionMessage e.Message) = expectedMessage @>)
     
     [<Test>]
-    let ``Calling make, with valid parameters, returns expected result``() = 
+    let ``Calling make read model, with valid parameters, returns expected result``() = 
         let expectedHeading = Helper.randomGuidString()
         let expectedSeverity = MessageDisplay.informationalSeverity
         let expectedMessages = [ Helper.randomGuidString() ]

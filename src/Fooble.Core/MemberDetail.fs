@@ -18,6 +18,10 @@ type IMemberDetailQueryHandler = IRequestHandler<IMemberDetailQuery, IResult<IMe
 
 [<RequireQualifiedAccess; Extension>]
 module MemberDetail = 
+    (* Active Patterns *)
+
+    let internal (|IsNotFound|) (status : IMemberDetailQueryFailureStatus) = ()
+    
     (* Query *)
 
     type private MemberDetailQueryImplementation = 
@@ -28,9 +32,9 @@ module MemberDetail =
                 | { Id = i } -> i
     
     [<CompiledName("MakeQuery")>]
-    let makeQuery id : IMemberDetailQuery = 
+    let makeQuery id = 
         Validation.ensureIsValid Member.validateId id
-        { MemberDetailQueryImplementation.Id = id } :> _
+        { MemberDetailQueryImplementation.Id = id } :> IMemberDetailQuery
     
     (* Read Model *)
 
@@ -47,11 +51,11 @@ module MemberDetail =
                 match this with
                 | { Id = _; Name = n } -> n
     
-    let internal makeReadModel id name : IMemberDetailReadModel = 
+    let internal makeReadModel id name = 
         Validation.ensureIsValid Member.validateId id
         Validation.ensureIsValid Member.validateName name
         { MemberDetailReadModelImplementation.Id = id
-          Name = name } :> _
+          Name = name } :> IMemberDetailReadModel
     
     (* Query Failure Status *)
 
@@ -63,15 +67,13 @@ module MemberDetail =
                 | NotFound -> true
     
     [<CompiledName("NotFoundQueryFailureStatus")>]
-    let notFoundQueryFailureStatus : IMemberDetailQueryFailureStatus = NotFound :> _
-    
-    let (|NotFound|) (status : IMemberDetailQueryFailureStatus) = ()
+    let notFoundQueryFailureStatus = NotFound :> IMemberDetailQueryFailureStatus
     
     (* Query Handler *)
 
     type private MemberDetailQueryHandlerImplementation(context : IDataContext) = 
         interface IMemberDetailQueryHandler with
-            member this.Handle(query) = 
+            member this.Handle(query : IMemberDetailQuery) = 
                 Validation.ensureNotNull query "query" "Query"
                 box (context.Members.Find(query.Id))
                 |> Option.ofObj
@@ -79,21 +81,21 @@ module MemberDetail =
                 |> Option.map (fun md -> makeReadModel md.Id md.Name)
                 |> Result.ofOption notFoundQueryFailureStatus
     
-    let internal makeQueryHandler context : IMemberDetailQueryHandler = 
+    let internal makeQueryHandler (context : IDataContext) = 
         Validation.ensureNotNull context "context" "Data context"
-        MemberDetailQueryHandlerImplementation(context) :> _
+        MemberDetailQueryHandlerImplementation(context) :> IMemberDetailQueryHandler
     
     (* Extensions *)
 
     [<CompiledName("ToMessageDisplayReadModel"); Extension>]
-    let toMessageDisplayReadModel (result : IResult<IMemberDetailReadModel, IMemberDetailQueryFailureStatus>) : IMessageDisplayReadModel = 
+    let toMessageDisplayReadModel (result : IResult<IMemberDetailReadModel, IMemberDetailQueryFailureStatus>) = 
         let h = "Member Detail Query"
         let ss = MessageDisplay.informationalSeverity
         let sm = "Member detail query was successful"
         let fs = MessageDisplay.errorSeverity
         let fm = "Member detail query was not successful and returned not found"
         match result with
-        | Result.Success _ -> MessageDisplay.makeReadModel h ss (Seq.singleton sm)
-        | Result.Failure s -> 
+        | Result.IsSuccess _ -> MessageDisplay.makeReadModel h ss (Seq.singleton sm)
+        | Result.IsFailure s -> 
             match s with
-            | NotFound -> MessageDisplay.makeReadModel h fs (Seq.singleton fm)
+            | IsNotFound -> MessageDisplay.makeReadModel h fs (Seq.singleton fm)

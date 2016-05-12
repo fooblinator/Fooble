@@ -12,50 +12,15 @@ type IMessageDisplayReadModel =
 
 [<RequireQualifiedAccess>]
 module MessageDisplay = 
-    type private MessageDisplaySeverityImplementation = 
-        | Informational
-        | Warning
-        | Error
-        interface IMessageDisplaySeverity with
-            
-            member this.IsInformational = 
-                match this with
-                | Informational -> true
-                | _ -> false
-            
-            member this.IsWarning = 
-                match this with
-                | Warning -> true
-                | _ -> false
-            
-            member this.IsError = 
-                match this with
-                | Error -> true
-                | _ -> false
+    (* Active Patterns *)
 
-    type private MessageDisplayReadModelImplementation = 
-        { Heading : string
-          Severity : IMessageDisplaySeverity
-          Messages : seq<string> }
-        interface IMessageDisplayReadModel with
-            
-            member this.Heading = 
-                match this with
-                | { Heading = h; Severity = _; Messages = _ } -> h
-            
-            member this.Severity = 
-                match this with
-                | { Heading = _; Severity = s; Messages = _ } -> s
-            
-            member this.Messages = 
-                match this with
-                | { Heading = _; Severity = _; Messages = ms } -> ms
-    
-    let (|Informational|Warning|Error|) (severity : IMessageDisplaySeverity) = 
+    let internal (|IsInformational|IsWarning|IsError|) (severity : IMessageDisplaySeverity) = 
         if severity.IsInformational then Choice1Of3()
         else if severity.IsWarning then Choice2Of3()
         else Choice3Of3()
     
+    (* Validators *)
+
     [<CompiledName("ValidateHeading")>]
     let validateHeading heading = 
         if Validation.isNullValue heading then 
@@ -76,29 +41,72 @@ module MessageDisplay =
             Some(Validation.makeFailureInfo "messages" (sprintf "%s should not be empty" "Message list items"))
         else None
     
+    (* Severity *)
+
+    type private MessageDisplaySeverityImplementation = 
+        | Informational
+        | Warning
+        | Error
+        interface IMessageDisplaySeverity with
+            
+            member this.IsInformational = 
+                match this with
+                | Informational -> true
+                | _ -> false
+            
+            member this.IsWarning = 
+                match this with
+                | Warning -> true
+                | _ -> false
+            
+            member this.IsError = 
+                match this with
+                | Error -> true
+                | _ -> false
+    
     [<CompiledName("InformationalSeverity")>]
-    let informationalSeverity : IMessageDisplaySeverity = Informational :> _
+    let informationalSeverity = Informational :> IMessageDisplaySeverity
     
     [<CompiledName("WarningSeverity")>]
-    let warningSeverity : IMessageDisplaySeverity = Warning :> _
+    let warningSeverity = Warning :> IMessageDisplaySeverity
     
     [<CompiledName("ErrorSeverity")>]
-    let errorSeverity : IMessageDisplaySeverity = Error :> _
+    let errorSeverity = Error :> IMessageDisplaySeverity
+    
+    (* Read Model *)
+
+    type private MessageDisplayReadModelImplementation = 
+        { Heading : string
+          Severity : IMessageDisplaySeverity
+          Messages : seq<string> }
+        interface IMessageDisplayReadModel with
+            
+            member this.Heading = 
+                match this with
+                | { Heading = h; Severity = _; Messages = _ } -> h
+            
+            member this.Severity = 
+                match this with
+                | { Heading = _; Severity = s; Messages = _ } -> s
+            
+            member this.Messages = 
+                match this with
+                | { Heading = _; Severity = _; Messages = ms } -> ms
     
     [<CompiledName("MakeReadModel")>]
-    let makeReadModel heading severity messages : IMessageDisplayReadModel = 
+    let makeReadModel heading severity messages = 
         Validation.ensureIsValid validateHeading heading
         Validation.ensureIsValid validateMessages messages
         match severity with
-        | Informational -> 
-            { Heading = heading
+        | IsInformational -> 
+            { MessageDisplayReadModelImplementation.Heading = heading
               Severity = informationalSeverity
-              Messages = messages } :> _
-        | Warning -> 
-            { Heading = heading
+              Messages = messages } :> IMessageDisplayReadModel
+        | IsWarning -> 
+            { MessageDisplayReadModelImplementation.Heading = heading
               Severity = warningSeverity
-              Messages = messages } :> _
-        | Error -> 
-            { Heading = heading
+              Messages = messages } :> IMessageDisplayReadModel
+        | IsError -> 
+            { MessageDisplayReadModelImplementation.Heading = heading
               Severity = errorSeverity
-              Messages = messages } :> _
+              Messages = messages } :> IMessageDisplayReadModel
