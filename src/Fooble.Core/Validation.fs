@@ -2,7 +2,7 @@
 
 open System
 
-type IValidationFailureInfo = 
+type IValidationInfo = 
     abstract ParamName : string
     abstract Message : string
 
@@ -22,10 +22,10 @@ module internal Validation =
     
     (* Failure Info *)
 
-    type private ValidationFailureInfoImplementation = 
+    type private ValidationInfoImplementation = 
         { ParamName : string
           Message : string }
-        interface IValidationFailureInfo with
+        interface IValidationInfo with
             
             member this.ParamName = 
                 match this with
@@ -35,49 +35,49 @@ module internal Validation =
                 match this with
                 | { ParamName = _; Message = x } -> x
     
-    let internal makeFailureInfo paramName message = 
+    let internal makeInfo paramName message = 
         if isNullValue paramName then invalidArg "paramName" (shouldNotBeNullMessage "Param name")
         if isEmptyString paramName then invalidArg "paramName" (shouldNotBeEmptyMessage "Param name")
         if isNullValue message then invalidArg "message" (shouldNotBeNullMessage "Message")
         if isEmptyString message then invalidArg "message" (shouldNotBeEmptyMessage "Message")
-        { ValidationFailureInfoImplementation.ParamName = paramName
-          Message = message } :> IValidationFailureInfo
+        { ValidationInfoImplementation.ParamName = paramName
+          Message = message } :> IValidationInfo
     
     (* Validators *)
 
     let internal validateIsNotNullValue (value : 'T) paramName prefix = 
         match isNullValue value with
-        | true -> Some(makeFailureInfo paramName (shouldNotBeNullMessage prefix))
+        | true -> Some(makeInfo paramName (shouldNotBeNullMessage prefix))
         | _ -> None
     
     let internal validateIsNotEmptyString value paramName prefix = 
         match isEmptyString value with
-        | true -> Some(makeFailureInfo paramName (shouldNotBeEmptyMessage prefix))
+        | true -> Some(makeInfo paramName (shouldNotBeEmptyMessage prefix))
         | _ -> None
     
     let internal validateIsGuidString value paramName prefix = 
         match isNotGuidString value with
-        | true -> Some(makeFailureInfo paramName (shouldBeGuidFormatMessage prefix))
+        | true -> Some(makeInfo paramName (shouldBeGuidFormatMessage prefix))
         | _ -> None
     
     let internal validateIsNotEmptyValue (value : seq<'T>) paramName prefix = 
         match isEmptyValue value with
-        | true -> Some(makeFailureInfo paramName (shouldNotBeEmptyMessage prefix))
+        | true -> Some(makeInfo paramName (shouldNotBeEmptyMessage prefix))
         | _ -> None
     
     let internal validateContainsNotNullValues (values : seq<'T>) paramName prefix = 
         match containsNullValues values with
-        | true -> Some(makeFailureInfo paramName (shouldNotBeNullMessage prefix))
+        | true -> Some(makeInfo paramName (shouldNotBeNullMessage prefix))
         | _ -> None
     
     let internal validateContainsNotEmptyStrings values paramName prefix = 
         match containsEmptyStrings values with
-        | true -> Some(makeFailureInfo paramName (shouldNotBeEmptyMessage prefix))
+        | true -> Some(makeInfo paramName (shouldNotBeEmptyMessage prefix))
         | _ -> None
     
     (* Misc *)
 
-    let internal ensure (validationResult : IValidationFailureInfo option) = 
-        match validationResult with
+    let internal enforce (validationInfo : IValidationInfo option) = 
+        match validationInfo with
         | Some i -> invalidArg i.ParamName i.Message
         | None -> ()

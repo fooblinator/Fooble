@@ -90,8 +90,8 @@ module MessageDisplay =
     
     [<CompiledName("MakeReadModel")>]
     let makeReadModel heading severity messages = 
-        Validation.ensure (validateHeading heading)
-        Validation.ensure (validateMessages messages)
+        Validation.enforce (validateHeading heading)
+        Validation.enforce (validateMessages messages)
         match severity with
         | IsInformational -> 
             { MessageDisplayReadModelImplementation.Heading = heading

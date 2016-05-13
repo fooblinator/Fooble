@@ -33,7 +33,7 @@ module MemberDetail =
     
     [<CompiledName("MakeQuery")>]
     let makeQuery id = 
-        Validation.ensure (Member.validateId id)
+        Validation.enforce (Member.validateId id)
         { MemberDetailQueryImplementation.Id = id } :> IMemberDetailQuery
     
     (* Read Model *)
@@ -52,8 +52,8 @@ module MemberDetail =
                 | { Id = _; Name = n } -> n
     
     let internal makeReadModel id name = 
-        Validation.ensure (Member.validateId id)
-        Validation.ensure (Member.validateName name)
+        Validation.enforce (Member.validateId id)
+        Validation.enforce (Member.validateName name)
         { MemberDetailReadModelImplementation.Id = id
           Name = name } :> IMemberDetailReadModel
     
@@ -74,7 +74,7 @@ module MemberDetail =
     type private MemberDetailQueryHandlerImplementation(context : IDataContext) = 
         interface IMemberDetailQueryHandler with
             member this.Handle(query : IMemberDetailQuery) = 
-                Validation.ensure (Validation.validateIsNotNullValue query "query" "Query")
+                Validation.enforce (Validation.validateIsNotNullValue query "query" "Query")
                 box (context.Members.Find(query.Id))
                 |> Option.ofObj
                 |> Option.map unbox<MemberData>
@@ -82,7 +82,7 @@ module MemberDetail =
                 |> Result.ofOption notFoundQueryFailureStatus
     
     let internal makeQueryHandler (context : IDataContext) = 
-        Validation.ensure (Validation.validateIsNotNullValue context "context" "Data context")
+        Validation.enforce (Validation.validateIsNotNullValue context "context" "Data context")
         MemberDetailQueryHandlerImplementation(context) :> IMemberDetailQueryHandler
     
     (* Extensions *)

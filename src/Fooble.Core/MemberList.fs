@@ -48,8 +48,8 @@ module MemberList =
                 | { Id = _; Name = n } -> n
     
     let internal makeItemReadModel id name = 
-        Validation.ensure (Member.validateId id)
-        Validation.ensure (Member.validateName name)
+        Validation.enforce (Member.validateId id)
+        Validation.enforce (Member.validateName name)
         { MemberListItemReadModelImplementation.Id = id
           Name = name } :> IMemberListItemReadModel
     
@@ -63,9 +63,9 @@ module MemberList =
                 | { Members = ms } -> ms
     
     let internal makeReadModel members = 
-        Validation.ensure (Validation.validateIsNotNullValue members "members" "Member list")
-        Validation.ensure (Validation.validateIsNotEmptyValue members "members" "Member list")
-        Validation.ensure (Validation.validateContainsNotNullValues members "members" "Member list items")
+        Validation.enforce (Validation.validateIsNotNullValue members "members" "Member list")
+        Validation.enforce (Validation.validateIsNotEmptyValue members "members" "Member list")
+        Validation.enforce (Validation.validateContainsNotNullValues members "members" "Member list items")
         { MemberListReadModelImplementation.Members = members } :> IMemberListReadModel
     
     (* Query Failure Status *)
@@ -85,7 +85,7 @@ module MemberList =
     type private MemberListQueryHandlerImplementation(context : IDataContext) = 
         interface IMemberListQueryHandler with
             member this.Handle(query : IMemberListQuery) = 
-                Validation.ensure (Validation.validateIsNotNullValue query "query" "Query")
+                Validation.enforce (Validation.validateIsNotNullValue query "query" "Query")
                 match List.ofSeq context.Members with
                 | [] -> Result.failure notFoundQueryFailureStatus
                 | mds -> 
@@ -95,7 +95,7 @@ module MemberList =
                     |> Result.success
     
     let internal makeQueryHandler (context : IDataContext) = 
-        Validation.ensure (Validation.validateIsNotNullValue context "context" "Data context")
+        Validation.enforce (Validation.validateIsNotNullValue context "context" "Data context")
         MemberListQueryHandlerImplementation(context) :> IMemberListQueryHandler
     
     (* Extensions *)
