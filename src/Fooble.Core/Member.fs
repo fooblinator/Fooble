@@ -11,7 +11,6 @@ module Member =
         [ Validation.validateIsNotNullValue; Validation.validateIsNotEmptyString; Validation.validateIsGuidString ] 
         |> List.tryPick (fun fn -> fn id "id" "Id")
     
-    [<CompiledName("ValidateName")>]
-    let validateName name = 
+    let internal validateName name = 
         [ Validation.validateIsNotNullValue; Validation.validateIsNotEmptyString ] 
         |> List.tryPick (fun fn -> fn name "name" "Name")
