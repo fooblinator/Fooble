@@ -50,6 +50,9 @@ module MemberControllerTests =
     let ``Calling member controller detail, with no matches in data store, returns expected result``() =
         let nonMatchingId = randomGuidString()
         let expectedQuery = MemberDetail.makeQuery nonMatchingId
+        let expectedHeading = "Member Detail Query"
+        let expectedSeverity = MessageDisplay.errorSeverity
+        let expectedMessages = [ "Member detail query was not successful and returned not found" ]
         let queryResult = Result.failure MemberDetail.notFoundQueryFailureStatus
         let mockMediator = Mock<IMediator>()
         mockMediator.SetupFunc(fun m -> m.Send(It.IsAny<IMemberDetailQuery>())).Returns(queryResult).End
@@ -61,7 +64,15 @@ module MemberControllerTests =
         test <@ result :? ViewResult @>
         let viewResult = result :?> ViewResult
         test <@ viewResult.ViewName = "Detail_NotFound" @>
-        test <@ isNull viewResult.Model @>
+        test <@ not (isNull viewResult.Model) @>
+        test <@ viewResult.Model :? IMessageDisplayReadModel @>
+        let actualViewModel = viewResult.Model :?> IMessageDisplayReadModel
+        let actualHeading = actualViewModel.Heading
+        test <@ actualHeading = expectedHeading @>
+        let actualSeverity = actualViewModel.Severity
+        test <@ actualSeverity = expectedSeverity @>
+        let actualMessages = List.ofSeq actualViewModel.Messages
+        test <@ actualMessages = expectedMessages @>
 
     [<Test>]
     let ``Calling member controller list, with matches in data store, returns expected result``() =
@@ -85,6 +96,9 @@ module MemberControllerTests =
     [<Test>]
     let ``Calling member controller list, with no matches in data store, returns expected result``() =
         let queryResult = Result.failure MemberList.notFoundQueryFailureStatus
+        let expectedHeading = "Member List Query"
+        let expectedSeverity = MessageDisplay.errorSeverity
+        let expectedMessages = [ "Member list query was not successful and returned not found" ]
         let mockMediator = Mock<IMediator>()
         mockMediator.SetupFunc(fun m -> m.Send(It.IsAny<IMemberListQuery>())).Returns(queryResult).End
         let controller = new MemberController(mockMediator.Object)
@@ -95,4 +109,12 @@ module MemberControllerTests =
         test <@ result :? ViewResult @>
         let viewResult = result :?> ViewResult
         test <@ viewResult.ViewName = "List_NotFound" @>
-        test <@ isNull viewResult.Model @>
+        test <@ not (isNull viewResult.Model) @>
+        test <@ viewResult.Model :? IMessageDisplayReadModel @>
+        let actualViewModel = viewResult.Model :?> IMessageDisplayReadModel
+        let actualHeading = actualViewModel.Heading
+        test <@ actualHeading = expectedHeading @>
+        let actualSeverity = actualViewModel.Severity
+        test <@ actualSeverity = expectedSeverity @>
+        let actualMessages = List.ofSeq actualViewModel.Messages
+        test <@ actualMessages = expectedMessages @>

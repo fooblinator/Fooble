@@ -21,15 +21,17 @@ namespace Fooble.Web.Controllers
         [HttpGet]
         public ActionResult Detail(string id)
         {
+            // TODO: handle invalid ids; prevent argument exceptions; redirect to message display
+
             var query = MemberDetail.MakeQuery(id);
             var result = _mediator.Send(query);
 
-            Debug.Assert(result != null, "Result should not be null");
+            Debug.Assert(result != null, "Result was null value");
 
             if (result.IsFailure)
             {
-                Debug.Assert(result.Status.IsNotFound, "Result status should be not found");
-                return View("Detail_NotFound");
+                Debug.Assert(result.Status.IsNotFound, "Result status was unexpected");
+                return View("Detail_NotFound", result.ToMessageDisplayReadModel());
             }
 
             return View(result.Value);
@@ -41,12 +43,12 @@ namespace Fooble.Web.Controllers
             var query = MemberList.MakeQuery();
             var result = _mediator.Send(query);
 
-            Debug.Assert(result != null, "Result should not be null");
+            Debug.Assert(result != null, "Result was null value");
 
             if (result.IsFailure)
             {
-                Debug.Assert(result.Status.IsNotFound, "Result status should be not found");
-                return View("List_NotFound");
+                Debug.Assert(result.Status.IsNotFound, "Result status was unexpected");
+                return View("List_NotFound", result.ToMessageDisplayReadModel());
             }
 
             return View(result.Value);
