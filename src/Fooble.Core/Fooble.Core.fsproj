@@ -55,15 +55,15 @@
     <Compile Include="..\Common\GlobalAssemblyInfo.fs">
       <Link>GlobalAssemblyInfo.fs</Link>
     </Compile>
+    <Content Include="App.config" />
+    <Content Include="packages.config" />
+    <Compile Include="Helpers.fs" />
     <Compile Include="Validation.fs" />
     <Compile Include="Result.fs" />
     <Compile Include="Persistence.fs" />
     <Compile Include="MessageDisplay.fs" />
-    <Compile Include="Member.fs" />
     <Compile Include="MemberDetail.fs" />
     <Compile Include="MemberList.fs" />
-    <Content Include="App.config" />
-    <Content Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Autofac">

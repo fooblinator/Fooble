@@ -55,16 +55,15 @@
     <Compile Include="..\..\src\Common\GlobalAssemblyInfo.fs">
       <Link>GlobalAssemblyInfo.fs</Link>
     </Compile>
-    <Compile Include="Helper.fs" />
+    <Content Include="App.config" />
+    <Content Include="packages.config" />
+    <Compile Include="Helpers.fs" />
     <Compile Include="ValidationTests.fs" />
     <Compile Include="ResultTests.fs" />
     <Compile Include="MessageDisplayTests.fs" />
-    <Compile Include="MemberTests.fs" />
     <Compile Include="MemberDetailTests.fs" />
     <Compile Include="MemberListTests.fs" />
     <Compile Include="MemberControllerTests.fs" />
-    <Content Include="App.config" />
-    <Content Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\Fooble.Web\Fooble.Web.csproj">
