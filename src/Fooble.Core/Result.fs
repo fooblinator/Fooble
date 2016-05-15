@@ -1,75 +1,66 @@
-﻿namespace Fooble.Core
+﻿[<AutoOpen>]
+module internal Fooble.Core.Result
 
-[<AllowNullLiteral>]
-type IResult<'TSuccess,'TFailure> =
-    abstract Value:'TSuccess
-    abstract Status:'TFailure
-    abstract IsSuccess:bool
-    abstract IsFailure:bool
+(* Active Patterns *)
 
-[<RequireQualifiedAccess>]
-module internal Result =
+let internal (|IsSuccess|IsFailure|) (result:IResult<'TSuccess,'TFailure>) =
+    if result.IsSuccess
+        then Choice1Of2 result.Value
+        else Choice2Of2 result.Status
 
-    (* Active Patterns *)
+(* Result *)
 
-    let internal (|IsSuccess|IsFailure|) (result:IResult<'TSuccess,'TFailure>) =
-        if result.IsSuccess
-            then Choice1Of2 result.Value
-            else Choice2Of2 result.Status
+type private ResultImplementation<'TSuccess,'TFailure when 'TSuccess : null and 'TFailure : null> =
+    | Success of 'TSuccess
+    | Failure of 'TFailure
 
-    (* Result *)
+    interface IResult<'TSuccess,'TFailure> with
 
-    type private ResultImplementation<'TSuccess,'TFailure when 'TSuccess : null and 'TFailure : null> =
-        | Success of 'TSuccess
-        | Failure of 'TFailure
+        member this.Value =
+            match this with
+            | ResultImplementation.Success v -> v
+            | _ -> invalidOp "Result was not a success"
 
-        interface IResult<'TSuccess,'TFailure> with
+        member this.Status =
+            match this with
+            | ResultImplementation.Failure s -> s
+            | _ -> invalidOp "Result was not a failure"
 
-            member this.Value =
-                match this with
-                | ResultImplementation.Success v -> v
-                | _ -> invalidOp "Result was not a success"
+        member this.IsFailure =
+            match this with
+            | ResultImplementation.Failure _ -> true
+            | _ -> false
 
-            member this.Status =
-                match this with
-                | ResultImplementation.Failure s -> s
-                | _ -> invalidOp "Result was not a failure"
+        member this.IsSuccess =
+            match this with
+            | ResultImplementation.Success _ -> true
+            | _ -> false
 
-            member this.IsFailure =
-                match this with
-                | ResultImplementation.Failure _ -> true
-                | _ -> false
+let internal successResult value =
 
-            member this.IsSuccess =
-                match this with
-                | ResultImplementation.Success _ -> true
-                | _ -> false
+    let contracts =
+        [ preCondition (isNullValue >> not) "(Result) success value argument was null value"
+          postCondition (isNullValue >> not) "(Result) success returned null value" ]
 
-    let internal success value =
+    let body x =
+        ResultImplementation.Success value :> IResult<'TSuccess,'TFailure>
 
-        let contracts =
-            [ preCondition (isNullValue >> not) "Result.success value argument was null value"
-              postCondition (isNullValue >> not) "Result.success returned null value" ]
+    ensure contracts body value
 
-        let body x =
-            ResultImplementation.Success value :> IResult<'TSuccess,'TFailure>
+let internal failureResult status =
 
-        ensure contracts body value
+    let contracts =
+        [ preCondition (isNullValue >> not) "(Result) failure status argument was null value"
+          postCondition (isNullValue >> not) "(Result) failure returned null value" ]
 
-    let internal failure status =
+    let body x =
+        ResultImplementation.Failure status :> IResult<'TSuccess,'TFailure>
 
-        let contracts =
-            [ preCondition (isNullValue >> not) "Result.failure status argument was null value"
-              postCondition (isNullValue >> not) "Result.failure returned null value" ]
+    ensure contracts body status
 
-        let body x =
-            ResultImplementation.Failure status :> IResult<'TSuccess,'TFailure>
+(* Misc *)
 
-        ensure contracts body status
-
-    (* Misc *)
-
-    let internal ofOption statusIfNone valueOption =
-        match valueOption with
-        | Some v -> success v
-        | None -> failure statusIfNone
+let internal failureIfNone statusIfNone valueOption =
+    match valueOption with
+    | Some v -> successResult v
+    | None -> failureResult statusIfNone

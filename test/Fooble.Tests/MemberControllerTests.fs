@@ -1,6 +1,8 @@
 ﻿namespace Fooble.Tests
 
+open Autofac
 open Fooble.Core
+open Fooble.Core.Infrastructure
 open Fooble.Web.Controllers
 open MediatR
 open Moq
@@ -17,9 +19,9 @@ module MemberControllerTests =
     let ``Constructing member controller, with null mediator, raises expected exception``() =
         let expectedParamName = "mediator"
         let expectedMessage = "Mediator should not be null"
-        raisesWith<ArgumentException> <@ new MemberController(null) @>
-            (fun e ->
-            <@ e.ParamName = expectedParamName && (fixArgumentExceptionMessage e.Message) = expectedMessage @>)
+
+        raisesWith<ArgumentException> <@ new MemberController(null) @> <|
+            fun e -> <@ e.ParamName = expectedParamName && (fixArgumentExceptionMessage e.Message) = expectedMessage @>
 
     [<Test>]
     let ``Constructing, with valid parameters, returns expected result``() =
@@ -30,13 +32,17 @@ module MemberControllerTests =
         let matchingId = randomGuidString()
         let expectedQuery = MemberDetail.makeQuery matchingId
         let expectedViewModel = MemberDetail.makeReadModel matchingId (randomGuidString())
-        let queryResult = Result.success expectedViewModel
-        let mockMediator = Mock<IMediator>()
-        mockMediator.SetupFunc(fun m -> m.Send(It.IsAny<IMemberDetailQuery>())).Returns(queryResult).End
-        let controller = new MemberController(mockMediator.Object)
+
+        let queryResult = successResult expectedViewModel
+        let mediatorMock = Mock<IMediator>()
+        mediatorMock.SetupFunc(fun m -> m.Send(It.IsAny<IMemberDetailQuery>())).Returns(queryResult).End
+
+        let controller = new MemberController(mediatorMock.Object)
         let result = controller.Detail(matchingId)
-        mockMediator.VerifyFunc((fun m -> m.Send(null)), Times.Never())
-        mockMediator.VerifyFunc((fun m -> m.Send(expectedQuery)), Times.Once())
+
+        mediatorMock.VerifyFunc((fun m -> m.Send(null)), Times.Never())
+        mediatorMock.VerifyFunc((fun m -> m.Send(expectedQuery)), Times.Once())
+
         test <@ not (isNull result) @>
         test <@ result :? ViewResult @>
         let viewResult = result :?> ViewResult
@@ -53,13 +59,17 @@ module MemberControllerTests =
         let expectedHeading = "Member Detail Query"
         let expectedSeverity = MessageDisplay.errorSeverity
         let expectedMessages = [ "Member detail query was not successful and returned not found" ]
-        let queryResult = Result.failure MemberDetail.notFoundQueryFailureStatus
-        let mockMediator = Mock<IMediator>()
-        mockMediator.SetupFunc(fun m -> m.Send(It.IsAny<IMemberDetailQuery>())).Returns(queryResult).End
-        let controller = new MemberController(mockMediator.Object)
+
+        let queryResult = failureResult MemberDetail.notFoundQueryFailureStatus
+        let mediatorMock = Mock<IMediator>()
+        mediatorMock.SetupFunc(fun m -> m.Send(It.IsAny<IMemberDetailQuery>())).Returns(queryResult).End
+
+        let controller = new MemberController(mediatorMock.Object)
         let result = controller.Detail(nonMatchingId)
-        mockMediator.VerifyFunc((fun m -> m.Send(null)), Times.Never())
-        mockMediator.VerifyFunc((fun m -> m.Send(expectedQuery)), Times.Once())
+
+        mediatorMock.VerifyFunc((fun m -> m.Send(null)), Times.Never())
+        mediatorMock.VerifyFunc((fun m -> m.Send(expectedQuery)), Times.Once())
+
         test <@ not (isNull result) @>
         test <@ result :? ViewResult @>
         let viewResult = result :?> ViewResult
@@ -77,13 +87,17 @@ module MemberControllerTests =
     [<Test>]
     let ``Calling member controller list, with matches in data store, returns expected result``() =
         let expectedMembers = [ MemberList.makeItemReadModel (randomGuidString()) (randomGuidString()) ]
-        let queryResult = Result.success (MemberList.makeReadModel (Seq.ofList expectedMembers))
-        let mockMediator = Mock<IMediator>()
-        mockMediator.SetupFunc(fun m -> m.Send(It.IsAny<IMemberListQuery>())).Returns(queryResult).End
-        let controller = new MemberController(mockMediator.Object)
+
+        let queryResult = successResult (MemberList.makeReadModel (Seq.ofList expectedMembers))
+        let mediatorMock = Mock<IMediator>()
+        mediatorMock.SetupFunc(fun m -> m.Send(It.IsAny<IMemberListQuery>())).Returns(queryResult).End
+
+        let controller = new MemberController(mediatorMock.Object)
         let result = controller.List()
-        mockMediator.VerifyFunc((fun m -> m.Send(null)), Times.Never())
-        mockMediator.VerifyFunc((fun m -> m.Send(It.IsAny<IMemberListQuery>())), Times.Once())
+ 
+        mediatorMock.VerifyFunc((fun m -> m.Send(null)), Times.Never())
+        mediatorMock.VerifyFunc((fun m -> m.Send(It.IsAny<IMemberListQuery>())), Times.Once())
+
         test <@ not (isNull result) @>
         test <@ result :? ViewResult @>
         let viewResult = result :?> ViewResult
@@ -95,16 +109,20 @@ module MemberControllerTests =
 
     [<Test>]
     let ``Calling member controller list, with no matches in data store, returns expected result``() =
-        let queryResult = Result.failure MemberList.notFoundQueryFailureStatus
         let expectedHeading = "Member List Query"
         let expectedSeverity = MessageDisplay.errorSeverity
         let expectedMessages = [ "Member list query was not successful and returned not found" ]
-        let mockMediator = Mock<IMediator>()
-        mockMediator.SetupFunc(fun m -> m.Send(It.IsAny<IMemberListQuery>())).Returns(queryResult).End
-        let controller = new MemberController(mockMediator.Object)
+
+        let queryResult = failureResult MemberList.notFoundQueryFailureStatus
+        let mediatorMock = Mock<IMediator>()
+        mediatorMock.SetupFunc(fun m -> m.Send(It.IsAny<IMemberListQuery>())).Returns(queryResult).End
+
+        let controller = new MemberController(mediatorMock.Object)
         let result = controller.List()
-        mockMediator.VerifyFunc((fun m -> m.Send(null)), Times.Never())
-        mockMediator.VerifyFunc((fun m -> m.Send(It.IsAny<IMemberListQuery>())), Times.Once())
+
+        mediatorMock.VerifyFunc((fun m -> m.Send(null)), Times.Never())
+        mediatorMock.VerifyFunc((fun m -> m.Send(It.IsAny<IMemberListQuery>())), Times.Once())
+
         test <@ not (isNull result) @>
         test <@ result :? ViewResult @>
         let viewResult = result :?> ViewResult

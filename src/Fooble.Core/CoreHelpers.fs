@@ -1,5 +1,5 @@
 ﻿[<AutoOpen>]
-module internal Fooble.Core.Helpers
+module internal Fooble.Core.CoreHelpers
 
 open System
 open System.Diagnostics
