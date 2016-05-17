@@ -7,6 +7,7 @@ open Fooble.Core.Persistence
 open MediatR
 open System
 open System.Collections.Generic
+open System.Diagnostics
 
 [<AllowNullLiteral>]
 type AutofacModule() =
@@ -18,15 +19,11 @@ type AutofacModule() =
     member internal this.Context
         with get () = this.context
         and set (context) =
-
-            let contracts =
-                [ preCondition (isNullValue >> not) "(AutofacModule) Context setter context argument was null value" ]
-
-            let body x = this.context <- context
-
-            ensure contracts body context
+            Debug.Assert(notIsNull context, "(AutofacModule.Context) context argument was null value")
+            this.context <- context
 
     override this.Load(builder:ContainerBuilder) = 
+        Debug.Assert(notIsNull builder, "(AutofacModule.Load) builder argument was null value")
 
         match not (isNull this.Context) with
         | true -> ignore <| builder.RegisterInstance(this.Context)

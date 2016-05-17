@@ -23,7 +23,7 @@ namespace Fooble.Web.Controllers
         {
             // TODO: handle invalid ids; prevent argument exceptions; redirect to message display
 
-            var query = MemberDetail.MakeQuery(id);
+            var query = MemberDetail.Query.Make(id);
             var result = _mediator.Send(query);
 
             Debug.Assert(result != null, "Result was null value");
@@ -40,7 +40,7 @@ namespace Fooble.Web.Controllers
         [HttpGet]
         public ActionResult List()
         {
-            var query = MemberList.MakeQuery();
+            var query = MemberList.Query.Make();
             var result = _mediator.Send(query);
 
             Debug.Assert(result != null, "Result was null value");

@@ -26,7 +26,7 @@ module MemberControllerIntegrationTests =
         new MemberController(mediator) |> ignore
 
     [<Test>]
-    let ``Calling member controller detail, with matches in data store, returns expected result``() =
+    let ``Calling detail, with matches in data store, returns expected result``() =
         let matchingId = randomGuidString()
 
         let memberData = MemberData(Id = matchingId, Name = randomGuidString()) :> IMemberData
@@ -57,10 +57,10 @@ module MemberControllerIntegrationTests =
         test <@ actualViewModel.Name = memberData.Name @>
 
     [<Test>]
-    let ``Calling member controller detail, with no matches in data store, returns expected result``() =
+    let ``Calling detail, with no matches in data store, returns expected result``() =
         let nonMatchingId = randomGuidString()
         let expectedHeading = "Member Detail Query"
-        let expectedSeverity = MessageDisplay.errorSeverity
+        let expectedSeverity = MessageDisplay.Severity.error
         let expectedMessages = [ "Member detail query was not successful and returned not found" ]
 
         let memberSetMock = Mock<IDbSet<IMemberData>>()
@@ -94,7 +94,7 @@ module MemberControllerIntegrationTests =
         test <@ actualMessages = expectedMessages @>
 
     [<Test>]
-    let ``Calling member controller list, with matches in data store, returns expected result``() =
+    let ``Calling list, with matches in data store, returns expected result``() =
         let memberData = 
             [ MemberData(Id = randomGuidString(), Name = randomGuidString()) :> IMemberData
               MemberData(Id = randomGuidString(), Name = randomGuidString()) :> IMemberData
@@ -128,9 +128,9 @@ module MemberControllerIntegrationTests =
             test <@ findResult.IsSome @>
 
     [<Test>]
-    let ``Calling member controller list, with no matches in data store, returns expected result``() =
+    let ``Calling list, with no matches in data store, returns expected result``() =
         let expectedHeading = "Member List Query"
-        let expectedSeverity = MessageDisplay.errorSeverity
+        let expectedSeverity = MessageDisplay.Severity.error
         let expectedMessages = [ "Member list query was not successful and returned not found" ]
 
         let memberSet = makeDbSet Seq.empty<IMemberData>

@@ -1,88 +1,69 @@
-﻿[<AutoOpen>]
-module internal Fooble.Core.Validation
+﻿namespace Fooble.Core
 
 open System
+open System.Diagnostics
 
-(* Failure Info *)
+[<RequireQualifiedAccess>]
+module internal ValidationResult =
 
-type private ValidationInfoImplementation =
-    { paramName:string; message:string }
+    (* Implementation *)
 
-    interface IValidationInfo with
+    type private Implementation =
+        | Valid
+        | Invalid of string * string
 
-        member this.ParamName =
+        interface IValidationResult with
 
-            let contracts =
-                [ postCondition (isNullValue >> not) "(IValidationInfo) ParamName property returned null value"
-                  postCondition (isEmptyString >> not) "(IValidationInfo) ParamName property returned empty string" ]
+            member this.ParamName =
+                match this with
+                | Invalid (x, _) -> x
+                | _ -> invalidOp "Result was not invalid"
 
-            let body x =
-                match x with
-                | { ValidationInfoImplementation.paramName = pn; message = _ } -> pn
+            member this.Message =
+                match this with
+                | Invalid (_, x) -> x
+                | _ -> invalidOp "Result was not invalid"
 
-            ensure contracts body this
+            member this.IsValid =
+                match this with
+                | Valid -> true
+                | _ -> false
 
-        member this.Message =
+            member this.IsInvalid =
+                match this with
+                | Invalid _ -> true
+                | _ -> false
 
-            let contracts =
-                [ postCondition (isNullValue >> not) "(IValidationInfo) Message property returned null value"
-                  postCondition (isEmptyString >> not) "(IValidationInfo) Message property returned empty string" ]
+    (* Construction *)
 
-            let body x =
-                match x with
-                | { ValidationInfoImplementation.paramName = _; message = m } -> m
+    let internal valid = Valid :> IValidationResult
 
-            ensure contracts body this
+    let internal invalid paramName message =
+        Debug.Assert(notIsNull paramName, "(ValidationResult.invalid) paramName argument was null")
+        Debug.Assert(String.notIsEmpty paramName, "(ValidationResult.invalid) paramName argument was empty string")
+        Debug.Assert(notIsNull message, "(ValidationResult.invalid) message argument was null")
+        Debug.Assert(String.notIsEmpty message, "(ValidationResult.invalid) message argument was empty string")
+        Invalid (paramName, message) :> IValidationResult
 
-let internal makeValidationInfo paramName message =
+[<AutoOpen>]
+module internal ValidationLibrary =
 
-    let contracts =
-        [ preCondition (fst >> isNullValue >> not) "(Validation) makeValidationInfo paramName argument was null value"
-          preCondition (fst >> isEmptyString >> not) "(Validation) makeValidationInfo paramName argument was empty string"
-          preCondition (snd >> isNullValue >> not) "(Validation) makeValidationInfo message argument was null value"
-          preCondition (snd >> isEmptyString >> not) "(Validation) makeValidationInfo message argument was empty string"
-          postCondition (isNullValue >> not) "(Validation) makeValidationInfo returned null value" ]
+    (* Active Patterns *)
 
-    let body (x, y) =
-        { ValidationInfoImplementation.paramName = x; message = y } :> IValidationInfo
+    let internal (|IsValid|IsInvalid|) (result:IValidationResult) =
+        if result.IsValid
+            then Choice1Of2 ()
+            else Choice2Of2 (result.ParamName, result.Message)
 
-    ensure contracts body (paramName, message)
+    (* Misc *)
 
-(* Validators *)
+    let internal validate value (paramName:string) conditions =
+        let chooser (fn, x) = if not <| fn value then Some x else None
+        match Seq.tryPick chooser conditions with
+        | None -> ValidationResult.valid
+        | Some x -> ValidationResult.invalid paramName x
 
-let internal validateIsNotNullValue (value:'T) paramName prefix =
-    match isNullValue value with
-    | true -> Some(makeValidationInfo paramName (sprintf "%s was null value" prefix))
-    | _ -> None
-
-let internal validateIsNotEmptyString value paramName prefix =
-    match isEmptyString value with
-    | true -> Some(makeValidationInfo paramName (sprintf "%s was empty string" prefix))
-    | _ -> None
-
-let internal validateIsGuidString value paramName prefix =
-    match not (isGuidString value) with
-    | true -> Some(makeValidationInfo paramName (sprintf "%s was string with invalid GUID format" prefix))
-    | _ -> None
-
-let internal validateIsNotEmptyValue (value:seq<'T>) paramName prefix =
-    match isEmptyValue value with
-    | true -> Some(makeValidationInfo paramName (sprintf "%s was empty value" prefix))
-    | _ -> None
-
-let internal validateContainsNotNullValues (values:seq<'T>) paramName prefix =
-    match containsNullValues values with
-    | true -> Some(makeValidationInfo paramName (sprintf "%s contained null values" prefix))
-    | _ -> None
-
-let internal validateContainsNotEmptyStrings values paramName prefix =
-    match containsEmptyStrings values with
-    | true -> Some(makeValidationInfo paramName (sprintf "%s contained empty strings" prefix))
-    | _ -> None
-
-(* Misc *)
-
-let internal enforce (validationInfo:IValidationInfo option) =
-    match validationInfo with
-    | Some i -> invalidArg i.ParamName i.Message
-    | None -> ()
+    let internal raiseIfInvalid (result:IValidationResult) =
+        match result with
+        | IsValid -> ()
+        | IsInvalid (x, y) -> invalidArg x y

@@ -1,158 +1,106 @@
-﻿[<RequireQualifiedAccess>]
-module Fooble.Core.MemberDetail
+﻿namespace Fooble.Core
 
 open Fooble.Core.Persistence
 open MediatR
+open System.Diagnostics
 open System.Runtime.CompilerServices
 
-(* Active Patterns *)
+[<RequireQualifiedAccess>]
+module MemberDetail =
 
-let internal (|IsNotFound|) (status:IMemberDetailQueryFailureStatus) = ()
+    (* Active Patterns *)
 
-(* Validators *)
+    let internal (|IsNotFound|) (status:IMemberDetailQueryFailureStatus) = ()
 
-[<CompiledName("ValidateId")>]
-let validateId id =
-    [ validateIsNotNullValue; validateIsNotEmptyString; validateIsGuidString ]
-    |> List.tryPick (fun fn -> fn id "id" "Id")
+    (* Validators *)
 
-(* Query *)
+    [<CompiledName("ValidateId")>]
+    let validateId id =
+        [ (notIsNull), "Id was null"
+          (String.notIsEmpty), "Id was empty string"
+          (String.isGuid), "Id was not GUID string" ]
+        |> validate id "id"
 
-type private MemberDetailQueryImplementation =
-    { id:string }
+    [<RequireQualifiedAccess>]
+    module Query =
 
-    interface IMemberDetailQuery with
+        (* Implementation *)
 
-        member this.Id =
+        type private Implementation =
+            { id:string }
 
-            let contracts =
-                [ postCondition (isNullValue >> not) "(IMemberDetailQuery) Id property returned null value"
-                  postCondition (isEmptyString >> not) "(IMemberDetailQuery) Id property returned empty string"
-                  postCondition (isGuidString) "(IMemberDetailQuery) Id property returned string with invalid GUID format" ]
+            interface IMemberDetailQuery with
 
-            let body x =
-                match x with
-                | { MemberDetailQueryImplementation.id = i } -> i
+                member this.Id = this.id
 
-            ensure contracts body this
+        (* Construction *)
 
-[<CompiledName("MakeQuery")>]
-let makeQuery id =
+        [<CompiledName("Make")>]
+        let make id =
+            raiseIfInvalid <| validateId id
+            { id = id } :> IMemberDetailQuery
 
-    let contracts =
-        [ postCondition (isNullValue >> not) "(MemberDetail) makeQuery returned null value" ]
+    [<RequireQualifiedAccess>]
+    module internal ReadModel =
 
-    let body x =
-        enforce (validateId id)
-        { MemberDetailQueryImplementation.id = x } :> IMemberDetailQuery
+        (* Implementation *)
 
-    ensure contracts body id
+        type private Implementation =
+            { id:string; name:string }
 
-(* Read Model *)
+            interface IMemberDetailReadModel with
 
-type private MemberDetailReadModelImplementation =
-    { id:string; name:string }
+                member this.Id = this.id
+                member this.Name = this.name
 
-    interface IMemberDetailReadModel with
+        (* Construction *)
 
-        member this.Id =
+        let internal make id name =
+            Debug.Assert(notIsNull id, "(MemberDetail.ReadModel.make) id argument was null value")
+            Debug.Assert(String.notIsEmpty id, "(MemberDetail.ReadModel.make) id argument was empty string")
+            Debug.Assert(String.isGuid id, "(MemberDetail.ReadModel.make) id argument was string with invalid GUID format")
+            Debug.Assert(notIsNull name, "(MemberDetail.ReadModel.make) name argument was null value")
+            Debug.Assert(String.notIsEmpty name, "(MemberDetail.ReadModel.make) name argument was empty string")
+            { id = id; name = name } :> IMemberDetailReadModel
 
-            let contracts =
-                [ postCondition (isNullValue >> not) "(IMemberDetailReadModel) Id property returned null value"
-                  postCondition (isEmptyString >> not) "(IMemberDetailReadModel) Id property returned empty string"
-                  postCondition (isGuidString) "(IMemberDetailReadModel) Id property returned string with invalid GUID format" ]
+    [<RequireQualifiedAccess>]
+    module QueryFailureStatus =
 
-            let body x =
-                match x with
-                | { MemberDetailReadModelImplementation.id = i; name = _ } -> i
+        (* Implementation *)
 
-            ensure contracts body this
+        type private Implementation =
+            | NotFound
 
-        member this.Name =
+            interface IMemberDetailQueryFailureStatus with
 
-            let contracts =
-                [ postCondition (isNullValue >> not) "(IMemberDetailReadModel) Name property returned null value"
-                  postCondition (isEmptyString >> not) "(IMemberDetailReadModel) Name property returned empty string" ]
+                member this.IsNotFound =
+                    match this with
+                    | NotFound -> true
 
-            let body x =
-                match x with
-                | { MemberDetailReadModelImplementation.id = _; name = n } -> n
+        (* Construction *)
 
-            ensure contracts body this
+        [<CompiledName("NotFound")>]
+        let notFound = NotFound :> IMemberDetailQueryFailureStatus
 
-let internal makeReadModel id name =
+    [<RequireQualifiedAccess>]
+    module internal QueryHandler =
 
-    let contracts =
-        [ preCondition (fst >> isNullValue >> not) "(MemberDetail) makeReadModel id argument was null value"
-          preCondition (fst >> isEmptyString >> not) "(MemberDetail) makeReadModel id argument was empty string"
-          preCondition (fst >> isGuidString) "(MemberDetail) makeReadModel id argument was string with invalid GUID format"
-          preCondition (snd >> isNullValue >> not) "(MemberDetail) makeReadModel name argument was null value"
-          preCondition (snd >> isEmptyString >> not) "(MemberDetail) makeReadModel name argument was empty string"
-          postCondition (isNullValue >> not) "(MemberDetail) makeReadModel returned null value" ]
+        (* Implementation *)
 
-    let body (x, y) =
-        { MemberDetailReadModelImplementation.id = x; name = y } :> IMemberDetailReadModel
+        type private Implementation(context:IDataContext) =
 
-    ensure contracts body (id, name)
+            interface IMemberDetailQueryHandler with
 
-(* Query Failure Status *)
+                member this.Handle(query) =
+                    Debug.Assert(notIsNull query, "(IMemberDetailQueryHandler.Handle) query argument was null value")
+                    context.Members.Find(query.Id)
+                    |> Option.ofObj
+                    |> Option.map unbox<MemberData>
+                    |> Option.map (fun md -> ReadModel.make md.Id md.Name)
+                    |> failureIfNone QueryFailureStatus.notFound
 
-type private MemberDetailQueryFailureStatusImplementation =
-    | NotFound
+        (* Construction *)
 
-    interface IMemberDetailQueryFailureStatus with
-
-        member this.IsNotFound =
-
-            let contracts =
-                [ postCondition (Operators.id) "(IMemberDetailQueryFailureStatus) IsNotFound property returned false" ]
-
-            let body x =
-                match x with
-                | MemberDetailQueryFailureStatusImplementation.NotFound -> true
-
-            ensure contracts body this
-
-[<CompiledName("NotFoundQueryFailureStatus")>]
-let notFoundQueryFailureStatus =
-
-    let contracts =
-        [ postCondition (isNullValue >> not) "(MemberDetail) notFoundQueryFailureStatus returned null value" ]
-
-    let body _ =
-        MemberDetailQueryFailureStatusImplementation.NotFound :> IMemberDetailQueryFailureStatus
-
-    ensure contracts body ()
-
-(* Query Handler *)
-
-[<AllowNullLiteral>]
-type private MemberDetailQueryHandlerImplementation(context:IDataContext) =
-
-    interface IMemberDetailQueryHandler with
-
-        member this.Handle(query) =
-
-            let contracts =
-                [ preCondition (isNullValue >> not) "(IMemberDetailQueryHandler) Handle query argument was null value"
-                  postCondition (isNullValue >> not) "(IMemberDetailQueryHandler) Handle returned null value" ]
-
-            let body (x:IMemberDetailQuery) =
-                box (context.Members.Find(x.Id)) // TODO: need to make MemberData so it will be valid as null... shouldn't have to box here
-                |> Option.ofObj
-                |> Option.map unbox<MemberData>
-                |> Option.map (fun md -> makeReadModel md.Id md.Name)
-                |> failureIfNone notFoundQueryFailureStatus
-
-            ensure contracts body query
-
-let internal makeQueryHandler context =
-
-    let contracts =
-        [ preCondition (isNullValue >> not) "(MemberDetail) makeQueryHandler context argument was null value"
-          postCondition (isNullValue >> not) "(MemberDetail) makeQueryHandler returned null value" ]
-
-    let body x =
-        MemberDetailQueryHandlerImplementation(x) :> IMemberDetailQueryHandler
-
-    ensure contracts body context
+        let internal make context =
+            Debug.Assert(notIsNull context, "(MemberDetail.QueryHandler.make) context argument was null value")
+            Implementation(context) :> IMemberDetailQueryHandler

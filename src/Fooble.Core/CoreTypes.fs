@@ -67,6 +67,8 @@ type IMessageDisplayReadModel =
     abstract Messages:seq<string>
 
 [<AllowNullLiteral>]
-type IValidationInfo =
+type IValidationResult =
     abstract ParamName:string
     abstract Message:string
+    abstract IsValid:bool
+    abstract IsInvalid:bool

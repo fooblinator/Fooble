@@ -16,7 +16,7 @@ open System.Web.Mvc
 module MemberControllerTests =
 
     [<Test>]
-    let ``Constructing member controller, with null mediator, raises expected exception``() =
+    let ``Constructing, with null mediator, raises expected exception``() =
         let expectedParamName = "mediator"
         let expectedMessage = "Mediator should not be null"
 
@@ -28,12 +28,12 @@ module MemberControllerTests =
         new MemberController(mock()) |> ignore
 
     [<Test>]
-    let ``Calling member controller detail, with matches in data store, returns expected result``() =
+    let ``Calling detail, with matches in data store, returns expected result``() =
         let matchingId = randomGuidString()
-        let expectedQuery = MemberDetail.makeQuery matchingId
-        let expectedViewModel = MemberDetail.makeReadModel matchingId (randomGuidString())
+        let expectedQuery = MemberDetail.Query.make matchingId
+        let expectedViewModel = MemberDetail.ReadModel.make matchingId (randomGuidString())
 
-        let queryResult = successResult expectedViewModel
+        let queryResult = Result.success expectedViewModel
         let mediatorMock = Mock<IMediator>()
         mediatorMock.SetupFunc(fun m -> m.Send(It.IsAny<IMemberDetailQuery>())).Returns(queryResult).End
 
@@ -53,14 +53,14 @@ module MemberControllerTests =
         test <@ actualViewModel = expectedViewModel @>
 
     [<Test>]
-    let ``Calling member controller detail, with no matches in data store, returns expected result``() =
+    let ``Calling detail, with no matches in data store, returns expected result``() =
         let nonMatchingId = randomGuidString()
-        let expectedQuery = MemberDetail.makeQuery nonMatchingId
+        let expectedQuery = MemberDetail.Query.make nonMatchingId
         let expectedHeading = "Member Detail Query"
-        let expectedSeverity = MessageDisplay.errorSeverity
+        let expectedSeverity = MessageDisplay.Severity.error
         let expectedMessages = [ "Member detail query was not successful and returned not found" ]
 
-        let queryResult = failureResult MemberDetail.notFoundQueryFailureStatus
+        let queryResult = Result.failure MemberDetail.QueryFailureStatus.notFound
         let mediatorMock = Mock<IMediator>()
         mediatorMock.SetupFunc(fun m -> m.Send(It.IsAny<IMemberDetailQuery>())).Returns(queryResult).End
 
@@ -85,10 +85,10 @@ module MemberControllerTests =
         test <@ actualMessages = expectedMessages @>
 
     [<Test>]
-    let ``Calling member controller list, with matches in data store, returns expected result``() =
-        let expectedMembers = [ MemberList.makeItemReadModel (randomGuidString()) (randomGuidString()) ]
+    let ``Calling list, with matches in data store, returns expected result``() =
+        let expectedMembers = [ MemberList.ItemReadModel.make (randomGuidString()) (randomGuidString()) ]
 
-        let queryResult = successResult (MemberList.makeReadModel (Seq.ofList expectedMembers))
+        let queryResult = Result.success (MemberList.ReadModel.make (Seq.ofList expectedMembers))
         let mediatorMock = Mock<IMediator>()
         mediatorMock.SetupFunc(fun m -> m.Send(It.IsAny<IMemberListQuery>())).Returns(queryResult).End
 
@@ -108,12 +108,12 @@ module MemberControllerTests =
         test <@ actualMembers = expectedMembers @>
 
     [<Test>]
-    let ``Calling member controller list, with no matches in data store, returns expected result``() =
+    let ``Calling list, with no matches in data store, returns expected result``() =
         let expectedHeading = "Member List Query"
-        let expectedSeverity = MessageDisplay.errorSeverity
+        let expectedSeverity = MessageDisplay.Severity.error
         let expectedMessages = [ "Member list query was not successful and returned not found" ]
 
-        let queryResult = failureResult MemberList.notFoundQueryFailureStatus
+        let queryResult = Result.failure MemberList.QueryFailureStatus.notFound
         let mediatorMock = Mock<IMediator>()
         mediatorMock.SetupFunc(fun m -> m.Send(It.IsAny<IMemberListQuery>())).Returns(queryResult).End
 

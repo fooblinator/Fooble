@@ -9,7 +9,7 @@ open NUnit.Framework
 open Swensen.Unquote
 
 [<TestFixture>]
-module CoreInfrastructureTests =
+module AutofacModuleTests =
 
     [<Test>]
     let ``Registering autofac container, with defaults, properly registers expected data context``() =

@@ -1,47 +1,39 @@
-﻿[<AutoOpen>]
-module internal Fooble.Core.CoreHelpers
+﻿namespace Fooble.Core
 
-open System
 open System.Diagnostics
 
-(* Contracts *)
+[<AutoOpen>]
+module internal CoreHelpers =
 
-let internal ensure contracts fn  =
-    List.fold (|>) fn contracts
+    (* Extensions *)
 
-let internal preCondition condition message fn x  =
-    Debug.Assert(condition x, message)
-    fn x
+    [<RequireQualifiedAccess>]
+    module internal String =
 
-let internal postCondition condition message fn x =
-    let result = fn x
-    Debug.Assert(condition result, message)
-    result
+        let internal empty = System.String.Empty
+        let internal isEmpty x = x = empty
+        let internal isGuid x = fst <| System.Guid.TryParse(x)
+        let internal notIsEmpty x = not <| isEmpty x
+        let internal notIsGuid x = not <| isGuid x
 
-(* Checks *)
+    [<RequireQualifiedAccess>]
+    module internal List =
 
-let internal isNullValue value =
-    isNull value
+        let internal containsEmptyStrings x = List.contains String.empty x
+        let internal containsNulls x = List.contains null x
+        let internal notContainsEmptyStrings x = not <| containsEmptyStrings x
+        let internal notContainsNulls x = not <| containsNulls x
+        let internal notIsEmpty x = not <| List.isEmpty x
 
-let internal isEmptyString value =
-    match value with
-    | "" -> true
-    | _ -> false
+    [<RequireQualifiedAccess>]
+    module internal Seq =
 
-let internal isGuidString value =
-    (Guid.TryParse >> fst) value
+        let internal containsEmptyStrings x = Seq.contains String.empty x
+        let internal containsNulls x = Seq.contains null x
+        let internal notContainsEmptyStrings x = not <| containsEmptyStrings x
+        let internal notContainsNulls x = not <| containsNulls x
+        let internal notIsEmpty x = not <| Seq.isEmpty x
 
-let internal isEmptyValue value =
-    Seq.isEmpty value
+    (* Misc *)
 
-let internal containsNullValues values =
-    (Seq.tryFind isNull >> Option.isSome) values
-
-let internal containsEmptyStrings values =
-    (Seq.tryFind isEmptyString >> Option.isSome) values
-
-(* Misc *)
-
-let internal fst3 (x, _, _) = x
-let internal snd3 (_, x, _) = x
-let internal thd3 (_, _, x) = x
+    let internal notIsNull x = not <| isNull x

@@ -1,142 +1,92 @@
-﻿[<RequireQualifiedAccess>]
-module Fooble.Core.MessageDisplay
+﻿namespace Fooble.Core
 
-(* Active Patterns *)
+[<RequireQualifiedAccess>]
+module MessageDisplay =
 
-let internal (|IsInformational|IsWarning|IsError|) (severity:IMessageDisplaySeverity) =
-    if severity.IsInformational
-        then Choice1Of3 ()
-        elif severity.IsWarning
-            then Choice2Of3 ()
-            else Choice3Of3 ()
+    (* Validators *)
 
-(* Validators *)
+    [<CompiledName("ValidateHeading")>]
+    let validateHeading heading =
+        [ (notIsNull), "Heading was null"
+          (String.notIsEmpty), "Heading was empty string" ]
+        |> validate heading "heading"
 
-[<CompiledName("ValidateHeading")>]
-let validateHeading heading =
-    [ validateIsNotNullValue; validateIsNotEmptyString ]
-    |> List.tryPick (fun fn -> fn heading "heading" "Heading")
+    [<CompiledName("ValidateMessages")>]
+    let validateMessages messages =
+        [ (notIsNull), "Messages was null"
+          (Seq.notIsEmpty), "Messages was empty sequence"
+          (Seq.notContainsNulls), "Messages contained null(s)"
+          (Seq.notContainsEmptyStrings), "Messages contained empty string(s)" ]
+        |> validate messages "messages"
 
-[<CompiledName("ValidateMessages")>]
-let validateMessages messages =
-    seq {
-        yield [ validateIsNotNullValue; validateIsNotEmptyValue ]
-            |> List.tryPick (fun fn -> fn messages "messages" "Message list")
-        yield [ validateContainsNotNullValues; validateContainsNotEmptyStrings ]
-            |> List.tryPick (fun fn -> fn messages "messages" "Message list items")
-    }
-    |> Seq.tryPick Operators.id
+    [<RequireQualifiedAccess>]
+    module Severity =
 
-(* Severity *)
+        (* Implementation *)
 
-type private MessageDisplaySeverityImplementation =
-    | Informational
-    | Warning
-    | Error
+        type private Implementation =
+            | Informational
+            | Warning
+            | Error
 
-    interface IMessageDisplaySeverity with
+            interface IMessageDisplaySeverity with
 
-        member this.IsInformational =
-            match this with
-            | MessageDisplaySeverityImplementation.Informational -> true
-            | _ -> false
+                member this.IsInformational =
+                    match this with
+                    | Informational -> true
+                    | _ -> false
 
-        member this.IsWarning =
-            match this with
-            | MessageDisplaySeverityImplementation.Warning -> true
-            | _ -> false
+                member this.IsWarning =
+                    match this with
+                    | Warning -> true
+                    | _ -> false
 
-        member this.IsError =
-            match this with
-            | MessageDisplaySeverityImplementation.Error -> true
-            | _ -> false
+                member this.IsError =
+                    match this with
+                    | Error -> true
+                    | _ -> false
 
-[<CompiledName("InformationalSeverity")>]
-let informationalSeverity =
+        (* Construction *)
 
-    let contracts =
-        [ postCondition (isNullValue >> not) "(MessageDisplay) informationalSeverity returned null value" ]
+        [<CompiledName("Informational")>]
+        let informational = Informational :> IMessageDisplaySeverity
 
-    let body _ =
-        MessageDisplaySeverityImplementation.Informational :> IMessageDisplaySeverity
+        [<CompiledName("Warning")>]
+        let warning = Warning :> IMessageDisplaySeverity
 
-    ensure contracts body ()
+        [<CompiledName("Error")>]
+        let error = Error :> IMessageDisplaySeverity
 
-[<CompiledName("WarningSeverity")>]
-let warningSeverity =
+    [<RequireQualifiedAccess>]
+    module ReadModel =
 
-    let contracts =
-        [ postCondition (isNullValue >> not) "(MessageDisplay) warningSeverity returned null value" ]
+        (* Implementation *)
 
-    let body _ =
-        MessageDisplaySeverityImplementation.Warning :> IMessageDisplaySeverity
+        type private Implementation =
+            { heading:string; severity:IMessageDisplaySeverity; messages:seq<string> }
 
-    ensure contracts body ()
+            interface IMessageDisplayReadModel with
 
-[<CompiledName("ErrorSeverity")>]
-let errorSeverity =
+                member this.Heading = this.heading
+                member this.Severity = this.severity
+                member this.Messages = this.messages
 
-    let contracts =
-        [ postCondition (isNullValue >> not) "(MessageDisplay) errorSeverity returned null value" ]
+        (* Construction *)
 
-    let body _ =
-        MessageDisplaySeverityImplementation.Error :> IMessageDisplaySeverity
+        [<CompiledName("Make")>]
+        let make heading severity messages =
+            raiseIfInvalid <| validateHeading heading
+            raiseIfInvalid <| validateMessages messages
+            { heading = heading; severity = severity; messages = messages } :> IMessageDisplayReadModel
 
-    ensure contracts body ()
+[<AutoOpen>]
+module internal MessageDisplayLibrary =
 
-(* Read Model *)
+    (* Active Patterns *)
 
-type private MessageDisplayReadModelImplementation =
-    { heading:string; severity:IMessageDisplaySeverity; messages:seq<string> }
-
-    interface IMessageDisplayReadModel with
-
-        member this.Heading =
-
-            let contracts =
-                [ postCondition (isNullValue >> not) "(IMessageDisplayReadModel) Heading property returned null value"
-                  postCondition (isEmptyString >> not) "(IMessageDisplayReadModel) Heading property returned empty string" ]
-
-            let body x =
-                match x with
-                | { MessageDisplayReadModelImplementation.heading = h; severity = _; messages = _ } -> h
-
-            ensure contracts body this
-
-        member this.Severity =
-
-            let contracts =
-                [ postCondition (isNullValue >> not) "(IMessageDisplayReadModel) Severity property returned null value" ]
-
-            let body x =
-                match x with
-                | { MessageDisplayReadModelImplementation.heading = _; severity = s; messages = _ } -> s
-
-            ensure contracts body this
-
-        member this.Messages =
-
-            let contracts =
-                [ postCondition (isNullValue >> not) "(IMessageDisplayReadModel) Messages property returned null value"
-                  postCondition (isEmptyValue >> not) "(IMessageDisplayReadModel) Messages property returned empty value"
-                  postCondition (containsNullValues >> not) "(IMessageDisplayReadModel) Messages property returned containing null values"
-                  postCondition (containsEmptyStrings >> not) "(IMessageDisplayReadModel) Messages property returned containing empty strings" ]
-
-            let body x =
-                match x with
-                | { MessageDisplayReadModelImplementation.heading = _; severity = _; messages = ms } -> ms
-
-            ensure contracts body this
-
-[<CompiledName("MakeReadModel")>]
-let makeReadModel heading severity messages =
-
-    let contracts =
-        [ postCondition (isNullValue >> not) "(MessageDisplay) makeReadModel returned null value" ]
-
-    let body (x, y, z) =
-        enforce (validateHeading heading)
-        enforce (validateMessages messages)
-        { MessageDisplayReadModelImplementation.heading = x; severity = y; messages = z } :> IMessageDisplayReadModel
-
-    ensure contracts body (heading, severity, messages)
+    let internal (|IsInformational|IsWarning|IsError|) (severity:IMessageDisplaySeverity) =
+        if severity.IsInformational
+            then Choice1Of3 ()
+            elif severity.IsWarning
+                then Choice2Of3 ()
+                else Choice3Of3 ()

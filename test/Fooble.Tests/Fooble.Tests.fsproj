@@ -63,6 +63,7 @@
     <Compile Include="MessageDisplayTests.fs" />
     <Compile Include="MemberDetailTests.fs" />
     <Compile Include="MemberListTests.fs" />
+    <Compile Include="CoreExtensionsTests.fs" />
     <Compile Include="CoreInfrastructureTests.fs" />
     <Compile Include="MemberControllerTests.fs" />
     <Compile Include="MemberControllerIntegrationTests.fs" />
