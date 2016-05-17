@@ -25,24 +25,29 @@ type AutofacModule() =
     override this.Load(builder:ContainerBuilder) = 
         Debug.Assert(notIsNull builder, "(AutofacModule.Load) builder argument was null value")
 
-        match not (isNull this.Context) with
-        | true -> ignore <| builder.RegisterInstance(this.Context)
-        | _ -> ignore <| builder.RegisterType<DataContext>().As<IDataContext>()
+        (* MediatR *)
 
         builder.RegisterSource(ContravariantRegistrationSource())
 
-        ignore <| builder.RegisterAssemblyTypes(base.ThisAssembly).AsClosedTypesOf(typedefof<IRequestHandler<_, _>>)
-
-        ignore <| builder.Register<SingleInstanceFactory>(
-            Func<IComponentContext, SingleInstanceFactory>(fun ctx ->
+        ignore <| builder.Register(fun ctx ->
                 let c = ctx.Resolve<IComponentContext>()
-                SingleInstanceFactory(fun t ->
-                    c.Resolve(t))))
+                SingleInstanceFactory(fun t -> c.Resolve(t)))
 
-        ignore <| builder.Register<MultiInstanceFactory>(
-            Func<IComponentContext, MultiInstanceFactory>(fun ctx ->
+        ignore <| builder.Register(fun ctx ->
                 let c = ctx.Resolve<IComponentContext>()
                 MultiInstanceFactory(fun t ->
-                    c.Resolve(typedefof<IEnumerable<_>>.MakeGenericType(t)) :?> IEnumerable<obj>)))
+                    c.Resolve(typedefof<IEnumerable<_>>.MakeGenericType(t)) :?> IEnumerable<obj>))
 
         ignore <| builder.RegisterType<Mediator>().As<IMediator>()
+
+        (* Fooble.Core *)
+
+        if notIsNull this.Context
+            then ignore <| builder.RegisterInstance(this.Context)
+            else ignore <| builder.RegisterType<DataContext>().As<IDataContext>()
+
+        ignore <| builder.Register(fun c -> MemberDetail.QueryHandler.make (c.Resolve<IDataContext>()))
+            .As<IMemberDetailQueryHandler>()
+
+        ignore <| builder.Register(fun c -> MemberList.QueryHandler.make (c.Resolve<IDataContext>()))
+            .As<IMemberListQueryHandler>()
