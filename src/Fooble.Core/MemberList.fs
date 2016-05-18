@@ -3,6 +3,7 @@
 open Fooble.Core.Persistence
 open MediatR
 open System.Diagnostics
+open System.Linq
 
 [<RequireQualifiedAccess>]
 module MemberList =
@@ -109,7 +110,7 @@ module MemberList =
 
             member this.Handle(query) =
                 Debug.Assert(notIsNull <| box query, "Query parameter was null")
-                match List.ofSeq this.Context.Members with
+                match List.ofSeq (this.Context.Members.OrderBy(fun x -> x.Name)) with
                 | [] -> notFoundResult
                 | mds ->
                     List.map (fun (md: IMemberData) -> makeItemReadModel md.Id md.Name) mds
