@@ -1,86 +1,91 @@
 ﻿namespace Fooble.Core
 
+open System.Diagnostics
+
 [<RequireQualifiedAccess>]
 module MessageDisplay =
 
-    (* Validators *)
+    (* Validation *)
 
     [<CompiledName("ValidateHeading")>]
     let validateHeading heading =
-        [ (notIsNull), "Heading was null"
-          (String.notIsEmpty), "Heading was empty string" ]
-        |> validate heading "heading"
+        [ (notIsNull), "Heading parameter was null"
+          (String.notIsEmpty), "Heading parameter was empty string" ]
+        |> Validation.validate heading "heading"
 
     [<CompiledName("ValidateMessages")>]
     let validateMessages messages =
-        [ (notIsNull), "Messages was null"
-          (Seq.notIsEmpty), "Messages was empty sequence"
-          (Seq.notContainsNulls), "Messages contained null(s)"
-          (Seq.notContainsEmptyStrings), "Messages contained empty string(s)" ]
-        |> validate messages "messages"
+        [ (notIsNull), "Messages parameter was null"
+          (Seq.notIsEmpty), "Messages parameter was empty sequence"
+          (Seq.notContainsNulls), "Messages parameter contained null(s)"
+          (Seq.notContainsEmptyStrings), "Messages parameter contained empty string(s)" ]
+        |> Validation.validate messages "messages"
 
-    [<RequireQualifiedAccess>]
-    module Severity =
+    (* Severity *)
 
-        (* Implementation *)
+    [<DefaultAugmentation(false)>]
+    type private Severity =
+        | Informational'
+        | Warning'
+        | Error'
 
-        type private Implementation =
-            | Informational
-            | Warning
-            | Error
+        member this.IsInformational =
+            match this with
+            | Informational' _ -> true
+            | _ -> false
 
-            interface IMessageDisplaySeverity with
+        member this.IsWarning =
+            match this with
+            | Warning' _ -> true
+            | _ -> false
 
-                member this.IsInformational =
-                    match this with
-                    | Informational -> true
-                    | _ -> false
+        member this.IsError =
+            match this with
+            | Error' _ -> true
+            | _ -> false
 
-                member this.IsWarning =
-                    match this with
-                    | Warning -> true
-                    | _ -> false
+        interface IMessageDisplaySeverity with
+            member this.IsInformational = this.IsInformational
+            member this.IsWarning = this.IsWarning
+            member this.IsError = this.IsError
 
-                member this.IsError =
-                    match this with
-                    | Error -> true
-                    | _ -> false
+    [<CompiledName("InformationalSeverity")>]
+    let informationalSeverity = Informational' :> IMessageDisplaySeverity
+    
+    [<CompiledName("WarningSeverity")>]
+    let warningSeverity = Warning' :> IMessageDisplaySeverity
+    
+    [<CompiledName("ErrorSeverity")>]
+    let errorSeverity = Error' :> IMessageDisplaySeverity
 
-        (* Construction *)
+    (* Read Model *)
 
-        [<CompiledName("Informational")>]
-        let informational = Informational :> IMessageDisplaySeverity
+    [<DefaultAugmentation(false)>]
+    type private ReadModel =
+        | ReadModel of string * IMessageDisplaySeverity * seq<string>
 
-        [<CompiledName("Warning")>]
-        let warning = Warning :> IMessageDisplaySeverity
+        member this.Heading =
+            match this with
+            | ReadModel (x, _, _) -> x
 
-        [<CompiledName("Error")>]
-        let error = Error :> IMessageDisplaySeverity
+        member this.Severity =
+            match this with
+            | ReadModel (_, x, _) -> x
 
-    [<RequireQualifiedAccess>]
-    module ReadModel =
+        member this.Messages =
+            match this with
+            | ReadModel (_, _, xs) -> xs
 
-        (* Implementation *)
-
-        type private Implementation =
-            { heading:string; severity:IMessageDisplaySeverity; messages:seq<string> }
-
-            interface IMessageDisplayReadModel with
-
-                member this.Heading = this.heading
-                member this.Severity = this.severity
-                member this.Messages = this.messages
-
-        (* Construction *)
-
-        [<CompiledName("Make")>]
-        let make heading severity messages =
-            raiseIfInvalid <| validateHeading heading
-            raiseIfInvalid <| validateMessages messages
-            { heading = heading; severity = severity; messages = messages } :> IMessageDisplayReadModel
-
-[<AutoOpen>]
-module internal MessageDisplayLibrary =
+        interface IMessageDisplayReadModel with
+            member this.Heading = this.Heading
+            member this.Severity = this.Severity
+            member this.Messages = this.Messages
+    
+    [<CompiledName("MakeReadModel")>]
+    let makeReadModel heading severity messages =
+        Validation.raiseIfInvalid <| validateHeading heading
+        Validation.raiseIfInvalid <| validateMessages messages
+        ReadModel (heading, severity, messages) :> IMessageDisplayReadModel
 
     (* Active Patterns *)
 

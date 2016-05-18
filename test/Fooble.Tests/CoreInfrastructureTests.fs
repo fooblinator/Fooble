@@ -2,6 +2,7 @@
 
 open Autofac
 open Fooble.Core
+open Fooble.Core.Persistence
 open Fooble.Core.Infrastructure
 open MediatR
 open Moq

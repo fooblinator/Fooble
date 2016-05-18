@@ -6,77 +6,56 @@ open Swensen.Unquote
 open System
 
 [<TestFixture>]
-module ValidationResultTests =
+module ValidationQueryResultTests =
 
     [<Test>]
-    let ``Calling valid, returns expected result``() =
-        let result = ValidationResult.valid
+    let ``Calling valid, returns validation result``() =
+        let result = Validation.validResult
 
-        test <@ result.IsValid @>
-        test <@ not result.IsInvalid @>
-
-    [<Test>]
-    let ``Calling invalid, with valid parameters, returns expected result``() =
-        let expectedParamName = randomGuidString()
-        let expectedMessage = randomGuidString()
-
-        let result = ValidationResult.invalid expectedParamName expectedMessage
-
-        test <@ result.IsInvalid @>
-        test <@ not result.IsValid @>
-        let actualParamName = result.ParamName
-        test <@ actualParamName = expectedParamName @>
-        let actualMessage = result.Message
-        test <@ actualMessage = expectedMessage @>
+        test <@ box result :? IValidationResult @>
 
     [<Test>]
-    let ``Calling param name, as invalid validation result, returns expected param name``() =
+    let ``Calling make invalid, with valid parameters, returns validation result``() =
+        let result = Validation.makeInvalidResult (randomGuidString()) (randomGuidString())
+
+        test <@ box result :? IValidationResult @>
+
+    [<Test>]
+    let ``Calling param name, with invalid validation result, returns expected param name``() =
         let expectedParamName = randomGuidString()
 
-        let result = ValidationResult.invalid expectedParamName (randomGuidString())
+        let result = Validation.makeInvalidResult expectedParamName (randomGuidString())
 
-        let actualParamName = result.ParamName
-        test <@ actualParamName = expectedParamName @>
-
-    [<Test>]
-    let ``Calling param name, as valid validation result, raises expected exception``() =
-        let expectedMessage = "Result was not invalid"
-
-        let result = ValidationResult.valid
-        raisesWith<InvalidOperationException> <@ result.ParamName @> <| fun e -> <@ e.Message = expectedMessage @>
+        test <@ result.ParamName = expectedParamName @>
 
     [<Test>]
-    let ``Calling message, as invalid validation result, returns expected message``() =
+    let ``Calling message, with invalid validation result, returns expected message``() =
         let expectedMessage = randomGuidString()
 
-        let result = ValidationResult.invalid (randomGuidString()) expectedMessage
+        let result = Validation.makeInvalidResult (randomGuidString()) expectedMessage
 
-        let actualMessage = result.Message
-        test <@ actualMessage = expectedMessage @>
-
-    [<Test>]
-    let ``Calling message, as valid validation result, raises expected exception``() =
-        let expectedMessage = "Result was not invalid"
-
-        let result = ValidationResult.valid
-        raisesWith<InvalidOperationException> <@ result.Message @> <| fun e -> <@ e.Message = expectedMessage @>
+        test <@ result.Message = expectedMessage @>
 
     [<Test>]
-    let ``Calling is valid, as valid validation result, returns true``() =
-        let result = ValidationResult.valid
+    let ``Calling is valid, with valid result, returns true``() =
+        let result = Validation.validResult
+
         test <@ result.IsValid @>
 
     [<Test>]
-    let ``Calling is valid, as invalid validation result, returns false``() =
-        let result = ValidationResult.invalid (randomGuidString()) (randomGuidString())
-        test <@ not result.IsValid @>
+    let ``Calling is valid, with invalid result, returns false``() =
+        let result = Validation.makeInvalidResult (randomGuidString()) (randomGuidString())
+
+        test <@ not <| result.IsValid @>
 
     [<Test>]
-    let ``Calling is invalid, as valid validation result, returns false``() =
-        let result = ValidationResult.valid
-        test <@ not result.IsInvalid @>
+    let ``Calling is invalid, with valid result, returns false``() =
+        let result = Validation.validResult
+
+        test <@ not <| result.IsInvalid @>
 
     [<Test>]
-    let ``Calling is invalid, as invalid validation result, returns true``() =
-        let result = ValidationResult.invalid (randomGuidString()) (randomGuidString())
+    let ``Calling is invalid, with invalid result, returns true``() =
+        let result = Validation.makeInvalidResult (randomGuidString()) (randomGuidString())
+
         test <@ result.IsInvalid @>

@@ -5,7 +5,6 @@ open Autofac.Features.Variance
 open Fooble.Core
 open Fooble.Core.Persistence
 open MediatR
-open System
 open System.Collections.Generic
 open System.Diagnostics
 
@@ -19,11 +18,11 @@ type AutofacModule() =
     member internal this.Context
         with get () = this.context
         and set (context) =
-            Debug.Assert(notIsNull context, "(AutofacModule.Context) context argument was null value")
+            Debug.Assert(notIsNull context, "Context parameter was null")
             this.context <- context
 
     override this.Load(builder:ContainerBuilder) = 
-        Debug.Assert(notIsNull builder, "(AutofacModule.Load) builder argument was null value")
+        Debug.Assert(notIsNull builder, "Builder parameter was null")
 
         (* MediatR *)
 
@@ -40,14 +39,14 @@ type AutofacModule() =
 
         ignore <| builder.RegisterType<Mediator>().As<IMediator>()
 
-        (* Fooble.Core *)
+        (* Fooble *)
 
         if notIsNull this.Context
             then ignore <| builder.RegisterInstance(this.Context)
             else ignore <| builder.RegisterType<DataContext>().As<IDataContext>()
 
-        ignore <| builder.Register(fun c -> MemberDetail.QueryHandler.make (c.Resolve<IDataContext>()))
+        ignore <| builder.Register(fun c -> MemberDetail.makeQueryHandler (c.Resolve<IDataContext>()))
             .As<IMemberDetailQueryHandler>()
 
-        ignore <| builder.Register(fun c -> MemberList.QueryHandler.make (c.Resolve<IDataContext>()))
+        ignore <| builder.Register(fun c -> MemberList.makeQueryHandler (c.Resolve<IDataContext>()))
             .As<IMemberListQueryHandler>()

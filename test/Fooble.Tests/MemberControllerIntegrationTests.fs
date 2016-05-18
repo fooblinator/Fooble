@@ -60,7 +60,7 @@ module MemberControllerIntegrationTests =
     let ``Calling detail, with no matches in data store, returns expected result``() =
         let nonMatchingId = randomGuidString()
         let expectedHeading = "Member Detail Query"
-        let expectedSeverity = MessageDisplay.Severity.error
+        let expectedSeverity = MessageDisplay.errorSeverity
         let expectedMessages = [ "Member detail query was not successful and returned not found" ]
 
         let memberSetMock = Mock<IDbSet<IMemberData>>()
@@ -130,7 +130,7 @@ module MemberControllerIntegrationTests =
     [<Test>]
     let ``Calling list, with no matches in data store, returns expected result``() =
         let expectedHeading = "Member List Query"
-        let expectedSeverity = MessageDisplay.Severity.error
+        let expectedSeverity = MessageDisplay.errorSeverity
         let expectedMessages = [ "Member list query was not successful and returned not found" ]
 
         let memberSet = makeDbSet Seq.empty<IMemberData>

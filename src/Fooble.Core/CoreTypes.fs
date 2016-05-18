@@ -3,70 +3,56 @@
 open MediatR
 open System.Data.Entity
 
-[<AllowNullLiteral>]
-type IResult<'TSuccess,'TFailure> =
-    abstract Value:'TSuccess
-    abstract Status:'TFailure
-    abstract IsSuccess:bool
-    abstract IsFailure:bool
+(* Member Detail *)
 
-[<AllowNullLiteral>]
-type IMemberData =
-    abstract Id:string
-    abstract Name:string
-
-[<AllowNullLiteral>]
-type internal IDataContext =
-    abstract Members:IDbSet<IMemberData>
-
-[<AllowNullLiteral>]
 type IMemberDetailReadModel =
     abstract Id:string
     abstract Name:string
 
-[<AllowNullLiteral>]
-type IMemberDetailQueryFailureStatus =
+type IMemberDetailQueryResult =
+    abstract ReadModel:IMemberDetailReadModel
+    abstract IsSuccess:bool
     abstract IsNotFound:bool
 
-[<AllowNullLiteral>]
 type IMemberDetailQuery =
-    inherit IRequest<IResult<IMemberDetailReadModel,IMemberDetailQueryFailureStatus>>
+    inherit IRequest<IMemberDetailQueryResult>
     abstract Id:string
 
-type IMemberDetailQueryHandler = IRequestHandler<IMemberDetailQuery,IResult<IMemberDetailReadModel,IMemberDetailQueryFailureStatus>>
+type IMemberDetailQueryHandler = IRequestHandler<IMemberDetailQuery, IMemberDetailQueryResult>
 
-[<AllowNullLiteral>]
+(* Member List *)
+
 type IMemberListItemReadModel =
     abstract Id:string
     abstract Name:string
 
-[<AllowNullLiteral>]
 type IMemberListReadModel =
     abstract Members:seq<IMemberListItemReadModel>
 
-[<AllowNullLiteral>]
-type IMemberListQueryFailureStatus =
+type IMemberListQueryResult =
+    abstract ReadModel:IMemberListReadModel
+    abstract IsSuccess:bool
     abstract IsNotFound:bool
 
-[<AllowNullLiteral>]
 type IMemberListQuery =
-    inherit IRequest<IResult<IMemberListReadModel,IMemberListQueryFailureStatus>>
+    inherit IRequest<IMemberListQueryResult>
 
-type IMemberListQueryHandler = IRequestHandler<IMemberListQuery,IResult<IMemberListReadModel,IMemberListQueryFailureStatus>>
+type IMemberListQueryHandler = IRequestHandler<IMemberListQuery, IMemberListQueryResult>
 
-[<AllowNullLiteral>]
+(* Message Display *)
+
 type IMessageDisplaySeverity =
     abstract IsInformational:bool
     abstract IsWarning:bool
     abstract IsError:bool
 
-[<AllowNullLiteral>]
 type IMessageDisplayReadModel =
     abstract Heading:string
     abstract Severity:IMessageDisplaySeverity
     abstract Messages:seq<string>
 
-[<AllowNullLiteral>]
+(* Validation *)
+
 type IValidationResult =
     abstract ParamName:string
     abstract Message:string
