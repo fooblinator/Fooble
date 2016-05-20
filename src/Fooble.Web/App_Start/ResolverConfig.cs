@@ -1,6 +1,7 @@
 ﻿using Autofac;
 using Autofac.Integration.Mvc;
 using Fooble.Core.Infrastructure;
+using System.Configuration;
 using System.Web.Mvc;
 
 namespace Fooble.Web
@@ -9,8 +10,10 @@ namespace Fooble.Web
     {
         public static void RegisterResolver()
         {
+            var connectionString = ConfigurationManager.ConnectionStrings["FoobleContext"].ConnectionString;
+
             var builder = new ContainerBuilder();
-            builder.RegisterModule<AutofacModule>();
+            builder.RegisterModule(new AutofacModule { ConnectionString = connectionString });
             builder.RegisterControllers(typeof(MvcApplication).Assembly);
             var container = builder.Build();
 

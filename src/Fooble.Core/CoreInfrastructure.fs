@@ -13,13 +13,21 @@ type AutofacModule() =
     inherit Autofac.Module()
 
     [<DefaultValue>]
-    val mutable private context:IFoobleContext
+    val mutable private connectionString:string option
+
+    [<DefaultValue>]
+    val mutable private context:IFoobleContext option
+    
+    member this.ConnectionString
+        with set(value) =
+            Debug.Assert(notIsNull value, "Connection string property was null")
+            Debug.Assert(String.notIsEmpty value, "Connection string property was empty")
+            this.connectionString <- Some value
     
     member internal this.Context
-        with get() = this.context
-        and set(context) =
-            Debug.Assert(notIsNull context, "Context parameter was null")
-            this.context <- context
+        with set(value) =
+            Debug.Assert(notIsNull value, "Context property was null")
+            this.context <- Some value
 
     override this.Load(builder:ContainerBuilder) = 
         Debug.Assert(notIsNull builder, "Builder parameter was null")
@@ -41,9 +49,17 @@ type AutofacModule() =
 
         (* Fooble *)
 
-        if notIsNull this.Context
-            then ignore <| builder.RegisterInstance(this.Context).ExternallyOwned()
-            else ignore <| builder.Register(fun _ -> makeFoobleContext ())
+        match this.context with
+        | Some x -> builder.RegisterInstance(x).ExternallyOwned()
+        | None ->
+            match this.connectionString with
+            | Some x -> builder.Register(fun _ -> makeFoobleContext <| Some x)
+            | None -> builder.Register(fun _ -> makeFoobleContext None)
+        |> ignore
+
+//        if notIsNull this.context
+//            then ignore <| builder.RegisterInstance(this.Context).ExternallyOwned()
+//            else ignore <| builder.Register(fun _ -> makeFoobleContext ())
 
         ignore <| builder.Register(fun c -> MemberDetail.makeQueryHandler <| c.Resolve<IFoobleContext>())
             .As<IMemberDetailQueryHandler>()

@@ -32,6 +32,8 @@ module internal Helpers =
               member this.MemberData =
                   context.MemberData :> IObjectSet<MemberData> }
 
-    let internal makeFoobleContext () =
-        EntityConnection.GetDataContext().DataContext :?> FoobleContext
+    let internal makeFoobleContext connectionString =
+        match connectionString with
+        | Some x -> EntityConnection.GetDataContext(x).DataContext :?> FoobleContext
+        | None -> EntityConnection.GetDataContext().DataContext :?> FoobleContext
         |> wrapFoobleContext
