@@ -56,6 +56,17 @@ type IMessageDisplayReadModel =
 type ISelfServiceRegisterReadModel =
     abstract Name:string
 
+type ISelfServiceRegisterCommandResult =
+    abstract IsSuccess:bool
+    abstract IsDuplicateId:bool
+
+type ISelfServiceRegisterCommand =
+    inherit IRequest<ISelfServiceRegisterCommandResult>
+    abstract Id:Guid
+    abstract Name:string
+
+type ISelfServiceRegisterCommandHandler = IRequestHandler<ISelfServiceRegisterCommand, ISelfServiceRegisterCommandResult>
+
 (* Validation *)
 
 type IValidationResult =

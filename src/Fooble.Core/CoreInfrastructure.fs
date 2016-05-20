@@ -57,12 +57,11 @@ type AutofacModule() =
             | None -> builder.Register(fun _ -> makeFoobleContext None)
         |> ignore
 
-//        if notIsNull this.context
-//            then ignore <| builder.RegisterInstance(this.Context).ExternallyOwned()
-//            else ignore <| builder.Register(fun _ -> makeFoobleContext ())
-
         ignore <| builder.Register(fun c -> MemberDetail.makeQueryHandler <| c.Resolve<IFoobleContext>())
             .As<IMemberDetailQueryHandler>()
 
         ignore <| builder.Register(fun c -> MemberList.makeQueryHandler <| c.Resolve<IFoobleContext>())
             .As<IMemberListQueryHandler>()
+
+        ignore <| builder.Register(fun c -> SelfServiceRegister.makeCommandHandler <| c.Resolve<IFoobleContext>())
+            .As<ISelfServiceRegisterCommandHandler>()

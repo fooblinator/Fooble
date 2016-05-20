@@ -52,7 +52,7 @@ module internal Helpers =
         setMock.As<IQueryable<'T>>().SetupFunc(fun m -> m.Expression).Returns(queryable.Expression).End
         setMock.As<IQueryable<'T>>().SetupFunc(fun m -> m.ElementType).Returns(queryable.ElementType).End
         setMock.As<IQueryable<'T>>().SetupFunc(fun m -> m.GetEnumerator()).Returns(queryable.GetEnumerator()).End
-        setMock.Object
+        setMock
 
     let internal notIsNull x = not <| isNull x
     let internal randomGuid () = Guid.NewGuid()

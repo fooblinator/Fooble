@@ -38,6 +38,16 @@ module AutofacModuleTests =
         test <@ notIsNull memberListQueryHandler @>
 
     [<Test>]
+    let ``Registering autofac container, properly registers expected command handlers`` () =
+        let context = Mock.Of<IFoobleContext>()
+        let builder = ContainerBuilder()
+        ignore <| builder.RegisterModule(AutofacModule(Context = context))
+        let container = builder.Build()
+
+        let memberDetailCommandHandler = container.Resolve<ISelfServiceRegisterCommandHandler>()
+        test <@ notIsNull memberDetailCommandHandler @>
+
+    [<Test>]
     let ``Registering autofac container, properly registers expected single instance factory`` () =
         let context = Mock.Of<IFoobleContext>()
         let builder = ContainerBuilder()

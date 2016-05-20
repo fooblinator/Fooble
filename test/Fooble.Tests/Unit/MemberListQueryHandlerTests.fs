@@ -19,9 +19,9 @@ module MemberListQueryHandlerTests =
 
     [<Test>]
     let ``Calling handler, with no members in data store, returns expected result`` () =
-        let memberSet = makeObjectSet Seq.empty<MemberData>
+        let memberSetMock = makeObjectSet Seq.empty<MemberData>
         let contextMock = Mock<IFoobleContext>()
-        contextMock.SetupFunc(fun x -> x.MemberData).Returns(memberSet).Verifiable()
+        contextMock.SetupFunc(fun x -> x.MemberData).Returns(memberSetMock.Object).Verifiable()
 
         let query = MemberList.makeQuery ()
         let queryHandler = MemberList.makeQueryHandler contextMock.Object
@@ -39,9 +39,9 @@ module MemberListQueryHandlerTests =
         let expectedName = randomString ()
 
         let memberData = List.init 5 <| fun _ -> MemberData(Id = randomGuid (), Name = randomString ())
-        let memberSet = makeObjectSet <| Seq.ofList memberData
+        let memberSetMock = makeObjectSet <| Seq.ofList memberData
         let contextMock = Mock<IFoobleContext>()
-        contextMock.SetupFunc(fun c -> c.MemberData).Returns(memberSet).Verifiable()
+        contextMock.SetupFunc(fun c -> c.MemberData).Returns(memberSetMock.Object).Verifiable()
 
         let query = MemberList.makeQuery ()
         let queryHandler = MemberList.makeQueryHandler contextMock.Object

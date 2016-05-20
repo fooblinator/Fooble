@@ -31,9 +31,9 @@ module MemberControllerToQueryHandlerTests =
         let expectedName = randomString ()
 
         let memberData = MemberData(Id = expectedId, Name = expectedName)
-        let memberSet = makeObjectSet <| Seq.singleton memberData
+        let memberSetMock = makeObjectSet <| Seq.singleton memberData
         let contextMock = Mock<IFoobleContext>()
-        contextMock.SetupFunc(fun c -> c.MemberData).Returns(memberSet).Verifiable()
+        contextMock.SetupFunc(fun c -> c.MemberData).Returns(memberSetMock.Object).Verifiable()
 
         let builder = ContainerBuilder()
         ignore <| builder.RegisterModule(AutofacModule(Context = contextMock.Object))
@@ -67,18 +67,18 @@ module MemberControllerToQueryHandlerTests =
         let expectedMessages = [ "Member detail query was not successful and returned not found" ]
 
         let memberSet = makeObjectSet Seq.empty<MemberData>
-        let contextMock = Mock<IFoobleContext>()
-        contextMock.SetupFunc(fun x -> x.MemberData).Returns(memberSet).Verifiable()
+        let memberSetMock = Mock<IFoobleContext>()
+        memberSetMock.SetupFunc(fun x -> x.MemberData).Returns(memberSet.Object).Verifiable()
 
         let builder = ContainerBuilder()
-        ignore <| builder.RegisterModule(AutofacModule(Context = contextMock.Object))
+        ignore <| builder.RegisterModule(AutofacModule(Context = memberSetMock.Object))
         let container = builder.Build()
         
         let mediator = container.Resolve<IMediator>()
         let controller = new MemberController(mediator)
         let result = controller.Detail(nonMatchingId.ToString())
 
-        contextMock.Verify()
+        memberSetMock.Verify()
 
         test <@ notIsNull result @>
         test <@ result :? ViewResult @>
@@ -103,9 +103,9 @@ module MemberControllerToQueryHandlerTests =
     [<Test>]
     let ``Calling list, with matches in data store, returns expected result`` () =
         let memberData = List.init 5 <| fun _ -> MemberData(Id = randomGuid (), Name = randomString ())
-        let memberSet = makeObjectSet <| Seq.ofList memberData
+        let memberSetMock = makeObjectSet <| Seq.ofList memberData
         let contextMock = Mock<IFoobleContext>()
-        contextMock.SetupFunc(fun c -> c.MemberData).Returns(memberSet).Verifiable()
+        contextMock.SetupFunc(fun c -> c.MemberData).Returns(memberSetMock.Object).Verifiable()
 
         let builder = ContainerBuilder()
         ignore <| builder.RegisterModule(AutofacModule(Context = contextMock.Object))
@@ -138,9 +138,9 @@ module MemberControllerToQueryHandlerTests =
         let expectedSeverity = MessageDisplay.errorSeverity
         let expectedMessages = [ "Member list query was not successful and returned not found" ]
 
-        let memberSet = makeObjectSet Seq.empty<MemberData>
+        let memberSetMock = makeObjectSet Seq.empty<MemberData>
         let contextMock = Mock<IFoobleContext>()
-        contextMock.SetupFunc(fun c -> c.MemberData).Returns(memberSet).Verifiable()
+        contextMock.SetupFunc(fun c -> c.MemberData).Returns(memberSetMock.Object).Verifiable()
 
         let builder = ContainerBuilder()
         ignore <| builder.RegisterModule(AutofacModule(Context = contextMock.Object))
