@@ -1,21 +1,21 @@
-﻿namespace Fooble.Tests
+﻿namespace Fooble.Tests.Unit
 
 open Fooble.Core
+open Fooble.Tests
 open NUnit.Framework
 open Swensen.Unquote
-open System
 
 [<TestFixture>]
-module ValidationQueryResultTests =
+module ValidationResultTests =
 
     [<Test>]
-    let ``Calling valid, returns validation result`` () =
+    let ``Calling valid result, returns validation result`` () =
         let result = Validation.validResult
 
         test <@ box result :? IValidationResult @>
 
     [<Test>]
-    let ``Calling make invalid, with valid parameters, returns validation result`` () =
+    let ``Calling make invalid result, with valid parameters, returns validation result`` () =
         let result = Validation.makeInvalidResult <|| (randomString (), randomString ())
 
         test <@ box result :? IValidationResult @>

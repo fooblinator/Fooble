@@ -1,44 +1,49 @@
-﻿namespace Fooble.Tests
+﻿namespace Fooble.Tests.Integration
 
+open Autofac
 open Fooble.Core
+open Fooble.Core.Infrastructure
+open Fooble.Core.Persistence
+open Fooble.Tests
 open Fooble.Web.Controllers
 open MediatR
 open Moq
 open Moq.FSharp.Extensions
 open NUnit.Framework
 open Swensen.Unquote
-open System
 open System.Web.Mvc
 
 [<TestFixture>]
-module MemberControllerTests =
-
-    [<Test>]
-    let ``Constructing, with null mediator, raises expected exception`` () =
-        let expectedParamName = "mediator"
-        let expectedMessage = "Mediator should not be null"
-
-        raisesWith<ArgumentException> <@ new MemberController(null) @> <|
-            fun e -> <@ e.ParamName = expectedParamName && (fixInvalidArgMessage e.Message) = expectedMessage @>
+module MemberControllerToQueryHandlerTests =
 
     [<Test>]
     let ``Constructing, with valid parameters, returns expected result`` () =
-        ignore <| new MemberController(mock ())
+        let builder = ContainerBuilder()
+        ignore <| builder.RegisterModule(AutofacModule(Context = mock ()))
+        let container = builder.Build()
+        
+        let mediator = container.Resolve<IMediator>()
+        ignore <| new MemberController(mediator)
 
     [<Test>]
     let ``Calling detail, with matches in data store, returns expected result`` () =
-        let matchingId = randomGuid ()
-        let expectedQuery = MemberDetail.makeQuery matchingId
-        let expectedViewModel = MemberDetail.makeReadModel <|| (matchingId, randomString ())
+        let expectedId = randomGuid ()
+        let expectedName = randomString ()
 
-        let queryResult = MemberDetail.makeSuccessResult expectedViewModel
-        let mediatorMock = Mock<IMediator>()
-        mediatorMock.SetupFunc(fun m -> m.Send(any ())).Returns(queryResult).Verifiable()
+        let memberData = MemberData(Id = expectedId, Name = expectedName)
+        let memberSet = makeObjectSet <| Seq.singleton memberData
+        let contextMock = Mock<IFoobleContext>()
+        contextMock.SetupFunc(fun c -> c.MemberData).Returns(memberSet).Verifiable()
 
-        let controller = new MemberController(mediatorMock.Object)
-        let result = controller.Detail(matchingId.ToString())
+        let builder = ContainerBuilder()
+        ignore <| builder.RegisterModule(AutofacModule(Context = contextMock.Object))
+        let container = builder.Build()
+        
+        let mediator = container.Resolve<IMediator>()
+        let controller = new MemberController(mediator)
+        let result = controller.Detail(expectedId.ToString())
 
-        mediatorMock.Verify()
+        contextMock.Verify()
 
         test <@ notIsNull result @>
         test <@ result :? ViewResult @>
@@ -50,24 +55,30 @@ module MemberControllerTests =
         test <@ viewResult.Model :? IMemberDetailReadModel @>
 
         let actualViewModel = viewResult.Model :?> IMemberDetailReadModel
-        test <@ actualViewModel = expectedViewModel @>
+
+        test <@ actualViewModel.Id = expectedId @>
+        test <@ actualViewModel.Name = expectedName @>
 
     [<Test>]
     let ``Calling detail, with no matches in data store, returns expected result`` () =
         let nonMatchingId = randomGuid ()
-        let expectedQuery = MemberDetail.makeQuery nonMatchingId
         let expectedHeading = "Member Detail Query"
         let expectedSeverity = MessageDisplay.errorSeverity
         let expectedMessages = [ "Member detail query was not successful and returned not found" ]
 
-        let queryResult = MemberDetail.notFoundResult
-        let mediatorMock = Mock<IMediator>()
-        mediatorMock.SetupFunc(fun m -> m.Send(any ())).Returns(queryResult).Verifiable()
+        let memberSet = makeObjectSet Seq.empty<MemberData>
+        let contextMock = Mock<IFoobleContext>()
+        contextMock.SetupFunc(fun x -> x.MemberData).Returns(memberSet).Verifiable()
 
-        let controller = new MemberController(mediatorMock.Object)
+        let builder = ContainerBuilder()
+        ignore <| builder.RegisterModule(AutofacModule(Context = contextMock.Object))
+        let container = builder.Build()
+        
+        let mediator = container.Resolve<IMediator>()
+        let controller = new MemberController(mediator)
         let result = controller.Detail(nonMatchingId.ToString())
 
-        mediatorMock.Verify()
+        contextMock.Verify()
 
         test <@ notIsNull result @>
         test <@ result :? ViewResult @>
@@ -91,17 +102,20 @@ module MemberControllerTests =
 
     [<Test>]
     let ``Calling list, with matches in data store, returns expected result`` () =
-        let expectedMembers = [ MemberList.makeItemReadModel <|| (randomGuid (), randomString ()) ]
+        let memberData = List.init 5 <| fun _ -> MemberData(Id = randomGuid (), Name = randomString ())
+        let memberSet = makeObjectSet <| Seq.ofList memberData
+        let contextMock = Mock<IFoobleContext>()
+        contextMock.SetupFunc(fun c -> c.MemberData).Returns(memberSet).Verifiable()
 
-        let readModel = MemberList.makeReadModel <| Seq.ofList expectedMembers
-        let queryResult = MemberList.makeSuccessResult readModel
-        let mediatorMock = Mock<IMediator>()
-        mediatorMock.SetupFunc(fun m -> m.Send(any ())).Returns(queryResult).Verifiable()
-
-        let controller = new MemberController(mediatorMock.Object)
+        let builder = ContainerBuilder()
+        ignore <| builder.RegisterModule(AutofacModule(Context = contextMock.Object))
+        let container = builder.Build()
+        
+        let mediator = container.Resolve<IMediator>()
+        let controller = new MemberController(mediator)
         let result = controller.List()
- 
-        mediatorMock.Verify()
+
+        contextMock.Verify()
 
         test <@ notIsNull result @>
         test <@ result :? ViewResult @>
@@ -113,7 +127,10 @@ module MemberControllerTests =
         test <@ viewResult.Model :? IMemberListReadModel @>
 
         let actualMembers = Seq.toList (viewResult.Model :?> IMemberListReadModel).Members
-        test <@ actualMembers = expectedMembers @>
+        test <@ (List.length actualMembers) = 5 @>
+        for current in actualMembers do
+            let findResult = List.tryFind (fun (x:MemberData) -> x.Id = current.Id && x.Name = current.Name) memberData
+            test <@ findResult.IsSome @>
 
     [<Test>]
     let ``Calling list, with no matches in data store, returns expected result`` () =
@@ -121,14 +138,19 @@ module MemberControllerTests =
         let expectedSeverity = MessageDisplay.errorSeverity
         let expectedMessages = [ "Member list query was not successful and returned not found" ]
 
-        let queryResult = MemberList.notFoundResult
-        let mediatorMock = Mock<IMediator>()
-        mediatorMock.SetupFunc(fun m -> m.Send(any ())).Returns(queryResult).Verifiable()
+        let memberSet = makeObjectSet Seq.empty<MemberData>
+        let contextMock = Mock<IFoobleContext>()
+        contextMock.SetupFunc(fun c -> c.MemberData).Returns(memberSet).Verifiable()
 
-        let controller = new MemberController(mediatorMock.Object)
+        let builder = ContainerBuilder()
+        ignore <| builder.RegisterModule(AutofacModule(Context = contextMock.Object))
+        let container = builder.Build()
+        
+        let mediator = container.Resolve<IMediator>()
+        let controller = new MemberController(mediator)
         let result = controller.List()
 
-        mediatorMock.Verify()
+        contextMock.Verify()
 
         test <@ notIsNull result @>
         test <@ result :? ViewResult @>

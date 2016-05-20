@@ -1,4 +1,4 @@
-﻿namespace Fooble.Tests
+﻿namespace Fooble.Tests.Unit
 
 open Autofac
 open Fooble.Core

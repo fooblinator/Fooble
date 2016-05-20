@@ -58,14 +58,25 @@
     <Content Include="App.config" />
     <Content Include="packages.config" />
     <Compile Include="TestHelpers.fs" />
-    <Compile Include="ValidationTests.fs" />
-    <Compile Include="MessageDisplayTests.fs" />
-    <Compile Include="MemberDetailTests.fs" />
-    <Compile Include="MemberListTests.fs" />
-    <Compile Include="CoreExtensionsTests.fs" />
-    <Compile Include="CoreInfrastructureTests.fs" />
-    <Compile Include="MemberControllerTests.fs" />
-    <Compile Include="MemberControllerIntegrationTests.fs" />
+    <Compile Include="Integration\MemberControllerToQueryHandlerTests.fs" />
+    <Compile Include="Unit\AutofacModuleTests.fs" />
+    <Compile Include="Unit\CoreExtensionsTests.fs" />
+    <Compile Include="Unit\MemberControllerTests.fs" />
+    <Compile Include="Unit\MemberDetailQueryHandlerTests.fs" />
+    <Compile Include="Unit\MemberDetailQueryResultTests.fs" />
+    <Compile Include="Unit\MemberDetailQueryTests.fs" />
+    <Compile Include="Unit\MemberDetailReadModelTests.fs" />
+    <Compile Include="Unit\MemberDetailTests.fs" />
+    <Compile Include="Unit\MemberListItemReadModelTests.fs" />
+    <Compile Include="Unit\MemberListQueryHandlerTests.fs" />
+    <Compile Include="Unit\MemberListQueryResultTests.fs" />
+    <Compile Include="Unit\MemberListQueryTests.fs" />
+    <Compile Include="Unit\MemberListReadModelTests.fs" />
+    <Compile Include="Unit\MemberListTests.fs" />
+    <Compile Include="Unit\MessageDisplayReadModelTests.fs" />
+    <Compile Include="Unit\MessageDisplaySeverityTests.fs" />
+    <Compile Include="Unit\MessageDisplayTests.fs" />
+    <Compile Include="Unit\ValidationResultTests.fs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\Fooble.Web\Fooble.Web.csproj">

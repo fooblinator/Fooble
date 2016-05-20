@@ -1,6 +1,7 @@
-﻿namespace Fooble.Tests
+﻿namespace Fooble.Tests.Unit
 
 open Fooble.Core
+open Fooble.Tests
 open NUnit.Framework
 open Swensen.Unquote
 
