@@ -79,7 +79,9 @@
     <Compile Include="Unit\MessageDisplayReadModelTests.fs" />
     <Compile Include="Unit\MessageDisplaySeverityTests.fs" />
     <Compile Include="Unit\MessageDisplayTests.fs" />
+    <Compile Include="Unit\SelfServiceRegisterReadModelTests.fs" />
     <Compile Include="Unit\ValidationResultTests.fs" />
+    <Compile Include="Unit\SelfServiceControllerTests.fs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\Fooble.Web\Fooble.Web.csproj">

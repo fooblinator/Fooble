@@ -51,6 +51,11 @@ type IMessageDisplayReadModel =
     abstract Severity:IMessageDisplaySeverity
     abstract Messages:seq<string>
 
+(* Self Service Register *)
+
+type ISelfServiceRegisterReadModel =
+    abstract Name:string
+
 (* Validation *)
 
 type IValidationResult =

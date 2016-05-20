@@ -64,6 +64,7 @@
     <Compile Include="MessageDisplay.fs" />
     <Compile Include="MemberDetail.fs" />
     <Compile Include="MemberList.fs" />
+    <Compile Include="SelfServiceRegister.fs" />
     <Compile Include="CoreExtensions.fs" />
     <Compile Include="CoreInfrastructure.fs" />
   </ItemGroup>
