@@ -19,7 +19,7 @@ namespace Fooble.Web.Controllers
         }
 
         [HttpGet]
-        public ActionResult Detail(string id)
+        public ActionResult Detail(Guid id)
         {
             // TODO: handle invalid ids; prevent argument exceptions; redirect to message display
 

@@ -2,25 +2,17 @@
 
 open Fooble.Core.Persistence
 open MediatR
+open System
 open System.Diagnostics
 
 [<RequireQualifiedAccess>]
 module MemberDetail =
 
-    (* Validation *)
-
-    [<CompiledName("ValidateId")>]
-    let validateId id =
-        [ (notIsNull), "Id parameter was null"
-          (String.notIsEmpty), "Id parameter was empty string"
-          (String.isGuid), "Id parameter was not GUID string" ]
-        |> Validation.validate id "id"
-
     (* Query *)
 
     [<DefaultAugmentation(false)>]
     type private Query =
-        | Query of string
+        | Query of Guid
 
         member this.Id =
             match this with
@@ -30,15 +22,13 @@ module MemberDetail =
             member this.Id = this.Id
 
     [<CompiledName("MakeQuery")>]
-    let makeQuery id =
-        Validation.raiseIfInvalid <| validateId id
-        Query id :> IMemberDetailQuery
+    let makeQuery id = Query id :> IMemberDetailQuery
 
     (* Read Model *)
 
     [<DefaultAugmentation(false)>]
     type private ReadModel =
-        | ReadModel of string * string
+        | ReadModel of Guid * string
 
         member this.Id =
             match this with
@@ -53,9 +43,6 @@ module MemberDetail =
             member this.Name = this.Name
 
     let internal makeReadModel id name =
-        Debug.Assert(notIsNull id, "Id parameter was null")
-        Debug.Assert(String.notIsEmpty id, "Id parameter was empty string")
-        Debug.Assert(String.isGuid id, "Id parameter was not guid string")
         Debug.Assert(notIsNull name, "Name parameter was null")
         Debug.Assert(String.notIsEmpty name, "Name parameter was empty string")
         ReadModel (id, name) :> IMemberDetailReadModel
@@ -97,7 +84,7 @@ module MemberDetail =
 
     [<DefaultAugmentation(false)>]
     type private QueryHandler =
-        | QueryHandler of IDataContext
+        | QueryHandler of IFoobleContext
 
         member this.Context =
             match this with
@@ -107,14 +94,11 @@ module MemberDetail =
 
             member this.Handle(query) =
                 Debug.Assert(notIsNull <| box query, "Query parameter was null")
-                this.Context.Members.Find(query.Id)
-                |> box
-                |> Option.ofObj
-                |> Option.map unbox<IMemberData>
-                |> Option.map (fun md -> makeReadModel md.Id md.Name)
+                Seq.tryFind (fun (x:MemberData) -> x.Id = query.Id) this.Context.MemberData
+                |> Option.map (fun x -> makeReadModel x.Id x.Name)
                 |> function
-                    | Some x -> makeSuccessResult x
-                    | None -> notFoundResult
+                   | Some x -> makeSuccessResult x
+                   | None -> notFoundResult
 
     let internal makeQueryHandler context =
         Debug.Assert(notIsNull context, "Context parameter was null")

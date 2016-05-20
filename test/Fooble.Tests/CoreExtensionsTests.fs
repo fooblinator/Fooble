@@ -3,19 +3,18 @@
 open Fooble.Core
 open NUnit.Framework
 open Swensen.Unquote
-open System
 
 [<TestFixture>]
 module CoreExtensionsTests =
 
     [<Test>]
-    let ``Calling to message display read model, as success result of member detail read model, returns expected result``() =
+    let ``Calling to message display read model, as success result of member detail read model, returns expected result`` () =
         let expectedHeading = "Member Detail Query"
         let expectedSeverity = MessageDisplay.informationalSeverity
         let expectedMessages = [ "Member detail query was successful" ]
 
         let readModel =
-            MemberDetail.makeReadModel (randomGuidString()) (randomGuidString())
+            MemberDetail.makeReadModel <|| (randomGuid (), randomString ())
             |> MemberDetail.makeSuccessResult
             |> CoreExtensions.ToMessageDisplayReadModel
 
@@ -27,7 +26,7 @@ module CoreExtensionsTests =
         test <@ actualMessages = expectedMessages @>
 
     [<Test>]
-    let ``Calling to message display read model, as not found result of member detail read model, returns expected result``() =
+    let ``Calling to message display read model, as not found result of member detail read model, returns expected result`` () =
         let expectedHeading = "Member Detail Query"
         let expectedSeverity = MessageDisplay.errorSeverity
         let expectedMessages = [ "Member detail query was not successful and returned not found" ]
@@ -44,13 +43,14 @@ module CoreExtensionsTests =
         test <@ actualMessages = expectedMessages @>
 
     [<Test>]
-    let ``Calling to message display read model, as success result with member list read model, returns expected result``() =
+    let ``Calling to message display read model, as success result with member list read model, returns expected result`` () =
         let expectedHeading = "Member List Query"
         let expectedSeverity = MessageDisplay.informationalSeverity
         let expectedMessages = [ "Member list query was successful" ]
 
         let readModel =
-            [ MemberList.makeItemReadModel (randomGuidString()) (randomGuidString()) ]
+            MemberList.makeItemReadModel <|| (randomGuid (), randomString ())
+            |> Seq.singleton
             |> MemberList.makeReadModel
             |> MemberList.makeSuccessResult
             |> CoreExtensions.ToMessageDisplayReadModel
@@ -63,7 +63,7 @@ module CoreExtensionsTests =
         test <@ actualMessages = expectedMessages @>
 
     [<Test>]
-    let ``Calling to message display read model, as not found result with member list read model, returns expected result``() =
+    let ``Calling to message display read model, as not found result with member list read model, returns expected result`` () =
         let expectedHeading = "Member List Query"
         let expectedSeverity = MessageDisplay.errorSeverity
         let expectedMessages = [ "Member list query was not successful and returned not found" ]

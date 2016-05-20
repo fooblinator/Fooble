@@ -1,12 +1,12 @@
 ﻿namespace Fooble.Core
 
 open MediatR
-open System.Data.Entity
+open System
 
 (* Member Detail *)
 
 type IMemberDetailReadModel =
-    abstract Id:string
+    abstract Id:Guid
     abstract Name:string
 
 type IMemberDetailQueryResult =
@@ -16,14 +16,14 @@ type IMemberDetailQueryResult =
 
 type IMemberDetailQuery =
     inherit IRequest<IMemberDetailQueryResult>
-    abstract Id:string
+    abstract Id:Guid
 
 type IMemberDetailQueryHandler = IRequestHandler<IMemberDetailQuery, IMemberDetailQueryResult>
 
 (* Member List *)
 
 type IMemberListItemReadModel =
-    abstract Id:string
+    abstract Id:Guid
     abstract Name:string
 
 type IMemberListReadModel =

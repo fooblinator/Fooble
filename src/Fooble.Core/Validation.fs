@@ -39,11 +39,11 @@ module internal Validation =
     let internal validResult = Valid' :> IValidationResult
 
     let internal makeInvalidResult paramName message =
-        Debug.Assert(not <| isNull paramName, "Param name parameter was null")
-        Debug.Assert(paramName <> "", "Param name parameter was empty string")
-        Debug.Assert(not <| isNull message, "Message parameter was null")
-        Debug.Assert(message <> "", "Message parameter was empty string")
-        Invalid (paramName, message) :> IValidationResult
+        Debug.Assert(notIsNull paramName, "Param name parameter was null")
+        Debug.Assert(String.notIsEmpty paramName, "Param name parameter was empty string")
+        Debug.Assert(notIsNull message, "Message parameter was null")
+        Debug.Assert(String.notIsEmpty message, "Message parameter was empty string")
+        Invalid(paramName, message) :> IValidationResult
 
     let internal (|IsValid|IsInvalid|) (result:IValidationResult) =
         if result.IsValid

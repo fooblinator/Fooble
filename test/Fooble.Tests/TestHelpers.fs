@@ -1,32 +1,62 @@
-﻿[<AutoOpen>]
-module internal Fooble.Tests.TestHelpers
+﻿namespace Fooble.Tests
 
 open Moq
 open Moq.FSharp.Extensions
 open System
-open System.Data.Entity
+open System.Data.Objects
 open System.Linq
 
-let internal fixArgumentExceptionMessage (message:string) =
-    (message.IndexOf "Parameter name: " |> message.Remove).Trim()
+[<AutoOpen>]
+module internal Helpers =
 
-let internal makeDbSet (data:seq<'T>) =
-    let queryable = data.AsQueryable()
+    (* Extensions *)
 
-    let setMock = Mock<IDbSet<'T>>()
-    
-    setMock.As<IQueryable<'T>>().SetupFunc(fun m -> m.Provider).Returns(queryable.Provider).End
-    setMock.As<IQueryable<'T>>().SetupFunc(fun m -> m.Expression).Returns(queryable.Expression).End
-    setMock.As<IQueryable<'T>>().SetupFunc(fun m -> m.ElementType).Returns(queryable.ElementType).End
-    setMock.As<IQueryable<'T>>().SetupFunc(fun m -> m.GetEnumerator()).Returns(queryable.GetEnumerator()).End
+    [<RequireQualifiedAccess>]
+    module internal String =
 
-    setMock.Object
+        let internal empty = System.String.Empty
+        let internal isEmpty x = x = empty
+        let internal notIsEmpty x = not <| isEmpty x
 
-let internal randomGuidString () =
-    sprintf "%A" (Guid.NewGuid())
+    [<RequireQualifiedAccess>]
+    module internal List =
 
-let internal randomNonGuidString () =
-    (randomGuidString ()).ToCharArray()
-    |> Array.filter (fun c -> c <> '-')
-    |> Array.take 16
-    |> String
+        let internal containsEmptyStrings x = List.contains String.empty x
+        let internal containsNulls x = List.contains null x
+        let internal notContainsEmptyStrings x = not <| containsEmptyStrings x
+        let internal notContainsNulls x = not <| containsNulls x
+        let internal notIsEmpty x = not <| List.isEmpty x
+
+    [<RequireQualifiedAccess>]
+    module internal Seq =
+
+        let internal containsEmptyStrings x = Seq.contains String.empty x
+        let internal containsNulls x = Seq.contains null x
+        let internal notContainsEmptyStrings x = not <| containsEmptyStrings x
+        let internal notContainsNulls x = not <| containsNulls x
+        let internal notIsEmpty x = not <| Seq.isEmpty x
+
+    (* Misc *)
+
+    let internal fixInvalidArgMessage (message:string) =
+        let i = message.IndexOf("Parameter name: ")
+        message.Remove(i).Trim()
+
+    let internal makeObjectSet (data:seq<'T>) =
+        let queryable = data.AsQueryable()
+        let setMock = Mock<IObjectSet<'T>>()
+        setMock.As<IQueryable<'T>>().SetupFunc(fun m -> m.Provider).Returns(queryable.Provider).End
+        setMock.As<IQueryable<'T>>().SetupFunc(fun m -> m.Expression).Returns(queryable.Expression).End
+        setMock.As<IQueryable<'T>>().SetupFunc(fun m -> m.ElementType).Returns(queryable.ElementType).End
+        setMock.As<IQueryable<'T>>().SetupFunc(fun m -> m.GetEnumerator()).Returns(queryable.GetEnumerator()).End
+        setMock.Object
+
+    let internal notIsNull x = not <| isNull x
+    let internal randomGuid () = Guid.NewGuid()
+    let internal randomString () = sprintf "%A" <| randomGuid ()
+
+    let internal randomNonGuidString () =
+        (randomString ()).ToCharArray()
+        |> Array.filter (fun c -> c <> '-')
+        |> Array.take 16
+        |> String

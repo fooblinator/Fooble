@@ -2,6 +2,7 @@
 
 open Fooble.Core.Persistence
 open MediatR
+open System
 open System.Diagnostics
 open System.Linq
 
@@ -23,7 +24,7 @@ module MemberList =
 
     [<DefaultAugmentation(false)>]
     type private ItemReadModel =
-        | ItemReadModel of string * string
+        | ItemReadModel of Guid * string
 
         member this.Id =
             match this with
@@ -38,9 +39,6 @@ module MemberList =
             member this.Name = this.Name
 
     let internal makeItemReadModel id name =
-        Debug.Assert(notIsNull id, "Id parameter was null")
-        Debug.Assert(String.notIsEmpty id, "Id parameter was empty string")
-        Debug.Assert(String.isGuid id, "Id parameter was not guid string")
         Debug.Assert(notIsNull name, "Name parameter was null")
         Debug.Assert(String.notIsEmpty name, "Name parameter was empty string")
         ItemReadModel (id, name) :> IMemberListItemReadModel
@@ -100,7 +98,7 @@ module MemberList =
 
     [<DefaultAugmentation(false)>]
     type private QueryHandler =
-        | QueryHandler of IDataContext
+        | QueryHandler of IFoobleContext
 
         member this.Context =
             match this with
@@ -110,13 +108,14 @@ module MemberList =
 
             member this.Handle(query) =
                 Debug.Assert(notIsNull <| box query, "Query parameter was null")
-                match List.ofSeq (this.Context.Members.OrderBy(fun x -> x.Name)) with
-                | [] -> notFoundResult
-                | mds ->
-                    List.map (fun (md: IMemberData) -> makeItemReadModel md.Id md.Name) mds
-                    |> Seq.ofList
-                    |> makeReadModel
-                    |> makeSuccessResult
+                Seq.sortBy (fun (x:MemberData) -> x.Name) this.Context.MemberData
+                |> Seq.map (fun x -> makeItemReadModel x.Id x.Name)
+                |> List.ofSeq // materialize the results
+                |> function
+                   | [] -> notFoundResult
+                   | xs -> Seq.ofList xs
+                           |> makeReadModel
+                           |> makeSuccessResult
 
     let internal makeQueryHandler context =
         Debug.Assert(not <| isNull context, "Context parameter was null")

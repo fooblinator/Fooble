@@ -13,11 +13,11 @@ type AutofacModule() =
     inherit Autofac.Module()
 
     [<DefaultValue>]
-    val mutable private context:IDataContext
+    val mutable private context:IFoobleContext
     
     member internal this.Context
-        with get () = this.context
-        and set (context) =
+        with get() = this.context
+        and set(context) =
             Debug.Assert(notIsNull context, "Context parameter was null")
             this.context <- context
 
@@ -42,11 +42,11 @@ type AutofacModule() =
         (* Fooble *)
 
         if notIsNull this.Context
-            then ignore <| builder.RegisterInstance(this.Context)
-            else ignore <| builder.RegisterType<DataContext>().As<IDataContext>()
+            then ignore <| builder.RegisterInstance(this.Context).ExternallyOwned()
+            else ignore <| builder.Register(fun _ -> makeFoobleContext ())
 
-        ignore <| builder.Register(fun c -> MemberDetail.makeQueryHandler (c.Resolve<IDataContext>()))
+        ignore <| builder.Register(fun c -> MemberDetail.makeQueryHandler <| c.Resolve<IFoobleContext>())
             .As<IMemberDetailQueryHandler>()
 
-        ignore <| builder.Register(fun c -> MemberList.makeQueryHandler (c.Resolve<IDataContext>()))
+        ignore <| builder.Register(fun c -> MemberList.makeQueryHandler <| c.Resolve<IFoobleContext>())
             .As<IMemberListQueryHandler>()

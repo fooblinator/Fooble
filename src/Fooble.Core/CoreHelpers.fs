@@ -1,9 +1,7 @@
 ﻿namespace Fooble.Core
 
-open System.Diagnostics
-
 [<AutoOpen>]
-module internal CoreHelpers =
+module internal Helpers =
 
     (* Extensions *)
 
@@ -12,9 +10,7 @@ module internal CoreHelpers =
 
         let internal empty = System.String.Empty
         let internal isEmpty x = x = empty
-        let internal isGuid x = fst <| System.Guid.TryParse(x)
         let internal notIsEmpty x = not <| isEmpty x
-        let internal notIsGuid x = not <| isGuid x
 
     [<RequireQualifiedAccess>]
     module internal List =
