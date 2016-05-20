@@ -182,6 +182,13 @@
     <Content Include="Views\Home\About.cshtml" />
     <Content Include="Views\Home\Contact.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
+    <Content Include="Views\Member\Detail.cshtml" />
+    <Content Include="Views\Member\Detail_NotFound.cshtml" />
+    <Content Include="Views\Member\List.cshtml" />
+    <Content Include="Views\Member\List_NotFound.cshtml" />
+    <Content Include="Views\Member\_Layout.cshtml" />
+    <Content Include="Views\Member\_ViewStart.cshtml" />
+    <Content Include="Views\Member\Detail_InvalidId.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

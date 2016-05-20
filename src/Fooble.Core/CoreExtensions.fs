@@ -4,7 +4,7 @@ open System.Diagnostics
 open System.Runtime.CompilerServices
 
 [<AutoOpen; Extension>]
-type CoreExtensions =
+type CoreExtensions = // TODO: need to provide overloads that allow overriding heading and severity
 
     (* Member Detail *)
 

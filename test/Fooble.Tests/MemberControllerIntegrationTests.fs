@@ -40,7 +40,7 @@ module MemberControllerIntegrationTests =
         
         let mediator = container.Resolve<IMediator>()
         let controller = new MemberController(mediator)
-        let result = controller.Detail(expectedId)
+        let result = controller.Detail(expectedId.ToString())
 
         contextMock.Verify()
 
@@ -75,7 +75,7 @@ module MemberControllerIntegrationTests =
         
         let mediator = container.Resolve<IMediator>()
         let controller = new MemberController(mediator)
-        let result = controller.Detail(nonMatchingId)
+        let result = controller.Detail(nonMatchingId.ToString())
 
         contextMock.Verify()
 

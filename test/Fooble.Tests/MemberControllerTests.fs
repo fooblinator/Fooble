@@ -36,7 +36,7 @@ module MemberControllerTests =
         mediatorMock.SetupFunc(fun m -> m.Send(any ())).Returns(queryResult).Verifiable()
 
         let controller = new MemberController(mediatorMock.Object)
-        let result = controller.Detail(matchingId)
+        let result = controller.Detail(matchingId.ToString())
 
         mediatorMock.Verify()
 
@@ -65,7 +65,7 @@ module MemberControllerTests =
         mediatorMock.SetupFunc(fun m -> m.Send(any ())).Returns(queryResult).Verifiable()
 
         let controller = new MemberController(mediatorMock.Object)
-        let result = controller.Detail(nonMatchingId)
+        let result = controller.Detail(nonMatchingId.ToString())
 
         mediatorMock.Verify()
 
