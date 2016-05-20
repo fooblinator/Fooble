@@ -18,6 +18,7 @@ type internal FoobleContext = EntityConnection.ServiceTypes.FoobleContext
 type internal IFoobleContext =
     inherit IDisposable
     abstract MemberData : IObjectSet<MemberData>
+    abstract SaveChanges : unit -> int
 
 [<AutoOpen>]
 module internal Helpers =
@@ -30,8 +31,11 @@ module internal Helpers =
                   context.Dispose()
 
               member this.MemberData =
-                  context.MemberData :> IObjectSet<MemberData> }
+                  context.MemberData :> IObjectSet<MemberData>
 
+              member this.SaveChanges() =
+                  context.SaveChanges() }
+              
     let internal makeFoobleContext connectionString =
         match connectionString with
         | Some x -> EntityConnection.GetDataContext(x).DataContext :?> FoobleContext

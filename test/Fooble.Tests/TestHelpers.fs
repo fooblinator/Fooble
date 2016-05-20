@@ -1,10 +1,13 @@
 ﻿namespace Fooble.Tests
 
+open FSharp.Configuration
 open Moq
 open Moq.FSharp.Extensions
 open System
 open System.Data.Objects
 open System.Linq
+
+type internal Settings = AppSettings<"app.config">
 
 [<AutoOpen>]
 module internal Helpers =
