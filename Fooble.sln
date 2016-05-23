@@ -13,6 +13,8 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Fooble.Tests", "test\Fooble
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fooble.Web", "src\Fooble.Web\Fooble.Web.csproj", "{B8E7F59F-08FE-48AB-9640-6A0B41083496}"
 EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Fooble.Core.Persistence", "src\Fooble.Core.Persistence\Fooble.Core.Persistence.fsproj", "{6324603A-6972-4B7E-AE8B-A5E4A13A657F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -32,6 +34,10 @@ Global
 		{B8E7F59F-08FE-48AB-9640-6A0B41083496}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B8E7F59F-08FE-48AB-9640-6A0B41083496}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B8E7F59F-08FE-48AB-9640-6A0B41083496}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6324603A-6972-4B7E-AE8B-A5E4A13A657F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6324603A-6972-4B7E-AE8B-A5E4A13A657F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6324603A-6972-4B7E-AE8B-A5E4A13A657F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6324603A-6972-4B7E-AE8B-A5E4A13A657F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -40,5 +46,6 @@ Global
 		{807E9944-9329-40C3-AC0E-74920A316CB6} = {AFBA107A-3E09-4144-9A81-98E9D0546E19}
 		{F1D4FF61-3982-4605-8BAF-1E7F941165CD} = {D4A4769A-F440-44D7-B71F-317DB3FA7CF5}
 		{B8E7F59F-08FE-48AB-9640-6A0B41083496} = {AFBA107A-3E09-4144-9A81-98E9D0546E19}
+		{6324603A-6972-4B7E-AE8B-A5E4A13A657F} = {AFBA107A-3E09-4144-9A81-98E9D0546E19}
 	EndGlobalSection
 EndGlobal

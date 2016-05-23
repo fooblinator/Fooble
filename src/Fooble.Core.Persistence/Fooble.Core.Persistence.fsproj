@@ -5,15 +5,14 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>807e9944-9329-40c3-ac0e-74920a316cb6</ProjectGuid>
+    <ProjectGuid>6324603a-6972-4b7e-ae8b-a5e4a13a657f</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>Fooble.Core</RootNamespace>
-    <AssemblyName>Fooble.Core</AssemblyName>
+    <RootNamespace>Fooble.Core.Persistence</RootNamespace>
+    <AssemblyName>Fooble.Core.Persistence</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <TargetFSharpCoreVersion>4.4.0.0</TargetFSharpCoreVersion>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-    <Name>Fooble.Core</Name>
-    <TargetFrameworkProfile />
+    <Name>Fooble.Core.Persistence</Name>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -23,7 +22,7 @@
     <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
-    <DocumentationFile>bin\Debug\Fooble.Core.XML</DocumentationFile>
+    <DocumentationFile>bin\Debug\Fooble.Core.Persistence.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -32,7 +31,7 @@
     <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
-    <DocumentationFile>bin\Release\Fooble.Core.XML</DocumentationFile>
+    <DocumentationFile>bin\Release\Fooble.Core.Persistence.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup>
     <MinimumVisualStudioVersion Condition="'$(MinimumVisualStudioVersion)' == ''">11</MinimumVisualStudioVersion>
@@ -57,40 +56,19 @@
     </Compile>
     <Content Include="App.config" />
     <Content Include="packages.config" />
-    <Compile Include="CoreHelpers.fs" />
-    <Compile Include="CoreTypes.fs" />
-    <Compile Include="Validation.fs" />
-    <Compile Include="MessageDisplay.fs" />
-    <Compile Include="Member.fs" />
-    <Compile Include="MemberDetail.fs" />
-    <Compile Include="MemberList.fs" />
-    <Compile Include="SelfServiceRegister.fs" />
-    <Compile Include="CoreExtensions.fs" />
-    <Compile Include="CoreInfrastructure.fs" />
+    <Compile Include="Persistence.fs" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Autofac">
-      <HintPath>..\..\packages\Autofac.3.5.2\lib\net40\Autofac.dll</HintPath>
+    <Reference Include="FSharp.Core, Version=4.4.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+    <Reference Include="FSharp.Data.TypeProviders">
+      <HintPath>..\..\packages\FSharp.Data.TypeProviders.5.0.0.2\lib\net40\FSharp.Data.TypeProviders.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="MediatR">
-      <HintPath>..\..\packages\MediatR.2.0.2\lib\net45\MediatR.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Microsoft.CSharp" />
     <Reference Include="mscorlib" />
-    <Reference Include="FSharp.Core, Version=$(TargetFSharpCoreVersion), Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data.Entity" />
     <Reference Include="System.Numerics" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Fooble.Core.Persistence\Fooble.Core.Persistence.fsproj">
-      <Name>Fooble.Core.Persistence</Name>
-      <Project>{6324603a-6972-4b7e-ae8b-a5e4a13a657f}</Project>
-      <Private>True</Private>
-    </ProjectReference>
   </ItemGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
