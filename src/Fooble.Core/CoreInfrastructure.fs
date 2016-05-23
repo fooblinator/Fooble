@@ -8,6 +8,9 @@ open MediatR
 open System.Collections.Generic
 open System.Diagnostics
 
+/// <summary>
+/// Provides the proper Autofac container registrations for the Fooble.Core assembly.
+/// </summary>
 [<AllowNullLiteral>]
 type AutofacModule() =
     inherit Autofac.Module()
@@ -18,6 +21,10 @@ type AutofacModule() =
     [<DefaultValue>]
     val mutable private context:IFoobleContext option
     
+    /// <summary>
+    /// Sets the connection string to use when registering the data context.
+    /// </summary>
+    /// <param name="value">The connection string to use.</param>
     member this.ConnectionString
         with set(value) =
             Debug.Assert(notIsNull value, "Connection string property was null")
@@ -57,11 +64,11 @@ type AutofacModule() =
             | None -> builder.Register(fun _ -> makeFoobleContext None)
         |> ignore
 
-        ignore <| builder.Register(fun c -> MemberDetail.makeQueryHandler <| c.Resolve<IFoobleContext>())
+        ignore <| builder.Register(fun c -> MemberDetail.QueryHandler.make <| c.Resolve<IFoobleContext>())
             .As<IMemberDetailQueryHandler>()
 
-        ignore <| builder.Register(fun c -> MemberList.makeQueryHandler <| c.Resolve<IFoobleContext>())
+        ignore <| builder.Register(fun c -> MemberList.QueryHandler.make <| c.Resolve<IFoobleContext>())
             .As<IMemberListQueryHandler>()
 
-        ignore <| builder.Register(fun c -> SelfServiceRegister.makeCommandHandler <| c.Resolve<IFoobleContext>())
+        ignore <| builder.Register(fun c -> SelfServiceRegister.CommandHandler.make <| c.Resolve<IFoobleContext>())
             .As<ISelfServiceRegisterCommandHandler>()

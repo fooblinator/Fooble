@@ -23,16 +23,15 @@ namespace Fooble.Web.Controllers
         {
             // TODO: need to modify the view pages to utilize the message display models appropriately
 
-            Guid actualId;
-            if (!Guid.TryParse(id, out actualId))
-            {
-                var readModel = MessageDisplay.MakeReadModel("Member Detail", MessageDisplay.ErrorSeverity,
-                    new[] { "Id parameter was not valid" });
+            var validationResult = Member.ValidateId(id);
 
-                return View("Detail_InvalidId", readModel);
+            if (validationResult.IsInvalid)
+            {
+                return View("Detail_InvalidId", validationResult.ToMessageDisplayReadModel());
             }
 
-            var query = MemberDetail.MakeQuery(actualId);
+            var actualId = Guid.Parse(id);
+            var query = MemberDetail.Query.Make(actualId);
             var result = _mediator.Send(query);
 
             Debug.Assert(result != null, "Result was null");
@@ -50,7 +49,7 @@ namespace Fooble.Web.Controllers
         {
             // TODO: need to modify the view pages to utilize the message display models appropriately
 
-            var query = MemberList.MakeQuery();
+            var query = MemberList.Query.Make();
             var result = _mediator.Send(query);
 
             Debug.Assert(result != null, "Result was null");

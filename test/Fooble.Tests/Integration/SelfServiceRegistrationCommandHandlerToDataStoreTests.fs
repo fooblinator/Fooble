@@ -13,12 +13,12 @@ module SelfServiceRegistrationCommandHandlerToDataStoreTests =
     let ``Calling make, with valid parameters, returns command handler`` () =
         let connectionString = Settings.ConnectionStrings.FoobleContext
         use context = makeFoobleContext <| Some connectionString
-        let commandHandler = SelfServiceRegister.makeCommandHandler context
+        let commandHandler = SelfServiceRegister.CommandHandler.make context
 
         test <@ box commandHandler :? ISelfServiceRegisterCommandHandler @>
 
     [<Test>]
-    let ``Calling handler, with no duplicate member id in data store, registers new member, and returns expected result`` () =
+    let ``Calling handle, with no duplicate member id in data store, registers new member, and returns expected result`` () =
         let connectionString = Settings.ConnectionStrings.FoobleContext
         use context = makeFoobleContext <| Some connectionString
 
@@ -28,16 +28,16 @@ module SelfServiceRegistrationCommandHandlerToDataStoreTests =
         // persist changes to the data store
         ignore <| context.SaveChanges()
 
-        let commandHandler = SelfServiceRegister.makeCommandHandler context
+        let commandHandler = SelfServiceRegister.CommandHandler.make context
 
-        let command = SelfServiceRegister.makeCommand <|| (randomGuid (), randomString ())
+        let command = SelfServiceRegister.Command.make <|| (randomGuid (), randomString ())
         let commandResult = commandHandler.Handle(command)
 
         test <@ commandResult.IsSuccess @>
         test <@ not <| commandResult.IsDuplicateId @>
 
     [<Test>]
-    let ``Calling handler, with duplicate member id in data store, does not register new member, and returns expected result`` () =
+    let ``Calling handle, with duplicate member id in data store, does not register new member, and returns expected result`` () =
         let existingId = randomGuid ()
 
         let connectionString = Settings.ConnectionStrings.FoobleContext
@@ -53,9 +53,9 @@ module SelfServiceRegistrationCommandHandlerToDataStoreTests =
         // persist changes to the data store
         ignore <| context.SaveChanges()
 
-        let commandHandler = SelfServiceRegister.makeCommandHandler context
+        let commandHandler = SelfServiceRegister.CommandHandler.make context
 
-        let command = SelfServiceRegister.makeCommand <|| (existingId, randomString ())
+        let command = SelfServiceRegister.Command.make <|| (existingId, randomString ())
         let commandResult = commandHandler.Handle(command)
 
         test <@ commandResult.IsDuplicateId @>

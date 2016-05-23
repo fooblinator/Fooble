@@ -11,7 +11,7 @@ module MemberDetailQueryTests =
 
     [<Test>]
     let ``Calling make, with valid parameters, returns query`` () =
-        let query = MemberDetail.makeQuery <| randomGuid ()
+        let query = MemberDetail.Query.make <| randomGuid ()
 
         test <@ box query :? IMemberDetailQuery @>
         test <@ box query :? IRequest<IMemberDetailQueryResult> @>
@@ -20,7 +20,7 @@ module MemberDetailQueryTests =
     let ``Calling id, returns expected id`` () =
         let expectedId = randomGuid ()
 
-        let query = MemberDetail.makeQuery expectedId
+        let query = MemberDetail.Query.make expectedId
 
         let actualId = query.Id
         test <@ actualId = expectedId @>

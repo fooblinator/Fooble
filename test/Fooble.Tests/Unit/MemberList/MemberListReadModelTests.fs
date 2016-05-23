@@ -10,16 +10,16 @@ module MemberListReadModelTests =
  
     [<Test>]
     let ``Calling make, with valid parameters, returns read model`` () =
-        let members = Seq.init 5 <| fun _ -> MemberList.makeItemReadModel <|| (randomGuid (), randomString ())
-        let readModel = MemberList.makeReadModel members
+        let members = Seq.init 5 <| fun _ -> MemberList.ItemReadModel.make <|| (randomGuid (), randomString ())
+        let readModel = MemberList.ReadModel.make members
 
         test <@ box readModel :? IMemberListReadModel @>
 
     [<Test>]
     let ``Calling members, returns expected members`` () =
-        let expectedMembers = List.init 5 <| fun _ -> MemberList.makeItemReadModel <|| (randomGuid (), randomString ())
+        let expectedMembers = List.init 5 <| fun _ -> MemberList.ItemReadModel.make <|| (randomGuid (), randomString ())
 
-        let readModel = MemberList.makeReadModel <| Seq.ofList expectedMembers
+        let readModel = MemberList.ReadModel.make <| Seq.ofList expectedMembers
 
         let actualMembers = Seq.toList readModel.Members
         test <@ List.length actualMembers = 5 @>

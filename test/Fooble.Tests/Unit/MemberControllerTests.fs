@@ -29,10 +29,10 @@ module MemberControllerTests =
     [<Test>]
     let ``Calling detail, with matches in data store, returns expected result`` () =
         let matchingId = randomGuid ()
-        let expectedQuery = MemberDetail.makeQuery matchingId
-        let expectedViewModel = MemberDetail.makeReadModel <|| (matchingId, randomString ())
+        let expectedQuery = MemberDetail.Query.make matchingId
+        let expectedViewModel = MemberDetail.ReadModel.make <|| (matchingId, randomString ())
 
-        let queryResult = MemberDetail.makeSuccessResult expectedViewModel
+        let queryResult = MemberDetail.QueryResult.makeSuccess expectedViewModel
         let mediatorMock = Mock<IMediator>()
         mediatorMock.SetupFunc(fun m -> m.Send(any ())).Returns(queryResult).Verifiable()
 
@@ -56,12 +56,12 @@ module MemberControllerTests =
     [<Test>]
     let ``Calling detail, with no matches in data store, returns expected result`` () =
         let nonMatchingId = randomGuid ()
-        let expectedQuery = MemberDetail.makeQuery nonMatchingId
-        let expectedHeading = "Member Detail Query"
-        let expectedSeverity = MessageDisplay.errorSeverity
-        let expectedMessages = [ "Member detail query was not successful and returned not found" ]
+        let expectedQuery = MemberDetail.Query.make nonMatchingId
+        let expectedHeading = "Member Detail"
+        let expectedSeverity = MessageDisplay.Severity.error
+        let expectedMessages = [ "Member detail query was not successful and returned \"not found\"" ]
 
-        let queryResult = MemberDetail.notFoundResult
+        let queryResult = MemberDetail.QueryResult.notFound
         let mediatorMock = Mock<IMediator>()
         mediatorMock.SetupFunc(fun m -> m.Send(any ())).Returns(queryResult).Verifiable()
 
@@ -92,10 +92,10 @@ module MemberControllerTests =
 
     [<Test>]
     let ``Calling list, with matches in data store, returns expected result`` () =
-        let expectedMembers = [ MemberList.makeItemReadModel <|| (randomGuid (), randomString ()) ]
+        let expectedMembers = [ MemberList.ItemReadModel.make <|| (randomGuid (), randomString ()) ]
 
-        let readModel = MemberList.makeReadModel <| Seq.ofList expectedMembers
-        let queryResult = MemberList.makeSuccessResult readModel
+        let readModel = MemberList.ReadModel.make <| Seq.ofList expectedMembers
+        let queryResult = MemberList.QueryResult.makeSuccess readModel
         let mediatorMock = Mock<IMediator>()
         mediatorMock.SetupFunc(fun m -> m.Send(any ())).Returns(queryResult).Verifiable()
 
@@ -118,11 +118,11 @@ module MemberControllerTests =
 
     [<Test>]
     let ``Calling list, with no matches in data store, returns expected result`` () =
-        let expectedHeading = "Member List Query"
-        let expectedSeverity = MessageDisplay.errorSeverity
-        let expectedMessages = [ "Member list query was not successful and returned not found" ]
+        let expectedHeading = "Member List"
+        let expectedSeverity = MessageDisplay.Severity.error
+        let expectedMessages = [ "Member list query was not successful and returned \"not found\"" ]
 
-        let queryResult = MemberList.notFoundResult
+        let queryResult = MemberList.QueryResult.notFound
         let mediatorMock = Mock<IMediator>()
         mediatorMock.SetupFunc(fun m -> m.Send(any ())).Returns(queryResult).Verifiable()
 

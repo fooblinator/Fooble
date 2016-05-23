@@ -13,12 +13,12 @@ module MemberListQueryHandlerToDataStoreTests =
     let ``Calling make, with valid parameters, returns query handler`` () =
         let connectionString = Settings.ConnectionStrings.FoobleContext
         use context = makeFoobleContext <| Some connectionString
-        let queryHandler = MemberList.makeQueryHandler context
+        let queryHandler = MemberList.QueryHandler.make context
 
         test <@ box queryHandler :? IMemberListQueryHandler @>
 
     [<Test>]
-    let ``Calling handler, with no members in data store, returns expected result`` () =
+    let ``Calling handle, with no members in data store, returns expected result`` () =
         let connectionString = Settings.ConnectionStrings.FoobleContext
         use context = makeFoobleContext <| Some connectionString
 
@@ -28,16 +28,16 @@ module MemberListQueryHandlerToDataStoreTests =
         // persist changes to the data store
         ignore <| context.SaveChanges()
 
-        let queryHandler = MemberList.makeQueryHandler context
+        let queryHandler = MemberList.QueryHandler.make context
 
-        let query = MemberList.makeQuery ()
+        let query = MemberList.Query.make ()
         let queryResult = queryHandler.Handle(query)
 
         test <@ queryResult.IsNotFound @>
         test <@ not <| queryResult.IsSuccess @>
 
     [<Test>]
-    let ``Calling handler, with members in data store, returns expected result`` () =
+    let ``Calling handle, with members in data store, returns expected result`` () =
         let connectionString = Settings.ConnectionStrings.FoobleContext
         use context = makeFoobleContext <| Some connectionString
 
@@ -51,9 +51,9 @@ module MemberListQueryHandlerToDataStoreTests =
         // persist changes to the data store
         ignore <| context.SaveChanges()
 
-        let queryHandler = MemberList.makeQueryHandler context
+        let queryHandler = MemberList.QueryHandler.make context
 
-        let query = MemberList.makeQuery ()
+        let query = MemberList.Query.make ()
         let queryResult = queryHandler.Handle(query)
 
         test <@ queryResult.IsSuccess @>

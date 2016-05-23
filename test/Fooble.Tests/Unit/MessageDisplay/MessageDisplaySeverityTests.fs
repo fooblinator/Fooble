@@ -8,73 +8,73 @@ open Swensen.Unquote
 module MessageDisplaySeverityTests =
 
     [<Test>]
-    let ``Calling make informational, returns severity`` () =
-        let severity = MessageDisplay.informationalSeverity
+    let ``Calling informational, returns severity`` () =
+        let severity = MessageDisplay.Severity.informational
 
         test <@ box severity :? IMessageDisplaySeverity @>
 
     [<Test>]
-    let ``Calling make warning, returns severity`` () =
-        let severity = MessageDisplay.warningSeverity
+    let ``Calling warning, returns severity`` () =
+        let severity = MessageDisplay.Severity.warning
 
         test <@ box severity :? IMessageDisplaySeverity @>
 
     [<Test>]
-    let ``Calling make error, returns severity`` () =
-        let severity = MessageDisplay.errorSeverity
+    let ``Calling error, returns severity`` () =
+        let severity = MessageDisplay.Severity.error
 
         test <@ box severity :? IMessageDisplaySeverity @>
 
     [<Test>]
     let ``Calling is informational, with informational severity, returns true`` () =
-        let severity = MessageDisplay.informationalSeverity
+        let severity = MessageDisplay.Severity.informational
 
         test <@ severity.IsInformational @>
 
     [<Test>]
     let ``Calling is informational, with warning severity, returns false`` () =
-        let severity = MessageDisplay.warningSeverity
+        let severity = MessageDisplay.Severity.warning
 
         test <@ not <| severity.IsInformational @>
 
     [<Test>]
     let ``Calling is informational, with error severity, returns false`` () =
-        let severity = MessageDisplay.errorSeverity
+        let severity = MessageDisplay.Severity.error
 
         test <@ not <| severity.IsInformational @>
 
     [<Test>]
     let ``Calling is warning, with informational severity, returns false`` () =
-        let severity = MessageDisplay.informationalSeverity
+        let severity = MessageDisplay.Severity.informational
 
         test <@ not <| severity.IsWarning @>
 
     [<Test>]
     let ``Calling is warning, with warning severity, returns true`` () =
-        let severity = MessageDisplay.warningSeverity
+        let severity = MessageDisplay.Severity.warning
 
         test <@ severity.IsWarning @>
 
     [<Test>]
     let ``Calling is warning, with error severity, returns false`` () =
-        let severity = MessageDisplay.errorSeverity
+        let severity = MessageDisplay.Severity.error
 
         test <@ not <| severity.IsWarning @>
 
     [<Test>]
     let ``Calling is error, with informational severity, returns false`` () =
-        let severity = MessageDisplay.informationalSeverity
+        let severity = MessageDisplay.Severity.informational
 
         test <@ not <| severity.IsError @>
 
     [<Test>]
     let ``Calling is error, with warning severity, returns false`` () =
-        let severity = MessageDisplay.warningSeverity
+        let severity = MessageDisplay.Severity.warning
 
         test <@ not <| severity.IsError @>
 
     [<Test>]
     let ``Calling is error, with error severity, returns true`` () =
-        let severity = MessageDisplay.errorSeverity
+        let severity = MessageDisplay.Severity.error
 
         test <@ severity.IsError @>

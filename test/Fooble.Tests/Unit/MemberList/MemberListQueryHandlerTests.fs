@@ -13,18 +13,18 @@ module MemberListQueryHandlerTests =
 
     [<Test>]
     let ``Calling make, with valid parameters, returns query handler`` () =
-        let queryHandler = MemberList.makeQueryHandler <| mock ()
+        let queryHandler = MemberList.QueryHandler.make <| mock ()
 
         test <@ box queryHandler :? IMemberListQueryHandler @>
 
     [<Test>]
-    let ``Calling handler, with no members in data store, returns expected result`` () =
+    let ``Calling handle, with no members in data store, returns expected result`` () =
         let memberSetMock = makeObjectSet Seq.empty<MemberData>
         let contextMock = Mock<IFoobleContext>()
         contextMock.SetupFunc(fun x -> x.MemberData).Returns(memberSetMock.Object).Verifiable()
 
-        let query = MemberList.makeQuery ()
-        let queryHandler = MemberList.makeQueryHandler contextMock.Object
+        let query = MemberList.Query.make ()
+        let queryHandler = MemberList.QueryHandler.make contextMock.Object
 
         let queryResult = queryHandler.Handle(query)
 
@@ -34,7 +34,7 @@ module MemberListQueryHandlerTests =
         test <@ not <| queryResult.IsSuccess @>
 
     [<Test>]
-    let ``Calling handler, with members in data store, returns expected result`` () =
+    let ``Calling handle, with members in data store, returns expected result`` () =
         let expectedId = randomGuid ()
         let expectedName = randomString ()
 
@@ -43,8 +43,8 @@ module MemberListQueryHandlerTests =
         let contextMock = Mock<IFoobleContext>()
         contextMock.SetupFunc(fun c -> c.MemberData).Returns(memberSetMock.Object).Verifiable()
 
-        let query = MemberList.makeQuery ()
-        let queryHandler = MemberList.makeQueryHandler contextMock.Object
+        let query = MemberList.Query.make ()
+        let queryHandler = MemberList.QueryHandler.make contextMock.Object
 
         let queryResult = queryHandler.Handle(query)
 

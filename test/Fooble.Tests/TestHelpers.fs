@@ -20,6 +20,8 @@ module internal Helpers =
         let internal empty = System.String.Empty
         let internal isEmpty x = x = empty
         let internal notIsEmpty x = not <| isEmpty x
+        let internal isGuid x = fst <| Guid.TryParse(x)
+        let internal notIsGuid x = not <| isGuid x
 
     [<RequireQualifiedAccess>]
     module internal List =

@@ -62,6 +62,7 @@
     <Compile Include="Persistence.fs" />
     <Compile Include="Validation.fs" />
     <Compile Include="MessageDisplay.fs" />
+    <Compile Include="Member.fs" />
     <Compile Include="MemberDetail.fs" />
     <Compile Include="MemberList.fs" />
     <Compile Include="SelfServiceRegister.fs" />

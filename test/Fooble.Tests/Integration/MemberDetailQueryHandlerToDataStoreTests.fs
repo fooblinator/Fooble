@@ -13,12 +13,12 @@ module MemberDetailQueryHandlerToDataStoreTests =
     let ``Calling make, with valid parameters, returns query handler`` () =
         let connectionString = Settings.ConnectionStrings.FoobleContext
         use context = makeFoobleContext <| Some connectionString
-        let queryHandler = MemberDetail.makeQueryHandler context
+        let queryHandler = MemberDetail.QueryHandler.make context
 
         test <@ box queryHandler :? IMemberDetailQueryHandler @>
 
     [<Test>]
-    let ``Calling handler, with no matching member in data store, returns expected result`` () =
+    let ``Calling handle, with no matching member in data store, returns expected result`` () =
         let connectionString = Settings.ConnectionStrings.FoobleContext
         use context = makeFoobleContext <| Some connectionString
 
@@ -28,16 +28,16 @@ module MemberDetailQueryHandlerToDataStoreTests =
         // persist changes to the data store
         ignore <| context.SaveChanges()
 
-        let queryHandler = MemberDetail.makeQueryHandler context
+        let queryHandler = MemberDetail.QueryHandler.make context
 
-        let query = MemberDetail.makeQuery <| randomGuid ()
+        let query = MemberDetail.Query.make <| randomGuid ()
         let queryResult = queryHandler.Handle(query)
 
         test <@ queryResult.IsNotFound @>
         test <@ not <| queryResult.IsSuccess @>
 
     [<Test>]
-    let ``Calling handler, with matching member in data store, returns expected result`` () =
+    let ``Calling handle, with matching member in data store, returns expected result`` () =
         let expectedId = randomGuid ()
         let expectedName = randomString ()
 
@@ -54,9 +54,9 @@ module MemberDetailQueryHandlerToDataStoreTests =
         // persist changes to the data store
         ignore <| context.SaveChanges()
 
-        let queryHandler = MemberDetail.makeQueryHandler context
+        let queryHandler = MemberDetail.QueryHandler.make context
 
-        let query = MemberDetail.makeQuery expectedId
+        let query = MemberDetail.Query.make expectedId
         let queryResult = queryHandler.Handle(query)
 
         test <@ queryResult.IsSuccess @>

@@ -26,7 +26,7 @@ module SelfServiceControllerTests =
 
     [<Test>]
     let ``Calling register, returns expected result`` () =
-        let expectedViewModel = SelfServiceRegister.makeInitialReadModel ()
+        let expectedViewModel = SelfServiceRegister.ReadModel.empty
 
         let controller = new SelfServiceController(mock ())
         let result = controller.Register()

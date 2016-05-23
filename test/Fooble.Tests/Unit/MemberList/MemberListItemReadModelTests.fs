@@ -10,7 +10,7 @@ module MemberListItemReadModelTests =
  
     [<Test>]
     let ``Calling make, with valid parameters, returns read model`` () =
-        let readModel = MemberList.makeItemReadModel <|| (randomGuid (), randomString ())
+        let readModel = MemberList.ItemReadModel.make <|| (randomGuid (), randomString ())
 
         test <@ box readModel :? IMemberListItemReadModel @>
 
@@ -18,7 +18,7 @@ module MemberListItemReadModelTests =
     let ``Calling id, returns expected id`` () =
         let expectedId = randomGuid ()
 
-        let itemReadModel = MemberList.makeItemReadModel <|| (expectedId, randomString ())
+        let itemReadModel = MemberList.ItemReadModel.make <|| (expectedId, randomString ())
 
         let actualId = itemReadModel.Id
         test <@ actualId = expectedId @>
@@ -27,7 +27,7 @@ module MemberListItemReadModelTests =
     let ``Calling name, returns expected name`` () =
         let expectedName = randomString ()
 
-        let itemReadModel = MemberList.makeItemReadModel <|| (randomGuid (), expectedName)
+        let itemReadModel = MemberList.ItemReadModel.make <|| (randomGuid (), expectedName)
 
         let actualName = itemReadModel.Name
         test <@ actualName = expectedName @>

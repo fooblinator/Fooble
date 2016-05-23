@@ -62,9 +62,9 @@ module MemberControllerToQueryHandlerTests =
     [<Test>]
     let ``Calling detail, with no matches in data store, returns expected result`` () =
         let nonMatchingId = randomGuid ()
-        let expectedHeading = "Member Detail Query"
-        let expectedSeverity = MessageDisplay.errorSeverity
-        let expectedMessages = [ "Member detail query was not successful and returned not found" ]
+        let expectedHeading = "Member Detail"
+        let expectedSeverity = MessageDisplay.Severity.error
+        let expectedMessages = [ "Member detail query was not successful and returned \"not found\"" ]
 
         let memberSet = makeObjectSet Seq.empty<MemberData>
         let memberSetMock = Mock<IFoobleContext>()
@@ -134,9 +134,9 @@ module MemberControllerToQueryHandlerTests =
 
     [<Test>]
     let ``Calling list, with no matches in data store, returns expected result`` () =
-        let expectedHeading = "Member List Query"
-        let expectedSeverity = MessageDisplay.errorSeverity
-        let expectedMessages = [ "Member list query was not successful and returned not found" ]
+        let expectedHeading = "Member List"
+        let expectedSeverity = MessageDisplay.Severity.error
+        let expectedMessages = [ "Member list query was not successful and returned \"not found\"" ]
 
         let memberSetMock = makeObjectSet Seq.empty<MemberData>
         let contextMock = Mock<IFoobleContext>()

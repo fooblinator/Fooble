@@ -10,53 +10,53 @@ module MemberListQueryResultTests =
  
     [<Test>]
     let ``Calling make success, with valid parameters, returns query result`` () =
-        let members = Seq.init 5 <| fun _ -> MemberList.makeItemReadModel <|| (randomGuid (), randomString ())
-        let readModel = MemberList.makeReadModel members
-        let queryResult = MemberList.makeSuccessResult readModel
+        let members = Seq.init 5 <| fun _ -> MemberList.ItemReadModel.make <|| (randomGuid (), randomString ())
+        let readModel = MemberList.ReadModel.make members
+        let queryResult = MemberList.QueryResult.makeSuccess readModel
 
         test <@ box queryResult :? IMemberListQueryResult @>
 
     [<Test>]
     let ``Calling not found, returns query result`` () =
-        let queryResult = MemberList.notFoundResult
+        let queryResult = MemberList.QueryResult.notFound
 
         test <@ box queryResult :? IMemberListQueryResult @>
 
     [<Test>]
     let ``Calling read model, with success query result, returns expected read model`` () =
-        let members = Seq.init 5 <| fun _ -> MemberList.makeItemReadModel <|| (randomGuid (), randomString ())
-        let expectedReadModel = MemberList.makeReadModel members
+        let members = Seq.init 5 <| fun _ -> MemberList.ItemReadModel.make <|| (randomGuid (), randomString ())
+        let expectedReadModel = MemberList.ReadModel.make members
 
-        let queryResult = MemberList.makeSuccessResult expectedReadModel
+        let queryResult = MemberList.QueryResult.makeSuccess expectedReadModel
 
         test <@ queryResult.ReadModel = expectedReadModel @>
 
     [<Test>]
     let ``Calling is success, with success query result, returns true`` () =
-        let members = Seq.init 5 <| fun _ -> MemberList.makeItemReadModel <|| (randomGuid (), randomString ())
-        let readModel = MemberList.makeReadModel members
+        let members = Seq.init 5 <| fun _ -> MemberList.ItemReadModel.make <|| (randomGuid (), randomString ())
+        let readModel = MemberList.ReadModel.make members
 
-        let queryResult = MemberList.makeSuccessResult readModel
+        let queryResult = MemberList.QueryResult.makeSuccess readModel
 
         test <@ queryResult.IsSuccess @>
 
     [<Test>]
     let ``Calling is success, with not found query result, returns false`` () =
-        let queryResult = MemberList.notFoundResult
+        let queryResult = MemberList.QueryResult.notFound
 
         test <@ not <| queryResult.IsSuccess @>
 
     [<Test>]
     let ``Calling is not found, with success query result, returns false`` () =
-        let members = Seq.init 5 <| fun _ -> MemberList.makeItemReadModel <|| (randomGuid (), randomString ())
-        let readModel = MemberList.makeReadModel members
+        let members = Seq.init 5 <| fun _ -> MemberList.ItemReadModel.make <|| (randomGuid (), randomString ())
+        let readModel = MemberList.ReadModel.make members
 
-        let queryResult = MemberList.makeSuccessResult readModel
+        let queryResult = MemberList.QueryResult.makeSuccess readModel
 
         test <@ not <| queryResult.IsNotFound @>
 
     [<Test>]
     let ``Calling is not found, with not found query result, returns true`` () =
-        let queryResult = MemberList.notFoundResult
+        let queryResult = MemberList.QueryResult.notFound
 
         test <@ queryResult.IsNotFound @>

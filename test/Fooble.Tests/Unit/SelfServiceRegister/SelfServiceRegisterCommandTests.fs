@@ -11,7 +11,7 @@ module SelfServiceRegisterCommandTests =
 
     [<Test>]
     let ``Calling make, with valid parameters, returns command`` () =
-        let command = SelfServiceRegister.makeCommand <|| (randomGuid (), randomString ())
+        let command = SelfServiceRegister.Command.make <|| (randomGuid (), randomString ())
 
         test <@ box command :? ISelfServiceRegisterCommand @>
         test <@ box command :? IRequest<ISelfServiceRegisterCommandResult> @>
@@ -20,7 +20,7 @@ module SelfServiceRegisterCommandTests =
     let ``Calling id, returns expected id`` () =
         let expectedId = randomGuid ()
 
-        let command = SelfServiceRegister.makeCommand <|| (expectedId, randomString ())
+        let command = SelfServiceRegister.Command.make <|| (expectedId, randomString ())
 
         let actualId = command.Id
         test <@ actualId = expectedId @>
@@ -29,7 +29,7 @@ module SelfServiceRegisterCommandTests =
     let ``Calling name, returns expected name`` () =
         let expectedName = randomString ()
 
-        let command = SelfServiceRegister.makeCommand <|| (randomGuid (), expectedName)
+        let command = SelfServiceRegister.Command.make <|| (randomGuid (), expectedName)
 
         let actualName = command.Name
         test <@ actualName = expectedName @>

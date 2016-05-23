@@ -1,18 +1,43 @@
 ﻿namespace Fooble.Core
 
+open System
+open System.Collections
+open System.Collections.Generic
 open System.Diagnostics
 
+/// <summary>
+/// Provides functionality used in the presentation of messages.
+/// </summary>
 [<RequireQualifiedAccess>]
 module MessageDisplay =
 
+    (* Active Patterns *)
+
+    let internal (|IsInformational|IsWarning|IsError|) (severity:IMessageDisplaySeverity) =
+        if severity.IsInformational
+            then Choice1Of3 ()
+            elif severity.IsWarning
+                then Choice2Of3 ()
+                else Choice3Of3 ()
+
     (* Validation *)
 
+    /// <summary>
+    /// Validates the supplied message display heading.
+    /// </summary>
+    /// <param name="heading">The message display heading.</param>
+    /// <returns>Returns a validation result.</returns>
     [<CompiledName("ValidateHeading")>]
     let validateHeading heading =
         [ (notIsNull), "Heading parameter was null"
           (String.notIsEmpty), "Heading parameter was empty string" ]
         |> Validation.validate heading "heading"
 
+    /// <summary>
+    /// Validates the supplied messages to be displayed.
+    /// </summary>
+    /// <param name="messages">The messages to be displayed.</param>
+    /// <returns>Returns a validation result.</returns>
     [<CompiledName("ValidateMessages")>]
     let validateMessages messages =
         [ (notIsNull), "Messages parameter was null"
@@ -23,75 +48,97 @@ module MessageDisplay =
 
     (* Severity *)
 
-    [<DefaultAugmentation(false)>]
-    type private Severity =
-        | Informational'
-        | Warning'
-        | Error'
+    /// <summary>
+    /// Provides functionality used in the presentation of messages - specifically the message display severity.
+    /// </summary>
+    [<RequireQualifiedAccess>]
+    module Severity =
 
-        member this.IsInformational =
-            match this with
-            | Informational' _ -> true
-            | _ -> false
+        [<DefaultAugmentation(false)>]
+        type private Implementation =
+            | Informational
+            | Warning
+            | Error
 
-        member this.IsWarning =
-            match this with
-            | Warning' _ -> true
-            | _ -> false
+            interface IMessageDisplaySeverity with
 
-        member this.IsError =
-            match this with
-            | Error' _ -> true
-            | _ -> false
+                member this.IsInformational
+                    with get() =
+                        match this with
+                        | Informational -> true
+                        | _ -> false
 
-        interface IMessageDisplaySeverity with
-            member this.IsInformational = this.IsInformational
-            member this.IsWarning = this.IsWarning
-            member this.IsError = this.IsError
+                member this.IsWarning
+                    with get() =
+                        match this with
+                        | Warning -> true
+                        | _ -> false
 
-    [<CompiledName("InformationalSeverity")>]
-    let informationalSeverity = Informational' :> IMessageDisplaySeverity
+                member this.IsError
+                    with get() =
+                        match this with
+                        | Error -> true
+                        | _ -> false
+
+        /// <summary>
+        /// Represents a message display severity of "informational".
+        /// </summary>
+        /// <returns>Returns a message display severity of "informational".</returns>
+        [<CompiledName("Informational")>]
+        let informational = Informational :> IMessageDisplaySeverity
     
-    [<CompiledName("WarningSeverity")>]
-    let warningSeverity = Warning' :> IMessageDisplaySeverity
+        /// <summary>
+        /// Represents a message display severity of "warning".
+        /// </summary>
+        /// <returns>Returns a message display severity of "warning".</returns>
+        [<CompiledName("Warning")>]
+        let warning = Warning :> IMessageDisplaySeverity
     
-    [<CompiledName("ErrorSeverity")>]
-    let errorSeverity = Error' :> IMessageDisplaySeverity
+        /// <summary>
+        /// Represents a message display severity of "error".
+        /// </summary>
+        /// <returns>Returns a message display severity of "error".</returns>
+        [<CompiledName("Error")>]
+        let error = Error :> IMessageDisplaySeverity
 
     (* Read Model *)
 
-    [<DefaultAugmentation(false)>]
-    type private ReadModel =
-        | ReadModel of string * IMessageDisplaySeverity * seq<string>
+    /// <summary>
+    /// Provides functionality used in the presentation of messages - specifically the message display read model.
+    /// </summary>
+    [<RequireQualifiedAccess>]
+    module ReadModel =
 
-        member this.Heading =
-            match this with
-            | ReadModel (x, _, _) -> x
+        [<DefaultAugmentation(false)>]
+        type private Implementation =
+            | ReadModel of string * IMessageDisplaySeverity * seq<string>
 
-        member this.Severity =
-            match this with
-            | ReadModel (_, x, _) -> x
+            interface IMessageDisplayReadModel with
 
-        member this.Messages =
-            match this with
-            | ReadModel (_, _, xs) -> xs
+                member this.Heading
+                    with get() =
+                        match this with
+                        | ReadModel (x, _, _) -> x
 
-        interface IMessageDisplayReadModel with
-            member this.Heading = this.Heading
-            member this.Severity = this.Severity
-            member this.Messages = this.Messages
-    
-    [<CompiledName("MakeReadModel")>]
-    let makeReadModel heading severity messages =
-        Validation.raiseIfInvalid <| validateHeading heading
-        Validation.raiseIfInvalid <| validateMessages messages
-        ReadModel (heading, severity, messages) :> IMessageDisplayReadModel
+                member this.Severity
+                    with get() =
+                        match this with
+                        | ReadModel (_, x, _) -> x
 
-    (* Active Patterns *)
+                member this.Messages
+                    with get() =
+                        match this with
+                        | ReadModel (_, _, x) -> x
 
-    let internal (|IsInformational|IsWarning|IsError|) (severity:IMessageDisplaySeverity) =
-        if severity.IsInformational
-            then Choice1Of3 ()
-            elif severity.IsWarning
-                then Choice2Of3 ()
-                else Choice3Of3 ()
+        /// <summary>
+        /// Constructs a message display read model.
+        /// </summary>
+        /// <param name="heading">The message display heading.</param>
+        /// <param name="severity">The message display severity.</param>
+        /// <param name="messages">The messages to be displayed.</param>
+        /// <returns>Returns a message display read model.</returns>
+        [<CompiledName("Make")>]
+        let make heading severity messages =
+            Validation.raiseIfInvalid <| validateHeading heading
+            Validation.raiseIfInvalid <| validateMessages messages
+            ReadModel (heading, severity, messages) :> IMessageDisplayReadModel
