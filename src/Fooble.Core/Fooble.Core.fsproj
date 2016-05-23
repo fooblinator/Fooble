@@ -57,14 +57,15 @@
     </Compile>
     <Content Include="App.config" />
     <Content Include="packages.config" />
-    <Compile Include="CoreHelpers.fs" />
     <Compile Include="CoreTypes.fs" />
+    <Compile Include="CoreHelpers.fs" />
     <Compile Include="Validation.fs" />
     <Compile Include="MessageDisplay.fs" />
     <Compile Include="Member.fs" />
     <Compile Include="MemberDetail.fs" />
     <Compile Include="MemberList.fs" />
     <Compile Include="SelfServiceRegister.fs" />
+    <Compile Include="KeyGenerator.fs" />
     <Compile Include="CoreExtensions.fs" />
     <Compile Include="CoreInfrastructure.fs" />
   </ItemGroup>

@@ -13,7 +13,7 @@ namespace Fooble.Web.Controllers
         public MemberController(IMediator mediator)
         {
             if (mediator == null)
-                throw new ArgumentNullException(nameof(mediator), "Mediator should not be null");
+                throw new ArgumentNullException(nameof(mediator), "Mediator was be null");
 
             _mediator = mediator;
         }

@@ -17,7 +17,7 @@ module MemberControllerTests =
     [<Test>]
     let ``Constructing, with null mediator, raises expected exception`` () =
         let expectedParamName = "mediator"
-        let expectedMessage = "Mediator should not be null"
+        let expectedMessage = "Mediator was be null"
 
         raisesWith<ArgumentException> <@ new MemberController(null) @> <|
             fun e -> <@ e.ParamName = expectedParamName && (fixInvalidArgMessage e.Message) = expectedMessage @>

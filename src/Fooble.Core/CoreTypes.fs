@@ -5,6 +5,19 @@ open System
 open System.Collections
 open System.Collections.Generic
 
+(* Key Generator *)
+
+/// <summary>
+/// Used to generate unique keys.
+/// </summary>
+type IKeyGenerator =
+
+    /// <summary>
+    /// Generates a unique key.
+    /// </summary>
+    /// <returns>Returns a newly generated unique key.</returns>
+    abstract GenerateKey:unit -> Guid
+
 (* Member Detail *)
 
 /// <summary>

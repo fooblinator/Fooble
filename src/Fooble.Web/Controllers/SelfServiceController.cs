@@ -9,15 +9,18 @@ namespace Fooble.Web.Controllers
     public class SelfServiceController : Controller
     {
         readonly IMediator _mediator;
+        readonly IKeyGenerator _keyGenerator;
 
-        public SelfServiceController(IMediator mediator)
+        public SelfServiceController(IMediator mediator, IKeyGenerator keyGenerator)
         {
-            // TODO: create key generator service and pass it in as dependency
-
             if (mediator == null)
-                throw new ArgumentNullException(nameof(mediator), "Mediator should not be null");
+                throw new ArgumentNullException(nameof(mediator), "Mediator was be null");
+
+            if (keyGenerator == null)
+                throw new ArgumentNullException(nameof(keyGenerator), "Key generator was null");
 
             _mediator = mediator;
+            _keyGenerator = keyGenerator;
         }
 
         [HttpGet]
@@ -44,9 +47,7 @@ namespace Fooble.Web.Controllers
                 return View(readModel);
             }
 
-            // TODO: utilize key generator service to generate id
-
-            var id = Guid.NewGuid();
+            var id = _keyGenerator.GenerateKey();
             var command = SelfServiceRegister.Command.Make(id, name);
             var result = _mediator.Send(command);
 

@@ -9,7 +9,6 @@ open Moq.FSharp.Extensions
 open NUnit.Framework
 open Swensen.Unquote
 open System
-open System.Linq
 open System.Web.Mvc
 
 [<TestFixture>]
@@ -18,20 +17,23 @@ module SelfServiceControllerTests =
     [<Test>]
     let ``Constructing, with null mediator, raises expected exception`` () =
         let expectedParamName = "mediator"
-        let expectedMessage = "Mediator should not be null"
+        let expectedMessage = "Mediator was be null"
 
-        raisesWith<ArgumentException> <@ new SelfServiceController(null) @> <|
+        let keyGenerator = KeyGenerator.make ()
+        raisesWith<ArgumentException> <@ new SelfServiceController(null, keyGenerator) @> <|
             fun e -> <@ e.ParamName = expectedParamName && (fixInvalidArgMessage e.Message) = expectedMessage @>
 
     [<Test>]
     let ``Constructing, with valid parameters, returns expected result`` () =
-        ignore <| new SelfServiceController(mock ())
+        let keyGenerator = KeyGenerator.make ()
+        ignore <| new SelfServiceController(mock (), keyGenerator)
 
     [<Test>]
     let ``Calling register, returns expected result`` () =
         let expectedViewModel = SelfServiceRegister.ReadModel.empty
 
-        let controller = new SelfServiceController(mock ())
+        let keyGenerator = KeyGenerator.make ()
+        let controller = new SelfServiceController(mock (), keyGenerator)
         let result = controller.Register()
 
         test <@ notIsNull result @>
@@ -51,7 +53,8 @@ module SelfServiceControllerTests =
         let nullName = null
         let expectedViewModel = SelfServiceRegister.ReadModel.make(nullName);
 
-        let controller = new SelfServiceController(mock ())
+        let keyGenerator = KeyGenerator.make ()
+        let controller = new SelfServiceController(mock (), keyGenerator)
         let result = controller.Register(nullName)
 
         test <@ notIsNull result @>
@@ -77,7 +80,8 @@ module SelfServiceControllerTests =
         let emptyName = String.empty
         let expectedViewModel = SelfServiceRegister.ReadModel.make(emptyName);
 
-        let controller = new SelfServiceController(mock ())
+        let keyGenerator = KeyGenerator.make ()
+        let controller = new SelfServiceController(mock (), keyGenerator)
         let result = controller.Register(emptyName)
 
         test <@ notIsNull result @>
@@ -109,7 +113,8 @@ module SelfServiceControllerTests =
         mediatorMock.SetupFunc(fun m -> m.Send(any ())).Returns(commandResult).Verifiable()
 
         let name = randomString ()
-        let controller = new SelfServiceController(mediatorMock.Object)
+        let keyGenerator = KeyGenerator.make ()
+        let controller = new SelfServiceController(mediatorMock.Object, keyGenerator)
         let result = controller.Register(name)
 
         mediatorMock.Verify()
@@ -141,7 +146,8 @@ module SelfServiceControllerTests =
         mediatorMock.SetupFunc(fun m -> m.Send(any ())).Returns(commandResult).Verifiable()
 
         let name = randomString ()
-        let controller = new SelfServiceController(mediatorMock.Object)
+        let keyGenerator = KeyGenerator.make ()
+        let controller = new SelfServiceController(mediatorMock.Object, keyGenerator)
         let result = controller.Register(name)
 
         mediatorMock.Verify()

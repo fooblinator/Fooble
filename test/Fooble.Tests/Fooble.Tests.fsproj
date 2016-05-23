@@ -67,6 +67,7 @@
     <Compile Include="Integration\SelfServiceRegistrationCommandHandlerToDataStoreTests.fs" />
     <Compile Include="Unit\AutofacModuleTests.fs" />
     <Compile Include="Unit\CoreExtensionsTests.fs" />
+    <Compile Include="Unit\KeyGeneratorTests.fs" />
     <Compile Include="Unit\MemberControllerTests.fs" />
     <Compile Include="Unit\SelfServiceControllerTests.fs" />
     <Compile Include="Unit\ValidationResultTests.fs" />

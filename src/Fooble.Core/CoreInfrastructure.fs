@@ -64,6 +64,8 @@ type AutofacModule() =
             | None -> builder.Register(fun _ -> makeFoobleContext None)
         |> ignore
 
+        ignore <| builder.Register(fun c -> KeyGenerator.make ()).As<IKeyGenerator>()
+
         ignore <| builder.Register(fun c -> MemberDetail.QueryHandler.make <| c.Resolve<IFoobleContext>())
             .As<IMemberDetailQueryHandler>()
 
