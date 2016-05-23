@@ -81,6 +81,40 @@ module CoreExtensionsTests =
         test <@ actualMessages = expectedMessages @>
 
     [<Test>]
+    let ``Calling to message display read model, as success result of self-service register command result, returns expected read model`` () =
+        let expectedHeading = "Self-Service Register"
+        let expectedSeverity = MessageDisplay.Severity.informational
+        let expectedMessages = [ "Self-service register command was successful" ]
+
+        let readModel =
+            SelfServiceRegister.CommandResult.success
+            |> CoreExtensions.ToMessageDisplayReadModel
+
+        let actualHeading = readModel.Heading
+        test <@ actualHeading = expectedHeading @>
+        let actualSeverity = readModel.Severity
+        test <@ actualSeverity = expectedSeverity @>
+        let actualMessages = List.ofSeq readModel.Messages
+        test <@ actualMessages = expectedMessages @>
+
+    [<Test>]
+    let ``Calling to message display read model, as not found result of self-service register command result, returns expected read model`` () =
+        let expectedHeading = "Self-Service Register"
+        let expectedSeverity = MessageDisplay.Severity.error
+        let expectedMessages = [ "Self-service register command was not successful and returned \"duplicate id\"" ]
+
+        let readModel =
+            SelfServiceRegister.CommandResult.duplicateId
+            |> CoreExtensions.ToMessageDisplayReadModel
+
+        let actualHeading = readModel.Heading
+        test <@ actualHeading = expectedHeading @>
+        let actualSeverity = readModel.Severity
+        test <@ actualSeverity = expectedSeverity @>
+        let actualMessages = List.ofSeq readModel.Messages
+        test <@ actualMessages = expectedMessages @>
+
+    [<Test>]
     let ``Calling to message display read model, as valid result of validation result, returns expected read model`` () =
         let expectedHeading = "Validation"
         let expectedSeverity = MessageDisplay.Severity.informational

@@ -62,6 +62,8 @@
     <Compile Include="Integration\MemberControllerToQueryHandlerTests.fs" />
     <Compile Include="Integration\MemberDetailQueryHandlerToDataStoreTests.fs" />
     <Compile Include="Integration\MemberListQueryHandlerToDataStoreTests.fs" />
+    <Compile Include="Integration\SelfServiceControllerToDataStoreTests.fs" />
+    <Compile Include="Integration\SelfServiceControllerToCommandHandlerTests.fs" />
     <Compile Include="Integration\SelfServiceRegistrationCommandHandlerToDataStoreTests.fs" />
     <Compile Include="Unit\AutofacModuleTests.fs" />
     <Compile Include="Unit\CoreExtensionsTests.fs" />

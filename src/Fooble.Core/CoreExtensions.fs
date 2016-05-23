@@ -47,6 +47,25 @@ type CoreExtensions = // TODO: need to provide overloads that allow overriding h
             MessageDisplay.ReadModel.make "Member List" MessageDisplay.Severity.error
                 (Seq.singleton "Member list query was not successful and returned \"not found\"")
 
+    (* Self-Service Register *)
+
+    /// <summary>
+    /// Constructs a message display read model from a self-service register command result.
+    /// </summary>
+    /// <param name="result">The self-service register command result to extend.</param>
+    [<Extension>]
+    static member ToMessageDisplayReadModel(result:ISelfServiceRegisterCommandResult) =
+        Debug.Assert(notIsNull <| box result, "Result parameter was null")
+        match result with
+
+        | SelfServiceRegister.IsSuccess _ ->
+            MessageDisplay.ReadModel.make "Self-Service Register" MessageDisplay.Severity.informational
+                (Seq.singleton "Self-service register command was successful")
+
+        | SelfServiceRegister.IsDuplicateId ->
+            MessageDisplay.ReadModel.make "Self-Service Register" MessageDisplay.Severity.error
+                (Seq.singleton "Self-service register command was not successful and returned \"duplicate id\"")
+
     (* Validation Result *)
 
     /// <summary>
