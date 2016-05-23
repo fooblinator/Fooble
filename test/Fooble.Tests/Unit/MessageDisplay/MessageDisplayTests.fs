@@ -24,7 +24,7 @@ module MessageDisplayTests =
     [<Test>]
     let ``Calling validate heading, with empty heading, returns expected validation result`` () =
         let expectedParamName = "heading"
-        let expectedMessage = "Heading parameter was empty string"
+        let expectedMessage = "Heading parameter was an empty string"
 
         let result = MessageDisplay.validateHeading String.empty
 
@@ -56,7 +56,7 @@ module MessageDisplayTests =
     [<Test>]
     let ``Calling validate messages, with empty messages, returns expected validation result`` () =
         let expectedParamName = "messages"
-        let expectedMessage = "Messages parameter was empty sequence"
+        let expectedMessage = "Messages parameter was an empty sequence"
 
         let result = MessageDisplay.validateMessages Seq.empty
 

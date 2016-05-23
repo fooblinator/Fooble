@@ -21,7 +21,7 @@ module Member =
     [<CompiledName("ValidateId")>]
     let validateId id =
         [ (notIsNull), "Id parameter was null"
-          (String.notIsEmpty), "Id parameter was empty string"
+          (String.notIsEmpty), "Id parameter was an empty string"
           (String.isGuid), "Id parameter was not in GUID format" ]
         |> Validation.validate id "id"
 
@@ -33,5 +33,5 @@ module Member =
     [<CompiledName("ValidateName")>]
     let validateName name =
         [ (notIsNull), "Name parameter was null"
-          (String.notIsEmpty), "Name parameter was empty string" ]
+          (String.notIsEmpty), "Name parameter was an empty string" ]
         |> Validation.validate name "name"

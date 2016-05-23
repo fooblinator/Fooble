@@ -22,7 +22,7 @@ module MessageDisplayReadModelTests =
     [<Test>]
     let ``Calling make, with empty heading, raises expected exception`` () =
         let expectedParamName = "heading"
-        let expectedMessage = "Heading parameter was empty string"
+        let expectedMessage = "Heading parameter was an empty string"
         
         let severity = MessageDisplay.Severity.informational
         raisesWith<ArgumentException>
@@ -42,7 +42,7 @@ module MessageDisplayReadModelTests =
     [<Test>]
     let ``Calling make, with empty messages, raises expected exception`` () =
         let expectedParamName = "messages"
-        let expectedMessage = "Messages parameter was empty sequence"
+        let expectedMessage = "Messages parameter was an empty sequence"
         
         let severity = MessageDisplay.Severity.informational
         raisesWith<ArgumentException>

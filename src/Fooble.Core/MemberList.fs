@@ -64,7 +64,7 @@ module MemberList =
 
         let internal make id name =
             Debug.Assert(notIsNull name, "Name parameter was null")
-            Debug.Assert(String.notIsEmpty name, "Name parameter was empty string")
+            Debug.Assert(String.notIsEmpty name, "Name parameter was an empty string")
             ItemReadModel (id, name) :> IMemberListItemReadModel
 
     (* Read Model *)
@@ -88,7 +88,7 @@ module MemberList =
 
         let internal make members =
             Debug.Assert(notIsNull members, "Members parameter was null")
-            Debug.Assert(Seq.notIsEmpty members, "Members parameter was empty sequence")
+            Debug.Assert(Seq.notIsEmpty members, "Members parameter was an empty sequence")
             ReadModel members :> IMemberListReadModel
 
     (* Query Result *)

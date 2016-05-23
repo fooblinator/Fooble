@@ -71,7 +71,7 @@ module MemberDetail =
 
         let internal make id name =
             Debug.Assert(notIsNull name, "Name parameter was null")
-            Debug.Assert(String.notIsEmpty name, "Name parameter was empty string")
+            Debug.Assert(String.notIsEmpty name, "Name parameter was an empty string")
             ReadModel (id, name) :> IMemberDetailReadModel
 
     (* Query Result *)

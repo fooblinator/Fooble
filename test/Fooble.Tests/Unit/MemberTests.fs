@@ -24,7 +24,7 @@ module MemberTests =
     [<Test>]
     let ``Calling validate id, with empty id, returns expected validation result`` () =
         let expectedParamName = "id"
-        let expectedMessage = "Id parameter was empty string"
+        let expectedMessage = "Id parameter was an empty string"
 
         let result = Member.validateId String.empty
 
@@ -69,7 +69,7 @@ module MemberTests =
     [<Test>]
     let ``Calling validate name, with empty name, returns expected validation result`` () =
         let expectedParamName = "name"
-        let expectedMessage = "Name parameter was empty string"
+        let expectedMessage = "Name parameter was an empty string"
 
         let result = Member.validateName String.empty
 

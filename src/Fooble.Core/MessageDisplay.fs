@@ -30,7 +30,7 @@ module MessageDisplay =
     [<CompiledName("ValidateHeading")>]
     let validateHeading heading =
         [ (notIsNull), "Heading parameter was null"
-          (String.notIsEmpty), "Heading parameter was empty string" ]
+          (String.notIsEmpty), "Heading parameter was an empty string" ]
         |> Validation.validate heading "heading"
 
     /// <summary>
@@ -41,7 +41,7 @@ module MessageDisplay =
     [<CompiledName("ValidateMessages")>]
     let validateMessages messages =
         [ (notIsNull), "Messages parameter was null"
-          (Seq.notIsEmpty), "Messages parameter was empty sequence"
+          (Seq.notIsEmpty), "Messages parameter was an empty sequence"
           (Seq.notContainsNulls), "Messages parameter contained null(s)"
           (Seq.notContainsEmptyStrings), "Messages parameter contained empty string(s)" ]
         |> Validation.validate messages "messages"
