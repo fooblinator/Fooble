@@ -6,34 +6,34 @@ open NUnit.Framework
 open Swensen.Unquote
  
 [<TestFixture>]
-module SelfServiceRegisterReadModelTests =
+module SelfServiceRegisterViewModelTests =
  
     [<Test>]
-    let ``Calling make initial, returns read model`` () =
-        let readModel = SelfServiceRegister.ReadModel.empty
+    let ``Calling make initial, returns view model`` () =
+        let viewModel = SelfServiceRegister.ViewModel.empty
 
-        test <@ box readModel :? ISelfServiceRegisterReadModel @>
+        test <@ box viewModel :? ISelfServiceRegisterViewModel @>
  
     [<Test>]
-    let ``Calling make, with valid parameters, returns read model`` () =
-        let readModel = SelfServiceRegister.ReadModel.make <| randomString ()
+    let ``Calling make, with valid parameters, returns view model`` () =
+        let viewModel = SelfServiceRegister.ViewModel.make <| randomString ()
 
-        test <@ box readModel :? ISelfServiceRegisterReadModel @>
+        test <@ box viewModel :? ISelfServiceRegisterViewModel @>
 
     [<Test>]
-    let ``Calling name, with initial read model, returns expected name`` () =
+    let ``Calling name, with initial view model, returns expected name`` () =
         let expectedName = String.empty
 
-        let readModel = SelfServiceRegister.ReadModel.empty
+        let viewModel = SelfServiceRegister.ViewModel.empty
 
-        let actualName = readModel.Name
+        let actualName = viewModel.Name
         test <@ actualName = expectedName @>
 
     [<Test>]
-    let ``Calling name, with not initial read model, returns expected name`` () =
+    let ``Calling name, with not initial view model, returns expected name`` () =
         let expectedName = randomString ()
 
-        let readModel = SelfServiceRegister.ReadModel.make expectedName
+        let viewModel = SelfServiceRegister.ViewModel.make expectedName
 
-        let actualName = readModel.Name
+        let actualName = viewModel.Name
         test <@ actualName = expectedName @>

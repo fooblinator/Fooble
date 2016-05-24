@@ -29,7 +29,7 @@ namespace Fooble.Web.Controllers
         [HttpGet]
         public ActionResult Register()
         {
-            return View(SelfServiceRegister.ReadModel.Empty);
+            return View(SelfServiceRegister.ViewModel.Empty);
         }
 
         [HttpPost]
@@ -41,7 +41,7 @@ namespace Fooble.Web.Controllers
             {
                 ModelState.AddModelError(validationResult.ParamName, validationResult.Message);
 
-                return View(SelfServiceRegister.ReadModel.Make(name));
+                return View(SelfServiceRegister.ViewModel.Make(name));
             }
 
             var id = _keyGenerator.GenerateKey();

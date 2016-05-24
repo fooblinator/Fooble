@@ -28,7 +28,7 @@ module SelfServiceControllerTests =
 
     [<Test>]
     let ``Calling register, returns expected result`` () =
-        let expectedViewModel = SelfServiceRegister.ReadModel.empty
+        let expectedViewModel = SelfServiceRegister.ViewModel.empty
 
         let keyGenerator = KeyGenerator.make ()
         let controller = new SelfServiceController(mock (), keyGenerator)
@@ -41,15 +41,15 @@ module SelfServiceControllerTests =
 
         test <@ String.isEmpty viewResult.ViewName @>
         test <@ notIsNull viewResult.Model @>
-        test <@ viewResult.Model :? ISelfServiceRegisterReadModel @>
+        test <@ viewResult.Model :? ISelfServiceRegisterViewModel @>
 
-        let actualViewModel = viewResult.Model :?> ISelfServiceRegisterReadModel
+        let actualViewModel = viewResult.Model :?> ISelfServiceRegisterViewModel
         test <@ actualViewModel = expectedViewModel @>
 
     [<Test>]
     let ``Calling register post, with null name, returns expected result`` () =
         let nullName = null
-        let expectedViewModel = SelfServiceRegister.ReadModel.make(nullName);
+        let expectedViewModel = SelfServiceRegister.ViewModel.make(nullName);
 
         let keyGenerator = KeyGenerator.make ()
         let controller = new SelfServiceController(mock (), keyGenerator)
@@ -62,9 +62,9 @@ module SelfServiceControllerTests =
 
         test <@ String.isEmpty viewResult.ViewName @>
         test <@ notIsNull viewResult.Model @>
-        test <@ viewResult.Model :? ISelfServiceRegisterReadModel @>
+        test <@ viewResult.Model :? ISelfServiceRegisterViewModel @>
 
-        let actualViewModel = viewResult.Model :?> ISelfServiceRegisterReadModel
+        let actualViewModel = viewResult.Model :?> ISelfServiceRegisterViewModel
         test <@ actualViewModel = expectedViewModel @>
 
         let modelState = viewResult.ViewData.ModelState
@@ -76,7 +76,7 @@ module SelfServiceControllerTests =
     [<Test>]
     let ``Calling register post, with empty name, returns expected result`` () =
         let emptyName = String.empty
-        let expectedViewModel = SelfServiceRegister.ReadModel.make(emptyName);
+        let expectedViewModel = SelfServiceRegister.ViewModel.make(emptyName);
 
         let keyGenerator = KeyGenerator.make ()
         let controller = new SelfServiceController(mock (), keyGenerator)
@@ -89,9 +89,9 @@ module SelfServiceControllerTests =
 
         test <@ String.isEmpty viewResult.ViewName @>
         test <@ notIsNull viewResult.Model @>
-        test <@ viewResult.Model :? ISelfServiceRegisterReadModel @>
+        test <@ viewResult.Model :? ISelfServiceRegisterViewModel @>
 
-        let actualViewModel = viewResult.Model :?> ISelfServiceRegisterReadModel
+        let actualViewModel = viewResult.Model :?> ISelfServiceRegisterViewModel
         test <@ actualViewModel = expectedViewModel @>
 
         let modelState = viewResult.ViewData.ModelState

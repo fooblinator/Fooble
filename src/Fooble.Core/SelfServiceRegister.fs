@@ -46,43 +46,43 @@ module SelfServiceRegister =
             Validation.raiseIfInvalid <| Member.validateName name
             Command (id, name) :> ISelfServiceRegisterCommand
 
-    (* Read Model *)
+    (* View Model *)
 
     /// <summary>
     /// Provides functionality used in the gathering of member details.
     /// </summary>
     [<RequireQualifiedAccess>]
-    module ReadModel =
+    module ViewModel =
 
         [<DefaultAugmentation(false)>]
         type private Implementation =
-            | ReadModel of string
+            | ViewModel of string
 
-            interface ISelfServiceRegisterReadModel with
+            interface ISelfServiceRegisterViewModel with
 
                 member this.Name
                     with get() =
                         match this with
-                        | ReadModel x -> x
+                        | ViewModel x -> x
     
         /// <summary>
-        /// Represents an empty self-service register read model.
+        /// Represents an empty self-service register view model.
         /// </summary>
-        /// <returns>Returns an empty self-service register read model.</returns>
+        /// <returns>Returns an empty self-service register view model.</returns>
         [<CompiledName("Empty")>]
-        let empty = ReadModel String.empty :> ISelfServiceRegisterReadModel
+        let empty = ViewModel String.empty :> ISelfServiceRegisterViewModel
     
         /// <summary>
-        /// Constructs a self-service register read model.
+        /// Constructs a self-service register view model.
         /// </summary>
         /// <param name="name">The name of the potential member.</param>
         /// <remarks>
         /// Does not validate parameters. This allows for re-construction of the view model with previously-submitted,
         /// and potentially invalid form data. Need to manually validate and handle submitted form data.
         /// </remarks>
-        /// <returns>Returns a self-service register read model.</returns>
+        /// <returns>Returns a self-service register view model.</returns>
         [<CompiledName("Make")>]
-        let make name = ReadModel name :> ISelfServiceRegisterReadModel
+        let make name = ViewModel name :> ISelfServiceRegisterViewModel
 
     (* Command Handler *)
 

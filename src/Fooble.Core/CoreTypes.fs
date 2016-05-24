@@ -189,7 +189,7 @@ type ISelfServiceRegisterCommand =
 /// <summary>
 /// Contains a potential member's detailed information to be submitted for self-service registration.
 /// </summary>
-type ISelfServiceRegisterReadModel =
+type ISelfServiceRegisterViewModel =
 
     /// <summary>
     /// The name of the member.
