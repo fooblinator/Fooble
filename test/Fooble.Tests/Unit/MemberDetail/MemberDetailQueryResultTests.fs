@@ -4,6 +4,7 @@ open Fooble.Core
 open Fooble.Tests
 open NUnit.Framework
 open Swensen.Unquote
+open System
  
 [<TestFixture>]
 module MemberDetailQueryResultTests =
@@ -20,6 +21,13 @@ module MemberDetailQueryResultTests =
         let queryResult = MemberDetail.QueryResult.notFound
 
         test <@ box queryResult :? IMemberDetailQueryResult @>
+    
+    [<Test>]
+    let ``Calling read model, with not found query result, raises expected exception`` () =
+        let expectedMessage = "Result was not successful"
+        
+        let queryResult = MemberDetail.QueryResult.notFound
+        raisesWith<InvalidOperationException> <@ queryResult.ReadModel @> (fun e -> <@ e.Message = expectedMessage @>)
 
     [<Test>]
     let ``Calling read model, with success query result, returns expected read model`` () =

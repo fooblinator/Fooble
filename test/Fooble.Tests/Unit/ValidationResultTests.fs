@@ -4,6 +4,7 @@ open Fooble.Core
 open Fooble.Tests
 open NUnit.Framework
 open Swensen.Unquote
+open System
 
 [<TestFixture>]
 module ValidationResultTests =
@@ -19,6 +20,13 @@ module ValidationResultTests =
         let result = Validation.Result.makeInvalid <|| (randomString (), randomString ())
 
         test <@ box result :? IValidationResult @>
+    
+    [<Test>]
+    let ``Calling param name, with valid validation result, raises expected exception`` () =
+        let expectedMessage = "Result was not invalid"
+        
+        let result = Validation.Result.valid
+        raisesWith<InvalidOperationException> <@ result.ParamName @> (fun e -> <@ e.Message = expectedMessage @>)
 
     [<Test>]
     let ``Calling param name, with invalid validation result, returns expected param name`` () =
@@ -27,6 +35,13 @@ module ValidationResultTests =
         let result = Validation.Result.makeInvalid <|| (expectedParamName, randomString ())
 
         test <@ result.ParamName = expectedParamName @>
+    
+    [<Test>]
+    let ``Calling message, with valid validation result, raises expected exception`` () =
+        let expectedMessage = "Result was not invalid"
+        
+        let result = Validation.Result.valid
+        raisesWith<InvalidOperationException> <@ result.Message @> (fun e -> <@ e.Message = expectedMessage @>)
 
     [<Test>]
     let ``Calling message, with invalid validation result, returns expected message`` () =
