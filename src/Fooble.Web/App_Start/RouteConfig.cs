@@ -17,6 +17,7 @@ namespace Fooble.Web
             routes.MapRoute("SelfServiceRegister", "self/register", new { controller = "selfservice", action = "register" });
 
             routes.IgnoreRoute("self/{*pathInfo}");
+            routes.IgnoreRoute("selfservice/{*pathInfo}");
 
             routes.MapRoute(
                 name: "Default",
