@@ -17,7 +17,7 @@ module AutofacModuleTests =
         let expectedContext = Mock.Of<IFoobleContext>()
 
         let builder = ContainerBuilder()
-        ignore <| builder.RegisterModule(AutofacModule(Context = expectedContext))
+        ignore <| builder.RegisterModule(AutofacModule(expectedContext))
         let container = builder.Build()
         
         let actualContext = container.Resolve<IFoobleContext>()
@@ -28,7 +28,7 @@ module AutofacModuleTests =
     let ``Registering autofac container, properly registers expected query handlers`` () =
         let context = Mock.Of<IFoobleContext>()
         let builder = ContainerBuilder()
-        ignore <| builder.RegisterModule(AutofacModule(Context = context))
+        ignore <| builder.RegisterModule(AutofacModule(context))
         let container = builder.Build()
 
         let memberDetailQueryHandler = container.Resolve<IRequestHandler<IMemberDetailQuery, IMemberDetailQueryResult>>()
@@ -41,7 +41,7 @@ module AutofacModuleTests =
     let ``Registering autofac container, properly registers expected command handlers`` () =
         let context = Mock.Of<IFoobleContext>()
         let builder = ContainerBuilder()
-        ignore <| builder.RegisterModule(AutofacModule(Context = context))
+        ignore <| builder.RegisterModule(AutofacModule(context))
         let container = builder.Build()
 
         let memberDetailCommandHandler = container.Resolve<IRequestHandler<ISelfServiceRegisterCommand, Unit>>()
@@ -51,7 +51,7 @@ module AutofacModuleTests =
     let ``Registering autofac container, properly registers expected single instance factory`` () =
         let context = Mock.Of<IFoobleContext>()
         let builder = ContainerBuilder()
-        ignore <| builder.RegisterModule(AutofacModule(Context = context))
+        ignore <| builder.RegisterModule(AutofacModule(context))
         let container = builder.Build()
 
         let singleInstanceFactory = container.Resolve<SingleInstanceFactory>()
@@ -71,7 +71,7 @@ module AutofacModuleTests =
     let ``Registering autofac container, properly registers expected multi instance factory`` () =
         let context = Mock.Of<IFoobleContext>()
         let builder = ContainerBuilder()
-        ignore <| builder.RegisterModule(AutofacModule(Context = context))
+        ignore <| builder.RegisterModule(AutofacModule(context))
         let container = builder.Build()
 
         let multiInstanceFactory = container.Resolve<MultiInstanceFactory>()
@@ -95,7 +95,7 @@ module AutofacModuleTests =
     let ``Registering autofac container, properly registers expected mediator`` () =
         let context = Mock.Of<IFoobleContext>()
         let builder = ContainerBuilder()
-        ignore <| builder.RegisterModule(AutofacModule(Context = context))
+        ignore <| builder.RegisterModule(AutofacModule(context))
         let container = builder.Build()
 
         let mediator = container.Resolve<IMediator>()

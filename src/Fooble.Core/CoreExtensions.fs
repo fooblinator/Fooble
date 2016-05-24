@@ -1,6 +1,5 @@
 ﻿namespace Fooble.Core
 
-open System.Diagnostics
 open System.Runtime.CompilerServices
 
 /// <summary>
@@ -25,13 +24,9 @@ type CoreExtensions = // TODO: need to provide overloads that allow overriding h
     static member ToMessageDisplayReadModel
         (result:IMemberDetailQueryResult, heading, subHeading, statusCode, severity, message) =
 
-        Debug.Assert(notIsNull <| box result, "Result parameter was null")
-        Debug.Assert(notIsNull heading, "Heading parameter was null")
-        Debug.Assert(String.notIsEmpty heading, "Heading parameter was an empty string")
-        Debug.Assert(notIsNull subHeading, "Sub-heading parameter was null")
-        Debug.Assert(statusCode >= 0, "Status code parameter was less than zero")
-        Debug.Assert(notIsNull message, "Message parameter was null")
-        Debug.Assert(String.notIsEmpty message, "Message parameter was an empty string")
+        [ (notIsNull << box), "Result parameter was null" ]
+        |> Validation.validate result "result"
+        |> Validation.raiseIfInvalid
 
         MessageDisplay.ReadModel.make heading subHeading statusCode severity message
 
@@ -70,7 +65,6 @@ type CoreExtensions = // TODO: need to provide overloads that allow overriding h
     /// <returns>Returns a message display read model.</returns>
     [<Extension>]
     static member ToMessageDisplayReadModel (result:IMemberDetailQueryResult) =
-
         match result with
 
         | MemberDetail.IsSuccess _ ->
@@ -95,13 +89,9 @@ type CoreExtensions = // TODO: need to provide overloads that allow overriding h
     static member ToMessageDisplayReadModel
         (result:IMemberListQueryResult, heading, subHeading, statusCode, severity, message) =
 
-        Debug.Assert(notIsNull <| box result, "Result parameter was null")
-        Debug.Assert(notIsNull heading, "Heading parameter was null")
-        Debug.Assert(String.notIsEmpty heading, "Heading parameter was an empty string")
-        Debug.Assert(notIsNull subHeading, "Sub-heading parameter was null")
-        Debug.Assert(statusCode >= 0, "Status code parameter was less than zero")
-        Debug.Assert(notIsNull message, "Message parameter was null")
-        Debug.Assert(String.notIsEmpty message, "Message parameter was an empty string")
+        [ (notIsNull << box), "Result parameter was null" ]
+        |> Validation.validate result "result"
+        |> Validation.raiseIfInvalid
 
         MessageDisplay.ReadModel.make heading subHeading statusCode severity message
 
@@ -134,7 +124,6 @@ type CoreExtensions = // TODO: need to provide overloads that allow overriding h
     /// <returns>Returns a message display read model.</returns>
     [<Extension>]
     static member ToMessageDisplayReadModel (result:IMemberListQueryResult) =
-
         match result with
 
         | MemberList.IsSuccess _ ->
@@ -158,13 +147,9 @@ type CoreExtensions = // TODO: need to provide overloads that allow overriding h
     static member ToMessageDisplayReadModel
         (result:IValidationResult, heading, subHeading, statusCode, severity, message) =
 
-        Debug.Assert(notIsNull <| box result, "Result parameter was null")
-        Debug.Assert(notIsNull heading, "Heading parameter was null")
-        Debug.Assert(String.notIsEmpty heading, "Heading parameter was an empty string")
-        Debug.Assert(notIsNull subHeading, "Sub-heading parameter was null")
-        Debug.Assert(statusCode >= 0, "Status code parameter was less than zero")
-        Debug.Assert(notIsNull message, "Message parameter was null")
-        Debug.Assert(String.notIsEmpty message, "Message parameter was an empty string")
+        [ (notIsNull << box), "Result parameter was null" ]
+        |> Validation.validate result "result"
+        |> Validation.raiseIfInvalid
 
         MessageDisplay.ReadModel.make heading subHeading statusCode severity message
 
@@ -203,7 +188,6 @@ type CoreExtensions = // TODO: need to provide overloads that allow overriding h
     /// <returns>Returns a message display read model.</returns>
     [<Extension>]
     static member ToMessageDisplayReadModel (result:IValidationResult) =
-
         match result with
 
         | Validation.IsValid -> CoreExtensions.ToMessageDisplayReadModel(result, "Validation was successful")

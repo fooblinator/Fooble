@@ -18,7 +18,7 @@ module MemberControllerToDataStoreTests =
     let ``Constructing, with valid parameters, returns expected result`` () =
         let connectionString = Settings.ConnectionStrings.FoobleContext
         let builder = ContainerBuilder()
-        ignore <| builder.RegisterModule(AutofacModule(ConnectionString = connectionString))
+        ignore <| builder.RegisterModule(AutofacModule(connectionString))
         let container = builder.Build()
         
         let mediator = container.Resolve<IMediator>()
@@ -43,7 +43,7 @@ module MemberControllerToDataStoreTests =
         ignore <| context.SaveChanges()
 
         let builder = ContainerBuilder()
-        ignore <| builder.RegisterModule(AutofacModule(Context = context))
+        ignore <| builder.RegisterModule(AutofacModule(context))
         let container = builder.Build()
         
         let mediator = container.Resolve<IMediator>()
@@ -81,7 +81,7 @@ module MemberControllerToDataStoreTests =
         ignore <| context.SaveChanges()
 
         let builder = ContainerBuilder()
-        ignore <| builder.RegisterModule(AutofacModule(Context = context))
+        ignore <| builder.RegisterModule(AutofacModule(context))
         let container = builder.Build()
         
         let mediator = container.Resolve<IMediator>()
@@ -116,7 +116,7 @@ module MemberControllerToDataStoreTests =
         ignore <| context.SaveChanges()
 
         let builder = ContainerBuilder()
-        ignore <| builder.RegisterModule(AutofacModule(Context = context))
+        ignore <| builder.RegisterModule(AutofacModule(context))
         let container = builder.Build()
         
         let mediator = container.Resolve<IMediator>()
@@ -154,7 +154,7 @@ module MemberControllerToDataStoreTests =
         ignore <| context.SaveChanges()
 
         let builder = ContainerBuilder()
-        ignore <| builder.RegisterModule(AutofacModule(Context = context))
+        ignore <| builder.RegisterModule(AutofacModule(context))
         let container = builder.Build()
         
         let mediator = container.Resolve<IMediator>()

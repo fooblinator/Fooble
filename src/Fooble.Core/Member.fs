@@ -13,13 +13,23 @@ module Member =
     /// </summary>
     /// <param name="id">The id that represents the member.</param>
     /// <returns>Returns a validation result.</returns>
+    [<CompiledName("ValidateId")>]
+    let validateId id =
+        [ (Guid.notIsEmpty), "Id parameter was an empty GUID" ]
+        |> Validation.validate id "id"
+
+    /// <summary>
+    /// Validates the supplied member id.
+    /// </summary>
+    /// <param name="id">The id that represents the member.</param>
+    /// <returns>Returns a validation result.</returns>
     /// <remarks>
     /// The member id is of type <see cref="System.Guid"/>, however this helper exists to validate Guid-formatted
     /// strings before parsing into a Guid. This exists purely for consistency with the other validation helpers, and
     /// as an alternative to <see cref="System.Guid.TryParse"/>.
     /// </remarks>
     [<CompiledName("ValidateId")>]
-    let validateId id =
+    let validateIdString id =
         [ (notIsNull), "Id parameter was null"
           (String.notIsEmpty), "Id parameter was an empty string"
           (String.isGuid), "Id parameter was not in GUID format" ]

@@ -13,7 +13,7 @@ namespace Fooble.Web
             var connectionString = ConfigurationManager.ConnectionStrings["FoobleContext"].ConnectionString;
 
             var builder = new ContainerBuilder();
-            builder.RegisterModule(new AutofacModule { ConnectionString = connectionString });
+            builder.RegisterModule(new AutofacModule(connectionString));
             builder.RegisterControllers(typeof(MvcApplication).Assembly);
             var container = builder.Build();
 

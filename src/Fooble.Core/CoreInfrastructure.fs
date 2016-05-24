@@ -12,29 +12,33 @@ open System.Diagnostics
 /// Provides the proper Autofac container registrations for the Fooble.Core assembly.
 /// </summary>
 [<AllowNullLiteral>]
-type AutofacModule() =
-    inherit Autofac.Module()
+type AutofacModule =
+    inherit Autofac.Module
 
-    [<DefaultValue>]
-    val mutable private connectionString:string option
+    val private ConnectionString:string option
+    val private Context:IFoobleContext option
 
-    [<DefaultValue>]
-    val mutable private context:IFoobleContext option
-    
     /// <summary>
-    /// Sets the connection string to use when registering the data context.
+    /// Constructs an instance of the Autofac module for the Fooble.Core assembly.
     /// </summary>
-    /// <param name="value">The connection string to use.</param>
-    member this.ConnectionString
-        with set(value) =
-            Debug.Assert(notIsNull value, "Connection string property was null")
-            Debug.Assert(String.notIsEmpty value, "Connection string property was empty")
-            this.connectionString <- Some value
-    
-    member internal this.Context
-        with set(value) =
-            Debug.Assert(notIsNull value, "Context property was null")
-            this.context <- Some value
+    new() = 
+        { ConnectionString = None
+          Context = None }
+
+    /// <summary>
+    /// Constructs an instance of the Autofac module for the Fooble.Core assembly.
+    /// </summary>
+    /// <param name="connectionString">The connection string to use.</param>
+    new(connectionString) =
+        Debug.Assert(notIsNull connectionString, "Connection string parameter was null")
+        Debug.Assert(String.notIsEmpty connectionString, "Connection string parameter was an empty string")
+        { ConnectionString = Some connectionString
+          Context = None }
+
+    internal new(context) =
+        Debug.Assert(notIsNull context, "Context parameter was null")
+        { ConnectionString = None;
+          Context = Some context }
 
     override this.Load(builder:ContainerBuilder) = 
         Debug.Assert(notIsNull builder, "Builder parameter was null")
@@ -56,10 +60,10 @@ type AutofacModule() =
 
         (* Fooble *)
 
-        match this.context with
+        match this.Context with
         | Some x -> builder.RegisterInstance(x).ExternallyOwned()
         | None ->
-            match this.connectionString with
+            match this.ConnectionString with
             | Some x -> builder.Register(fun _ -> makeFoobleContext <| Some x)
             | None -> builder.Register(fun _ -> makeFoobleContext None)
         |> ignore

@@ -18,8 +18,9 @@ module MemberControllerToQueryHandlerTests =
 
     [<Test>]
     let ``Constructing, with valid parameters, returns expected result`` () =
+        let context = Mock.Of<IFoobleContext>()
         let builder = ContainerBuilder()
-        ignore <| builder.RegisterModule(AutofacModule(Context = mock ()))
+        ignore <| builder.RegisterModule(AutofacModule(context))
         let container = builder.Build()
         
         let mediator = container.Resolve<IMediator>()
@@ -36,7 +37,7 @@ module MemberControllerToQueryHandlerTests =
         contextMock.SetupFunc(fun c -> c.MemberData).Returns(memberSetMock.Object).Verifiable()
 
         let builder = ContainerBuilder()
-        ignore <| builder.RegisterModule(AutofacModule(Context = contextMock.Object))
+        ignore <| builder.RegisterModule(AutofacModule(contextMock.Object))
         let container = builder.Build()
         
         let mediator = container.Resolve<IMediator>()
@@ -67,18 +68,18 @@ module MemberControllerToQueryHandlerTests =
                 "No matching member could be found."
 
         let memberSet = makeObjectSet Seq.empty<MemberData>
-        let memberSetMock = Mock<IFoobleContext>()
-        memberSetMock.SetupFunc(fun x -> x.MemberData).Returns(memberSet.Object).Verifiable()
+        let contextMock = Mock<IFoobleContext>()
+        contextMock.SetupFunc(fun x -> x.MemberData).Returns(memberSet.Object).Verifiable()
 
         let builder = ContainerBuilder()
-        ignore <| builder.RegisterModule(AutofacModule(Context = memberSetMock.Object))
+        ignore <| builder.RegisterModule(AutofacModule(contextMock.Object))
         let container = builder.Build()
         
         let mediator = container.Resolve<IMediator>()
         let controller = new MemberController(mediator)
         let result = controller.Detail(nonMatchingId.ToString())
 
-        memberSetMock.Verify()
+        contextMock.Verify()
 
         test <@ notIsNull result @>
         test <@ result :? ViewResult @>
@@ -100,7 +101,7 @@ module MemberControllerToQueryHandlerTests =
         contextMock.SetupFunc(fun c -> c.MemberData).Returns(memberSetMock.Object).Verifiable()
 
         let builder = ContainerBuilder()
-        ignore <| builder.RegisterModule(AutofacModule(Context = contextMock.Object))
+        ignore <| builder.RegisterModule(AutofacModule(contextMock.Object))
         let container = builder.Build()
         
         let mediator = container.Resolve<IMediator>()
@@ -135,7 +136,7 @@ module MemberControllerToQueryHandlerTests =
         contextMock.SetupFunc(fun c -> c.MemberData).Returns(memberSetMock.Object).Verifiable()
 
         let builder = ContainerBuilder()
-        ignore <| builder.RegisterModule(AutofacModule(Context = contextMock.Object))
+        ignore <| builder.RegisterModule(AutofacModule(contextMock.Object))
         let container = builder.Build()
         
         let mediator = container.Resolve<IMediator>()

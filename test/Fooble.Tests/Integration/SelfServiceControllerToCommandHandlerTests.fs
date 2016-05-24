@@ -18,8 +18,9 @@ module SelfServiceControllerToCommandHandlerTests =
 
     [<Test>]
     let ``Constructing, with valid parameters, returns expected result`` () =
+        let context = Mock.Of<IFoobleContext>()
         let builder = ContainerBuilder()
-        ignore <| builder.RegisterModule(AutofacModule(Context = mock ()))
+        ignore <| builder.RegisterModule(AutofacModule(context))
         let container = builder.Build()
         
         let mediator = container.Resolve<IMediator>()
@@ -36,7 +37,7 @@ module SelfServiceControllerToCommandHandlerTests =
         contextMock.SetupFunc(fun x -> x.MemberData).Returns(memberSetMock.Object).Verifiable()
 
         let builder = ContainerBuilder()
-        ignore <| builder.RegisterModule(AutofacModule(Context = contextMock.Object))
+        ignore <| builder.RegisterModule(AutofacModule(contextMock.Object))
         let container = builder.Build()
 
         let mediator = container.Resolve<IMediator>()

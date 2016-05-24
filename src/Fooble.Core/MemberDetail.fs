@@ -44,7 +44,9 @@ module MemberDetail =
         /// <param name="id">The member id to search for.</param>
         /// <returns>Returns a member detail query.</returns>
         [<CompiledName("Make")>]
-        let make id = Query id :> IMemberDetailQuery
+        let make id =
+            Validation.raiseIfInvalid <| Member.validateId id
+            Query id :> IMemberDetailQuery
 
     (* Read Model *)
 

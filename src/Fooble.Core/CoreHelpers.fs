@@ -8,6 +8,12 @@ module internal Helpers =
     (* Extensions *)
 
     [<RequireQualifiedAccess>]
+    module internal Guid =
+        let internal empty = System.Guid.Empty
+        let internal isEmpty x = x = empty
+        let internal notIsEmpty x = not <| isEmpty x
+
+    [<RequireQualifiedAccess>]
     module internal String =
         let internal empty = System.String.Empty
         let internal isEmpty x = x = empty
