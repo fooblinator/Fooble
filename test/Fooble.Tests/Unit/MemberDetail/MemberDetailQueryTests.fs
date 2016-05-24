@@ -9,28 +9,27 @@ open System
 
 [<TestFixture>]
 module MemberDetailQueryTests =
-    
+
     [<Test>]
     let ``Calling make, with empty id, raises expected exception`` () =
         let expectedParamName = "id"
         let expectedMessage = "Id parameter was an empty GUID"
-        
+
         raisesWith<ArgumentException>
-            <@ MemberDetail.Query.make Guid.empty @> <|
-                fun e -> <@ e.ParamName = expectedParamName && (fixInvalidArgMessage e.Message) = expectedMessage @>
+            <@ MemberDetail.Query.make Guid.empty @> (fun x ->
+                <@ x.ParamName = expectedParamName && (fixInvalidArgMessage x.Message) = expectedMessage @>)
 
     [<Test>]
     let ``Calling make, with valid parameters, returns query`` () =
-        let query = MemberDetail.Query.make <| randomGuid ()
+        let query = MemberDetail.Query.make (Guid.random ())
 
         test <@ box query :? IMemberDetailQuery @>
         test <@ box query :? IRequest<IMemberDetailQueryResult> @>
 
     [<Test>]
     let ``Calling id, returns expected id`` () =
-        let expectedId = randomGuid ()
+        let expectedId = Guid.random ()
 
         let query = MemberDetail.Query.make expectedId
 
-        let actualId = query.Id
-        test <@ actualId = expectedId @>
+        test <@ query.Id = expectedId @>

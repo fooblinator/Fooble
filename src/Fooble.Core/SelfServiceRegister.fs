@@ -3,11 +3,19 @@
 open Fooble.Core.Persistence
 open MediatR
 open System
-open System.Diagnostics
 
 /// Provides functionality used in the gathering and persisting of member details.
 [<RequireQualifiedAccess>]
 module SelfServiceRegister =
+
+    (* Active Patterns *)
+
+    let internal (|IsSuccess|IsUsernameUnavailable|) (result:ISelfServiceRegisterCommandResult) =
+        if result.IsSuccess
+            then Choice1Of2 ()
+            else Choice2Of2 ()
+
+
 
     (* Command *)
 
@@ -17,31 +25,38 @@ module SelfServiceRegister =
 
         [<DefaultAugmentation(false)>]
         type private Implementation =
-            | Command of Guid * string
+            | Command of Guid * string * string
 
             interface ISelfServiceRegisterCommand with
 
                 member this.Id
                     with get() =
                         match this with
-                        | Command (x, _) -> x
+                        | Command (x, _, _) -> x
+
+                member this.Username
+                    with get() =
+                        match this with
+                        | Command (_, x, _) -> x
 
                 member this.Name
                     with get() =
                         match this with
-                        | Command (_, x) -> x
+                        | Command (_, _, x) -> x
 
         /// <summary>
         /// Constructs a self-service register command.
         /// </summary>
         /// <param name="id">The id that will potentially represent the member.</param>
+        /// <param name="username">The username of the potential member.</param>
         /// <param name="name">The name of the potential member.</param>
         /// <returns>Returns a self-service register command.</returns>
         [<CompiledName("Make")>]
-        let make id name =
+        let make id username name =
             Validation.raiseIfInvalid <| Member.validateId id
+            Validation.raiseIfInvalid <| Member.validateUsername username
             Validation.raiseIfInvalid <| Member.validateName name
-            Command (id, name) :> ISelfServiceRegisterCommand
+            Command (id, username, name) :> ISelfServiceRegisterCommand
 
 
 
@@ -53,33 +68,68 @@ module SelfServiceRegister =
 
         [<DefaultAugmentation(false)>]
         type private Implementation =
-            | ViewModel of string
+            | ViewModel of string * string
 
             interface ISelfServiceRegisterViewModel with
+
+                member this.Username
+                    with get() =
+                        match this with
+                        | ViewModel (x, _) -> x
 
                 member this.Name
                     with get() =
                         match this with
-                        | ViewModel x -> x
-    
+                        | ViewModel (_, x) -> x
+
         /// <summary>
         /// Represents an empty self-service register view model.
         /// </summary>
         /// <returns>Returns an empty self-service register view model.</returns>
         [<CompiledName("Empty")>]
-        let empty = ViewModel String.empty :> ISelfServiceRegisterViewModel
-    
+        let empty = ViewModel (String.empty, String.empty) :> ISelfServiceRegisterViewModel
+
         /// <summary>
         /// Constructs a self-service register view model.
         /// </summary>
         /// <param name="name">The name of the potential member.</param>
+        /// <param name="name">The username of the potential member.</param>
         /// <remarks>
         /// Does not validate parameters. This allows for re-construction of the view model with previously-submitted,
         /// and potentially invalid form data. Need to manually validate and handle submitted form data.
         /// </remarks>
         /// <returns>Returns a self-service register view model.</returns>
         [<CompiledName("Make")>]
-        let make name = ViewModel name :> ISelfServiceRegisterViewModel
+        let make username name = ViewModel (username, name) :> ISelfServiceRegisterViewModel
+
+
+
+    (* Command Result *)
+
+    [<RequireQualifiedAccess>]
+    module internal CommandResult =
+
+        [<DefaultAugmentation(false)>]
+        type private Implementation =
+            | Success
+            | UsernameUnavailable
+
+            interface ISelfServiceRegisterCommandResult with
+
+                member this.IsSuccess
+                    with get() =
+                        match this with
+                        | Success _ -> true
+                        | _ -> false
+
+                member this.IsUsernameUnavailable
+                    with get() =
+                        match this with
+                        | UsernameUnavailable -> true
+                        | _ -> false
+
+        let internal success = Success :> ISelfServiceRegisterCommandResult
+        let internal usernameUnavailable = UsernameUnavailable :> ISelfServiceRegisterCommandResult
 
 
 
@@ -97,18 +147,20 @@ module SelfServiceRegister =
                     match this with
                     | CommandHandler x -> x
 
-            interface IRequestHandler<ISelfServiceRegisterCommand, Unit> with
+            interface IRequestHandler<ISelfServiceRegisterCommand, ISelfServiceRegisterCommandResult> with
 
                 member this.Handle(command) =
-                    Debug.Assert(notIsNull <| box command, "Command parameter was null")
-                    
-                    MemberData(Id = command.Id, Name = command.Name)
-                    |> this.Context.MemberData.AddObject
+                    assert (isNotNull <| box command)
 
-                    ignore <| this.Context.SaveChanges()
-
-                    Unit.Value
+                    Seq.tryFind (fun (x:MemberData) -> x.Username = command.Username) this.Context.MemberData
+                    |> function
+                        | Some _ -> CommandResult.usernameUnavailable
+                        | None ->
+                            MemberData(Id = command.Id, Username = command.Username, Name = command.Name)
+                            |> this.Context.MemberData.AddObject
+                            ignore <| this.Context.SaveChanges()
+                            CommandResult.success
 
         let internal make context =
-            Debug.Assert(notIsNull context, "Context parameter was null")
-            CommandHandler context :> IRequestHandler<ISelfServiceRegisterCommand, Unit>
+            assert (isNotNull context)
+            CommandHandler context :> IRequestHandler<ISelfServiceRegisterCommand, ISelfServiceRegisterCommandResult>

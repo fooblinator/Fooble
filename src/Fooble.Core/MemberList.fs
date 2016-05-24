@@ -3,7 +3,6 @@
 open Fooble.Core.Persistence
 open MediatR
 open System
-open System.Diagnostics
 
 /// Provides functionality used in the querying and presentation of member lists.
 [<RequireQualifiedAccess>]
@@ -29,7 +28,7 @@ module MemberList =
             | Query
 
             interface IMemberListQuery
-    
+
         /// <summary>
         /// Constructs a member list query.
         /// </summary>
@@ -61,8 +60,9 @@ module MemberList =
                         | ItemReadModel (_, x) -> x
 
         let internal make id name =
-            Debug.Assert(notIsNull name, "Name parameter was null")
-            Debug.Assert(String.notIsEmpty name, "Name parameter was an empty string")
+            assert (Guid.isNotEmpty id)
+            assert (isNotNull name)
+            assert (String.isNotEmpty name)
             ItemReadModel (id, name) :> IMemberListItemReadModel
 
 
@@ -84,8 +84,8 @@ module MemberList =
                         | ReadModel xs -> xs
 
         let internal make members =
-            Debug.Assert(notIsNull members, "Members parameter was null")
-            Debug.Assert(Seq.notIsEmpty members, "Members parameter was an empty sequence")
+            assert (isNotNull members)
+            assert (Seq.isNotEmpty members)
             ReadModel members :> IMemberListReadModel
 
 
@@ -121,7 +121,7 @@ module MemberList =
                         | NotFound -> true
 
         let internal makeSuccess readModel =
-            Debug.Assert(notIsNull <| box readModel, "Read model parameter was null")
+            assert (isNotNull <| box readModel)
             Success readModel :> IMemberListQueryResult
 
         let internal notFound = NotFound :> IMemberListQueryResult
@@ -145,7 +145,7 @@ module MemberList =
             interface IRequestHandler<IMemberListQuery, IMemberListQueryResult> with
 
                 member this.Handle(query) =
-                    Debug.Assert(notIsNull <| box query, "Query parameter was null")
+                    assert (isNotNull <| box query)
                     Seq.sortBy (fun (x:MemberData) -> x.Name) this.Context.MemberData
                     |> Seq.map (fun x -> ItemReadModel.make x.Id x.Name)
                     |> List.ofSeq // materialize the results
@@ -156,5 +156,5 @@ module MemberList =
                                |> QueryResult.makeSuccess
 
         let internal make context =
-            Debug.Assert(not <| isNull context, "Context parameter was null")
+            assert (not <| isNull context)
             QueryHandler context :> IRequestHandler<IMemberListQuery, IMemberListQueryResult>

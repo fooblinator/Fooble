@@ -14,9 +14,9 @@ module SelfServiceRegisterCommandHandlerTests =
 
     [<Test>]
     let ``Calling make, with valid parameters, returns command handler`` () =
-        let commandHandler = SelfServiceRegister.CommandHandler.make <| mock ()
+        let handler = SelfServiceRegister.CommandHandler.make (mock ())
 
-        test <@ box commandHandler :? IRequestHandler<ISelfServiceRegisterCommand, Unit> @>
+        test <@ box handler :? IRequestHandler<ISelfServiceRegisterCommand, ISelfServiceRegisterCommandResult> @>
 
     [<Test>]
     let ``Calling handle, registers new member, and completes without exception`` () =
@@ -25,10 +25,10 @@ module SelfServiceRegisterCommandHandlerTests =
         let contextMock = Mock<IFoobleContext>()
         contextMock.SetupFunc(fun x -> x.MemberData).Returns(memberSetMock.Object).Verifiable()
 
-        let command = SelfServiceRegister.Command.make <|| (randomGuid (), randomString ())
-        let commandHandler = SelfServiceRegister.CommandHandler.make contextMock.Object
+        let command = SelfServiceRegister.Command.make (Guid.random ()) (String.random 32) (String.random 64)
+        let handler = SelfServiceRegister.CommandHandler.make contextMock.Object
 
-        ignore <| commandHandler.Handle(command)
+        ignore <| handler.Handle(command)
 
         memberSetMock.Verify()
         contextMock.Verify()

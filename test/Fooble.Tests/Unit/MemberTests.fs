@@ -16,14 +16,12 @@ module MemberTests =
         let result = Member.validateId Guid.empty
 
         test <@ result.IsInvalid @>
-        let actualParamName = result.ParamName
-        test <@ actualParamName = expectedParamName @>
-        let actualMessage = result.Message
-        test <@ actualMessage = expectedMessage @>
+        test <@ result.ParamName = expectedParamName @>
+        test <@ result.Message = expectedMessage @>
 
     [<Test>]
     let ``Calling validate id, with valid id, returns no messages`` () =
-        let result = Member.validateId <| randomGuid ()
+        let result = Member.validateId (Guid.random ())
 
         test <@ result.IsValid @>
 
@@ -35,10 +33,8 @@ module MemberTests =
         let result = Member.validateIdString null
 
         test <@ result.IsInvalid @>
-        let actualParamName = result.ParamName
-        test <@ actualParamName = expectedParamName @>
-        let actualMessage = result.Message
-        test <@ actualMessage = expectedMessage @>
+        test <@ result.ParamName = expectedParamName @>
+        test <@ result.Message = expectedMessage @>
 
     [<Test>]
     let ``Calling validate id string, with empty id, returns expected validation result`` () =
@@ -48,27 +44,73 @@ module MemberTests =
         let result = Member.validateIdString String.empty
 
         test <@ result.IsInvalid @>
-        let actualParamName = result.ParamName
-        test <@ actualParamName = expectedParamName @>
-        let actualMessage = result.Message
-        test <@ actualMessage = expectedMessage @>
+        test <@ result.ParamName = expectedParamName @>
+        test <@ result.Message = expectedMessage @>
 
     [<Test>]
     let ``Calling validate id string, with invalid format id, returns expected validation result`` () =
         let expectedParamName = "id"
         let expectedMessage = "Id parameter was not in GUID format"
 
-        let result = Member.validateIdString <| randomNonGuidString ()
+        let result = Member.validateIdString (String.random 64)
 
         test <@ result.IsInvalid @>
-        let actualParamName = result.ParamName
-        test <@ actualParamName = expectedParamName @>
-        let actualMessage = result.Message
-        test <@ actualMessage = expectedMessage @>
+        test <@ result.ParamName = expectedParamName @>
+        test <@ result.Message = expectedMessage @>
 
     [<Test>]
     let ``Calling validate id string, with valid id, returns no messages`` () =
-        let result = Member.validateIdString <| randomString ()
+        let result = Member.validateIdString (Guid.random () |> String.ofGuid)
+
+        test <@ result.IsValid @>
+
+    [<Test>]
+    let ``Calling validate username, with null username, returns expected validation result`` () =
+        let expectedParamName = "username"
+        let expectedMessage = "Username parameter was null"
+
+        let result = Member.validateUsername null
+
+        test <@ result.IsInvalid @>
+        test <@ result.ParamName = expectedParamName @>
+        test <@ result.Message = expectedMessage @>
+
+    [<Test>]
+    let ``Calling validate username, with empty username, returns expected validation result`` () =
+        let expectedParamName = "username"
+        let expectedMessage = "Username parameter was an empty string"
+
+        let result = Member.validateUsername String.empty
+
+        test <@ result.IsInvalid @>
+        test <@ result.ParamName = expectedParamName @>
+        test <@ result.Message = expectedMessage @>
+
+    [<Test>]
+    let ``Calling validate username, with username shorter than 3, returns expected validation result`` () =
+        let expectedParamName = "username"
+        let expectedMessage = "Username parameter was shorter than 3 characters"
+
+        let result = Member.validateUsername (String.random 2)
+
+        test <@ result.IsInvalid @>
+        test <@ result.ParamName = expectedParamName @>
+        test <@ result.Message = expectedMessage @>
+
+    [<Test>]
+    let ``Calling validate username, with username longer than 32, returns expected validation result`` () =
+        let expectedParamName = "username"
+        let expectedMessage = "Username parameter was longer than 32 characters"
+
+        let result = Member.validateUsername (String.random 33)
+
+        test <@ result.IsInvalid @>
+        test <@ result.ParamName = expectedParamName @>
+        test <@ result.Message = expectedMessage @>
+
+    [<Test>]
+    let ``Calling validate username, with valid username, returns no messages`` () =
+        let result = Member.validateUsername (String.random 32)
 
         test <@ result.IsValid @>
 
@@ -80,10 +122,8 @@ module MemberTests =
         let result = Member.validateName null
 
         test <@ result.IsInvalid @>
-        let actualParamName = result.ParamName
-        test <@ actualParamName = expectedParamName @>
-        let actualMessage = result.Message
-        test <@ actualMessage = expectedMessage @>
+        test <@ result.ParamName = expectedParamName @>
+        test <@ result.Message = expectedMessage @>
 
     [<Test>]
     let ``Calling validate name, with empty name, returns expected validation result`` () =
@@ -93,13 +133,11 @@ module MemberTests =
         let result = Member.validateName String.empty
 
         test <@ result.IsInvalid @>
-        let actualParamName = result.ParamName
-        test <@ actualParamName = expectedParamName @>
-        let actualMessage = result.Message
-        test <@ actualMessage = expectedMessage @>
+        test <@ result.ParamName = expectedParamName @>
+        test <@ result.Message = expectedMessage @>
 
     [<Test>]
     let ``Calling validate name, with valid name, returns no messages`` () =
-        let result = Member.validateName <| randomString ()
+        let result = Member.validateName (String.random 64)
 
         test <@ result.IsValid @>

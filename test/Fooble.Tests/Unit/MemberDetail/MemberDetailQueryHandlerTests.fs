@@ -14,9 +14,9 @@ module MemberDetailQueryHandlerTests =
 
     [<Test>]
     let ``Calling make, with valid parameters, returns query handler`` () =
-        let queryHandler = MemberDetail.QueryHandler.make <| mock ()
+        let handler = MemberDetail.QueryHandler.make (mock ())
 
-        test <@ box queryHandler :? IRequestHandler<IMemberDetailQuery, IMemberDetailQueryResult> @>
+        test <@ box handler :? IRequestHandler<IMemberDetailQuery, IMemberDetailQueryResult> @>
 
     [<Test>]
     let ``Calling handle, with no matching member in data store, returns expected result`` () =
@@ -24,10 +24,10 @@ module MemberDetailQueryHandlerTests =
         let contextMock = Mock<IFoobleContext>()
         contextMock.SetupFunc(fun x -> x.MemberData).Returns(memberSetMock.Object).Verifiable()
 
-        let query = MemberDetail.Query.make <| randomGuid ()
-        let queryHandler = MemberDetail.QueryHandler.make contextMock.Object
+        let query = MemberDetail.Query.make (Guid.random ())
+        let handler = MemberDetail.QueryHandler.make contextMock.Object
 
-        let queryResult = queryHandler.Handle(query)
+        let queryResult = handler.Handle(query)
 
         contextMock.Verify()
 
@@ -36,18 +36,19 @@ module MemberDetailQueryHandlerTests =
 
     [<Test>]
     let ``Calling handle, with matching member in data store, returns expected result`` () =
-        let expectedId = randomGuid ()
-        let expectedName = randomString ()
+        let expectedId = Guid.random ()
+        let expectedUsername = String.random 32
+        let expectedName = String.random 64
 
-        let memberData = Seq.singleton <| MemberData(Id = expectedId, Name = expectedName)
+        let memberData = Seq.singleton (MemberData(Id = expectedId, Username = expectedUsername, Name = expectedName))
         let memberSetMock = makeObjectSet memberData
         let contextMock = Mock<IFoobleContext>()
-        contextMock.SetupFunc(fun c -> c.MemberData).Returns(memberSetMock.Object).Verifiable()
+        contextMock.SetupFunc(fun x -> x.MemberData).Returns(memberSetMock.Object).Verifiable()
 
         let query = MemberDetail.Query.make expectedId
-        let queryHandler = MemberDetail.QueryHandler.make contextMock.Object
+        let handler = MemberDetail.QueryHandler.make contextMock.Object
 
-        let queryResult = queryHandler.Handle(query)
+        let queryResult = handler.Handle(query)
 
         contextMock.Verify()
 
@@ -55,6 +56,6 @@ module MemberDetailQueryHandlerTests =
         test <@ not <| queryResult.IsNotFound @>
 
         let actualReadModel = queryResult.ReadModel
-
         test <@ actualReadModel.Id = expectedId @>
+        test <@ actualReadModel.Username = expectedUsername @>
         test <@ actualReadModel.Name = expectedName @>

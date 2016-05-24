@@ -53,14 +53,14 @@ module MessageDisplay =
         /// <returns>Returns a message display severity of "informational".</returns>
         [<CompiledName("Informational")>]
         let informational = Informational :> IMessageDisplaySeverity
-    
+
         /// <summary>
         /// Represents a message display severity of "warning".
         /// </summary>
         /// <returns>Returns a message display severity of "warning".</returns>
         [<CompiledName("Warning")>]
         let warning = Warning :> IMessageDisplaySeverity
-    
+
         /// <summary>
         /// Represents a message display severity of "error".
         /// </summary>
@@ -119,12 +119,12 @@ module MessageDisplay =
         [<CompiledName("Make")>]
         let make heading subHeading statusCode severity message =
 
-            [ (notIsNull), "Heading parameter was null"
-              (String.notIsEmpty), "Heading parameter was an empty string" ]
+            [ (isNotNull), "Heading parameter was null"
+              (String.isNotEmpty), "Heading parameter was an empty string" ]
             |> Validation.validate heading "heading"
             |> Validation.raiseIfInvalid
 
-            [ (notIsNull), "Sub-heading parameter was null" ]
+            [ (isNotNull), "Sub-heading parameter was null" ]
             |> Validation.validate subHeading "subHeading"
             |> Validation.raiseIfInvalid
 
@@ -132,8 +132,8 @@ module MessageDisplay =
             |> Validation.validate statusCode "statusCode"
             |> Validation.raiseIfInvalid
 
-            [ (notIsNull), "Message parameter was null"
-              (String.notIsEmpty), "Message parameter was an empty string" ]
+            [ (isNotNull), "Message parameter was null"
+              (String.isNotEmpty), "Message parameter was an empty string" ]
             |> Validation.validate message "message"
             |> Validation.raiseIfInvalid
 

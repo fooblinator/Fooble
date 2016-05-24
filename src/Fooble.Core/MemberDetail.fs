@@ -3,7 +3,6 @@
 open Fooble.Core.Persistence
 open MediatR
 open System
-open System.Diagnostics
 
 /// Provides functionality used in the querying and presentation of member details.
 [<RequireQualifiedAccess>]
@@ -55,24 +54,34 @@ module MemberDetail =
 
         [<DefaultAugmentation(false)>]
         type private Implementation =
-            | ReadModel of Guid * string
+            | ReadModel of Guid * string * string
 
             interface IMemberDetailReadModel with
 
                 member this.Id
                     with get() =
                         match this with
-                        | ReadModel (x, _) -> x
+                        | ReadModel (x, _, _) -> x
+
+                member this.Username
+                    with get() =
+                        match this with
+                        | ReadModel (_, x, _) -> x
 
                 member this.Name
                     with get() =
                         match this with
-                        | ReadModel (_, x) -> x
+                        | ReadModel (_, _, x) -> x
 
-        let internal make id name =
-            Debug.Assert(notIsNull name, "Name parameter was null")
-            Debug.Assert(String.notIsEmpty name, "Name parameter was an empty string")
-            ReadModel (id, name) :> IMemberDetailReadModel
+        let internal make id username name =
+            assert (Guid.isNotEmpty id)
+            assert (isNotNull username)
+            assert (String.isNotEmpty username)
+            assert (String.isNotShorter 3 username)
+            assert (String.isNotLonger 32 username)
+            assert (isNotNull name)
+            assert (String.isNotEmpty name)
+            ReadModel (id, username, name) :> IMemberDetailReadModel
 
 
 
@@ -105,9 +114,9 @@ module MemberDetail =
                         match this with
                         | NotFound -> true
                         | _ -> false
-    
+
         let internal makeSuccess readModel =
-            Debug.Assert(notIsNull <| box readModel, "Read model parameter was null")
+            assert (isNotNull <| box readModel)
             Success readModel :> IMemberDetailQueryResult
 
         let internal notFound = NotFound :> IMemberDetailQueryResult
@@ -131,13 +140,13 @@ module MemberDetail =
             interface IRequestHandler<IMemberDetailQuery, IMemberDetailQueryResult> with
 
                 member this.Handle(query) =
-                    Debug.Assert(notIsNull <| box query, "Query parameter was null")
+                    assert (isNotNull <| box query)
                     Seq.tryFind (fun (x:MemberData) -> x.Id = query.Id) this.Context.MemberData
-                    |> Option.map (fun x -> ReadModel.make x.Id x.Name)
+                    |> Option.map (fun x -> ReadModel.make x.Id x.Username x.Name)
                     |> function
                        | Some x -> QueryResult.makeSuccess x
                        | None -> QueryResult.notFound
 
         let internal make context =
-            Debug.Assert(notIsNull context, "Context parameter was null")
+            assert (isNotNull context)
             QueryHandler context :> IRequestHandler<IMemberDetailQuery, IMemberDetailQueryResult>

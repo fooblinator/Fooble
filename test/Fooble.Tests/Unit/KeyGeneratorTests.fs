@@ -20,4 +20,4 @@ module KeyGeneratorTests =
 
         let key = keyGenerator.GenerateKey()
 
-        test <@ Guid.notIsEmpty key @>
+        test <@ Guid.isNotEmpty key @>

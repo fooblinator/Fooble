@@ -4,30 +4,36 @@ open Fooble.Core
 open Fooble.Tests
 open NUnit.Framework
 open Swensen.Unquote
- 
+
 [<TestFixture>]
 module MemberDetailReadModelTests =
- 
+
     [<Test>]
     let ``Calling make, with valid parameters, returns read model`` () =
-        let readModel = MemberDetail.ReadModel.make <|| (randomGuid (), randomString ())
+        let readModel = MemberDetail.ReadModel.make (Guid.random ()) (String.random 32) (String.random 64)
 
         test <@ box readModel :? IMemberDetailReadModel @>
 
     [<Test>]
     let ``Calling id, returns expected id`` () =
-        let expectedId = randomGuid ()
+        let expectedId = Guid.random ()
 
-        let readModel = MemberDetail.ReadModel.make <|| (expectedId, randomString ())
+        let readModel = MemberDetail.ReadModel.make expectedId (String.random 32) (String.random 64)
 
-        let actualId = readModel.Id
-        test <@ actualId = expectedId @>
+        test <@ readModel.Id = expectedId @>
+
+    [<Test>]
+    let ``Calling username, returns expected username`` () =
+        let expectedUsername = String.random 32
+
+        let readModel = MemberDetail.ReadModel.make (Guid.random ()) expectedUsername (String.random 64)
+
+        test <@ readModel.Username = expectedUsername @>
 
     [<Test>]
     let ``Calling name, returns expected name`` () =
-        let expectedName = randomString ()
+        let expectedName = String.random 64
 
-        let readModel = MemberDetail.ReadModel.make <|| (randomGuid (), expectedName)
+        let readModel = MemberDetail.ReadModel.make (Guid.random ()) (String.random 32) expectedName
 
-        let actualName = readModel.Name
-        test <@ actualName = expectedName @>
+        test <@ readModel.Name = expectedName @>

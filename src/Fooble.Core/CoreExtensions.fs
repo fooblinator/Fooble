@@ -18,7 +18,7 @@ type CoreExtensions =
     [<Extension>]
     static member ToMessageDisplayReadModel result =
 
-        [ (notIsNull << box), "Result parameter was null" ]
+        [ (isNotNull << box), "Result parameter was null" ]
         |> Validation.validate result "result"
         |> Validation.raiseIfInvalid
 
@@ -43,7 +43,7 @@ type CoreExtensions =
     [<Extension>]
     static member ToMessageDisplayReadModel result =
 
-        [ (notIsNull << box), "Result parameter was null" ]
+        [ (isNotNull << box), "Result parameter was null" ]
         |> Validation.validate result "result"
         |> Validation.raiseIfInvalid
 
@@ -53,6 +53,31 @@ type CoreExtensions =
         | MemberList.IsNotFound ->
             MessageDisplay.ReadModel.make "Member" "List" 200 MessageDisplay.Severity.informational
                 "No members have yet been added."
+
+
+
+    (* Self-Service Register *)
+
+    /// <summary>
+    /// Constructs a message display read model from a self-service register command result.
+    /// </summary>
+    /// <param name="result">The self-service register command result to extend.</param>
+    /// <returns>Returns a message display read model.</returns>
+    /// <remarks>This method should only be called on unsuccessful results. For displaying a "success" result, use
+    /// <see cref="MessageDisplay.ReadModel.Make"/> directly.</remarks>
+    [<Extension>]
+    static member ToMessageDisplayReadModel result =
+
+        [ (isNotNull << box), "Result parameter was null" ]
+        |> Validation.validate result "result"
+        |> Validation.raiseIfInvalid
+
+        match result with
+        | SelfServiceRegister.IsSuccess -> invalidOp "Result was not unsuccessful"
+
+        | SelfServiceRegister.IsUsernameUnavailable ->
+            MessageDisplay.ReadModel.make "Self-Service" "Register" 400 MessageDisplay.Severity.warning
+                "Requested username is unavailable."
 
 
 
@@ -68,7 +93,7 @@ type CoreExtensions =
     [<Extension>]
     static member ToMessageDisplayReadModel result =
 
-        [ (notIsNull << box), "Result parameter was null" ]
+        [ (isNotNull << box), "Result parameter was null" ]
         |> Validation.validate result "result"
         |> Validation.raiseIfInvalid
 

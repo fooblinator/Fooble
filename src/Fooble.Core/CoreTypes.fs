@@ -21,6 +21,8 @@ type IKeyGenerator =
 type IMemberDetailReadModel =
     /// The id that represents the member.
     abstract Id:Guid with get
+    /// The username of the member.
+    abstract Username:string with get
     /// The name of the member.
     abstract Name:string with get
 
@@ -106,11 +108,23 @@ type IMessageDisplayReadModel =
 
 (* Self Service Register *)
 
+/// <summary>
+/// Represents the status of a self-service registration command.
+/// </summary>
+/// <remarks>The result is only one of "success" or "username unavailable".</remarks>
+type ISelfServiceRegisterCommandResult =
+    /// Whether the result is "success" (or not).
+    abstract IsSuccess:bool with get
+    /// Whether the result is "username unavailable" (or not).
+    abstract IsUsernameUnavailable:bool with get
+
 /// Represents the self-service registration command, and contains the potential member's detailed information.
 type ISelfServiceRegisterCommand =
-    inherit IRequest<Unit>
+    inherit IRequest<ISelfServiceRegisterCommandResult>
     /// The id that will potentially represent the member.
     abstract Id:Guid with get
+    /// The username of the member.
+    abstract Username:string with get
     /// The name of the member.
     abstract Name:string with get
 
@@ -118,6 +132,8 @@ type ISelfServiceRegisterCommand =
 type ISelfServiceRegisterViewModel =
     /// The name of the member.
     abstract Name:string with get
+    /// The username of the member.
+    abstract Username:string with get
 
 
 

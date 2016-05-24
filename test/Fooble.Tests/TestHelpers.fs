@@ -15,17 +15,31 @@ module internal Helpers =
     (* Extensions *)
 
     [<RequireQualifiedAccess>]
-    module internal Guid =       
-        let internal empty = System.Guid.Empty
+    module internal Guid =
+        let internal empty = Guid.Empty
         let internal isEmpty x = x = empty
-        let internal notIsEmpty x = not <| isEmpty x
+        let internal isNotEmpty x = not <| isEmpty x
+        let internal random () = Guid.NewGuid()
+        let internal toString (x:Guid) = x.ToString()
 
     [<RequireQualifiedAccess>]
     module internal String =
-        let internal empty = System.String.Empty
+        let internal empty = String.Empty
         let internal isEmpty x = x = empty
+        let internal ofGuid x = Guid.toString x
+        let internal toArray (x:string) = x.ToCharArray()
+
+        let internal random len =
+            assert (len > 0)
+            Seq.init (len / 32 + 1) (fun _ -> Guid.random () |> ofGuid |> toArray)
+            |> Array.concat
+            |> Array.filter (fun x -> x <> '-')
+            |> Array.take len
+            |> String
 
     (* Misc *)
+
+    let internal isNotNull x = not <| isNull x
 
     let internal fixInvalidArgMessage (message:string) =
         let i = message.IndexOf("Parameter name: ")
@@ -39,13 +53,3 @@ module internal Helpers =
         setMock.As<IQueryable<'T>>().SetupFunc(fun m -> m.ElementType).Returns(queryable.ElementType).End
         setMock.As<IQueryable<'T>>().SetupFunc(fun m -> m.GetEnumerator()).Returns(queryable.GetEnumerator()).End
         setMock
-
-    let internal notIsNull x = not <| isNull x
-    let internal randomGuid () = Guid.NewGuid()
-    let internal randomString () = sprintf "%A" <| randomGuid ()
-
-    let internal randomNonGuidString () =
-        (randomString ()).ToCharArray()
-        |> Array.filter (fun c -> c <> '-')
-        |> Array.take 16
-        |> String

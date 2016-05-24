@@ -84,6 +84,7 @@
     <Compile Include="Unit\MessageDisplay\MessageDisplayReadModelTests.fs" />
     <Compile Include="Unit\MessageDisplay\MessageDisplaySeverityTests.fs" />
     <Compile Include="Unit\SelfServiceRegister\SelfServiceRegisterCommandHandlerTests.fs" />
+    <Compile Include="Unit\SelfServiceRegister\SelfServiceRegisterCommandResultTests.fs" />
     <Compile Include="Unit\SelfServiceRegister\SelfServiceRegisterCommandTests.fs" />
     <Compile Include="Unit\SelfServiceRegister\SelfServiceRegisterReadModelTests.fs" />
   </ItemGroup>

@@ -1,7 +1,5 @@
 ﻿namespace Fooble.Core
 
-open System.Diagnostics
-
 [<RequireQualifiedAccess>]
 module internal Validation =
 
@@ -53,10 +51,10 @@ module internal Validation =
         let internal valid = Valid :> IValidationResult
 
         let internal makeInvalid paramName message =
-            Debug.Assert(notIsNull paramName, "Param name parameter was null")
-            Debug.Assert(String.notIsEmpty paramName, "Param name parameter was an empty string")
-            Debug.Assert(notIsNull message, "Message parameter was null")
-            Debug.Assert(String.notIsEmpty message, "Message parameter was an empty string")
+            assert (isNotNull paramName)
+            assert (String.isNotEmpty paramName)
+            assert (isNotNull message)
+            assert (String.isNotEmpty message)
             Invalid(paramName, message) :> IValidationResult
 
 

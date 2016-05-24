@@ -22,50 +22,54 @@ module MemberControllerToQueryHandlerTests =
         let builder = ContainerBuilder()
         ignore <| builder.RegisterModule(AutofacModule(context))
         let container = builder.Build()
-        
+
         let mediator = container.Resolve<IMediator>()
         ignore <| new MemberController(mediator)
 
     [<Test>]
     let ``Calling detail, with matches in data store, returns expected result`` () =
-        let expectedId = randomGuid ()
-        let expectedName = randomString ()
+        let expectedId = Guid.random ()
+        let expectedUsername = String.random 32
+        let expectedName = String.random 64
 
-        let memberData = MemberData(Id = expectedId, Name = expectedName)
-        let memberSetMock = makeObjectSet <| Seq.singleton memberData
+        let memberData = MemberData(Id = expectedId, Username = expectedUsername, Name = expectedName)
+        let memberSetMock = makeObjectSet (Seq.singleton memberData)
         let contextMock = Mock<IFoobleContext>()
-        contextMock.SetupFunc(fun c -> c.MemberData).Returns(memberSetMock.Object).Verifiable()
+        contextMock.SetupFunc(fun x -> x.MemberData).Returns(memberSetMock.Object).Verifiable()
 
         let builder = ContainerBuilder()
         ignore <| builder.RegisterModule(AutofacModule(contextMock.Object))
         let container = builder.Build()
-        
+
         let mediator = container.Resolve<IMediator>()
         let controller = new MemberController(mediator)
         let result = controller.Detail(expectedId.ToString())
 
         contextMock.Verify()
 
-        test <@ notIsNull result @>
+        test <@ isNotNull result @>
         test <@ result :? ViewResult @>
 
         let viewResult = result :?> ViewResult
 
         test <@ String.isEmpty viewResult.ViewName @>
-        test <@ notIsNull viewResult.Model @>
+        test <@ isNotNull viewResult.Model @>
         test <@ viewResult.Model :? IMemberDetailReadModel @>
 
         let actualViewModel = viewResult.Model :?> IMemberDetailReadModel
 
         test <@ actualViewModel.Id = expectedId @>
+        test <@ actualViewModel.Username = expectedUsername @>
         test <@ actualViewModel.Name = expectedName @>
 
     [<Test>]
     let ``Calling detail, with no matches in data store, returns expected result`` () =
-        let nonMatchingId = randomGuid ()
-        let expectedReadModel =
-            MessageDisplay.ReadModel.make "Member" "Detail" 404 MessageDisplay.Severity.warning
-                "No matching member could be found."
+        let nonMatchingId = Guid.random ()
+        let expectedHeading = "Member"
+        let expectedSubHeading = "Detail"
+        let expectedStatusCode = 404
+        let expectedSeverity = MessageDisplay.Severity.warning
+        let expectedMessage = "No matching member could be found."
 
         let memberSet = makeObjectSet Seq.empty<MemberData>
         let contextMock = Mock<IFoobleContext>()
@@ -74,49 +78,54 @@ module MemberControllerToQueryHandlerTests =
         let builder = ContainerBuilder()
         ignore <| builder.RegisterModule(AutofacModule(contextMock.Object))
         let container = builder.Build()
-        
+
         let mediator = container.Resolve<IMediator>()
         let controller = new MemberController(mediator)
         let result = controller.Detail(nonMatchingId.ToString())
 
         contextMock.Verify()
 
-        test <@ notIsNull result @>
+        test <@ isNotNull result @>
         test <@ result :? ViewResult @>
 
         let viewResult = result :?> ViewResult
 
         test <@ viewResult.ViewName = "MessageDisplay" @>
-        test <@ notIsNull viewResult.Model @>
+        test <@ isNotNull viewResult.Model @>
         test <@ viewResult.Model :? IMessageDisplayReadModel @>
 
         let actualReadModel = viewResult.Model :?> IMessageDisplayReadModel
-        test <@ actualReadModel = expectedReadModel @>
+        test <@ actualReadModel.Heading = expectedHeading @>
+        test <@ actualReadModel.SubHeading = expectedSubHeading @>
+        test <@ actualReadModel.StatusCode = expectedStatusCode @>
+        test <@ actualReadModel.Severity = expectedSeverity @>
+        test <@ actualReadModel.Message = expectedMessage @>
 
     [<Test>]
     let ``Calling list, with matches in data store, returns expected result`` () =
-        let memberData = List.init 5 <| fun _ -> MemberData(Id = randomGuid (), Name = randomString ())
-        let memberSetMock = makeObjectSet <| Seq.ofList memberData
+        let memberData = List.init 5 (fun _ ->
+            MemberData(Id = Guid.random (), Username = String.random 32, Name = String.random 64))
+        let memberSetMock = makeObjectSet (Seq.ofList memberData)
         let contextMock = Mock<IFoobleContext>()
         contextMock.SetupFunc(fun c -> c.MemberData).Returns(memberSetMock.Object).Verifiable()
 
         let builder = ContainerBuilder()
         ignore <| builder.RegisterModule(AutofacModule(contextMock.Object))
         let container = builder.Build()
-        
+
         let mediator = container.Resolve<IMediator>()
         let controller = new MemberController(mediator)
         let result = controller.List()
 
         contextMock.Verify()
 
-        test <@ notIsNull result @>
+        test <@ isNotNull result @>
         test <@ result :? ViewResult @>
 
         let viewResult = result :?> ViewResult
 
         test <@ String.isEmpty viewResult.ViewName @>
-        test <@ notIsNull viewResult.Model @>
+        test <@ isNotNull viewResult.Model @>
         test <@ viewResult.Model :? IMemberListReadModel @>
 
         let actualMembers = Seq.toList (viewResult.Model :?> IMemberListReadModel).Members
@@ -127,32 +136,38 @@ module MemberControllerToQueryHandlerTests =
 
     [<Test>]
     let ``Calling list, with no matches in data store, returns expected result`` () =
-        let expectedReadModel =
-            MessageDisplay.ReadModel.make "Member" "List" 200 MessageDisplay.Severity.informational
-                "No members have yet been added."
+        let expectedHeading = "Member"
+        let expectedSubHeading = "List"
+        let expectedStatusCode = 200
+        let expectedSeverity = MessageDisplay.Severity.informational
+        let expectedMessage = "No members have yet been added."
 
         let memberSetMock = makeObjectSet Seq.empty<MemberData>
         let contextMock = Mock<IFoobleContext>()
-        contextMock.SetupFunc(fun c -> c.MemberData).Returns(memberSetMock.Object).Verifiable()
+        contextMock.SetupFunc(fun x -> x.MemberData).Returns(memberSetMock.Object).Verifiable()
 
         let builder = ContainerBuilder()
         ignore <| builder.RegisterModule(AutofacModule(contextMock.Object))
         let container = builder.Build()
-        
+
         let mediator = container.Resolve<IMediator>()
         let controller = new MemberController(mediator)
         let result = controller.List()
 
         contextMock.Verify()
 
-        test <@ notIsNull result @>
+        test <@ isNotNull result @>
         test <@ result :? ViewResult @>
 
         let viewResult = result :?> ViewResult
 
         test <@ viewResult.ViewName = "MessageDisplay" @>
-        test <@ notIsNull viewResult.Model @>
+        test <@ isNotNull viewResult.Model @>
         test <@ viewResult.Model :? IMessageDisplayReadModel @>
 
         let actualReadModel = viewResult.Model :?> IMessageDisplayReadModel
-        test <@ actualReadModel = expectedReadModel @>
+        test <@ actualReadModel.Heading = expectedHeading @>
+        test <@ actualReadModel.SubHeading = expectedSubHeading @>
+        test <@ actualReadModel.StatusCode = expectedStatusCode @>
+        test <@ actualReadModel.Severity = expectedSeverity @>
+        test <@ actualReadModel.Message = expectedMessage @>

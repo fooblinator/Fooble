@@ -22,14 +22,14 @@ module SelfServiceControllerToCommandHandlerTests =
         let builder = ContainerBuilder()
         ignore <| builder.RegisterModule(AutofacModule(context))
         let container = builder.Build()
-        
+
         let mediator = container.Resolve<IMediator>()
         let keyGenerator = container.Resolve<IKeyGenerator>()
         ignore <| new SelfServiceController(mediator, keyGenerator)
 
     [<Test>]
-    let ``Calling register post, returns expected result`` () =
-        let expectedId = randomGuid ()
+    let ``Calling register post, with no existing username in data store, returns expected result`` () =
+        let expectedId = Guid.random ()
 
         let memberSetMock = makeObjectSet Seq.empty<MemberData>
         memberSetMock.SetupAction(fun x -> x.AddObject(any ())).Verifiable()
@@ -45,13 +45,12 @@ module SelfServiceControllerToCommandHandlerTests =
         let keyGeneratorMock = Mock<IKeyGenerator>()
         keyGeneratorMock.SetupFunc(fun x -> x.GenerateKey()).Returns(expectedId).Verifiable()
 
-        let name = randomString ()
         let controller = new SelfServiceController(mediator, keyGeneratorMock.Object)
-        let result = controller.Register(name);
+        let result = controller.Register(String.random 32, String.random 64);
 
         keyGeneratorMock.Verify()
 
-        test <@ notIsNull result @>
+        test <@ isNotNull result @>
         test <@ result :? RedirectToRouteResult @>
 
         let redirectResult = result :?> RedirectToRouteResult
@@ -63,7 +62,7 @@ module SelfServiceControllerToCommandHandlerTests =
         test <@ routeValues.ContainsKey("action") @>
         test <@ routeValues.["action"].ToString().ToLowerInvariant() = "detail" @>
 
-        let expectedIdString = expectedId.ToString()
+        let expectedIdString = String.ofGuid expectedId
 
         test <@ routeValues.ContainsKey("id") @>
         test <@ routeValues.["id"].ToString().ToLowerInvariant() = expectedIdString @>

@@ -17,37 +17,37 @@ module ValidationResultTests =
 
     [<Test>]
     let ``Calling make invalid, with valid parameters, returns validation result`` () =
-        let result = Validation.Result.makeInvalid <|| (randomString (), randomString ())
+        let result = Validation.Result.makeInvalid (String.random 64) (String.random 64)
 
         test <@ box result :? IValidationResult @>
-    
+
     [<Test>]
     let ``Calling param name, with valid validation result, raises expected exception`` () =
         let expectedMessage = "Result was not invalid"
-        
+
         let result = Validation.Result.valid
-        raisesWith<InvalidOperationException> <@ result.ParamName @> (fun e -> <@ e.Message = expectedMessage @>)
+        raisesWith<InvalidOperationException> <@ result.ParamName @> (fun x -> <@ x.Message = expectedMessage @>)
 
     [<Test>]
     let ``Calling param name, with invalid validation result, returns expected param name`` () =
-        let expectedParamName = randomString ()
+        let expectedParamName = String.random 64
 
-        let result = Validation.Result.makeInvalid <|| (expectedParamName, randomString ())
+        let result = Validation.Result.makeInvalid expectedParamName (String.random 64)
 
         test <@ result.ParamName = expectedParamName @>
-    
+
     [<Test>]
     let ``Calling message, with valid validation result, raises expected exception`` () =
         let expectedMessage = "Result was not invalid"
-        
+
         let result = Validation.Result.valid
-        raisesWith<InvalidOperationException> <@ result.Message @> (fun e -> <@ e.Message = expectedMessage @>)
+        raisesWith<InvalidOperationException> <@ result.Message @> (fun x -> <@ x.Message = expectedMessage @>)
 
     [<Test>]
     let ``Calling message, with invalid validation result, returns expected message`` () =
-        let expectedMessage = randomString ()
+        let expectedMessage = String.random 64
 
-        let result = Validation.Result.makeInvalid <|| (randomString (), expectedMessage)
+        let result = Validation.Result.makeInvalid (String.random 64) expectedMessage
 
         test <@ result.Message = expectedMessage @>
 
@@ -59,7 +59,7 @@ module ValidationResultTests =
 
     [<Test>]
     let ``Calling is valid, with invalid result, returns false`` () =
-        let result = Validation.Result.makeInvalid <|| (randomString (), randomString ())
+        let result = Validation.Result.makeInvalid (String.random 64) (String.random 64)
 
         test <@ not <| result.IsValid @>
 
@@ -71,6 +71,6 @@ module ValidationResultTests =
 
     [<Test>]
     let ``Calling is invalid, with invalid result, returns true`` () =
-        let result = Validation.Result.makeInvalid <|| (randomString (), randomString ())
+        let result = Validation.Result.makeInvalid (String.random 64) (String.random 64)
 
         test <@ result.IsInvalid @>

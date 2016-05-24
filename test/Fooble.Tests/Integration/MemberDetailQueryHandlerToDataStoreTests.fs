@@ -13,15 +13,15 @@ module MemberDetailQueryHandlerToDataStoreTests =
     [<Test>]
     let ``Calling make, with valid parameters, returns query handler`` () =
         let connectionString = Settings.ConnectionStrings.FoobleContext
-        use context = makeFoobleContext <| Some connectionString
-        let queryHandler = MemberDetail.QueryHandler.make context
+        use context = makeFoobleContext (Some connectionString)
+        let handler = MemberDetail.QueryHandler.make context
 
-        test <@ box queryHandler :? IRequestHandler<IMemberDetailQuery, IMemberDetailQueryResult> @>
+        test <@ box handler :? IRequestHandler<IMemberDetailQuery, IMemberDetailQueryResult> @>
 
     [<Test>]
     let ``Calling handle, with no matching member in data store, returns expected result`` () =
         let connectionString = Settings.ConnectionStrings.FoobleContext
-        use context = makeFoobleContext <| Some connectionString
+        use context = makeFoobleContext (Some connectionString)
 
         // remove all existing members from the data store
         Seq.iter (fun x -> context.MemberData.DeleteObject(x)) context.MemberData
@@ -29,36 +29,37 @@ module MemberDetailQueryHandlerToDataStoreTests =
         // persist changes to the data store
         ignore <| context.SaveChanges()
 
-        let queryHandler = MemberDetail.QueryHandler.make context
+        let handler = MemberDetail.QueryHandler.make context
 
-        let query = MemberDetail.Query.make <| randomGuid ()
-        let queryResult = queryHandler.Handle(query)
+        let query = MemberDetail.Query.make (Guid.random ())
+        let queryResult = handler.Handle(query)
 
         test <@ queryResult.IsNotFound @>
         test <@ not <| queryResult.IsSuccess @>
 
     [<Test>]
     let ``Calling handle, with matching member in data store, returns expected result`` () =
-        let expectedId = randomGuid ()
-        let expectedName = randomString ()
+        let expectedId = Guid.random ()
+        let expectedUsername = String.random 32
+        let expectedName = String.random 64
 
         let connectionString = Settings.ConnectionStrings.FoobleContext
-        use context = makeFoobleContext <| Some connectionString
+        use context = makeFoobleContext (Some connectionString)
 
         // remove all existing members from the data store
         Seq.iter (fun x -> context.MemberData.DeleteObject(x)) context.MemberData
 
         // add matching member to the data store
-        let memberData = MemberData(Id = expectedId, Name = expectedName)
+        let memberData = MemberData(Id = expectedId, Username = expectedUsername, Name = expectedName)
         context.MemberData.AddObject(memberData)
 
         // persist changes to the data store
         ignore <| context.SaveChanges()
 
-        let queryHandler = MemberDetail.QueryHandler.make context
+        let handler = MemberDetail.QueryHandler.make context
 
         let query = MemberDetail.Query.make expectedId
-        let queryResult = queryHandler.Handle(query)
+        let queryResult = handler.Handle(query)
 
         test <@ queryResult.IsSuccess @>
         test <@ not <| queryResult.IsNotFound @>
@@ -66,4 +67,5 @@ module MemberDetailQueryHandlerToDataStoreTests =
         let actualReadModel = queryResult.ReadModel
 
         test <@ actualReadModel.Id = expectedId @>
+        test <@ actualReadModel.Username = expectedUsername @>
         test <@ actualReadModel.Name = expectedName @>

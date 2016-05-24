@@ -14,9 +14,9 @@ module MemberListQueryHandlerTests =
 
     [<Test>]
     let ``Calling make, with valid parameters, returns query handler`` () =
-        let queryHandler = MemberList.QueryHandler.make <| mock ()
+        let handler = MemberList.QueryHandler.make <| mock ()
 
-        test <@ box queryHandler :? IRequestHandler<IMemberListQuery, IMemberListQueryResult> @>
+        test <@ box handler :? IRequestHandler<IMemberListQuery, IMemberListQueryResult> @>
 
     [<Test>]
     let ``Calling handle, with no members in data store, returns expected result`` () =
@@ -25,9 +25,9 @@ module MemberListQueryHandlerTests =
         contextMock.SetupFunc(fun x -> x.MemberData).Returns(memberSetMock.Object).Verifiable()
 
         let query = MemberList.Query.make ()
-        let queryHandler = MemberList.QueryHandler.make contextMock.Object
+        let handler = MemberList.QueryHandler.make contextMock.Object
 
-        let queryResult = queryHandler.Handle(query)
+        let queryResult = handler.Handle(query)
 
         contextMock.Verify()
 
@@ -36,15 +36,16 @@ module MemberListQueryHandlerTests =
 
     [<Test>]
     let ``Calling handle, with members in data store, returns expected result`` () =
-        let memberData = List.init 5 <| fun _ -> MemberData(Id = randomGuid (), Name = randomString ())
-        let memberSetMock = makeObjectSet <| Seq.ofList memberData
+        let memberData = List.init 5 <| fun _ ->
+            MemberData(Id = Guid.random (), Username = String.random 32, Name = String.random 64)
+        let memberSetMock = makeObjectSet (Seq.ofList memberData)
         let contextMock = Mock<IFoobleContext>()
-        contextMock.SetupFunc(fun c -> c.MemberData).Returns(memberSetMock.Object).Verifiable()
+        contextMock.SetupFunc(fun x -> x.MemberData).Returns(memberSetMock.Object).Verifiable()
 
         let query = MemberList.Query.make ()
-        let queryHandler = MemberList.QueryHandler.make contextMock.Object
+        let handler = MemberList.QueryHandler.make contextMock.Object
 
-        let queryResult = queryHandler.Handle(query)
+        let queryResult = handler.Handle(query)
 
         contextMock.Verify()
 
@@ -52,7 +53,6 @@ module MemberListQueryHandlerTests =
         test <@ not <| queryResult.IsNotFound @>
 
         let actualMembers = Seq.toList queryResult.ReadModel.Members
-
         test <@ List.length actualMembers = 5 @>
         for current in actualMembers do
             let findResult = List.tryFind (fun (x:MemberData) -> x.Id = current.Id && x.Name = current.Name) memberData

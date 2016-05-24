@@ -13,15 +13,15 @@ module SelfServiceRegistrationCommandHandlerToDataStoreTests =
     [<Test>]
     let ``Calling make, with valid parameters, returns command handler`` () =
         let connectionString = Settings.ConnectionStrings.FoobleContext
-        use context = makeFoobleContext <| Some connectionString
-        let commandHandler = SelfServiceRegister.CommandHandler.make context
+        use context = makeFoobleContext (Some connectionString)
+        let handler = SelfServiceRegister.CommandHandler.make context
 
-        test <@ box commandHandler :? IRequestHandler<ISelfServiceRegisterCommand, Unit> @>
+        test <@ box handler :? IRequestHandler<ISelfServiceRegisterCommand, ISelfServiceRegisterCommandResult> @>
 
     [<Test>]
-    let ``Calling handle, registers new member, and completes without exception`` () =
+    let ``Calling handle, with no existing username in data store, registers new member, and completes without exception`` () =
         let connectionString = Settings.ConnectionStrings.FoobleContext
-        use context = makeFoobleContext <| Some connectionString
+        use context = makeFoobleContext (Some connectionString)
 
         // remove all existing members from the data store
         Seq.iter (fun x -> context.MemberData.DeleteObject(x)) context.MemberData
@@ -29,7 +29,7 @@ module SelfServiceRegistrationCommandHandlerToDataStoreTests =
         // persist changes to the data store
         ignore <| context.SaveChanges()
 
-        let commandHandler = SelfServiceRegister.CommandHandler.make context
+        let handler = SelfServiceRegister.CommandHandler.make context
 
-        let command = SelfServiceRegister.Command.make <|| (randomGuid (), randomString ())
-        ignore <| commandHandler.Handle(command)
+        let command = SelfServiceRegister.Command.make (Guid.random ()) (String.random 32) (String.random 64)
+        ignore <| handler.Handle(command)
