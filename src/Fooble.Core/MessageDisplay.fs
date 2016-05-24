@@ -1,10 +1,5 @@
 ﻿namespace Fooble.Core
 
-open System
-open System.Collections
-open System.Collections.Generic
-open System.Diagnostics
-
 /// <summary>
 /// Provides functionality used in the presentation of messages.
 /// </summary>
@@ -19,32 +14,6 @@ module MessageDisplay =
             elif severity.IsWarning
                 then Choice2Of3 ()
                 else Choice3Of3 ()
-
-    (* Validation *)
-
-    /// <summary>
-    /// Validates the supplied message display heading.
-    /// </summary>
-    /// <param name="heading">The message display heading.</param>
-    /// <returns>Returns a validation result.</returns>
-    [<CompiledName("ValidateHeading")>]
-    let validateHeading heading =
-        [ (notIsNull), "Heading parameter was null"
-          (String.notIsEmpty), "Heading parameter was an empty string" ]
-        |> Validation.validate heading "heading"
-
-    /// <summary>
-    /// Validates the supplied messages to be displayed.
-    /// </summary>
-    /// <param name="messages">The messages to be displayed.</param>
-    /// <returns>Returns a validation result.</returns>
-    [<CompiledName("ValidateMessages")>]
-    let validateMessages messages =
-        [ (notIsNull), "Messages parameter was null"
-          (Seq.notIsEmpty), "Messages parameter was an empty sequence"
-          (Seq.notContainsNulls), "Messages parameter contained null(s)"
-          (Seq.notContainsEmptyStrings), "Messages parameter contained empty string(s)" ]
-        |> Validation.validate messages "messages"
 
     (* Severity *)
 
@@ -111,34 +80,63 @@ module MessageDisplay =
 
         [<DefaultAugmentation(false)>]
         type private Implementation =
-            | ReadModel of string * IMessageDisplaySeverity * seq<string>
+            | ReadModel of string * string * int * IMessageDisplaySeverity * string
 
             interface IMessageDisplayReadModel with
 
                 member this.Heading
                     with get() =
                         match this with
-                        | ReadModel (x, _, _) -> x
+                        | ReadModel (x, _, _, _, _) -> x
+
+                member this.SubHeading
+                    with get() =
+                        match this with
+                        | ReadModel (_, x, _, _, _) -> x
+
+                member this.StatusCode
+                    with get() =
+                        match this with
+                        | ReadModel (_, _, x, _, _) -> x
 
                 member this.Severity
                     with get() =
                         match this with
-                        | ReadModel (_, x, _) -> x
+                        | ReadModel (_, _, _, x, _) -> x
 
-                member this.Messages
+                member this.Message
                     with get() =
                         match this with
-                        | ReadModel (_, _, x) -> x
+                        | ReadModel (_, _, _, _, x) -> x
 
         /// <summary>
         /// Constructs a message display read model.
         /// </summary>
         /// <param name="heading">The message display heading.</param>
+        /// <param name="subHeading">The message display sub-heading.</param>
+        /// <param name="statusCode">The message display status code.</param>
         /// <param name="severity">The message display severity.</param>
         /// <param name="messages">The messages to be displayed.</param>
         /// <returns>Returns a message display read model.</returns>
         [<CompiledName("Make")>]
-        let make heading severity messages =
-            Validation.raiseIfInvalid <| validateHeading heading
-            Validation.raiseIfInvalid <| validateMessages messages
-            ReadModel (heading, severity, messages) :> IMessageDisplayReadModel
+        let make heading subHeading statusCode severity message =
+
+            [ (notIsNull), "Heading parameter was null"
+              (String.notIsEmpty), "Heading parameter was an empty string" ]
+            |> Validation.validate heading "heading"
+            |> Validation.raiseIfInvalid
+
+            [ (notIsNull), "Sub-heading parameter was null" ]
+            |> Validation.validate subHeading "subHeading"
+            |> Validation.raiseIfInvalid
+
+            [ (fun x -> x >= 0), "Status code parameter was less than zero" ]
+            |> Validation.validate statusCode "statusCode"
+            |> Validation.raiseIfInvalid
+
+            [ (notIsNull), "Message parameter was null"
+              (String.notIsEmpty), "Message parameter was an empty string" ]
+            |> Validation.validate message "message"
+            |> Validation.raiseIfInvalid
+
+            ReadModel (heading, subHeading, statusCode, severity, message) :> IMessageDisplayReadModel

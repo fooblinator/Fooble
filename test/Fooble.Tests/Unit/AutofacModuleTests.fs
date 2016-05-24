@@ -31,10 +31,10 @@ module AutofacModuleTests =
         ignore <| builder.RegisterModule(AutofacModule(Context = context))
         let container = builder.Build()
 
-        let memberDetailQueryHandler = container.Resolve<IMemberDetailQueryHandler>()
+        let memberDetailQueryHandler = container.Resolve<IRequestHandler<IMemberDetailQuery, IMemberDetailQueryResult>>()
         test <@ notIsNull memberDetailQueryHandler @>
 
-        let memberListQueryHandler = container.Resolve<IMemberListQueryHandler>()
+        let memberListQueryHandler = container.Resolve<IRequestHandler<IMemberListQuery, IMemberListQueryResult>>()
         test <@ notIsNull memberListQueryHandler @>
 
     [<Test>]
@@ -44,7 +44,7 @@ module AutofacModuleTests =
         ignore <| builder.RegisterModule(AutofacModule(Context = context))
         let container = builder.Build()
 
-        let memberDetailCommandHandler = container.Resolve<ISelfServiceRegisterCommandHandler>()
+        let memberDetailCommandHandler = container.Resolve<IRequestHandler<ISelfServiceRegisterCommand, Unit>>()
         test <@ notIsNull memberDetailCommandHandler @>
 
     [<Test>]
@@ -59,13 +59,13 @@ module AutofacModuleTests =
 
         (* test resolution of known request handler types using the factory *)
 
-        let result1 = singleInstanceFactory.Invoke(typeof<IMemberDetailQueryHandler>)
+        let result1 = singleInstanceFactory.Invoke(typeof<IRequestHandler<IMemberDetailQuery, IMemberDetailQueryResult>>)
         test <@ notIsNull result1 @>
-        test <@ result1 :? IMemberDetailQueryHandler @>
+        test <@ result1 :? IRequestHandler<IMemberDetailQuery, IMemberDetailQueryResult> @>
 
-        let result2 = singleInstanceFactory.Invoke(typeof<IMemberListQueryHandler>)
+        let result2 = singleInstanceFactory.Invoke(typeof<IRequestHandler<IMemberListQuery, IMemberListQueryResult>>)
         test <@ notIsNull result2 @>
-        test <@ result2 :? IMemberListQueryHandler @>
+        test <@ result2 :? IRequestHandler<IMemberListQuery, IMemberListQueryResult> @>
 
     [<Test>]
     let ``Registering autofac container, properly registers expected multi instance factory`` () =
@@ -79,17 +79,17 @@ module AutofacModuleTests =
 
         (* test resolution of known request handler types using the factory *)
 
-        let result1 = multiInstanceFactory.Invoke(typeof<IMemberDetailQueryHandler>)
+        let result1 = multiInstanceFactory.Invoke(typeof<IRequestHandler<IMemberDetailQuery, IMemberDetailQueryResult>>)
         test <@ notIsNull result1 @>
         test <@ (Seq.length result1) = 1 @>
         let actualResult1 = (Seq.head result1)
-        test <@ actualResult1 :? IMemberDetailQueryHandler @>
+        test <@ actualResult1 :? IRequestHandler<IMemberDetailQuery, IMemberDetailQueryResult> @>
 
-        let result2 = multiInstanceFactory.Invoke(typeof<IMemberListQueryHandler>)
+        let result2 = multiInstanceFactory.Invoke(typeof<IRequestHandler<IMemberListQuery, IMemberListQueryResult>>)
         test <@ notIsNull result2 @>
         test <@ (Seq.length result2) = 1 @>
         let actualResult2 = (Seq.head result2)
-        test <@ actualResult2 :? IMemberListQueryHandler @>
+        test <@ actualResult2 :? IRequestHandler<IMemberListQuery, IMemberListQueryResult> @>
 
     [<Test>]
     let ``Registering autofac container, properly registers expected mediator`` () =

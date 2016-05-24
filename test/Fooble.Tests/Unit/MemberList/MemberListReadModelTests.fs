@@ -17,7 +17,8 @@ module MemberListReadModelTests =
 
     [<Test>]
     let ``Calling members, returns expected members`` () =
-        let expectedMembers = List.init 5 <| fun _ -> MemberList.ItemReadModel.make <|| (randomGuid (), randomString ())
+        let expectedMembers =
+            List.init 5 <| fun _ -> MemberList.ItemReadModel.make <|| (randomGuid (), randomString ())
 
         let readModel = MemberList.ReadModel.make <| Seq.ofList expectedMembers
 

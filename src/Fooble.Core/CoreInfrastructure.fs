@@ -67,10 +67,10 @@ type AutofacModule() =
         ignore <| builder.Register(fun c -> KeyGenerator.make ()).As<IKeyGenerator>()
 
         ignore <| builder.Register(fun c -> MemberDetail.QueryHandler.make <| c.Resolve<IFoobleContext>())
-            .As<IMemberDetailQueryHandler>()
+            .As<IRequestHandler<IMemberDetailQuery, IMemberDetailQueryResult>>()
 
         ignore <| builder.Register(fun c -> MemberList.QueryHandler.make <| c.Resolve<IFoobleContext>())
-            .As<IMemberListQueryHandler>()
+            .As<IRequestHandler<IMemberListQuery, IMemberListQueryResult>>()
 
         ignore <| builder.Register(fun c -> SelfServiceRegister.CommandHandler.make <| c.Resolve<IFoobleContext>())
-            .As<ISelfServiceRegisterCommandHandler>()
+            .As<IRequestHandler<ISelfServiceRegisterCommand, Unit>>()

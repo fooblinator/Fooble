@@ -1,7 +1,6 @@
 ﻿using Fooble.Core;
 using MediatR;
 using System;
-using System.Diagnostics;
 using System.Web.Mvc;
 
 namespace Fooble.Web.Controllers
@@ -14,10 +13,14 @@ namespace Fooble.Web.Controllers
         public SelfServiceController(IMediator mediator, IKeyGenerator keyGenerator)
         {
             if (mediator == null)
-                throw new ArgumentNullException(nameof(mediator), "Mediator was be null");
+            {
+                throw new ArgumentNullException(nameof(mediator), "Mediator parameter was null");
+            }
 
             if (keyGenerator == null)
-                throw new ArgumentNullException(nameof(keyGenerator), "Key generator was null");
+            {
+                throw new ArgumentNullException(nameof(keyGenerator), "Key generator parameter was null");
+            }
 
             _mediator = mediator;
             _keyGenerator = keyGenerator;
@@ -26,37 +29,24 @@ namespace Fooble.Web.Controllers
         [HttpGet]
         public ActionResult Register()
         {
-            var readModel = SelfServiceRegister.ReadModel.Empty;
-
-            return View(readModel);
+            return View(SelfServiceRegister.ReadModel.Empty);
         }
 
         [HttpPost]
         public ActionResult Register(string name)
         {
-            // TODO: need to modify the view pages to utilize the message display models appropriately
-
             var validationResult = Member.ValidateName(name);
 
             if (validationResult.IsInvalid)
             {
                 ModelState.AddModelError(validationResult.ParamName, validationResult.Message);
 
-                var readModel = SelfServiceRegister.ReadModel.Make(name);
-
-                return View(readModel);
+                return View(SelfServiceRegister.ReadModel.Make(name));
             }
 
             var id = _keyGenerator.GenerateKey();
             var command = SelfServiceRegister.Command.Make(id, name);
-            var result = _mediator.Send(command);
-
-            Debug.Assert(result != null, "Result was null");
-
-            if (result.IsDuplicateId)
-            {
-                return View("Register_DuplicateId", result.ToMessageDisplayReadModel());
-            }
+            _mediator.Send(command);
 
             return RedirectToAction("Detail", "Member", new { id = id.ToString() });
         }

@@ -1,6 +1,7 @@
 ﻿namespace Fooble.Core
 
 open Fooble.Core.Persistence
+open MediatR
 open System
 open System.Diagnostics
 
@@ -9,13 +10,6 @@ open System.Diagnostics
 /// </summary>
 [<RequireQualifiedAccess>]
 module SelfServiceRegister =
-
-    (* Active Patterns *)
-
-    let internal (|IsSuccess|IsDuplicateId|) (result:ISelfServiceRegisterCommandResult) =
-        if result.IsSuccess
-            then Choice1Of2 ()
-            else Choice2Of2 ()
 
     (* Command *)
 
@@ -90,36 +84,6 @@ module SelfServiceRegister =
         [<CompiledName("Make")>]
         let make name = ReadModel name :> ISelfServiceRegisterReadModel
 
-    (* Command Result *)
-
-    /// <summary>
-    /// Provides functionality used in the persisting of member details.
-    /// </summary>
-    [<RequireQualifiedAccess>]
-    module internal CommandResult =
-
-        [<DefaultAugmentation(false)>]
-        type private Implementation =
-            | Success
-            | DuplicateId
-
-            interface ISelfServiceRegisterCommandResult with
-
-                member this.IsSuccess
-                    with get() =
-                        match this with
-                        | Success _ -> true
-                        | DuplicateId -> false
-
-                member this.IsDuplicateId
-                    with get() =
-                        match this with
-                        | Success _ -> false
-                        | DuplicateId -> true
-
-        let internal success = Success :> ISelfServiceRegisterCommandResult
-        let internal duplicateId = DuplicateId :> ISelfServiceRegisterCommandResult
-
     (* Command Handler *)
 
     /// <summary>
@@ -137,20 +101,18 @@ module SelfServiceRegister =
                     match this with
                     | CommandHandler x -> x
 
-            interface ISelfServiceRegisterCommandHandler with
+            interface IRequestHandler<ISelfServiceRegisterCommand, Unit> with
 
                 member this.Handle(command) =
                     Debug.Assert(notIsNull <| box command, "Command parameter was null")
-                    Seq.tryFind (fun (x:MemberData) -> x.Id = command.Id) this.Context.MemberData
-                    |> function
-                        | Some _ -> CommandResult.duplicateId
-                        | None ->
-                            MemberData(Id = command.Id, Name = command.Name)
-                            |> this.Context.MemberData.AddObject
-                            // TODO: research what could go wrong here and handle appropriately
-                            ignore <| this.Context.SaveChanges()
-                            CommandResult.success
+                    
+                    MemberData(Id = command.Id, Name = command.Name)
+                    |> this.Context.MemberData.AddObject
+
+                    ignore <| this.Context.SaveChanges()
+
+                    Unit.Value
 
         let internal make context =
             Debug.Assert(notIsNull context, "Context parameter was null")
-            CommandHandler context :> ISelfServiceRegisterCommandHandler
+            CommandHandler context :> IRequestHandler<ISelfServiceRegisterCommand, Unit>

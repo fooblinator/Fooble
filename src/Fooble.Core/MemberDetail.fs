@@ -1,6 +1,7 @@
 ﻿namespace Fooble.Core
 
 open Fooble.Core.Persistence
+open MediatR
 open System
 open System.Diagnostics
 
@@ -130,7 +131,7 @@ module MemberDetail =
                     match this with
                     | QueryHandler x -> x
 
-            interface IMemberDetailQueryHandler with
+            interface IRequestHandler<IMemberDetailQuery, IMemberDetailQueryResult> with
 
                 member this.Handle(query) =
                     Debug.Assert(notIsNull <| box query, "Query parameter was null")
@@ -142,4 +143,4 @@ module MemberDetail =
 
         let internal make context =
             Debug.Assert(notIsNull context, "Context parameter was null")
-            QueryHandler context :> IMemberDetailQueryHandler
+            QueryHandler context :> IRequestHandler<IMemberDetailQuery, IMemberDetailQueryResult>

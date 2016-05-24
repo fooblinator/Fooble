@@ -2,8 +2,6 @@
 
 open MediatR
 open System
-open System.Collections
-open System.Collections.Generic
 
 (* Key Generator *)
 
@@ -67,8 +65,6 @@ type IMemberDetailQuery =
     /// </summary>
     abstract Id:Guid with get
 
-type IMemberDetailQueryHandler = IRequestHandler<IMemberDetailQuery, IMemberDetailQueryResult>
-
 (* Member List *)
 
 /// <summary>
@@ -119,8 +115,6 @@ type IMemberListQueryResult =
 type IMemberListQuery =
     inherit IRequest<IMemberListQueryResult>
 
-type IMemberListQueryHandler = IRequestHandler<IMemberListQuery, IMemberListQueryResult>
-
 (* Message Display *)
 
 /// <summary>
@@ -155,48 +149,32 @@ type IMessageDisplayReadModel =
     abstract Heading:string with get
 
     /// <summary>
+    /// The sub-heading of the message display.
+    /// </summary>
+    abstract SubHeading:string with get
+
+    /// <summary>
+    /// The status code of the message display.
+    /// </summary>
+    abstract StatusCode:int with get
+
+    /// <summary>
     /// The severity of the message display.
     /// </summary>
     abstract Severity:IMessageDisplaySeverity with get
 
     /// <summary>
-    /// The messages to be displayed.
+    /// The message to be displayed.
     /// </summary>
-    abstract Messages:seq<string> with get
+    abstract Message:string with get
 
 (* Self Service Register *)
-
-/// <summary>
-/// Contains a potential member's detailed information to be submitted for self-service registration.
-/// </summary>
-type ISelfServiceRegisterReadModel =
-
-    /// <summary>
-    /// The name of the member.
-    /// </summary>
-    abstract Name:string with get
-
-/// <summary>
-/// Represents the status of a self-service registration command.
-/// </summary>
-/// <remarks>The result is only one of "success" or "duplicate id".</remarks>
-type ISelfServiceRegisterCommandResult =
-
-    /// <summary>
-    /// Whether the result is "success" (or not).
-    /// </summary>
-    abstract IsSuccess:bool with get
-
-    /// <summary>
-    /// Whether the result is "duplicate id" (or not).
-    /// </summary>
-    abstract IsDuplicateId:bool with get
 
 /// <summary>
 /// Represents the self-service registration command, and contains the potential member's detailed information.
 /// </summary>
 type ISelfServiceRegisterCommand =
-    inherit IRequest<ISelfServiceRegisterCommandResult>
+    inherit IRequest<Unit>
 
     /// <summary>
     /// The id that will potentially represent the member.
@@ -208,7 +186,15 @@ type ISelfServiceRegisterCommand =
     /// </summary>
     abstract Name:string with get
 
-type ISelfServiceRegisterCommandHandler = IRequestHandler<ISelfServiceRegisterCommand, ISelfServiceRegisterCommandResult>
+/// <summary>
+/// Contains a potential member's detailed information to be submitted for self-service registration.
+/// </summary>
+type ISelfServiceRegisterReadModel =
+
+    /// <summary>
+    /// The name of the member.
+    /// </summary>
+    abstract Name:string with get
 
 (* Validation *)
 

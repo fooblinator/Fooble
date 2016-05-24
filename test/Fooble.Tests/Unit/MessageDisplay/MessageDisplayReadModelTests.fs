@@ -16,7 +16,7 @@ module MessageDisplayReadModelTests =
         
         let severity = MessageDisplay.Severity.informational
         raisesWith<ArgumentException>
-            <@ MessageDisplay.ReadModel.make <||| (null, severity, Seq.singleton <| randomString ()) @> <|
+            <@ MessageDisplay.ReadModel.make null (randomString ()) 200 severity (randomString ()) @> <|
                 fun e -> <@ e.ParamName = expectedParamName && (fixInvalidArgMessage e.Message) = expectedMessage @>
     
     [<Test>]
@@ -26,54 +26,54 @@ module MessageDisplayReadModelTests =
         
         let severity = MessageDisplay.Severity.informational
         raisesWith<ArgumentException>
-            <@ MessageDisplay.ReadModel.make <||| (String.empty, severity, Seq.singleton <| randomString ()) @> <|
+            <@ MessageDisplay.ReadModel.make String.empty (randomString ()) 200 severity (randomString ()) @> <|
                 fun e -> <@ e.ParamName = expectedParamName && (fixInvalidArgMessage e.Message) = expectedMessage @>
 
     [<Test>]
-    let ``Calling make, with null messages, raises expected exception`` () =
-        let expectedParamName = "messages"
-        let expectedMessage = "Messages parameter was null"
+    let ``Calling make, with null sub-heading, raises expected exception`` () =
+        let expectedParamName = "subHeading"
+        let expectedMessage = "Sub-heading parameter was null"
         
         let severity = MessageDisplay.Severity.informational
         raisesWith<ArgumentException>
-            <@ MessageDisplay.ReadModel.make <||| (randomString (), severity, null) @> <|
+            <@ MessageDisplay.ReadModel.make (randomString ()) null 200 severity (randomString ()) @> <|
                 fun e -> <@ e.ParamName = expectedParamName && (fixInvalidArgMessage e.Message) = expectedMessage @>
 
     [<Test>]
-    let ``Calling make, with empty messages, raises expected exception`` () =
-        let expectedParamName = "messages"
-        let expectedMessage = "Messages parameter was an empty sequence"
+    let ``Calling make, with status code less than zero, raises expected exception`` () =
+        let expectedParamName = "statusCode"
+        let expectedMessage = "Status code parameter was less than zero"
         
         let severity = MessageDisplay.Severity.informational
         raisesWith<ArgumentException>
-            <@ MessageDisplay.ReadModel.make <||| (randomString (), severity, Seq.empty) @> <|
+            <@ MessageDisplay.ReadModel.make (randomString ()) (randomString ()) -1 severity (randomString ()) @> <|
                 fun e -> <@ e.ParamName = expectedParamName && (fixInvalidArgMessage e.Message) = expectedMessage @>
 
     [<Test>]
-    let ``Calling make, with not empty messages containing null message, raises expected exception`` () =
-        let expectedParamName = "messages"
-        let expectedMessage = "Messages parameter contained null(s)"
+    let ``Calling make, with null message, raises expected exception`` () =
+        let expectedParamName = "message"
+        let expectedMessage = "Message parameter was null"
         
         let severity = MessageDisplay.Severity.informational
         raisesWith<ArgumentException>
-            <@ MessageDisplay.ReadModel.make <||| (randomString (), severity, Seq.singleton null) @> <|
+            <@ MessageDisplay.ReadModel.make (randomString ()) (randomString ()) 200 severity null @> <|
                 fun e -> <@ e.ParamName = expectedParamName && (fixInvalidArgMessage e.Message) = expectedMessage @>
-
+    
     [<Test>]
-    let ``Calling make, with not empty messages containing empty message, raises expected exception`` () =
-        let expectedParamName = "messages"
-        let expectedMessage = "Messages parameter contained empty string(s)"
+    let ``Calling make, with empty message, raises expected exception`` () =
+        let expectedParamName = "message"
+        let expectedMessage = "Message parameter was an empty string"
         
         let severity = MessageDisplay.Severity.informational
         raisesWith<ArgumentException>
-            <@ MessageDisplay.ReadModel.make <||| (randomString (), severity, Seq.singleton String.empty) @> <|
+            <@ MessageDisplay.ReadModel.make (randomString ()) (randomString ()) 200 severity String.empty @> <|
                 fun e -> <@ e.ParamName = expectedParamName && (fixInvalidArgMessage e.Message) = expectedMessage @>
 
     [<Test>]
     let ``Calling make, with valid parameters, returns read model`` () =
-        let severity = MessageDisplay.Severity.informational
-        let messages = Seq.init 5 <| fun _ -> randomString ()
-        let readModel = MessageDisplay.ReadModel.make <||| (randomString (), severity, messages)
+        let readModel =
+            MessageDisplay.ReadModel.make (randomString ()) (randomString ()) 200 MessageDisplay.Severity.informational
+                (randomString ())
 
         test <@ box readModel :? IMessageDisplayReadModel @>
 
@@ -81,32 +81,52 @@ module MessageDisplayReadModelTests =
     let ``Calling heading, returns expected heading`` () =
         let expectedHeading = randomString ()
 
-        let severity = MessageDisplay.Severity.informational
-        let messages = Seq.init 5 <| fun _ -> randomString ()
-        let readModel = MessageDisplay.ReadModel.make expectedHeading severity messages
+        let readModel =
+            MessageDisplay.ReadModel.make expectedHeading (randomString ()) 200 MessageDisplay.Severity.informational
+                (randomString ())
 
         let actualHeading = readModel.Heading
         test <@ actualHeading = expectedHeading @>
 
     [<Test>]
+    let ``Calling sub-heading, returns expected sub-heading`` () =
+        let expectedSubHeading = randomString ()
+
+        let readModel =
+            MessageDisplay.ReadModel.make (randomString ()) expectedSubHeading 200 MessageDisplay.Severity.informational
+                (randomString ())
+
+        let actualSubHeading = readModel.SubHeading
+        test <@ actualSubHeading = expectedSubHeading @>
+
+    [<Test>]
+    let ``Calling status code, returns expected status code`` () =
+        let expectedStatusCode = 200
+
+        let readModel =
+            MessageDisplay.ReadModel.make (randomString ()) (randomString ()) expectedStatusCode
+                MessageDisplay.Severity.informational (randomString ())
+
+        let actualStatusCode = readModel.StatusCode
+        test <@ actualStatusCode = expectedStatusCode @>
+
+    [<Test>]
     let ``Calling severity, returns expected severity`` () =
         let expectedSeverity = MessageDisplay.Severity.informational
 
-        let messages = Seq.init 5 <| fun _ -> randomString ()
-        let readModel = MessageDisplay.ReadModel.make <||| (randomString (), expectedSeverity, messages)
+        let readModel =
+            MessageDisplay.ReadModel.make (randomString ()) (randomString ()) 200 expectedSeverity (randomString ())
 
         let actualSeverity = readModel.Severity
         test <@ actualSeverity = expectedSeverity @>
 
     [<Test>]
-    let ``Calling messages, returns expected messages`` () =
-        let expectedMessages = List.init 5 <| fun _ -> randomString ()
+    let ``Calling message, returns expected message`` () =
+        let expectedMessage = randomString ()
 
-        let severity = MessageDisplay.Severity.informational
-        let readModel = MessageDisplay.ReadModel.make <||| (randomString (), severity, Seq.ofList expectedMessages)
+        let readModel =
+            MessageDisplay.ReadModel.make (randomString ()) (randomString ()) 200 MessageDisplay.Severity.informational
+                expectedMessage
 
-        let actualMessages = Seq.toList readModel.Messages
-        test <@ List.length actualMessages = 5 @>
-        for current in actualMessages do
-            let findResult = List.tryFind (fun x -> x = current) expectedMessages
-            test <@ findResult.IsSome @>
+        let actualMessage = readModel.Message
+        test <@ actualMessage = expectedMessage @>

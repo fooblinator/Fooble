@@ -62,9 +62,9 @@ module MemberControllerToQueryHandlerTests =
     [<Test>]
     let ``Calling detail, with no matches in data store, returns expected result`` () =
         let nonMatchingId = randomGuid ()
-        let expectedHeading = "Member Detail"
-        let expectedSeverity = MessageDisplay.Severity.error
-        let expectedMessages = [ "Member detail query was not successful and returned \"not found\"" ]
+        let expectedReadModel =
+            MessageDisplay.ReadModel.make "Member" "Detail" 404 MessageDisplay.Severity.warning
+                "No matching member could be found."
 
         let memberSet = makeObjectSet Seq.empty<MemberData>
         let memberSetMock = Mock<IFoobleContext>()
@@ -85,20 +85,12 @@ module MemberControllerToQueryHandlerTests =
 
         let viewResult = result :?> ViewResult
 
-        test <@ viewResult.ViewName = "Detail_NotFound" @>
+        test <@ viewResult.ViewName = "MessageDisplay" @>
         test <@ notIsNull viewResult.Model @>
         test <@ viewResult.Model :? IMessageDisplayReadModel @>
 
-        let actualViewModel = viewResult.Model :?> IMessageDisplayReadModel
-
-        let actualHeading = actualViewModel.Heading
-        test <@ actualHeading = expectedHeading @>
-
-        let actualSeverity = actualViewModel.Severity
-        test <@ actualSeverity = expectedSeverity @>
-
-        let actualMessages = List.ofSeq actualViewModel.Messages
-        test <@ actualMessages = expectedMessages @>
+        let actualReadModel = viewResult.Model :?> IMessageDisplayReadModel
+        test <@ actualReadModel = expectedReadModel @>
 
     [<Test>]
     let ``Calling list, with matches in data store, returns expected result`` () =
@@ -134,9 +126,9 @@ module MemberControllerToQueryHandlerTests =
 
     [<Test>]
     let ``Calling list, with no matches in data store, returns expected result`` () =
-        let expectedHeading = "Member List"
-        let expectedSeverity = MessageDisplay.Severity.error
-        let expectedMessages = [ "Member list query was not successful and returned \"not found\"" ]
+        let expectedReadModel =
+            MessageDisplay.ReadModel.make "Member" "List" 200 MessageDisplay.Severity.informational
+                "No members have yet been added."
 
         let memberSetMock = makeObjectSet Seq.empty<MemberData>
         let contextMock = Mock<IFoobleContext>()
@@ -157,17 +149,9 @@ module MemberControllerToQueryHandlerTests =
 
         let viewResult = result :?> ViewResult
 
-        test <@ viewResult.ViewName = "List_NotFound" @>
+        test <@ viewResult.ViewName = "MessageDisplay" @>
         test <@ notIsNull viewResult.Model @>
         test <@ viewResult.Model :? IMessageDisplayReadModel @>
 
-        let actualViewModel = viewResult.Model :?> IMessageDisplayReadModel
-
-        let actualHeading = actualViewModel.Heading
-        test <@ actualHeading = expectedHeading @>
-
-        let actualSeverity = actualViewModel.Severity
-        test <@ actualSeverity = expectedSeverity @>
-
-        let actualMessages = List.ofSeq actualViewModel.Messages
-        test <@ actualMessages = expectedMessages @>
+        let actualReadModel = viewResult.Model :?> IMessageDisplayReadModel
+        test <@ actualReadModel = expectedReadModel @>

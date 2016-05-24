@@ -3,6 +3,7 @@
 open Fooble.Core
 open Fooble.Tests
 open Fooble.Core.Persistence
+open MediatR
 open NUnit.Framework
 open Swensen.Unquote
 
@@ -15,7 +16,7 @@ module MemberListQueryHandlerToDataStoreTests =
         use context = makeFoobleContext <| Some connectionString
         let queryHandler = MemberList.QueryHandler.make context
 
-        test <@ box queryHandler :? IMemberListQueryHandler @>
+        test <@ box queryHandler :? IRequestHandler<IMemberListQuery, IMemberListQueryResult> @>
 
     [<Test>]
     let ``Calling handle, with no members in data store, returns expected result`` () =

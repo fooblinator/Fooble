@@ -3,6 +3,7 @@
 open Fooble.Core
 open Fooble.Core.Persistence
 open Fooble.Tests
+open MediatR
 open Moq
 open Moq.FSharp.Extensions
 open NUnit.Framework
@@ -15,7 +16,7 @@ module MemberDetailQueryHandlerTests =
     let ``Calling make, with valid parameters, returns query handler`` () =
         let queryHandler = MemberDetail.QueryHandler.make <| mock ()
 
-        test <@ box queryHandler :? IMemberDetailQueryHandler @>
+        test <@ box queryHandler :? IRequestHandler<IMemberDetailQuery, IMemberDetailQueryResult> @>
 
     [<Test>]
     let ``Calling handle, with no matching member in data store, returns expected result`` () =

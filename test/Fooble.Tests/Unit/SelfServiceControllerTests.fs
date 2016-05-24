@@ -3,8 +3,6 @@
 open Fooble.Core
 open Fooble.Tests
 open Fooble.Web.Controllers
-open MediatR
-open Moq
 open Moq.FSharp.Extensions
 open NUnit.Framework
 open Swensen.Unquote
@@ -17,7 +15,7 @@ module SelfServiceControllerTests =
     [<Test>]
     let ``Constructing, with null mediator, raises expected exception`` () =
         let expectedParamName = "mediator"
-        let expectedMessage = "Mediator was be null"
+        let expectedMessage = "Mediator parameter was null"
 
         let keyGenerator = KeyGenerator.make ()
         raisesWith<ArgumentException> <@ new SelfServiceController(null, keyGenerator) @> <|
@@ -103,54 +101,11 @@ module SelfServiceControllerTests =
         test <@ modelState.["name"].Errors.[0].ErrorMessage = "Name parameter was an empty string" @>
 
     [<Test>]
-    let ``Calling register post, with existing id in data store, returns expected result`` () =
-        let expectedHeading = "Self-Service Register"
-        let expectedSeverity = MessageDisplay.Severity.error
-        let expectedMessages = [ "Self-service register command was not successful and returned \"duplicate id\"" ]
-
-        let commandResult = SelfServiceRegister.CommandResult.duplicateId
-        let mediatorMock = Mock<IMediator>()
-        mediatorMock.SetupFunc(fun m -> m.Send(any ())).Returns(commandResult).Verifiable()
-
+    let ``Calling register post, with valid name, completes without exception`` () =
         let name = randomString ()
         let keyGenerator = KeyGenerator.make ()
-        let controller = new SelfServiceController(mediatorMock.Object, keyGenerator)
+        let controller = new SelfServiceController(mock (), keyGenerator)
         let result = controller.Register(name)
-
-        mediatorMock.Verify()
-
-        test <@ notIsNull result @>
-        test <@ result :? ViewResult @>
-
-        let viewResult = result :?> ViewResult
-
-        test <@ viewResult.ViewName = "Register_DuplicateId" @>
-        test <@ notIsNull viewResult.Model @>
-        test <@ viewResult.Model :? IMessageDisplayReadModel @>
-
-        let actualViewModel = viewResult.Model :?> IMessageDisplayReadModel
-
-        let actualHeading = actualViewModel.Heading
-        test <@ actualHeading = expectedHeading @>
-
-        let actualSeverity = actualViewModel.Severity
-        test <@ actualSeverity = expectedSeverity @>
-
-        let actualMessages = List.ofSeq actualViewModel.Messages
-        test <@ actualMessages = expectedMessages @>
-
-    [<Test>]
-    let ``Calling register post, with no existing id in data store, returns expected result`` () =
-        let commandResult = SelfServiceRegister.CommandResult.success
-        let mediatorMock = Mock<IMediator>()
-        mediatorMock.SetupFunc(fun m -> m.Send(any ())).Returns(commandResult).Verifiable()
-
-        let name = randomString ()
-        let keyGenerator = KeyGenerator.make ()
-        let controller = new SelfServiceController(mediatorMock.Object, keyGenerator)
-        let result = controller.Register(name)
-
-        mediatorMock.Verify()
 
         test <@ notIsNull result @>
         test <@ result :? RedirectToRouteResult @>

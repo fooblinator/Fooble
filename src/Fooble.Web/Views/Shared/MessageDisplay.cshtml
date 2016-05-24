@@ -1,0 +1,26 @@
+﻿@model IMessageDisplayReadModel
+
+@{
+    Response.StatusCode = Model.StatusCode;
+    ViewBag.Title = $"{Model.Heading} - {Model.SubHeading}";
+}
+
+<h1>@Model.Heading <small>@Model.SubHeading</small></h1>
+
+<hr />
+
+<p>
+    @if (Model.Severity.IsInformational)
+    {
+        <span class="label label-info">Info</span><br /><br />
+    }
+    else if (Model.Severity.IsWarning)
+    {
+        <span class="label label-warning">Warning</span><br /><br />
+    }
+    else // if (Model.Severity.IsError)
+    {
+        <span class="label label-danger">Error</span><br /><br />
+    }
+    @Model.Message
+</p>

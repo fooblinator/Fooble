@@ -15,18 +15,69 @@ type CoreExtensions = // TODO: need to provide overloads that allow overriding h
     /// Constructs a message display read model from a member detail query result.
     /// </summary>
     /// <param name="result">The member detail query result to extend.</param>
+    /// <param name="heading">The heading of the message display.</param>
+    /// <param name="subHeading">The sub-heading of the message display.</param>
+    /// <param name="statusCode">The status code of the message display.</param>
+    /// <param name="severity">The severity of the message display.</param>
+    /// <param name="message">The message to be displayed.</param>
+    /// <returns>Returns a message display read model.</returns>
     [<Extension>]
-    static member ToMessageDisplayReadModel(result:IMemberDetailQueryResult) =
+    static member ToMessageDisplayReadModel
+        (result:IMemberDetailQueryResult, heading, subHeading, statusCode, severity, message) =
+
         Debug.Assert(notIsNull <| box result, "Result parameter was null")
+        Debug.Assert(notIsNull heading, "Heading parameter was null")
+        Debug.Assert(String.notIsEmpty heading, "Heading parameter was an empty string")
+        Debug.Assert(notIsNull subHeading, "Sub-heading parameter was null")
+        Debug.Assert(statusCode >= 0, "Status code parameter was less than zero")
+        Debug.Assert(notIsNull message, "Message parameter was null")
+        Debug.Assert(String.notIsEmpty message, "Message parameter was an empty string")
+
+        MessageDisplay.ReadModel.make heading subHeading statusCode severity message
+
+    /// <summary>
+    /// Constructs a message display read model from a member detail query result.
+    /// </summary>
+    /// <param name="result">The member detail query result to extend.</param>
+    /// <param name="statusCode">The status code of the message display.</param>
+    /// <param name="severity">The severity of the message display.</param>
+    /// <param name="message">The message to be displayed.</param>
+    /// <returns>Returns a message display read model.</returns>
+    [<Extension>]
+    static member ToMessageDisplayReadModel (result:IMemberDetailQueryResult, statusCode, severity, message) =
+        CoreExtensions.ToMessageDisplayReadModel(result, "Member", "Detail", statusCode, severity, message)
+
+    /// <summary>
+    /// Constructs a message display read model from a member detail query result.
+    /// </summary>
+    /// <param name="result">The member detail query result to extend.</param>
+    /// <param name="message">The message to be displayed.</param>
+    /// <returns>Returns a message display read model.</returns>
+    [<Extension>]
+    static member ToMessageDisplayReadModel (result:IMemberDetailQueryResult, message) =
         match result with
 
         | MemberDetail.IsSuccess _ ->
-            MessageDisplay.ReadModel.make "Member Detail" MessageDisplay.Severity.informational
-                (Seq.singleton "Member detail query was successful")
+            CoreExtensions.ToMessageDisplayReadModel(result, 200, MessageDisplay.Severity.informational, message)
 
         | MemberDetail.IsNotFound ->
-            MessageDisplay.ReadModel.make "Member Detail" MessageDisplay.Severity.error
-                (Seq.singleton "Member detail query was not successful and returned \"not found\"")
+            CoreExtensions.ToMessageDisplayReadModel(result, 404, MessageDisplay.Severity.warning, message)
+
+    /// <summary>
+    /// Constructs a message display read model from a member detail query result.
+    /// </summary>
+    /// <param name="result">The member detail query result to extend.</param>
+    /// <returns>Returns a message display read model.</returns>
+    [<Extension>]
+    static member ToMessageDisplayReadModel (result:IMemberDetailQueryResult) =
+
+        match result with
+
+        | MemberDetail.IsSuccess _ ->
+            CoreExtensions.ToMessageDisplayReadModel(result, "Member detail query was successful")
+
+        | MemberDetail.IsNotFound ->
+            CoreExtensions.ToMessageDisplayReadModel(result, "No matching member could be found.")
 
     (* Member List *)
 
@@ -34,37 +85,62 @@ type CoreExtensions = // TODO: need to provide overloads that allow overriding h
     /// Constructs a message display read model from a member list query result.
     /// </summary>
     /// <param name="result">The member list query result to extend.</param>
+    /// <param name="heading">The heading of the message display.</param>
+    /// <param name="subHeading">The sub-heading of the message display.</param>
+    /// <param name="statusCode">The status code of the message display.</param>
+    /// <param name="severity">The severity of the message display.</param>
+    /// <param name="message">The message to be displayed.</param>
+    /// <returns>Returns a message display read model.</returns>
     [<Extension>]
-    static member ToMessageDisplayReadModel(result:IMemberListQueryResult) =
+    static member ToMessageDisplayReadModel
+        (result:IMemberListQueryResult, heading, subHeading, statusCode, severity, message) =
+
         Debug.Assert(notIsNull <| box result, "Result parameter was null")
+        Debug.Assert(notIsNull heading, "Heading parameter was null")
+        Debug.Assert(String.notIsEmpty heading, "Heading parameter was an empty string")
+        Debug.Assert(notIsNull subHeading, "Sub-heading parameter was null")
+        Debug.Assert(statusCode >= 0, "Status code parameter was less than zero")
+        Debug.Assert(notIsNull message, "Message parameter was null")
+        Debug.Assert(String.notIsEmpty message, "Message parameter was an empty string")
+
+        MessageDisplay.ReadModel.make heading subHeading statusCode severity message
+
+    /// <summary>
+    /// Constructs a message display read model from a member list query result.
+    /// </summary>
+    /// <param name="result">The member list query result to extend.</param>
+    /// <param name="statusCode">The status code of the message display.</param>
+    /// <param name="severity">The severity of the message display.</param>
+    /// <param name="message">The message to be displayed.</param>
+    /// <returns>Returns a message display read model.</returns>
+    [<Extension>]
+    static member ToMessageDisplayReadModel (result:IMemberListQueryResult, statusCode, severity, message) =
+        CoreExtensions.ToMessageDisplayReadModel(result, "Member", "List", statusCode, severity, message)
+
+    /// <summary>
+    /// Constructs a message display read model from a member list query result.
+    /// </summary>
+    /// <param name="result">The member list query result to extend.</param>
+    /// <param name="message">The message to be displayed.</param>
+    /// <returns>Returns a message display read model.</returns>
+    [<Extension>]
+    static member ToMessageDisplayReadModel (result:IMemberListQueryResult, message) =
+        CoreExtensions.ToMessageDisplayReadModel(result, 200, MessageDisplay.Severity.informational, message)
+
+    /// <summary>
+    /// Constructs a message display read model from a member list query result.
+    /// </summary>
+    /// <param name="result">The member list query result to extend.</param>
+    /// <returns>Returns a message display read model.</returns>
+    [<Extension>]
+    static member ToMessageDisplayReadModel (result:IMemberListQueryResult) =
+
         match result with
 
         | MemberList.IsSuccess _ ->
-            MessageDisplay.ReadModel.make "Member List" MessageDisplay.Severity.informational
-                (Seq.singleton "Member list query was successful")
+            CoreExtensions.ToMessageDisplayReadModel(result, "Member list query was successful")
 
-        | MemberList.IsNotFound ->
-            MessageDisplay.ReadModel.make "Member List" MessageDisplay.Severity.error
-                (Seq.singleton "Member list query was not successful and returned \"not found\"")
-
-    (* Self-Service Register *)
-
-    /// <summary>
-    /// Constructs a message display read model from a self-service register command result.
-    /// </summary>
-    /// <param name="result">The self-service register command result to extend.</param>
-    [<Extension>]
-    static member ToMessageDisplayReadModel(result:ISelfServiceRegisterCommandResult) =
-        Debug.Assert(notIsNull <| box result, "Result parameter was null")
-        match result with
-
-        | SelfServiceRegister.IsSuccess _ ->
-            MessageDisplay.ReadModel.make "Self-Service Register" MessageDisplay.Severity.informational
-                (Seq.singleton "Self-service register command was successful")
-
-        | SelfServiceRegister.IsDuplicateId ->
-            MessageDisplay.ReadModel.make "Self-Service Register" MessageDisplay.Severity.error
-                (Seq.singleton "Self-service register command was not successful and returned \"duplicate id\"")
+        | MemberList.IsNotFound -> CoreExtensions.ToMessageDisplayReadModel(result, "No members have yet been added.")
 
     (* Validation Result *)
 
@@ -72,15 +148,66 @@ type CoreExtensions = // TODO: need to provide overloads that allow overriding h
     /// Constructs a message display read model from a validation result.
     /// </summary>
     /// <param name="result">The validation result to extend.</param>
+    /// <param name="heading">The heading of the message display.</param>
+    /// <param name="subHeading">The sub-heading of the message display.</param>
+    /// <param name="statusCode">The status code of the message display.</param>
+    /// <param name="severity">The severity of the message display.</param>
+    /// <param name="message">The message to be displayed.</param>
+    /// <returns>Returns a message display read model.</returns>
     [<Extension>]
-    static member ToMessageDisplayReadModel(result:IValidationResult) =
+    static member ToMessageDisplayReadModel
+        (result:IValidationResult, heading, subHeading, statusCode, severity, message) =
+
         Debug.Assert(notIsNull <| box result, "Result parameter was null")
+        Debug.Assert(notIsNull heading, "Heading parameter was null")
+        Debug.Assert(String.notIsEmpty heading, "Heading parameter was an empty string")
+        Debug.Assert(notIsNull subHeading, "Sub-heading parameter was null")
+        Debug.Assert(statusCode >= 0, "Status code parameter was less than zero")
+        Debug.Assert(notIsNull message, "Message parameter was null")
+        Debug.Assert(String.notIsEmpty message, "Message parameter was an empty string")
+
+        MessageDisplay.ReadModel.make heading subHeading statusCode severity message
+
+    /// <summary>
+    /// Constructs a message display read model from a validation result.
+    /// </summary>
+    /// <param name="result">The validation result to extend.</param>
+    /// <param name="statusCode">The status code of the message display.</param>
+    /// <param name="severity">The severity of the message display.</param>
+    /// <param name="message">The message to be displayed.</param>
+    /// <returns>Returns a message display read model.</returns>
+    [<Extension>]
+    static member ToMessageDisplayReadModel (result:IValidationResult, statusCode, severity, message) =
+        CoreExtensions.ToMessageDisplayReadModel(result, "Validation", String.empty, statusCode, severity, message)
+
+    /// <summary>
+    /// Constructs a message display read model from a validation result.
+    /// </summary>
+    /// <param name="result">The validation result to extend.</param>
+    /// <param name="message">The message to be displayed.</param>
+    /// <returns>Returns a message display read model.</returns>
+    [<Extension>]
+    static member ToMessageDisplayReadModel (result:IValidationResult, message) =
         match result with
 
         | Validation.IsValid ->
-            MessageDisplay.ReadModel.make "Validation" MessageDisplay.Severity.informational
-                (Seq.singleton "Validation was successful")
+            CoreExtensions.ToMessageDisplayReadModel(result, 200, MessageDisplay.Severity.informational, message)
+
+        | Validation.IsInvalid _ ->
+            CoreExtensions.ToMessageDisplayReadModel(result, 400, MessageDisplay.Severity.error, message)
+
+    /// <summary>
+    /// Constructs a message display read model from a validation result.
+    /// </summary>
+    /// <param name="result">The validation result to extend.</param>
+    /// <returns>Returns a message display read model.</returns>
+    [<Extension>]
+    static member ToMessageDisplayReadModel (result:IValidationResult) =
+
+        match result with
+
+        | Validation.IsValid -> CoreExtensions.ToMessageDisplayReadModel(result, "Validation was successful")
 
         | Validation.IsInvalid (_, x) ->
-            MessageDisplay.ReadModel.make "Validation" MessageDisplay.Severity.error
-                (Seq.singleton <| sprintf "Validation was not successful and returned: \"%s\"" x)
+            CoreExtensions.ToMessageDisplayReadModel(result,
+                (sprintf "Validation was not successful and returned: \"%s\"" x))

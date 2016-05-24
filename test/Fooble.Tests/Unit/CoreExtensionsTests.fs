@@ -10,44 +10,34 @@ module CoreExtensionsTests =
 
     [<Test>]
     let ``Calling to message display read model, as success result of member detail query result, returns expected read model`` () =
-        let expectedHeading = "Member Detail"
-        let expectedSeverity = MessageDisplay.Severity.informational
-        let expectedMessages = [ "Member detail query was successful" ]
+        let expectedReadModel =
+            MessageDisplay.ReadModel.make "Member" "Detail" 200 MessageDisplay.Severity.informational
+                "Member detail query was successful"
 
         let readModel =
             MemberDetail.ReadModel.make <|| (randomGuid (), randomString ())
             |> MemberDetail.QueryResult.makeSuccess
             |> CoreExtensions.ToMessageDisplayReadModel
 
-        let actualHeading = readModel.Heading
-        test <@ actualHeading = expectedHeading @>
-        let actualSeverity = readModel.Severity
-        test <@ actualSeverity = expectedSeverity @>
-        let actualMessages = List.ofSeq readModel.Messages
-        test <@ actualMessages = expectedMessages @>
+        test <@ readModel = expectedReadModel @>
 
     [<Test>]
     let ``Calling to message display read model, as not found result of member detail query result, returns expected read model`` () =
-        let expectedHeading = "Member Detail"
-        let expectedSeverity = MessageDisplay.Severity.error
-        let expectedMessages = [ "Member detail query was not successful and returned \"not found\"" ]
+        let expectedReadModel =
+            MessageDisplay.ReadModel.make "Member" "Detail" 404 MessageDisplay.Severity.warning
+                "No matching member could be found."
 
         let readModel =
             MemberDetail.QueryResult.notFound
             |> CoreExtensions.ToMessageDisplayReadModel
 
-        let actualHeading = readModel.Heading
-        test <@ actualHeading = expectedHeading @>
-        let actualSeverity = readModel.Severity
-        test <@ actualSeverity = expectedSeverity @>
-        let actualMessages = List.ofSeq readModel.Messages
-        test <@ actualMessages = expectedMessages @>
+        test <@ readModel = expectedReadModel @>
 
     [<Test>]
     let ``Calling to message display read model, as success result with member list query result, returns expected read model`` () =
-        let expectedHeading = "Member List"
-        let expectedSeverity = MessageDisplay.Severity.informational
-        let expectedMessages = [ "Member list query was successful" ]
+        let expectedReadModel =
+            MessageDisplay.ReadModel.make "Member" "List" 200 MessageDisplay.Severity.informational
+                "Member list query was successful"
 
         let readModel =
             MemberList.ItemReadModel.make <|| (randomGuid (), randomString ())
@@ -56,95 +46,41 @@ module CoreExtensionsTests =
             |> MemberList.QueryResult.makeSuccess
             |> CoreExtensions.ToMessageDisplayReadModel
 
-        let actualHeading = readModel.Heading
-        test <@ actualHeading = expectedHeading @>
-        let actualSeverity = readModel.Severity
-        test <@ actualSeverity = expectedSeverity @>
-        let actualMessages = List.ofSeq readModel.Messages
-        test <@ actualMessages = expectedMessages @>
+        test <@ readModel = expectedReadModel @>
 
     [<Test>]
     let ``Calling to message display read model, as not found result with member list query result, returns expected read model`` () =
-        let expectedHeading = "Member List"
-        let expectedSeverity = MessageDisplay.Severity.error
-        let expectedMessages = [ "Member list query was not successful and returned \"not found\"" ]
+        let expectedReadModel =
+            MessageDisplay.ReadModel.make "Member" "List" 200 MessageDisplay.Severity.informational
+                "No members have yet been added."
 
         let readModel =
             MemberList.QueryResult.notFound
             |> CoreExtensions.ToMessageDisplayReadModel
 
-        let actualHeading = readModel.Heading
-        test <@ actualHeading = expectedHeading @>
-        let actualSeverity = readModel.Severity
-        test <@ actualSeverity = expectedSeverity @>
-        let actualMessages = List.ofSeq readModel.Messages
-        test <@ actualMessages = expectedMessages @>
-
-    [<Test>]
-    let ``Calling to message display read model, as success result of self-service register command result, returns expected read model`` () =
-        let expectedHeading = "Self-Service Register"
-        let expectedSeverity = MessageDisplay.Severity.informational
-        let expectedMessages = [ "Self-service register command was successful" ]
-
-        let readModel =
-            SelfServiceRegister.CommandResult.success
-            |> CoreExtensions.ToMessageDisplayReadModel
-
-        let actualHeading = readModel.Heading
-        test <@ actualHeading = expectedHeading @>
-        let actualSeverity = readModel.Severity
-        test <@ actualSeverity = expectedSeverity @>
-        let actualMessages = List.ofSeq readModel.Messages
-        test <@ actualMessages = expectedMessages @>
-
-    [<Test>]
-    let ``Calling to message display read model, as not found result of self-service register command result, returns expected read model`` () =
-        let expectedHeading = "Self-Service Register"
-        let expectedSeverity = MessageDisplay.Severity.error
-        let expectedMessages = [ "Self-service register command was not successful and returned \"duplicate id\"" ]
-
-        let readModel =
-            SelfServiceRegister.CommandResult.duplicateId
-            |> CoreExtensions.ToMessageDisplayReadModel
-
-        let actualHeading = readModel.Heading
-        test <@ actualHeading = expectedHeading @>
-        let actualSeverity = readModel.Severity
-        test <@ actualSeverity = expectedSeverity @>
-        let actualMessages = List.ofSeq readModel.Messages
-        test <@ actualMessages = expectedMessages @>
+        test <@ readModel = expectedReadModel @>
 
     [<Test>]
     let ``Calling to message display read model, as valid result of validation result, returns expected read model`` () =
-        let expectedHeading = "Validation"
-        let expectedSeverity = MessageDisplay.Severity.informational
-        let expectedMessages = [ "Validation was successful" ]
+        let expectedReadModel =
+            MessageDisplay.ReadModel.make "Validation" String.empty 200 MessageDisplay.Severity.informational
+                "Validation was successful"
 
         let readModel =
             Validation.Result.valid
             |> CoreExtensions.ToMessageDisplayReadModel
 
-        let actualHeading = readModel.Heading
-        test <@ actualHeading = expectedHeading @>
-        let actualSeverity = readModel.Severity
-        test <@ actualSeverity = expectedSeverity @>
-        let actualMessages = List.ofSeq readModel.Messages
-        test <@ actualMessages = expectedMessages @>
+        test <@ readModel = expectedReadModel @>
 
     [<Test>]
     let ``Calling to message display read model, as invalid result of validation result, returns expected read model`` () =
-        let expectedHeading = "Validation"
-        let expectedSeverity = MessageDisplay.Severity.error
-        let expectedMessage = randomString ()
-        let expectedMessages = [ sprintf "Validation was not successful and returned: \"%s\"" expectedMessage ]
+        let innerMessage = randomString ()
+        let expectedReadModel =
+            MessageDisplay.ReadModel.make "Validation" String.empty 400 MessageDisplay.Severity.error
+                (sprintf "Validation was not successful and returned: \"%s\"" innerMessage)
 
         let readModel =
-            Validation.Result.makeInvalid <|| (randomString (), expectedMessage)
+            Validation.Result.makeInvalid <|| (randomString (), innerMessage)
             |> CoreExtensions.ToMessageDisplayReadModel
 
-        let actualHeading = readModel.Heading
-        test <@ actualHeading = expectedHeading @>
-        let actualSeverity = readModel.Severity
-        test <@ actualSeverity = expectedSeverity @>
-        let actualMessages = List.ofSeq readModel.Messages
-        test <@ actualMessages = expectedMessages @>
+        test <@ readModel = expectedReadModel @>

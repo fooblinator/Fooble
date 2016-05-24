@@ -14,7 +14,7 @@ module SelfServiceRegisterCommandTests =
         let command = SelfServiceRegister.Command.make <|| (randomGuid (), randomString ())
 
         test <@ box command :? ISelfServiceRegisterCommand @>
-        test <@ box command :? IRequest<ISelfServiceRegisterCommandResult> @>
+        test <@ box command :? IRequest<Unit> @>
 
     [<Test>]
     let ``Calling id, returns expected id`` () =

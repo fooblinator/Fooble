@@ -13,7 +13,9 @@ namespace Fooble.Web.Controllers
         public MemberController(IMediator mediator)
         {
             if (mediator == null)
-                throw new ArgumentNullException(nameof(mediator), "Mediator was be null");
+            {
+                throw new ArgumentNullException(nameof(mediator), "Mediator parameter was null");
+            }
 
             _mediator = mediator;
         }
@@ -21,24 +23,22 @@ namespace Fooble.Web.Controllers
         [HttpGet]
         public ActionResult Detail(string id)
         {
-            // TODO: need to modify the view pages to utilize the message display models appropriately
-
             var validationResult = Member.ValidateId(id);
 
             if (validationResult.IsInvalid)
             {
-                return View("Detail_InvalidId", validationResult.ToMessageDisplayReadModel());
+                return View("MessageDisplay", validationResult.ToMessageDisplayReadModel());
             }
 
             var actualId = Guid.Parse(id);
             var query = MemberDetail.Query.Make(actualId);
             var result = _mediator.Send(query);
 
-            Debug.Assert(result != null, "Result was null");
+            Debug.Assert(result != null, "Result parameter was null");
 
             if (result.IsNotFound)
             {
-                return View("Detail_NotFound", result.ToMessageDisplayReadModel());
+                return View("MessageDisplay", result.ToMessageDisplayReadModel());
             }
 
             return View(result.ReadModel);
@@ -47,16 +47,14 @@ namespace Fooble.Web.Controllers
         [HttpGet]
         public ActionResult List()
         {
-            // TODO: need to modify the view pages to utilize the message display models appropriately
-
             var query = MemberList.Query.Make();
             var result = _mediator.Send(query);
 
-            Debug.Assert(result != null, "Result was null");
+            Debug.Assert(result != null, "Result parameter was null");
 
             if (result.IsNotFound)
             {
-                return View("List_NotFound", result.ToMessageDisplayReadModel());
+                return View("MessageDisplay", result.ToMessageDisplayReadModel());
             }
 
             return View(result.ReadModel);

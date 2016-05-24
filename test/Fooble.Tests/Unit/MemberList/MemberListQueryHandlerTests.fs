@@ -3,6 +3,7 @@
 open Fooble.Core
 open Fooble.Tests
 open Fooble.Core.Persistence
+open MediatR
 open Moq
 open Moq.FSharp.Extensions
 open NUnit.Framework
@@ -15,7 +16,7 @@ module MemberListQueryHandlerTests =
     let ``Calling make, with valid parameters, returns query handler`` () =
         let queryHandler = MemberList.QueryHandler.make <| mock ()
 
-        test <@ box queryHandler :? IMemberListQueryHandler @>
+        test <@ box queryHandler :? IRequestHandler<IMemberListQuery, IMemberListQueryResult> @>
 
     [<Test>]
     let ``Calling handle, with no members in data store, returns expected result`` () =
@@ -35,9 +36,6 @@ module MemberListQueryHandlerTests =
 
     [<Test>]
     let ``Calling handle, with members in data store, returns expected result`` () =
-        let expectedId = randomGuid ()
-        let expectedName = randomString ()
-
         let memberData = List.init 5 <| fun _ -> MemberData(Id = randomGuid (), Name = randomString ())
         let memberSetMock = makeObjectSet <| Seq.ofList memberData
         let contextMock = Mock<IFoobleContext>()
