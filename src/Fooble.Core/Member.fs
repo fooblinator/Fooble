@@ -1,8 +1,6 @@
 ﻿namespace Fooble.Core
 
-/// <summary>
 /// Provides common functionality used in the other member-related modules.
-/// </summary>
 [<RequireQualifiedAccess>]
 module Member =
 

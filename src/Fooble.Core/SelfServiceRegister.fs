@@ -5,17 +5,13 @@ open MediatR
 open System
 open System.Diagnostics
 
-/// <summary>
 /// Provides functionality used in the gathering and persisting of member details.
-/// </summary>
 [<RequireQualifiedAccess>]
 module SelfServiceRegister =
 
     (* Command *)
 
-    /// <summary>
     /// Provides functionality used in the persisting of member details.
-    /// </summary>
     [<RequireQualifiedAccess>]
     module Command =
 
@@ -47,11 +43,11 @@ module SelfServiceRegister =
             Validation.raiseIfInvalid <| Member.validateName name
             Command (id, name) :> ISelfServiceRegisterCommand
 
+
+
     (* View Model *)
 
-    /// <summary>
     /// Provides functionality used in the gathering of member details.
-    /// </summary>
     [<RequireQualifiedAccess>]
     module ViewModel =
 
@@ -85,11 +81,10 @@ module SelfServiceRegister =
         [<CompiledName("Make")>]
         let make name = ViewModel name :> ISelfServiceRegisterViewModel
 
+
+
     (* Command Handler *)
 
-    /// <summary>
-    /// Provides functionality used in the persisting of member details.
-    /// </summary>
     [<RequireQualifiedAccess>]
     module internal CommandHandler =
 

@@ -12,6 +12,8 @@ module internal Validation =
             then Choice1Of2 ()
             else Choice2Of2 (result.ParamName, result.Message)
 
+
+
     (* Result *)
 
     [<RequireQualifiedAccess>]
@@ -56,6 +58,8 @@ module internal Validation =
             Debug.Assert(notIsNull message, "Message parameter was null")
             Debug.Assert(String.notIsEmpty message, "Message parameter was an empty string")
             Invalid(paramName, message) :> IValidationResult
+
+
 
     (* Helpers *)
 

@@ -2,11 +2,9 @@
 
 open System.Runtime.CompilerServices
 
-/// <summary>
 /// Provides extensions used for presentation.
-/// </summary>
 [<AutoOpen; Extension>]
-type CoreExtensions = // TODO: need to provide overloads that allow overriding heading and severity
+type CoreExtensions =
 
     (* Member Detail *)
 
@@ -73,6 +71,8 @@ type CoreExtensions = // TODO: need to provide overloads that allow overriding h
         | MemberDetail.IsNotFound ->
             CoreExtensions.ToMessageDisplayReadModel(result, "No matching member could be found.")
 
+
+
     (* Member List *)
 
     /// <summary>
@@ -130,6 +130,8 @@ type CoreExtensions = // TODO: need to provide overloads that allow overriding h
             CoreExtensions.ToMessageDisplayReadModel(result, "Member list query was successful")
 
         | MemberList.IsNotFound -> CoreExtensions.ToMessageDisplayReadModel(result, "No members have yet been added.")
+
+
 
     (* Validation Result *)
 

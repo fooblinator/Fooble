@@ -1,8 +1,6 @@
 ﻿namespace Fooble.Core
 
-/// <summary>
 /// Provides functionality used in the presentation of messages.
-/// </summary>
 [<RequireQualifiedAccess>]
 module MessageDisplay =
 
@@ -15,11 +13,11 @@ module MessageDisplay =
                 then Choice2Of3 ()
                 else Choice3Of3 ()
 
+
+
     (* Severity *)
 
-    /// <summary>
     /// Provides functionality used in the presentation of messages - specifically the message display severity.
-    /// </summary>
     [<RequireQualifiedAccess>]
     module Severity =
 
@@ -70,11 +68,11 @@ module MessageDisplay =
         [<CompiledName("Error")>]
         let error = Error :> IMessageDisplaySeverity
 
+
+
     (* Read Model *)
 
-    /// <summary>
     /// Provides functionality used in the presentation of messages - specifically the message display read model.
-    /// </summary>
     [<RequireQualifiedAccess>]
     module ReadModel =
 

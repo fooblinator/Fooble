@@ -5,9 +5,7 @@ open MediatR
 open System
 open System.Diagnostics
 
-/// <summary>
 /// Provides functionality used in the querying and presentation of member lists.
-/// </summary>
 [<RequireQualifiedAccess>]
 module MemberList =
 
@@ -18,11 +16,11 @@ module MemberList =
             then Choice1Of2 result.ReadModel
             else Choice2Of2 ()
 
+
+
     (* Query *)
 
-    /// <summary>
     /// Provides functionality used in the querying of member lists.
-    /// </summary>
     [<RequireQualifiedAccess>]
     module Query =
 
@@ -39,11 +37,10 @@ module MemberList =
         [<CompiledName("Make")>]
         let make () = Query :> IMemberListQuery
 
+
+
     (* Item Read Model *)
 
-    /// <summary>
-    /// Provides functionality used in the presentation of member lists.
-    /// </summary>
     [<RequireQualifiedAccess>]
     module internal ItemReadModel =
 
@@ -68,11 +65,10 @@ module MemberList =
             Debug.Assert(String.notIsEmpty name, "Name parameter was an empty string")
             ItemReadModel (id, name) :> IMemberListItemReadModel
 
+
+
     (* Read Model *)
 
-    /// <summary>
-    /// Provides functionality used in the presentation of member lists.
-    /// </summary>
     [<RequireQualifiedAccess>]
     module internal ReadModel =
 
@@ -92,11 +88,10 @@ module MemberList =
             Debug.Assert(Seq.notIsEmpty members, "Members parameter was an empty sequence")
             ReadModel members :> IMemberListReadModel
 
+
+
     (* Query Result *)
 
-    /// <summary>
-    /// Provides functionality used in the querying of member lists.
-    /// </summary>
     [<RequireQualifiedAccess>]
     module internal QueryResult =
 
@@ -131,11 +126,10 @@ module MemberList =
 
         let internal notFound = NotFound :> IMemberListQueryResult
 
+
+
     (* Query Handler *)
 
-    /// <summary>
-    /// Provides functionality used in the querying of member lists.
-    /// </summary>
     [<RequireQualifiedAccess>]
     module internal QueryHandler =
 

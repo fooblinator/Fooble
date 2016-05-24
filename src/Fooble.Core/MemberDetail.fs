@@ -5,9 +5,7 @@ open MediatR
 open System
 open System.Diagnostics
 
-/// <summary>
 /// Provides functionality used in the querying and presentation of member details.
-/// </summary>
 [<RequireQualifiedAccess>]
 module MemberDetail =
 
@@ -18,11 +16,11 @@ module MemberDetail =
             then Choice1Of2 result.ReadModel
             else Choice2Of2 ()
 
+
+
     (* Query *)
 
-    /// <summary>
     /// Provides functionality used in the querying of member details.
-    /// </summary>
     [<RequireQualifiedAccess>]
     module Query =
 
@@ -48,11 +46,10 @@ module MemberDetail =
             Validation.raiseIfInvalid <| Member.validateId id
             Query id :> IMemberDetailQuery
 
+
+
     (* Read Model *)
 
-    /// <summary>
-    /// Provides functionality used in the presentation of member details.
-    /// </summary>
     [<RequireQualifiedAccess>]
     module internal ReadModel =
 
@@ -77,11 +74,10 @@ module MemberDetail =
             Debug.Assert(String.notIsEmpty name, "Name parameter was an empty string")
             ReadModel (id, name) :> IMemberDetailReadModel
 
+
+
     (* Query Result *)
 
-    /// <summary>
-    /// Provides functionality used in the querying of member details.
-    /// </summary>
     [<RequireQualifiedAccess>]
     module internal QueryResult =
 
@@ -116,11 +112,10 @@ module MemberDetail =
 
         let internal notFound = NotFound :> IMemberDetailQueryResult
 
+
+
     (* Query Handler *)
 
-    /// <summary>
-    /// Provides functionality used in the querying of member details.
-    /// </summary>
     [<RequireQualifiedAccess>]
     module internal QueryHandler =
 

@@ -8,9 +8,7 @@ open MediatR
 open System.Collections.Generic
 open System.Diagnostics
 
-/// <summary>
 /// Provides the proper Autofac container registrations for the Fooble.Core assembly.
-/// </summary>
 [<AllowNullLiteral>]
 type AutofacModule =
     inherit Autofac.Module
@@ -18,9 +16,7 @@ type AutofacModule =
     val private ConnectionString:string option
     val private Context:IFoobleContext option
 
-    /// <summary>
     /// Constructs an instance of the Autofac module for the Fooble.Core assembly.
-    /// </summary>
     new() = 
         { ConnectionString = None
           Context = None }
