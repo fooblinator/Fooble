@@ -77,9 +77,10 @@
     <Compile Include="SelfServiceRegister\SelfServiceRegisterCommandTests.fs" />
     <Compile Include="SelfServiceRegister\SelfServiceRegisterExtensionsTests.fs" />
     <Compile Include="SelfServiceRegister\SelfServiceRegisterReadModelTests.fs" />
+    <Compile Include="Validation\ValidationExtensionsTests.fs" />
+    <Compile Include="Validation\ValidationResultTests.fs" />
     <Compile Include="AutofacModuleTests.fs" />
     <Compile Include="KeyGeneratorTests.fs" />
-    <Compile Include="ValidationResultTests.fs" />
     <Content Include="App.config" />
     <Content Include="packages.config" />
   </ItemGroup>

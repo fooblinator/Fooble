@@ -15,8 +15,8 @@ module SelfServiceRegisterExtensionsTests =
 
         let commandResult = SelfServiceRegister.CommandResult.success
 
-        raisesWith<InvalidOperationException> <@ commandResult.ToMessageDisplayReadModel() @> (fun x ->
-            <@ x.Message = expectedMessage @>)
+        raisesWith<InvalidOperationException> <@ MessageDisplay.ofSelfServiceRegisterCommandResult commandResult @>
+            (fun x -> <@ x.Message = expectedMessage @>)
 
     [<Test>]
     let ``Calling to message display read model, as username unavailable result of self-service register command result, returns expected read model`` () =
@@ -27,8 +27,7 @@ module SelfServiceRegisterExtensionsTests =
         let expectedMessage = "Requested username is unavailable."
 
         let readModel =
-            SelfServiceRegister.CommandResult.usernameUnavailable
-            |> CoreExtensions.ToMessageDisplayReadModel
+            SelfServiceRegister.CommandResult.usernameUnavailable |> MessageDisplay.ofSelfServiceRegisterCommandResult
 
         test <@ readModel.Heading = expectedHeading @>
         test <@ readModel.SubHeading = expectedSubHeading @>

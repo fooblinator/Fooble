@@ -55,17 +55,16 @@
     <Compile Include="..\Common\GlobalAssemblyInfo.fs">
       <Link>Properties\GlobalAssemblyInfo.fs</Link>
     </Compile>
-    <Compile Include="CoreTypes.fs" />
-    <Compile Include="CoreHelpers.fs" />
+    <Compile Include="Helpers.fs" />
+    <Compile Include="Types.fs" />
     <Compile Include="Validation.fs" />
-    <Compile Include="MessageDisplay.fs" />
     <Compile Include="Member.fs" />
     <Compile Include="MemberDetail.fs" />
     <Compile Include="MemberList.fs" />
     <Compile Include="SelfServiceRegister.fs" />
+    <Compile Include="MessageDisplay.fs" />
     <Compile Include="KeyGenerator.fs" />
-    <Compile Include="CoreExtensions.fs" />
-    <Compile Include="CoreInfrastructure.fs" />
+    <Compile Include="Infrastructure\AutofacModule.fs" />
     <Content Include="App.config" />
     <Content Include="packages.config" />
   </ItemGroup>

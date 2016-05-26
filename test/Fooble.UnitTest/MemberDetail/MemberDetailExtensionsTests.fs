@@ -17,7 +17,7 @@ module MemberDetailExtensionsTests =
             MemberDetail.ReadModel.make (Guid.random ()) (String.random 32) (String.random 64)
             |> MemberDetail.QueryResult.makeSuccess
 
-        raisesWith<InvalidOperationException> <@ queryResult.ToMessageDisplayReadModel() @> (fun x ->
+        raisesWith<InvalidOperationException> <@ MessageDisplay.ofMemberDetailQueryResult queryResult @> (fun x ->
             <@ x.Message = expectedMessage @>)
 
     [<Test>]
@@ -28,9 +28,7 @@ module MemberDetailExtensionsTests =
         let expectedSeverity = MessageDisplay.Severity.warning
         let expectedMessage = "No matching member could be found."
 
-        let readModel =
-            MemberDetail.QueryResult.notFound
-            |> CoreExtensions.ToMessageDisplayReadModel
+        let readModel = MemberDetail.QueryResult.notFound |> MessageDisplay.ofMemberDetailQueryResult
 
         test <@ readModel.Heading = expectedHeading @>
         test <@ readModel.SubHeading = expectedSubHeading @>

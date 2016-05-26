@@ -19,7 +19,7 @@ module MemberListExtensionsTests =
             |> MemberList.ReadModel.make
             |> MemberList.QueryResult.makeSuccess
 
-        raisesWith<InvalidOperationException> <@ queryResult.ToMessageDisplayReadModel() @>
+        raisesWith<InvalidOperationException> <@ MessageDisplay.ofMemberListQueryResult queryResult @>
             (fun e -> <@ e.Message = expectedMessage @>)
 
     [<Test>]
@@ -30,9 +30,7 @@ module MemberListExtensionsTests =
         let expectedSeverity = MessageDisplay.Severity.informational
         let expectedMessage = "No members have yet been added."
 
-        let readModel =
-            MemberList.QueryResult.notFound
-            |> CoreExtensions.ToMessageDisplayReadModel
+        let readModel = MemberList.QueryResult.notFound |> MessageDisplay.ofMemberListQueryResult
 
         test <@ readModel.Heading = expectedHeading @>
         test <@ readModel.SubHeading = expectedSubHeading @>
