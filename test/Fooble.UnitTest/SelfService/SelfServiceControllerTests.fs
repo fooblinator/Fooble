@@ -257,40 +257,37 @@ module SelfServiceControllerTests =
 
     [<Test>]
     let ``Calling register post, with existing username in data store, returns expected result`` () =
-        let expectedHeading = "Self-Service"
-        let expectedSubHeading = "Register"
-        let expectedStatusCode = 400
-        let expectedSeverity = MessageDisplay.Severity.warning
-        let expectedMessage = "Requested username is unavailable."
+        let existingUsername = String.random 32
+        let expectedName = String.random 64
 
         let commandResult = SelfServiceRegister.CommandResult.usernameUnavailable
         let mediatorMock = Mock<IMediator>()
         mediatorMock.SetupFunc(fun x -> x.Send(any ())).Returns(commandResult).Verifiable()
 
-        let keyGeneratorMock = Mock<IKeyGenerator>()
-        keyGeneratorMock.SetupFunc(fun x -> x.GenerateKey()).Returns(Guid.random ()).Verifiable()
-
-        let controller = new SelfServiceController(mediatorMock.Object, keyGeneratorMock.Object)
-        let result = controller.Register(String.random 32, String.random 64)
+        let keyGenerator = KeyGenerator.make ()
+        let controller = new SelfServiceController(mediatorMock.Object, keyGenerator)
+        let result = controller.Register(existingUsername, expectedName)
 
         mediatorMock.Verify()
-        keyGeneratorMock.Verify()
 
         test <@ isNotNull result @>
         test <@ result :? ViewResult @>
 
         let viewResult = result :?> ViewResult
 
-        test <@ viewResult.ViewName = "MessageDisplay" @>
+        test <@ String.isEmpty viewResult.ViewName @>
         test <@ isNotNull viewResult.Model @>
-        test <@ viewResult.Model :? IMessageDisplayReadModel @>
+        test <@ viewResult.Model :? ISelfServiceRegisterViewModel @>
 
-        let actualReadModel = viewResult.Model :?> IMessageDisplayReadModel
-        test <@ actualReadModel.Heading = expectedHeading @>
-        test <@ actualReadModel.SubHeading = expectedSubHeading @>
-        test <@ actualReadModel.StatusCode = expectedStatusCode @>
-        test <@ actualReadModel.Severity = expectedSeverity @>
-        test <@ actualReadModel.Message = expectedMessage @>
+        let actualViewModel = viewResult.Model :?> ISelfServiceRegisterViewModel
+        test <@ actualViewModel.Username = existingUsername @>
+        test <@ actualViewModel.Name = expectedName @>
+
+        let modelState = viewResult.ViewData.ModelState
+
+        test <@ modelState.ContainsKey("username") @>
+        test <@ modelState.["username"].Errors.Count = 1 @>
+        test <@ modelState.["username"].Errors.[0].ErrorMessage = "Username is unavailable" @>
 
     [<Test>]
     let ``Calling register post, with no existing username in data store, returns expected result`` () =

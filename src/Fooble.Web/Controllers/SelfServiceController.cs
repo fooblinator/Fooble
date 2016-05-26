@@ -63,7 +63,9 @@ namespace Fooble.Web.Controllers
 
             if (result.IsUsernameUnavailable)
             {
-                return View("MessageDisplay", result.ToMessageDisplayReadModel());
+                ModelState.AddModelError("username", "Username is unavailable");
+
+                return View(SelfServiceRegister.ViewModel.Make(username, name));
             }
 
             return RedirectToAction("Detail", "Member", new { id = id.ToString() });
