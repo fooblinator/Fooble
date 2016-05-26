@@ -139,6 +139,7 @@ module SelfServiceRegister =
     module internal CommandHandler =
 
         [<DefaultAugmentation(false)>]
+        [<NoComparison>]
         type private Implementation =
             | CommandHandler of IFoobleContext
 

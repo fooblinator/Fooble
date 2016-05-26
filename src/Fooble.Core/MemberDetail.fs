@@ -91,6 +91,7 @@ module MemberDetail =
     module internal QueryResult =
 
         [<DefaultAugmentation(false)>]
+        [<NoComparison>]
         type private Implementation =
             | Success of IMemberDetailReadModel
             | NotFound
@@ -129,6 +130,7 @@ module MemberDetail =
     module internal QueryHandler =
 
         [<DefaultAugmentation(false)>]
+        [<NoComparison>]
         type private Implementation =
             | QueryHandler of IFoobleContext
 

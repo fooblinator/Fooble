@@ -73,6 +73,7 @@ module MemberList =
     module internal ReadModel =
 
         [<DefaultAugmentation(false)>]
+        [<NoComparison>]
         type private Implementation =
             | ReadModel of seq<IMemberListItemReadModel>
 
@@ -96,6 +97,7 @@ module MemberList =
     module internal QueryResult =
 
         [<DefaultAugmentation(false)>]
+        [<NoComparison>]
         type private Implementation =
             | Success of IMemberListReadModel
             | NotFound
@@ -134,6 +136,7 @@ module MemberList =
     module internal QueryHandler =
 
         [<DefaultAugmentation(false)>]
+        [<NoComparison>]
         type private Implementation =
             | QueryHandler of IFoobleContext
 

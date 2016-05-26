@@ -9,11 +9,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{AFBA107A-3E0
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{D4A4769A-F440-44D7-B71F-317DB3FA7CF5}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Fooble.Tests", "test\Fooble.Tests\Fooble.Tests.fsproj", "{F1D4FF61-3982-4605-8BAF-1E7F941165CD}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Fooble.UnitTest", "test\Fooble.UnitTest\Fooble.UnitTest.fsproj", "{F1D4FF61-3982-4605-8BAF-1E7F941165CD}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fooble.Web", "src\Fooble.Web\Fooble.Web.csproj", "{B8E7F59F-08FE-48AB-9640-6A0B41083496}"
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Fooble.Core.Persistence", "src\Fooble.Core.Persistence\Fooble.Core.Persistence.fsproj", "{6324603A-6972-4B7E-AE8B-A5E4A13A657F}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Fooble.IntegrationTest", "test\Fooble.IntegrationTest\Fooble.IntegrationTest.fsproj", "{72FBC0FE-F9FB-4ED6-AD2C-4CB8D2F51C17}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -38,6 +40,10 @@ Global
 		{6324603A-6972-4B7E-AE8B-A5E4A13A657F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6324603A-6972-4B7E-AE8B-A5E4A13A657F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6324603A-6972-4B7E-AE8B-A5E4A13A657F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{72FBC0FE-F9FB-4ED6-AD2C-4CB8D2F51C17}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{72FBC0FE-F9FB-4ED6-AD2C-4CB8D2F51C17}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{72FBC0FE-F9FB-4ED6-AD2C-4CB8D2F51C17}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{72FBC0FE-F9FB-4ED6-AD2C-4CB8D2F51C17}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -47,5 +53,6 @@ Global
 		{F1D4FF61-3982-4605-8BAF-1E7F941165CD} = {D4A4769A-F440-44D7-B71F-317DB3FA7CF5}
 		{B8E7F59F-08FE-48AB-9640-6A0B41083496} = {AFBA107A-3E09-4144-9A81-98E9D0546E19}
 		{6324603A-6972-4B7E-AE8B-A5E4A13A657F} = {AFBA107A-3E09-4144-9A81-98E9D0546E19}
+		{72FBC0FE-F9FB-4ED6-AD2C-4CB8D2F51C17} = {D4A4769A-F440-44D7-B71F-317DB3FA7CF5}
 	EndGlobalSection
 EndGlobal

@@ -1,4 +1,4 @@
-﻿namespace Meta.AssemblyInfo
+﻿namespace Fooble.AssemblyInfo
 
 open System.Reflection
 open System.Resources

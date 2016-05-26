@@ -77,6 +77,7 @@ module MessageDisplay =
     module ReadModel =
 
         [<DefaultAugmentation(false)>]
+        [<NoComparison>]
         type private Implementation =
             | ReadModel of string * string * int * IMessageDisplaySeverity * string
 
