@@ -42,7 +42,7 @@ module MemberDetail =
         /// <returns>Returns a member detail query.</returns>
         [<CompiledName("Make")>]
         let make id =
-            Validation.raiseIfInvalid <| Member.validateId id
+            Validation.raiseIfInvalid (Member.validateId id)
             Query id :> IMemberDetailQuery
 
 

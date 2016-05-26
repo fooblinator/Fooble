@@ -11,7 +11,7 @@ module MemberTests =
     [<Test>]
     let ``Calling validate id, with empty id, returns expected validation result`` () =
         let expectedParamName = "id"
-        let expectedMessage = "Id parameter was an empty GUID"
+        let expectedMessage = "Id is required"
 
         let result = Member.validateId Guid.empty
 
@@ -28,7 +28,7 @@ module MemberTests =
     [<Test>]
     let ``Calling validate id string, with null id, returns expected validation result`` () =
         let expectedParamName = "id"
-        let expectedMessage = "Id parameter was null"
+        let expectedMessage = "Id is required"
 
         let result = Member.validateIdString null
 
@@ -39,7 +39,7 @@ module MemberTests =
     [<Test>]
     let ``Calling validate id string, with empty id, returns expected validation result`` () =
         let expectedParamName = "id"
-        let expectedMessage = "Id parameter was an empty string"
+        let expectedMessage = "Id is required"
 
         let result = Member.validateIdString String.empty
 
@@ -50,7 +50,7 @@ module MemberTests =
     [<Test>]
     let ``Calling validate id string, with invalid format id, returns expected validation result`` () =
         let expectedParamName = "id"
-        let expectedMessage = "Id parameter was not in GUID format"
+        let expectedMessage = "Id is not in the correct format (GUID)"
 
         let result = Member.validateIdString (String.random 64)
 
@@ -67,7 +67,7 @@ module MemberTests =
     [<Test>]
     let ``Calling validate username, with null username, returns expected validation result`` () =
         let expectedParamName = "username"
-        let expectedMessage = "Username parameter was null"
+        let expectedMessage = "Username is required"
 
         let result = Member.validateUsername null
 
@@ -78,7 +78,7 @@ module MemberTests =
     [<Test>]
     let ``Calling validate username, with empty username, returns expected validation result`` () =
         let expectedParamName = "username"
-        let expectedMessage = "Username parameter was an empty string"
+        let expectedMessage = "Username is required"
 
         let result = Member.validateUsername String.empty
 
@@ -89,7 +89,7 @@ module MemberTests =
     [<Test>]
     let ``Calling validate username, with username shorter than 3, returns expected validation result`` () =
         let expectedParamName = "username"
-        let expectedMessage = "Username parameter was shorter than 3 characters"
+        let expectedMessage = "Username is shorter than 3 characters"
 
         let result = Member.validateUsername (String.random 2)
 
@@ -100,7 +100,7 @@ module MemberTests =
     [<Test>]
     let ``Calling validate username, with username longer than 32, returns expected validation result`` () =
         let expectedParamName = "username"
-        let expectedMessage = "Username parameter was longer than 32 characters"
+        let expectedMessage = "Username is longer than 32 characters"
 
         let result = Member.validateUsername (String.random 33)
 
@@ -117,7 +117,7 @@ module MemberTests =
     [<Test>]
     let ``Calling validate name, with null name, returns expected validation result`` () =
         let expectedParamName = "name"
-        let expectedMessage = "Name parameter was null"
+        let expectedMessage = "Name is required"
 
         let result = Member.validateName null
 
@@ -128,7 +128,7 @@ module MemberTests =
     [<Test>]
     let ``Calling validate name, with empty name, returns expected validation result`` () =
         let expectedParamName = "name"
-        let expectedMessage = "Name parameter was an empty string"
+        let expectedMessage = "Name is required"
 
         let result = Member.validateName String.empty
 

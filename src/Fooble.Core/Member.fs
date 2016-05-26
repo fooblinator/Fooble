@@ -13,7 +13,7 @@ module Member =
     /// <returns>Returns a validation result.</returns>
     [<CompiledName("ValidateId")>]
     let validateId id =
-        [ (Guid.isNotEmpty), "Id parameter was an empty GUID" ]
+        [ (Guid.isNotEmpty), "Id is required" ]
         |> Validation.validate id "id"
 
     /// <summary>
@@ -28,9 +28,8 @@ module Member =
     /// </remarks>
     [<CompiledName("ValidateId")>]
     let validateIdString id =
-        [ (isNotNull), "Id parameter was null"
-          (String.isNotEmpty), "Id parameter was an empty string"
-          (String.isGuid), "Id parameter was not in GUID format" ]
+        [ (String.isNotNullOrEmpty), "Id is required"
+          (String.isGuid), "Id is not in the correct format (GUID)" ]
         |> Validation.validate id "id"
 
     /// <summary>
@@ -40,10 +39,9 @@ module Member =
     /// <returns>Returns a validation result.</returns>
     [<CompiledName("ValidateUsername")>]
     let validateUsername username =
-        [ (isNotNull), "Username parameter was null"
-          (String.isNotEmpty), "Username parameter was an empty string"
-          (String.isNotShorter 3), "Username parameter was shorter than 3 characters"
-          (String.isNotLonger 32), "Username parameter was longer than 32 characters" ]
+        [ (String.isNotNullOrEmpty), "Username is required"
+          (String.isNotShorter 3), "Username is shorter than 3 characters"
+          (String.isNotLonger 32), "Username is longer than 32 characters" ]
         |> Validation.validate username "username"
 
     /// <summary>
@@ -53,6 +51,5 @@ module Member =
     /// <returns>Returns a validation result.</returns>
     [<CompiledName("ValidateName")>]
     let validateName name =
-        [ (isNotNull), "Name parameter was null"
-          (String.isNotEmpty), "Name parameter was an empty string" ]
+        [ (String.isNotNullOrEmpty), "Name is required" ]
         |> Validation.validate name "name"

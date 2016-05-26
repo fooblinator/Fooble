@@ -53,9 +53,9 @@ module SelfServiceRegister =
         /// <returns>Returns a self-service register command.</returns>
         [<CompiledName("Make")>]
         let make id username name =
-            Validation.raiseIfInvalid <| Member.validateId id
-            Validation.raiseIfInvalid <| Member.validateUsername username
-            Validation.raiseIfInvalid <| Member.validateName name
+            Validation.raiseIfInvalid (Member.validateId id)
+            Validation.raiseIfInvalid (Member.validateUsername username)
+            Validation.raiseIfInvalid (Member.validateName name)
             Command (id, username, name) :> ISelfServiceRegisterCommand
 
 

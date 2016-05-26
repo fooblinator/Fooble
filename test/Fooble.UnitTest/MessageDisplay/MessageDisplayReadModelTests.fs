@@ -12,7 +12,7 @@ module MessageDisplayReadModelTests =
     [<Test>]
     let ``Calling make, with null heading, raises expected exception`` () =
         let expectedParamName = "heading"
-        let expectedMessage = "Heading parameter was null"
+        let expectedMessage = "Heading is required"
 
         let severity = MessageDisplay.Severity.informational
         raisesWith<ArgumentException>
@@ -22,7 +22,7 @@ module MessageDisplayReadModelTests =
     [<Test>]
     let ``Calling make, with empty heading, raises expected exception`` () =
         let expectedParamName = "heading"
-        let expectedMessage = "Heading parameter was an empty string"
+        let expectedMessage = "Heading is required"
 
         let severity = MessageDisplay.Severity.informational
         raisesWith<ArgumentException>
@@ -32,7 +32,7 @@ module MessageDisplayReadModelTests =
     [<Test>]
     let ``Calling make, with null sub-heading, raises expected exception`` () =
         let expectedParamName = "subHeading"
-        let expectedMessage = "Sub-heading parameter was null"
+        let expectedMessage = "Sub-heading is required"
 
         let severity = MessageDisplay.Severity.informational
         raisesWith<ArgumentException>
@@ -42,7 +42,7 @@ module MessageDisplayReadModelTests =
     [<Test>]
     let ``Calling make, with status code less than zero, raises expected exception`` () =
         let expectedParamName = "statusCode"
-        let expectedMessage = "Status code parameter was less than zero"
+        let expectedMessage = "Status code parameter is less than zero"
 
         let severity = MessageDisplay.Severity.informational
         raisesWith<ArgumentException>
@@ -52,7 +52,7 @@ module MessageDisplayReadModelTests =
     [<Test>]
     let ``Calling make, with null message, raises expected exception`` () =
         let expectedParamName = "message"
-        let expectedMessage = "Message parameter was null"
+        let expectedMessage = "Message is required"
 
         let severity = MessageDisplay.Severity.informational
         raisesWith<ArgumentException>
@@ -62,7 +62,7 @@ module MessageDisplayReadModelTests =
     [<Test>]
     let ``Calling make, with empty message, raises expected exception`` () =
         let expectedParamName = "message"
-        let expectedMessage = "Message parameter was an empty string"
+        let expectedMessage = "Message is required"
 
         let severity = MessageDisplay.Severity.informational
         raisesWith<ArgumentException>

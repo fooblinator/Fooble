@@ -84,7 +84,7 @@ module SelfServiceControllerTests =
 
         test <@ modelState.ContainsKey("username") @>
         test <@ modelState.["username"].Errors.Count = 1 @>
-        test <@ modelState.["username"].Errors.[0].ErrorMessage = "Username parameter was null" @>
+        test <@ modelState.["username"].Errors.[0].ErrorMessage = "Username is required" @>
 
     [<Test>]
     let ``Calling register post, with empty username, returns expected result`` () =
@@ -112,7 +112,7 @@ module SelfServiceControllerTests =
 
         test <@ modelState.ContainsKey("username") @>
         test <@ modelState.["username"].Errors.Count = 1 @>
-        test <@ modelState.["username"].Errors.[0].ErrorMessage = "Username parameter was an empty string" @>
+        test <@ modelState.["username"].Errors.[0].ErrorMessage = "Username is required" @>
 
     [<Test>]
     let ``Calling register post, with username shorter than 3 characters, returns expected result`` () =
@@ -140,7 +140,7 @@ module SelfServiceControllerTests =
 
         test <@ modelState.ContainsKey("username") @>
         test <@ modelState.["username"].Errors.Count = 1 @>
-        test <@ modelState.["username"].Errors.[0].ErrorMessage = "Username parameter was shorter than 3 characters" @>
+        test <@ modelState.["username"].Errors.[0].ErrorMessage = "Username is shorter than 3 characters" @>
 
     [<Test>]
     let ``Calling register post, with username longer than 32 characters, returns expected result`` () =
@@ -168,7 +168,7 @@ module SelfServiceControllerTests =
 
         test <@ modelState.ContainsKey("username") @>
         test <@ modelState.["username"].Errors.Count = 1 @>
-        test <@ modelState.["username"].Errors.[0].ErrorMessage = "Username parameter was longer than 32 characters" @>
+        test <@ modelState.["username"].Errors.[0].ErrorMessage = "Username is longer than 32 characters" @>
 
     [<Test>]
     let ``Calling register post, with null name, returns expected result`` () =
@@ -196,7 +196,7 @@ module SelfServiceControllerTests =
 
         test <@ modelState.ContainsKey("name") @>
         test <@ modelState.["name"].Errors.Count = 1 @>
-        test <@ modelState.["name"].Errors.[0].ErrorMessage = "Name parameter was null" @>
+        test <@ modelState.["name"].Errors.[0].ErrorMessage = "Name is required" @>
 
     [<Test>]
     let ``Calling register post, with empty name, returns expected result`` () =
@@ -224,7 +224,7 @@ module SelfServiceControllerTests =
 
         test <@ modelState.ContainsKey("name") @>
         test <@ modelState.["name"].Errors.Count = 1 @>
-        test <@ modelState.["name"].Errors.[0].ErrorMessage = "Name parameter was an empty string" @>
+        test <@ modelState.["name"].Errors.[0].ErrorMessage = "Name is required" @>
 
     [<Test>]
     let ``Calling register post, with existing username in data store, returns expected result`` () =

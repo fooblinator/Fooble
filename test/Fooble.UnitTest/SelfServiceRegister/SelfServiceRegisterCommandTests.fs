@@ -13,7 +13,7 @@ module SelfServiceRegisterCommandTests =
     [<Test>]
     let ``Calling make, with empty id, raises expected exception`` () =
         let expectedParamName = "id"
-        let expectedMessage = "Id parameter was an empty GUID"
+        let expectedMessage = "Id is required"
 
         raisesWith<ArgumentException>
             <@ SelfServiceRegister.Command.make Guid.empty (String.random 32) (String.random 64) @> (fun x ->
@@ -22,7 +22,7 @@ module SelfServiceRegisterCommandTests =
     [<Test>]
     let ``Calling make, with null username, raises expected exception`` () =
         let expectedParamName = "username"
-        let expectedMessage = "Username parameter was null"
+        let expectedMessage = "Username is required"
 
         raisesWith<ArgumentException>
             <@ SelfServiceRegister.Command.make (Guid.random ()) null (String.random 64) @> (fun x ->
@@ -31,7 +31,7 @@ module SelfServiceRegisterCommandTests =
     [<Test>]
     let ``Calling make, with empty username, raises expected exception`` () =
         let expectedParamName = "username"
-        let expectedMessage = "Username parameter was an empty string"
+        let expectedMessage = "Username is required"
 
         raisesWith<ArgumentException>
             <@ SelfServiceRegister.Command.make (Guid.random ()) String.empty (String.random 64) @> (fun x ->
@@ -40,7 +40,7 @@ module SelfServiceRegisterCommandTests =
     [<Test>]
     let ``Calling make, with null name, raises expected exception`` () =
         let expectedParamName = "name"
-        let expectedMessage = "Name parameter was null"
+        let expectedMessage = "Name is required"
 
         raisesWith<ArgumentException>
             <@ SelfServiceRegister.Command.make (Guid.random ()) (String.random 32) null @> (fun x ->
@@ -49,7 +49,7 @@ module SelfServiceRegisterCommandTests =
     [<Test>]
     let ``Calling make, with empty name, raises expected exception`` () =
         let expectedParamName = "name"
-        let expectedMessage = "Name parameter was an empty string"
+        let expectedMessage = "Name is required"
 
         raisesWith<ArgumentException>
             <@ SelfServiceRegister.Command.make (Guid.random ()) (String.random 32) String.empty @> (fun x ->

@@ -123,21 +123,19 @@ module MessageDisplay =
         [<CompiledName("Make")>]
         let make heading subHeading statusCode severity message =
 
-            [ (isNotNull), "Heading parameter was null"
-              (String.isNotEmpty), "Heading parameter was an empty string" ]
+            [ (String.isNotNullOrEmpty), "Heading is required" ]
             |> Validation.validate heading "heading"
             |> Validation.raiseIfInvalid
 
-            [ (isNotNull), "Sub-heading parameter was null" ]
+            [ (isNotNull), "Sub-heading is required" ]
             |> Validation.validate subHeading "subHeading"
             |> Validation.raiseIfInvalid
 
-            [ (fun x -> x >= 0), "Status code parameter was less than zero" ]
+            [ (fun x -> x >= 0), "Status code parameter is less than zero" ]
             |> Validation.validate statusCode "statusCode"
             |> Validation.raiseIfInvalid
 
-            [ (isNotNull), "Message parameter was null"
-              (String.isNotEmpty), "Message parameter was an empty string" ]
+            [ (String.isNotNullOrEmpty), "Message is required" ]
             |> Validation.validate message "message"
             |> Validation.raiseIfInvalid
 

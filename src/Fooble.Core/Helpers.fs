@@ -19,6 +19,8 @@ module internal Helpers =
         let internal empty = String.Empty
         let internal isEmpty x = x = empty
         let internal isNotEmpty x = not <| isEmpty x
+        let internal isNullOrEmpty x = isNull x || isEmpty x
+        let internal isNotNullOrEmpty x = not <| isNullOrEmpty x
         let internal isGuid x = fst (Guid.TryParse(x))
         let internal isLonger max x = String.length x > max
         let internal isNotLonger max x = not <| isLonger max x

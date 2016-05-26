@@ -13,7 +13,7 @@ module MemberDetailQueryTests =
     [<Test>]
     let ``Calling make, with empty id, raises expected exception`` () =
         let expectedParamName = "id"
-        let expectedMessage = "Id parameter was an empty GUID"
+        let expectedMessage = "Id is required"
 
         raisesWith<ArgumentException>
             <@ MemberDetail.Query.make Guid.empty @> (fun x ->
