@@ -76,7 +76,7 @@
     <Compile Include="SelfServiceRegister\SelfServiceRegisterCommandResultTests.fs" />
     <Compile Include="SelfServiceRegister\SelfServiceRegisterCommandTests.fs" />
     <Compile Include="SelfServiceRegister\SelfServiceRegisterExtensionsTests.fs" />
-    <Compile Include="SelfServiceRegister\SelfServiceRegisterReadModelTests.fs" />
+    <Compile Include="SelfServiceRegister\SelfServiceRegisterViewModelTests.fs" />
     <Compile Include="Validation\ValidationExtensionsTests.fs" />
     <Compile Include="Validation\ValidationResultTests.fs" />
     <Compile Include="AutofacModuleTests.fs" />
