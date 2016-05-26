@@ -1,6 +1,7 @@
 ﻿namespace Fooble.Core
 
 open System
+open System.Text.RegularExpressions
 
 [<AutoOpen>]
 module internal Helpers =
@@ -16,6 +17,7 @@ module internal Helpers =
 
     [<RequireQualifiedAccess>]
     module internal String =
+
         let internal empty = String.Empty
         let internal isEmpty x = x = empty
         let internal isNotEmpty x = not <| isEmpty x
@@ -26,6 +28,7 @@ module internal Helpers =
         let internal isNotLonger max x = not <| isLonger max x
         let internal isShorter min x = String.length x < min
         let internal isNotShorter min x = not <| isShorter min x
+        let internal isMatch pattern x = Regex.IsMatch(x, pattern)
 
     [<RequireQualifiedAccess>]
     module internal Seq =

@@ -41,7 +41,8 @@ module Member =
     let validateUsername username =
         [ (String.isNotNullOrEmpty), "Username is required"
           (String.isNotShorter 3), "Username is shorter than 3 characters"
-          (String.isNotLonger 32), "Username is longer than 32 characters" ]
+          (String.isNotLonger 32), "Username is longer than 32 characters"
+          (String.isMatch "^[a-z0-9]+$"), "Username is not in the correct format (lowercase alphanumeric)" ]
         |> Validation.validate username "username"
 
     /// <summary>

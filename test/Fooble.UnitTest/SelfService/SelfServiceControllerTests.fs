@@ -171,6 +171,35 @@ module SelfServiceControllerTests =
         test <@ modelState.["username"].Errors.[0].ErrorMessage = "Username is longer than 32 characters" @>
 
     [<Test>]
+    let ``Calling register post, with username in invalid format, returns expected result`` () =
+        let invalidFormatUsername = sprintf "-%s-%s-" (String.random 8) (String.random 8)
+        let expectedName = String.random 64
+
+        let keyGenerator = KeyGenerator.make ()
+        let controller = new SelfServiceController(mock (), keyGenerator)
+        let result = controller.Register(invalidFormatUsername, expectedName)
+
+        test <@ isNotNull result @>
+        test <@ result :? ViewResult @>
+
+        let viewResult = result :?> ViewResult
+
+        test <@ String.isEmpty viewResult.ViewName @>
+        test <@ isNotNull viewResult.Model @>
+        test <@ viewResult.Model :? ISelfServiceRegisterViewModel @>
+
+        let actualViewModel = viewResult.Model :?> ISelfServiceRegisterViewModel
+        test <@ actualViewModel.Username = invalidFormatUsername @>
+        test <@ actualViewModel.Name = expectedName @>
+
+        let modelState = viewResult.ViewData.ModelState
+
+        test <@ modelState.ContainsKey("username") @>
+        test <@ modelState.["username"].Errors.Count = 1 @>
+        test <@ modelState.["username"].Errors.[0].ErrorMessage =
+            "Username is not in the correct format (lowercase alphanumeric)" @>
+
+    [<Test>]
     let ``Calling register post, with null name, returns expected result`` () =
         let expectedUsername = String.random 32
         let nullName:string = null

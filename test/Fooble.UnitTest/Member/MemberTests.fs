@@ -109,6 +109,17 @@ module MemberTests =
         test <@ result.Message = expectedMessage @>
 
     [<Test>]
+    let ``Calling validate username, with username in invalid format, returns expected validation result`` () =
+        let expectedParamName = "username"
+        let expectedMessage = "Username is not in the correct format (lowercase alphanumeric)"
+
+        let result = Member.validateUsername (sprintf "-%s-%s-" (String.random 8) (String.random 8))
+
+        test <@ result.IsInvalid @>
+        test <@ result.ParamName = expectedParamName @>
+        test <@ result.Message = expectedMessage @>
+
+    [<Test>]
     let ``Calling validate username, with valid username, returns no messages`` () =
         let result = Member.validateUsername (String.random 32)
 

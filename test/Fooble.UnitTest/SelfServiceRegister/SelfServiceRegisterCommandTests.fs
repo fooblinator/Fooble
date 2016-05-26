@@ -38,6 +38,34 @@ module SelfServiceRegisterCommandTests =
                 <@ x.ParamName = expectedParamName && (fixInvalidArgMessage x.Message) = expectedMessage @>)
 
     [<Test>]
+    let ``Calling make, with username shorter than 3 characters, raises expected exception`` () =
+        let expectedParamName = "username"
+        let expectedMessage = "Username is shorter than 3 characters"
+
+        raisesWith<ArgumentException>
+            <@ SelfServiceRegister.Command.make (Guid.random ()) (String.random 2) (String.random 64) @> (fun x ->
+                <@ x.ParamName = expectedParamName && (fixInvalidArgMessage x.Message) = expectedMessage @>)
+
+    [<Test>]
+    let ``Calling make, with username longer than 32 characters, raises expected exception`` () =
+        let expectedParamName = "username"
+        let expectedMessage = "Username is longer than 32 characters"
+
+        raisesWith<ArgumentException>
+            <@ SelfServiceRegister.Command.make (Guid.random ()) (String.random 33) (String.random 64) @> (fun x ->
+                <@ x.ParamName = expectedParamName && (fixInvalidArgMessage x.Message) = expectedMessage @>)
+
+    [<Test>]
+    let ``Calling make, with username in invalid format, raises expected exception`` () =
+        let expectedParamName = "username"
+        let expectedMessage = "Username is not in the correct format (lowercase alphanumeric)"
+
+        let invalidFormatUsername = sprintf "-%s-%s-" (String.random 8) (String.random 8)
+        raisesWith<ArgumentException>
+            <@ SelfServiceRegister.Command.make (Guid.random ()) invalidFormatUsername (String.random 64) @> (fun x ->
+                <@ x.ParamName = expectedParamName && (fixInvalidArgMessage x.Message) = expectedMessage @>)
+
+    [<Test>]
     let ``Calling make, with null name, raises expected exception`` () =
         let expectedParamName = "name"
         let expectedMessage = "Name is required"
