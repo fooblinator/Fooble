@@ -17,7 +17,7 @@ module SelfServiceControllerTests =
     [<Test>]
     let ``Constructing, with null mediator, raises expected exception`` () =
         let expectedParamName = "mediator"
-        let expectedMessage = "Mediator parameter was null"
+        let expectedMessage = "Mediator is required"
 
         let keyGenerator = KeyGenerator.make ()
         raisesWith<ArgumentException> <@ new SelfServiceController(null, keyGenerator) @> (fun x ->
@@ -26,7 +26,7 @@ module SelfServiceControllerTests =
 //    [<Test>]
 //    let ``Constructing, with null key generator, raises expected exception`` () =
 //        let expectedParamName = "keyGenerator"
-//        let expectedMessage = "Key generator parameter was null"
+//        let expectedMessage = "Key generator is required"
 //
 //        raisesWith<ArgumentException> <@ new SelfServiceController(mock (), null) @> (fun x ->
 //            <@ x.ParamName = expectedParamName && (fixInvalidArgMessage x.Message) = expectedMessage @>)

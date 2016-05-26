@@ -14,7 +14,7 @@ namespace Fooble.Web.Controllers
         {
             if (mediator == null)
             {
-                throw new ArgumentNullException(nameof(mediator), "Mediator parameter was null");
+                throw new ArgumentNullException(nameof(mediator), "Mediator is required");
             }
 
             _mediator = mediator;

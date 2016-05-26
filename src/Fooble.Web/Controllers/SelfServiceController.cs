@@ -15,12 +15,12 @@ namespace Fooble.Web.Controllers
         {
             if (mediator == null)
             {
-                throw new ArgumentNullException(nameof(mediator), "Mediator parameter was null");
+                throw new ArgumentNullException(nameof(mediator), "Mediator is required");
             }
 
             if (keyGenerator == null)
             {
-                throw new ArgumentNullException(nameof(keyGenerator), "Key generator parameter was null");
+                throw new ArgumentNullException(nameof(keyGenerator), "Key generator is required");
             }
 
             _mediator = mediator;
