@@ -1,6 +1,7 @@
 ﻿using Fooble.Core;
 using MediatR;
 using System;
+using System.Diagnostics;
 using System.Web.Mvc;
 
 namespace Fooble.Web.Controllers
@@ -56,7 +57,14 @@ namespace Fooble.Web.Controllers
 
             var id = _keyGenerator.GenerateKey();
             var command = SelfServiceRegister.Command.Make(id, username, name);
-            _mediator.Send(command);
+            var result = _mediator.Send(command);
+
+            Debug.Assert(result != null, "Result parameter was null");
+
+            if (result.IsUsernameUnavailable)
+            {
+                return View("MessageDisplay", result.ToMessageDisplayReadModel());
+            }
 
             return RedirectToAction("Detail", "Member", new { id = id.ToString() });
         }

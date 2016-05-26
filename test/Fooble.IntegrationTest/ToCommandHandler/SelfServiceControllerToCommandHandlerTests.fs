@@ -27,6 +27,52 @@ module SelfServiceControllerToCommandHandlerTests =
         ignore <| new SelfServiceController(mediator, keyGenerator)
 
     [<Test>]
+    let ``Calling register post, with existing username in data store, returns expected result`` () =
+        let existingUsername = String.random 32
+        let expectedHeading = "Self-Service"
+        let expectedSubHeading = "Register"
+        let expectedStatusCode = 400
+        let expectedSeverity = MessageDisplay.Severity.warning
+        let expectedMessage = "Requested username is unavailable."
+
+        let memberData =
+            Seq.singleton (MemberData(Id = Guid.random (), Username = existingUsername, Name = String.random 64))
+        let memberSetMock = makeObjectSet memberData
+        let contextMock = Mock<IFoobleContext>()
+        contextMock.SetupFunc(fun x -> x.MemberData).Returns(memberSetMock.Object).Verifiable()
+
+        let builder = ContainerBuilder()
+        ignore <| builder.RegisterModule(AutofacModule(contextMock.Object))
+        let container = builder.Build()
+
+        let mediator = container.Resolve<IMediator>()
+
+        let keyGeneratorMock = Mock<IKeyGenerator>()
+        keyGeneratorMock.SetupFunc(fun x -> x.GenerateKey()).Returns(Guid.random ()).Verifiable()
+
+        let controller = new SelfServiceController(mediator, keyGeneratorMock.Object)
+        let result = controller.Register(existingUsername, String.random 64)
+
+        contextMock.Verify()
+        keyGeneratorMock.Verify()
+
+        test <@ isNotNull result @>
+        test <@ result :? ViewResult @>
+
+        let viewResult = result :?> ViewResult
+
+        test <@ viewResult.ViewName = "MessageDisplay" @>
+        test <@ isNotNull viewResult.Model @>
+        test <@ viewResult.Model :? IMessageDisplayReadModel @>
+
+        let actualReadModel = viewResult.Model :?> IMessageDisplayReadModel
+        test <@ actualReadModel.Heading = expectedHeading @>
+        test <@ actualReadModel.SubHeading = expectedSubHeading @>
+        test <@ actualReadModel.StatusCode = expectedStatusCode @>
+        test <@ actualReadModel.Severity = expectedSeverity @>
+        test <@ actualReadModel.Message = expectedMessage @>
+
+    [<Test>]
     let ``Calling register post, with no existing username in data store, returns expected result`` () =
         let expectedId = Guid.random ()
 
@@ -47,6 +93,7 @@ module SelfServiceControllerToCommandHandlerTests =
         let controller = new SelfServiceController(mediator, keyGeneratorMock.Object)
         let result = controller.Register(String.random 32, String.random 64);
 
+        contextMock.Verify()
         keyGeneratorMock.Verify()
 
         test <@ isNotNull result @>

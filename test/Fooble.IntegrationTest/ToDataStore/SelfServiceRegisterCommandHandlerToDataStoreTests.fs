@@ -18,7 +18,32 @@ module SelfServiceRegisterCommandHandlerToDataStoreTests =
         test <@ box handler :? IRequestHandler<ISelfServiceRegisterCommand, ISelfServiceRegisterCommandResult> @>
 
     [<Test>]
-    let ``Calling handle, with no existing username in data store, registers new member, and completes without exception`` () =
+    let ``Calling handle, with existing username in data store, and returns expected result`` () =
+        let existingUsername = String.random 32
+
+        let connectionString = Settings.ConnectionStrings.FoobleContext
+        use context = makeFoobleContext (Some connectionString)
+
+        // remove all existing members from the data store
+        Seq.iter (fun x -> context.MemberData.DeleteObject(x)) context.MemberData
+
+        // add matching member to the data store
+        let memberData = MemberData(Id = Guid.random (), Username = existingUsername, Name = String.random 64)
+        context.MemberData.AddObject(memberData)
+
+        // persist changes to the data store
+        ignore <| context.SaveChanges()
+
+        let handler = SelfServiceRegister.CommandHandler.make context
+
+        let command = SelfServiceRegister.Command.make (Guid.random ()) existingUsername (String.random 64)
+        let commandResult = handler.Handle(command)
+
+        test <@ commandResult.IsUsernameUnavailable @>
+        test <@ not <| commandResult.IsSuccess @>
+
+    [<Test>]
+    let ``Calling handle, with no existing username in data store, returns expected result`` () =
         let connectionString = Settings.ConnectionStrings.FoobleContext
         use context = makeFoobleContext (Some connectionString)
 
@@ -31,4 +56,7 @@ module SelfServiceRegisterCommandHandlerToDataStoreTests =
         let handler = SelfServiceRegister.CommandHandler.make context
 
         let command = SelfServiceRegister.Command.make (Guid.random ()) (String.random 32) (String.random 64)
-        ignore <| handler.Handle(command)
+        let commandResult = handler.Handle(command)
+
+        test <@ commandResult.IsSuccess @>
+        test <@ not <| commandResult.IsUsernameUnavailable @>

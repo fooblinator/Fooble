@@ -3,6 +3,7 @@
 open Fooble.Core
 open Fooble.UnitTest
 open Fooble.Web.Controllers
+open MediatR
 open Moq
 open Moq.FSharp.Extensions
 open NUnit.Framework
@@ -21,6 +22,14 @@ module SelfServiceControllerTests =
         let keyGenerator = KeyGenerator.make ()
         raisesWith<ArgumentException> <@ new SelfServiceController(null, keyGenerator) @> (fun x ->
             <@ x.ParamName = expectedParamName && (fixInvalidArgMessage x.Message) = expectedMessage @>)
+
+//    [<Test>]
+//    let ``Constructing, with null key generator, raises expected exception`` () =
+//        let expectedParamName = "keyGenerator"
+//        let expectedMessage = "Key generator parameter was null"
+//
+//        raisesWith<ArgumentException> <@ new SelfServiceController(mock (), null) @> (fun x ->
+//            <@ x.ParamName = expectedParamName && (fixInvalidArgMessage x.Message) = expectedMessage @>)
 
     [<Test>]
     let ``Constructing, with valid parameters, returns expected result`` () =
@@ -106,6 +115,62 @@ module SelfServiceControllerTests =
         test <@ modelState.["username"].Errors.[0].ErrorMessage = "Username parameter was an empty string" @>
 
     [<Test>]
+    let ``Calling register post, with username shorter than 3 characters, returns expected result`` () =
+        let shortUsername = String.random 2
+        let expectedName = String.random 64
+
+        let keyGenerator = KeyGenerator.make ()
+        let controller = new SelfServiceController(mock (), keyGenerator)
+        let result = controller.Register(shortUsername, expectedName)
+
+        test <@ isNotNull result @>
+        test <@ result :? ViewResult @>
+
+        let viewResult = result :?> ViewResult
+
+        test <@ String.isEmpty viewResult.ViewName @>
+        test <@ isNotNull viewResult.Model @>
+        test <@ viewResult.Model :? ISelfServiceRegisterViewModel @>
+
+        let actualViewModel = viewResult.Model :?> ISelfServiceRegisterViewModel
+        test <@ actualViewModel.Username = shortUsername @>
+        test <@ actualViewModel.Name = expectedName @>
+
+        let modelState = viewResult.ViewData.ModelState
+
+        test <@ modelState.ContainsKey("username") @>
+        test <@ modelState.["username"].Errors.Count = 1 @>
+        test <@ modelState.["username"].Errors.[0].ErrorMessage = "Username parameter was shorter than 3 characters" @>
+
+    [<Test>]
+    let ``Calling register post, with username longer than 32 characters, returns expected result`` () =
+        let longUsername = String.random 33
+        let expectedName = String.random 64
+
+        let keyGenerator = KeyGenerator.make ()
+        let controller = new SelfServiceController(mock (), keyGenerator)
+        let result = controller.Register(longUsername, expectedName)
+
+        test <@ isNotNull result @>
+        test <@ result :? ViewResult @>
+
+        let viewResult = result :?> ViewResult
+
+        test <@ String.isEmpty viewResult.ViewName @>
+        test <@ isNotNull viewResult.Model @>
+        test <@ viewResult.Model :? ISelfServiceRegisterViewModel @>
+
+        let actualViewModel = viewResult.Model :?> ISelfServiceRegisterViewModel
+        test <@ actualViewModel.Username = longUsername @>
+        test <@ actualViewModel.Name = expectedName @>
+
+        let modelState = viewResult.ViewData.ModelState
+
+        test <@ modelState.ContainsKey("username") @>
+        test <@ modelState.["username"].Errors.Count = 1 @>
+        test <@ modelState.["username"].Errors.[0].ErrorMessage = "Username parameter was longer than 32 characters" @>
+
+    [<Test>]
     let ``Calling register post, with null name, returns expected result`` () =
         let expectedUsername = String.random 32
         let nullName:string = null
@@ -162,14 +227,58 @@ module SelfServiceControllerTests =
         test <@ modelState.["name"].Errors.[0].ErrorMessage = "Name parameter was an empty string" @>
 
     [<Test>]
-    let ``Calling register post, with valid parameters, completes without exception`` () =
+    let ``Calling register post, with existing username in data store, returns expected result`` () =
+        let expectedHeading = "Self-Service"
+        let expectedSubHeading = "Register"
+        let expectedStatusCode = 400
+        let expectedSeverity = MessageDisplay.Severity.warning
+        let expectedMessage = "Requested username is unavailable."
+
+        let commandResult = SelfServiceRegister.CommandResult.usernameUnavailable
+        let mediatorMock = Mock<IMediator>()
+        mediatorMock.SetupFunc(fun x -> x.Send(any ())).Returns(commandResult).Verifiable()
+
+        let keyGeneratorMock = Mock<IKeyGenerator>()
+        keyGeneratorMock.SetupFunc(fun x -> x.GenerateKey()).Returns(Guid.random ()).Verifiable()
+
+        let controller = new SelfServiceController(mediatorMock.Object, keyGeneratorMock.Object)
+        let result = controller.Register(String.random 32, String.random 64)
+
+        mediatorMock.Verify()
+        keyGeneratorMock.Verify()
+
+        test <@ isNotNull result @>
+        test <@ result :? ViewResult @>
+
+        let viewResult = result :?> ViewResult
+
+        test <@ viewResult.ViewName = "MessageDisplay" @>
+        test <@ isNotNull viewResult.Model @>
+        test <@ viewResult.Model :? IMessageDisplayReadModel @>
+
+        let actualReadModel = viewResult.Model :?> IMessageDisplayReadModel
+        test <@ actualReadModel.Heading = expectedHeading @>
+        test <@ actualReadModel.SubHeading = expectedSubHeading @>
+        test <@ actualReadModel.StatusCode = expectedStatusCode @>
+        test <@ actualReadModel.Severity = expectedSeverity @>
+        test <@ actualReadModel.Message = expectedMessage @>
+
+    [<Test>]
+    let ``Calling register post, with no existing username in data store, returns expected result`` () =
         let expectedId = Guid.random ()
+
+        let commandResult = SelfServiceRegister.CommandResult.success
+        let mediatorMock = Mock<IMediator>()
+        mediatorMock.SetupFunc(fun x -> x.Send(any ())).Returns(commandResult).Verifiable()
 
         let keyGeneratorMock = Mock<IKeyGenerator>()
         keyGeneratorMock.SetupFunc(fun x -> x.GenerateKey()).Returns(expectedId).Verifiable()
 
-        let controller = new SelfServiceController(mock (), keyGeneratorMock.Object)
+        let controller = new SelfServiceController(mediatorMock.Object, keyGeneratorMock.Object)
         let result = controller.Register(String.random 32, String.random 64)
+
+        mediatorMock.Verify()
+        keyGeneratorMock.Verify()
 
         test <@ isNotNull result @>
         test <@ result :? RedirectToRouteResult @>
