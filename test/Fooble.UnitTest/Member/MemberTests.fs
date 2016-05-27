@@ -148,6 +148,17 @@ module MemberTests =
         test <@ result.Message = expectedMessage @>
 
     [<Test>]
+    let ``Calling validate name, with name longer than 64, returns expected validation result`` () =
+        let expectedParamName = "name"
+        let expectedMessage = "Name is longer than 64 characters"
+
+        let result = Member.validateName (String.random 65)
+
+        test <@ result.IsInvalid @>
+        test <@ result.ParamName = expectedParamName @>
+        test <@ result.Message = expectedMessage @>
+
+    [<Test>]
     let ``Calling validate name, with valid name, returns no messages`` () =
         let result = Member.validateName (String.random 64)
 

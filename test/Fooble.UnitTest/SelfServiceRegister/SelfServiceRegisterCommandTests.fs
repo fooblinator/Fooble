@@ -84,6 +84,15 @@ module SelfServiceRegisterCommandTests =
                 <@ x.ParamName = expectedParamName && (fixInvalidArgMessage x.Message) = expectedMessage @>)
 
     [<Test>]
+    let ``Calling make, with name longer than 64 characters, raises expected exception`` () =
+        let expectedParamName = "name"
+        let expectedMessage = "Name is longer than 64 characters"
+
+        raisesWith<ArgumentException>
+            <@ SelfServiceRegister.Command.make (Guid.random ()) (String.random 32) (String.random 65) @> (fun x ->
+                <@ x.ParamName = expectedParamName && (fixInvalidArgMessage x.Message) = expectedMessage @>)
+
+    [<Test>]
     let ``Calling make, with valid parameters, returns command`` () =
         let command = SelfServiceRegister.Command.make (Guid.random ()) (String.random 32) (String.random 64)
 

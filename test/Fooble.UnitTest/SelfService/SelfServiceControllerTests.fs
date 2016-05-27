@@ -256,6 +256,34 @@ module SelfServiceControllerTests =
         test <@ modelState.["name"].Errors.[0].ErrorMessage = "Name is required" @>
 
     [<Test>]
+    let ``Calling register post, with name longer than 64 characters, returns expected result`` () =
+        let expectedUsername = String.random 32
+        let longName = String.random 65
+
+        let keyGenerator = KeyGenerator.make ()
+        let controller = new SelfServiceController(mock (), keyGenerator)
+        let result = controller.Register(expectedUsername, longName)
+
+        test <@ isNotNull result @>
+        test <@ result :? ViewResult @>
+
+        let viewResult = result :?> ViewResult
+
+        test <@ String.isEmpty viewResult.ViewName @>
+        test <@ isNotNull viewResult.Model @>
+        test <@ viewResult.Model :? ISelfServiceRegisterViewModel @>
+
+        let actualViewModel = viewResult.Model :?> ISelfServiceRegisterViewModel
+        test <@ actualViewModel.Username = expectedUsername @>
+        test <@ actualViewModel.Name = longName @>
+
+        let modelState = viewResult.ViewData.ModelState
+
+        test <@ modelState.ContainsKey("name") @>
+        test <@ modelState.["name"].Errors.Count = 1 @>
+        test <@ modelState.["name"].Errors.[0].ErrorMessage = "Name is longer than 64 characters" @>
+
+    [<Test>]
     let ``Calling register post, with existing username in data store, returns expected result`` () =
         let existingUsername = String.random 32
         let expectedName = String.random 64

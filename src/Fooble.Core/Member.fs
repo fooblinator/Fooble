@@ -52,5 +52,6 @@ module Member =
     /// <returns>Returns a validation result.</returns>
     [<CompiledName("ValidateName")>]
     let validateName name =
-        [ (String.isNotNullOrEmpty), "Name is required" ]
+        [ (String.isNotNullOrEmpty), "Name is required"
+          (String.isNotLonger 64), "Name is longer than 64 characters" ]
         |> Validation.validate name "name"
