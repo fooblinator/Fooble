@@ -55,14 +55,20 @@
     <Compile Include="..\Common\GlobalAssemblyInfo.fs">
       <Link>Properties\GlobalAssemblyInfo.fs</Link>
     </Compile>
-    <Compile Include="Helpers.fs" />
-    <Compile Include="Types.fs" />
+    <Compile Include="ValidationResult.fs" />
+    <Compile Include="Presentation\MessageDisplayReadModel.fs" />
+    <Compile Include="Presentation\MessageDisplay.fs" />
+    <Compile Include="Presentation\MemberDetailReadModel.fs" />
+    <Compile Include="Presentation\MemberListReadModel.fs" />
+    <Compile Include="Presentation\SelfServiceRegisterViewModel.fs" />
     <Compile Include="Validation.fs" />
     <Compile Include="Member.fs" />
+    <Compile Include="MemberDetailQuery.fs" />
     <Compile Include="MemberDetail.fs" />
+    <Compile Include="MemberListQuery.fs" />
     <Compile Include="MemberList.fs" />
+    <Compile Include="SelfServiceRegisterCommand.fs" />
     <Compile Include="SelfServiceRegister.fs" />
-    <Compile Include="MessageDisplay.fs" />
     <Compile Include="KeyGenerator.fs" />
     <Compile Include="Infrastructure\AutofacModule.fs" />
     <Content Include="App.config" />
@@ -116,6 +122,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Fooble.Common\Fooble.Common.fsproj">
+      <Name>Fooble.Common</Name>
+      <Project>{f61c2a8e-303c-4f38-8d8f-f364fdff3d7a}</Project>
+      <Private>True</Private>
+    </ProjectReference>
     <ProjectReference Include="..\Fooble.Persistence\Fooble.Persistence.fsproj">
       <Name>Fooble.Persistence</Name>
       <Project>{6324603a-6972-4b7e-ae8b-a5e4a13a657f}</Project>

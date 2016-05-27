@@ -1,5 +1,6 @@
 ﻿namespace Fooble.UnitTest.MemberDetail
 
+open Fooble.Common
 open Fooble.Core
 open Fooble.UnitTest
 open MediatR
@@ -16,12 +17,12 @@ module MemberDetailQueryTests =
         let expectedMessage = "Id is required"
 
         raisesWith<ArgumentException>
-            <@ MemberDetail.Query.make Guid.empty @> (fun x ->
+            <@ MemberDetail.makeQuery Guid.empty @> (fun x ->
                 <@ x.ParamName = expectedParamName && (fixInvalidArgMessage x.Message) = expectedMessage @>)
 
     [<Test>]
     let ``Calling make, with valid parameters, returns query`` () =
-        let query = MemberDetail.Query.make (Guid.random ())
+        let query = MemberDetail.makeQuery (Guid.random ())
 
         test <@ box query :? IMemberDetailQuery @>
         test <@ box query :? IRequest<IMemberDetailQueryResult> @>
@@ -30,6 +31,6 @@ module MemberDetailQueryTests =
     let ``Calling id, returns expected id`` () =
         let expectedId = Guid.random ()
 
-        let query = MemberDetail.Query.make expectedId
+        let query = MemberDetail.makeQuery expectedId
 
         test <@ query.Id = expectedId @>

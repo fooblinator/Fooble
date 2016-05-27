@@ -1,6 +1,8 @@
 ﻿namespace Fooble.UnitTest.SelfService
 
+open Fooble.Common
 open Fooble.Core
+open Fooble.Presentation
 open Fooble.UnitTest
 open Fooble.Web.Controllers
 open MediatR
@@ -427,7 +429,7 @@ module SelfServiceControllerTests =
         let expectedEmail = sprintf "%s@%s.%s" (String.random 32) (String.random 32) (String.random 3)
         let expectedNickname = String.random 64
 
-        let commandResult = SelfServiceRegister.CommandResult.usernameUnavailable
+        let commandResult = SelfServiceRegisterCommand.usernameUnavailableResult
         let mediatorMock = Mock<IMediator>()
         mediatorMock.SetupFunc(fun x -> x.Send(any ())).Returns(commandResult).Verifiable()
 
@@ -463,7 +465,7 @@ module SelfServiceControllerTests =
         let existingEmail = sprintf "%s@%s.%s" (String.random 32) (String.random 32) (String.random 3)
         let expectedNickname = String.random 64
 
-        let commandResult = SelfServiceRegister.CommandResult.emailUnavailable
+        let commandResult = SelfServiceRegisterCommand.emailUnavailableResult
         let mediatorMock = Mock<IMediator>()
         mediatorMock.SetupFunc(fun x -> x.Send(any ())).Returns(commandResult).Verifiable()
 
@@ -497,7 +499,7 @@ module SelfServiceControllerTests =
     let ``Calling register post, with no existing username or email in data store, returns expected result`` () =
         let expectedId = Guid.random ()
 
-        let commandResult = SelfServiceRegister.CommandResult.success
+        let commandResult = SelfServiceRegisterCommand.successResult
         let mediatorMock = Mock<IMediator>()
         mediatorMock.SetupFunc(fun x -> x.Send(any ())).Returns(commandResult).Verifiable()
 

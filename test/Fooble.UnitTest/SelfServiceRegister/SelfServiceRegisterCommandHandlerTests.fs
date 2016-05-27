@@ -1,5 +1,6 @@
 ﻿namespace Fooble.UnitTest.SelfServiceRegister
 
+open Fooble.Common
 open Fooble.Core
 open Fooble.Persistence
 open Fooble.UnitTest
@@ -14,7 +15,7 @@ module SelfServiceRegisterCommandHandlerTests =
 
     [<Test>]
     let ``Calling make, with valid parameters, returns command handler`` () =
-        let handler = SelfServiceRegister.CommandHandler.make (mock ())
+        let handler = SelfServiceRegisterCommand.makeHandler (mock ())
 
         test <@ box handler :? IRequestHandler<ISelfServiceRegisterCommand, ISelfServiceRegisterCommandResult> @>
 
@@ -32,9 +33,9 @@ module SelfServiceRegisterCommandHandlerTests =
         contextMock.SetupFunc(fun x -> x.MemberData).Returns(memberSetMock.Object).Verifiable()
 
         let command =
-            SelfServiceRegister.Command.make (Guid.random ()) existingUsername
+            SelfServiceRegister.makeCommand (Guid.random ()) existingUsername
                 (sprintf "%s@%s.%s" (String.random 32) (String.random 32) (String.random 3)) (String.random 64)
-        let handler = SelfServiceRegister.CommandHandler.make contextMock.Object
+        let handler = SelfServiceRegisterCommand.makeHandler contextMock.Object
 
         let commandResult = handler.Handle(command)
 
@@ -57,8 +58,8 @@ module SelfServiceRegisterCommandHandlerTests =
         contextMock.SetupFunc(fun x -> x.MemberData).Returns(memberSetMock.Object).Verifiable()
 
         let command =
-            SelfServiceRegister.Command.make (Guid.random ()) (String.random 32) existingEmail (String.random 64)
-        let handler = SelfServiceRegister.CommandHandler.make contextMock.Object
+            SelfServiceRegister.makeCommand (Guid.random ()) (String.random 32) existingEmail (String.random 64)
+        let handler = SelfServiceRegisterCommand.makeHandler contextMock.Object
 
         let commandResult = handler.Handle(command)
 
@@ -76,9 +77,9 @@ module SelfServiceRegisterCommandHandlerTests =
         contextMock.SetupFunc(fun x -> x.MemberData).Returns(memberSetMock.Object).Verifiable()
 
         let command =
-            SelfServiceRegister.Command.make (Guid.random ()) (String.random 32)
+            SelfServiceRegister.makeCommand (Guid.random ()) (String.random 32)
                 (sprintf "%s@%s.%s" (String.random 32) (String.random 32) (String.random 3)) (String.random 64)
-        let handler = SelfServiceRegister.CommandHandler.make contextMock.Object
+        let handler = SelfServiceRegisterCommand.makeHandler contextMock.Object
 
         let commandResult = handler.Handle(command)
 

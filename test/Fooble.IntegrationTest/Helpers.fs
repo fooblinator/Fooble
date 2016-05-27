@@ -3,7 +3,6 @@
 open FSharp.Configuration
 open Moq
 open Moq.FSharp.Extensions
-open System
 open System.Data.Objects
 open System.Linq
 
@@ -11,26 +10,6 @@ type internal Settings = AppSettings<"App.config">
 
 [<AutoOpen>]
 module internal Helpers =
-
-    (* Extensions *)
-
-    [<RequireQualifiedAccess>]
-    module internal Guid =
-        let internal random () = Guid.NewGuid()
-        let internal toString (x:Guid) = x.ToString()
-
-    [<RequireQualifiedAccess>]
-    module internal String =
-        let internal ofGuid x = Guid.toString x
-        let internal toArray (x:string) = x.ToCharArray()
-
-        let internal random len =
-            assert (len > 0)
-            Seq.init (len / 32 + 1) (fun _ -> Guid.random () |> ofGuid |> toArray)
-            |> Array.concat
-            |> Array.filter (fun x -> x <> '-')
-            |> Array.take len
-            |> String
 
     (* Misc *)
 

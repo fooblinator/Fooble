@@ -1,8 +1,10 @@
-﻿namespace Fooble.IntegrationTest
+﻿namespace Fooble.IntegrationTest.ToDataStore
 
 open Autofac
-open Fooble.Core
+open Fooble.Common
 open Fooble.Core.Infrastructure
+open Fooble.IntegrationTest
+open Fooble.Presentation
 open Fooble.Persistence
 open Fooble.Web.Controllers
 open MediatR
@@ -75,7 +77,7 @@ module MemberControllerToDataStoreTests =
         let expectedHeading = "Member"
         let expectedSubHeading = "Detail"
         let expectedStatusCode = 404
-        let expectedSeverity = MessageDisplay.Severity.warning
+        let expectedSeverity = MessageDisplay.warningSeverity
         let expectedMessage = "No matching member could be found."
 
         let connectionString = Settings.ConnectionStrings.FoobleContext
@@ -158,7 +160,7 @@ module MemberControllerToDataStoreTests =
         let expectedHeading = "Member"
         let expectedSubHeading = "List"
         let expectedStatusCode = 200
-        let expectedSeverity = MessageDisplay.Severity.informational
+        let expectedSeverity = MessageDisplay.informationalSeverity
         let expectedMessage = "No members have yet been added."
 
         let connectionString = Settings.ConnectionStrings.FoobleContext

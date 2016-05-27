@@ -1,7 +1,7 @@
 ﻿namespace Fooble.UnitTest.Member
 
+open Fooble.Common
 open Fooble.Core
-open Fooble.UnitTest
 open NUnit.Framework
 open Swensen.Unquote
 

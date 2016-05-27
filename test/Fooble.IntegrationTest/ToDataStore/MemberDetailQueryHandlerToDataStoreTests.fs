@@ -1,6 +1,8 @@
-﻿namespace Fooble.IntegrationTest
+﻿namespace Fooble.IntegrationTest.ToDataStore
 
+open Fooble.Common
 open Fooble.Core
+open Fooble.IntegrationTest
 open Fooble.Persistence
 open MediatR
 open NUnit.Framework
@@ -13,7 +15,7 @@ module MemberDetailQueryHandlerToDataStoreTests =
     let ``Calling make, with valid parameters, returns query handler`` () =
         let connectionString = Settings.ConnectionStrings.FoobleContext
         use context = makeFoobleContext (Some connectionString)
-        let handler = MemberDetail.QueryHandler.make context
+        let handler = MemberDetailQuery.makeHandler context
 
         test <@ box handler :? IRequestHandler<IMemberDetailQuery, IMemberDetailQueryResult> @>
 
@@ -28,9 +30,9 @@ module MemberDetailQueryHandlerToDataStoreTests =
         // persist changes to the data store
         ignore <| context.SaveChanges()
 
-        let handler = MemberDetail.QueryHandler.make context
+        let handler = MemberDetailQuery.makeHandler context
 
-        let query = MemberDetail.Query.make (Guid.random ())
+        let query = MemberDetail.makeQuery (Guid.random ())
         let queryResult = handler.Handle(query)
 
         test <@ queryResult.IsNotFound @>
@@ -58,9 +60,9 @@ module MemberDetailQueryHandlerToDataStoreTests =
         // persist changes to the data store
         ignore <| context.SaveChanges()
 
-        let handler = MemberDetail.QueryHandler.make context
+        let handler = MemberDetailQuery.makeHandler context
 
-        let query = MemberDetail.Query.make expectedId
+        let query = MemberDetail.makeQuery expectedId
         let queryResult = handler.Handle(query)
 
         test <@ queryResult.IsSuccess @>

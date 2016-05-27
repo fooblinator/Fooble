@@ -1,9 +1,11 @@
-﻿namespace Fooble.IntegrationTest
+﻿namespace Fooble.IntegrationTest.ToQueryHandler
 
 open Autofac
-open Fooble.Core
+open Fooble.Common
 open Fooble.Core.Infrastructure
+open Fooble.IntegrationTest
 open Fooble.Persistence
+open Fooble.Presentation
 open Fooble.Web.Controllers
 open MediatR
 open Moq
@@ -71,7 +73,7 @@ module MemberControllerToQueryHandlerTests =
         let expectedHeading = "Member"
         let expectedSubHeading = "Detail"
         let expectedStatusCode = 404
-        let expectedSeverity = MessageDisplay.Severity.warning
+        let expectedSeverity = MessageDisplay.warningSeverity
         let expectedMessage = "No matching member could be found."
 
         let memberSet = makeObjectSet Seq.empty<MemberData>
@@ -145,7 +147,7 @@ module MemberControllerToQueryHandlerTests =
         let expectedHeading = "Member"
         let expectedSubHeading = "List"
         let expectedStatusCode = 200
-        let expectedSeverity = MessageDisplay.Severity.informational
+        let expectedSeverity = MessageDisplay.informationalSeverity
         let expectedMessage = "No members have yet been added."
 
         let memberSetMock = makeObjectSet Seq.empty<MemberData>

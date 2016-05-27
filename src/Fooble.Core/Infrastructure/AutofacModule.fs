@@ -2,6 +2,7 @@
 
 open Autofac
 open Autofac.Features.Variance
+open Fooble.Common
 open Fooble.Core
 open Fooble.Persistence
 open MediatR
@@ -60,11 +61,11 @@ type AutofacModule =
 
         ignore <| builder.Register(fun _ -> KeyGenerator.make ()).As<IKeyGenerator>()
 
-        ignore <| builder.Register(fun x -> MemberDetail.QueryHandler.make <| x.Resolve<IFoobleContext>())
+        ignore <| builder.Register(fun x -> MemberDetailQuery.makeHandler <| x.Resolve<IFoobleContext>())
             .As<IRequestHandler<IMemberDetailQuery, IMemberDetailQueryResult>>()
 
-        ignore <| builder.Register(fun x -> MemberList.QueryHandler.make <| x.Resolve<IFoobleContext>())
+        ignore <| builder.Register(fun x -> MemberListQuery.makeHandler <| x.Resolve<IFoobleContext>())
             .As<IRequestHandler<IMemberListQuery, IMemberListQueryResult>>()
 
-        ignore <| builder.Register(fun x -> SelfServiceRegister.CommandHandler.make <| x.Resolve<IFoobleContext>())
+        ignore <| builder.Register(fun x -> SelfServiceRegisterCommand.makeHandler <| x.Resolve<IFoobleContext>())
             .As<IRequestHandler<ISelfServiceRegisterCommand, ISelfServiceRegisterCommandResult>>()

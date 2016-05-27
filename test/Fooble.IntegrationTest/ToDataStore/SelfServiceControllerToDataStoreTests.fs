@@ -1,8 +1,11 @@
-﻿namespace Fooble.IntegrationTest
+﻿namespace Fooble.IntegrationTest.ToDataStore
 
 open Autofac
+open Fooble.Common
 open Fooble.Core
 open Fooble.Core.Infrastructure
+open Fooble.IntegrationTest
+open Fooble.Presentation
 open Fooble.Persistence
 open Fooble.Web.Controllers
 open MediatR

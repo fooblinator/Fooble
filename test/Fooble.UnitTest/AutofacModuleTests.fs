@@ -1,6 +1,7 @@
 ﻿namespace Fooble.UnitTest
 
 open Autofac
+open Fooble.Common
 open Fooble.Core
 open Fooble.Persistence
 open Fooble.Core.Infrastructure

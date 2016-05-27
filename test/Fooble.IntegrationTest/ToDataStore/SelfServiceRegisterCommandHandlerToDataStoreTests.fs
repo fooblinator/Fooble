@@ -1,6 +1,8 @@
-﻿namespace Fooble.IntegrationTest
+﻿namespace Fooble.IntegrationTest.ToDataStore
 
+open Fooble.Common
 open Fooble.Core
+open Fooble.IntegrationTest
 open Fooble.Persistence
 open MediatR
 open NUnit.Framework
@@ -13,7 +15,7 @@ module SelfServiceRegisterCommandHandlerToDataStoreTests =
     let ``Calling make, with valid parameters, returns command handler`` () =
         let connectionString = Settings.ConnectionStrings.FoobleContext
         use context = makeFoobleContext (Some connectionString)
-        let handler = SelfServiceRegister.CommandHandler.make context
+        let handler = SelfServiceRegisterCommand.makeHandler context
 
         test <@ box handler :? IRequestHandler<ISelfServiceRegisterCommand, ISelfServiceRegisterCommandResult> @>
 
@@ -37,10 +39,10 @@ module SelfServiceRegisterCommandHandlerToDataStoreTests =
         // persist changes to the data store
         ignore <| context.SaveChanges()
 
-        let handler = SelfServiceRegister.CommandHandler.make context
+        let handler = SelfServiceRegisterCommand.makeHandler context
 
         let command =
-            SelfServiceRegister.Command.make (Guid.random ()) existingUsername
+            SelfServiceRegister.makeCommand (Guid.random ()) existingUsername
                 (sprintf "%s@%s.%s" (String.random 32) (String.random 32) (String.random 3)) (String.random 64)
         let commandResult = handler.Handle(command)
 
@@ -67,10 +69,10 @@ module SelfServiceRegisterCommandHandlerToDataStoreTests =
         // persist changes to the data store
         ignore <| context.SaveChanges()
 
-        let handler = SelfServiceRegister.CommandHandler.make context
+        let handler = SelfServiceRegisterCommand.makeHandler context
 
         let command =
-            SelfServiceRegister.Command.make (Guid.random ()) (String.random 32) existingEmail (String.random 64)
+            SelfServiceRegister.makeCommand (Guid.random ()) (String.random 32) existingEmail (String.random 64)
         let commandResult = handler.Handle(command)
 
         test <@ commandResult.IsEmailUnavailable @>
@@ -88,10 +90,10 @@ module SelfServiceRegisterCommandHandlerToDataStoreTests =
         // persist changes to the data store
         ignore <| context.SaveChanges()
 
-        let handler = SelfServiceRegister.CommandHandler.make context
+        let handler = SelfServiceRegisterCommand.makeHandler context
 
         let command =
-            SelfServiceRegister.Command.make (Guid.random ()) (String.random 32)
+            SelfServiceRegister.makeCommand (Guid.random ()) (String.random 32)
                 (sprintf "%s@%s.%s" (String.random 32) (String.random 32) (String.random 3)) (String.random 64)
         let commandResult = handler.Handle(command)
 

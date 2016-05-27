@@ -1,5 +1,6 @@
 ﻿namespace Fooble.UnitTest.MemberDetail
 
+open Fooble.Common
 open Fooble.Core
 open Fooble.Persistence
 open Fooble.UnitTest
@@ -14,7 +15,7 @@ module MemberDetailQueryHandlerTests =
 
     [<Test>]
     let ``Calling make, with valid parameters, returns query handler`` () =
-        let handler = MemberDetail.QueryHandler.make (mock ())
+        let handler = MemberDetailQuery.makeHandler (mock ())
 
         test <@ box handler :? IRequestHandler<IMemberDetailQuery, IMemberDetailQueryResult> @>
 
@@ -24,8 +25,8 @@ module MemberDetailQueryHandlerTests =
         let contextMock = Mock<IFoobleContext>()
         contextMock.SetupFunc(fun x -> x.MemberData).Returns(memberSetMock.Object).Verifiable()
 
-        let query = MemberDetail.Query.make (Guid.random ())
-        let handler = MemberDetail.QueryHandler.make contextMock.Object
+        let query = MemberDetail.makeQuery (Guid.random ())
+        let handler = MemberDetailQuery.makeHandler contextMock.Object
 
         let queryResult = handler.Handle(query)
 
@@ -49,8 +50,8 @@ module MemberDetailQueryHandlerTests =
         let contextMock = Mock<IFoobleContext>()
         contextMock.SetupFunc(fun x -> x.MemberData).Returns(memberSetMock.Object).Verifiable()
 
-        let query = MemberDetail.Query.make expectedId
-        let handler = MemberDetail.QueryHandler.make contextMock.Object
+        let query = MemberDetail.makeQuery expectedId
+        let handler = MemberDetailQuery.makeHandler contextMock.Object
 
         let queryResult = handler.Handle(query)
 

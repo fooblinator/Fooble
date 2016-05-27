@@ -1,6 +1,8 @@
 ﻿namespace Fooble.UnitTest.Member
 
+open Fooble.Common
 open Fooble.Core
+open Fooble.Presentation
 open Fooble.UnitTest
 open Fooble.Web.Controllers
 open MediatR
@@ -33,8 +35,8 @@ module MemberControllerTests =
         let expectedEmail = sprintf "%s@%s.%s" (String.random 32) (String.random 32) (String.random 3)
         let expectedNickname = String.random 64
 
-        let readModel = MemberDetail.ReadModel.make matchingId expectedUsername expectedEmail expectedNickname
-        let queryResult = MemberDetail.QueryResult.makeSuccess readModel
+        let readModel = MemberDetailReadModel.make matchingId expectedUsername expectedEmail expectedNickname
+        let queryResult = MemberDetailQuery.makeSuccessResult readModel
         let mediatorMock = Mock<IMediator>()
         mediatorMock.SetupFunc(fun x -> x.Send(any ())).Returns(queryResult).Verifiable()
 
@@ -64,10 +66,10 @@ module MemberControllerTests =
         let expectedHeading = "Member"
         let expectedSubHeading = "Detail"
         let expectedStatusCode = 404
-        let expectedSeverity = MessageDisplay.Severity.warning
+        let expectedSeverity = MessageDisplay.warningSeverity
         let expectedMessage = "No matching member could be found."
 
-        let queryResult = MemberDetail.QueryResult.notFound
+        let queryResult = MemberDetailQuery.notFoundResult
         let mediatorMock = Mock<IMediator>()
         mediatorMock.SetupFunc(fun x -> x.Send(any ())).Returns(queryResult).Verifiable()
 
@@ -95,10 +97,10 @@ module MemberControllerTests =
     [<Test>]
     let ``Calling list, with matches in data store, returns expected result`` () =
         let expectedMembers = List.init 5 (fun _ ->
-            MemberList.ItemReadModel.make (Guid.random ()) (String.random 64))
+            MemberListReadModel.makeItem (Guid.random ()) (String.random 64))
 
-        let readModel = MemberList.ReadModel.make <| Seq.ofList expectedMembers
-        let queryResult = MemberList.QueryResult.makeSuccess readModel
+        let readModel = MemberListReadModel.make <| Seq.ofList expectedMembers
+        let queryResult = MemberListQuery.makeSuccessResult readModel
         let mediatorMock = Mock<IMediator>()
         mediatorMock.SetupFunc(fun x -> x.Send(any ())).Returns(queryResult).Verifiable()
 
@@ -129,10 +131,10 @@ module MemberControllerTests =
         let expectedHeading = "Member"
         let expectedSubHeading = "List"
         let expectedStatusCode = 200
-        let expectedSeverity = MessageDisplay.Severity.informational
+        let expectedSeverity = MessageDisplay.informationalSeverity
         let expectedMessage = "No members have yet been added."
 
-        let queryResult = MemberList.QueryResult.notFound
+        let queryResult = MemberListQuery.notFoundResult
         let mediatorMock = Mock<IMediator>()
         mediatorMock.SetupFunc(fun m -> m.Send(any ())).Returns(queryResult).Verifiable()
 

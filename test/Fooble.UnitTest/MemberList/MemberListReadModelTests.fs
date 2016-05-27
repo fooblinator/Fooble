@@ -1,7 +1,7 @@
 ﻿namespace Fooble.UnitTest.MemberList
 
-open Fooble.Core
-open Fooble.UnitTest
+open Fooble.Common
+open Fooble.Presentation
 open NUnit.Framework
 open Swensen.Unquote
 
@@ -10,17 +10,17 @@ module MemberListReadModelTests =
 
     [<Test>]
     let ``Calling make, with valid parameters, returns read model`` () =
-        let members = Seq.init 5 (fun _ -> MemberList.ItemReadModel.make (Guid.random ()) (String.random 64))
-        let readModel = MemberList.ReadModel.make members
+        let members = Seq.init 5 (fun _ -> MemberListReadModel.makeItem (Guid.random ()) (String.random 64))
+        let readModel = MemberListReadModel.make members
 
         test <@ box readModel :? IMemberListReadModel @>
 
     [<Test>]
     let ``Calling members, returns expected members`` () =
         let expectedMembers = List.init 5 (fun _ ->
-            MemberList.ItemReadModel.make (Guid.random ()) (String.random 64))
+            MemberListReadModel.makeItem (Guid.random ()) (String.random 64))
 
-        let readModel = MemberList.ReadModel.make (Seq.ofList expectedMembers)
+        let readModel = MemberListReadModel.make (Seq.ofList expectedMembers)
 
         let actualMembers = Seq.toList readModel.Members
         test <@ List.length actualMembers = 5 @>
