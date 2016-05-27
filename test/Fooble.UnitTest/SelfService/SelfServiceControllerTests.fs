@@ -39,7 +39,7 @@ module SelfServiceControllerTests =
     [<Test>]
     let ``Calling register, returns expected result`` () =
         let emptyUsername = String.empty
-        let emptyName = String.empty
+        let emptyNickname = String.empty
 
         let keyGenerator = KeyGenerator.make ()
         let controller = new SelfServiceController(mock (), keyGenerator)
@@ -56,16 +56,16 @@ module SelfServiceControllerTests =
 
         let actualViewModel = viewResult.Model :?> ISelfServiceRegisterViewModel
         test <@ actualViewModel.Username = emptyUsername @>
-        test <@ actualViewModel.Name = emptyName @>
+        test <@ actualViewModel.Nickname = emptyNickname @>
 
     [<Test>]
     let ``Calling register post, with null username, returns expected result`` () =
         let nullUsername:string = null
-        let expectedName = String.random 64
+        let expectedNickname = String.random 64
 
         let keyGenerator = KeyGenerator.make ()
         let controller = new SelfServiceController(mock (), keyGenerator)
-        let result = controller.Register(nullUsername, expectedName)
+        let result = controller.Register(nullUsername, expectedNickname)
 
         test <@ isNotNull result @>
         test <@ result :? ViewResult @>
@@ -78,7 +78,7 @@ module SelfServiceControllerTests =
 
         let actualViewModel = viewResult.Model :?> ISelfServiceRegisterViewModel
         test <@ actualViewModel.Username = nullUsername @>
-        test <@ actualViewModel.Name = expectedName @>
+        test <@ actualViewModel.Nickname = expectedNickname @>
 
         let modelState = viewResult.ViewData.ModelState
 
@@ -89,11 +89,11 @@ module SelfServiceControllerTests =
     [<Test>]
     let ``Calling register post, with empty username, returns expected result`` () =
         let emptyUsername = String.empty
-        let expectedName = String.random 64
+        let expectedNickname = String.random 64
 
         let keyGenerator = KeyGenerator.make ()
         let controller = new SelfServiceController(mock (), keyGenerator)
-        let result = controller.Register(emptyUsername, expectedName)
+        let result = controller.Register(emptyUsername, expectedNickname)
 
         test <@ isNotNull result @>
         test <@ result :? ViewResult @>
@@ -106,7 +106,7 @@ module SelfServiceControllerTests =
 
         let actualViewModel = viewResult.Model :?> ISelfServiceRegisterViewModel
         test <@ actualViewModel.Username = emptyUsername @>
-        test <@ actualViewModel.Name = expectedName @>
+        test <@ actualViewModel.Nickname = expectedNickname @>
 
         let modelState = viewResult.ViewData.ModelState
 
@@ -117,11 +117,11 @@ module SelfServiceControllerTests =
     [<Test>]
     let ``Calling register post, with username shorter than 3 characters, returns expected result`` () =
         let shortUsername = String.random 2
-        let expectedName = String.random 64
+        let expectedNickname = String.random 64
 
         let keyGenerator = KeyGenerator.make ()
         let controller = new SelfServiceController(mock (), keyGenerator)
-        let result = controller.Register(shortUsername, expectedName)
+        let result = controller.Register(shortUsername, expectedNickname)
 
         test <@ isNotNull result @>
         test <@ result :? ViewResult @>
@@ -134,7 +134,7 @@ module SelfServiceControllerTests =
 
         let actualViewModel = viewResult.Model :?> ISelfServiceRegisterViewModel
         test <@ actualViewModel.Username = shortUsername @>
-        test <@ actualViewModel.Name = expectedName @>
+        test <@ actualViewModel.Nickname = expectedNickname @>
 
         let modelState = viewResult.ViewData.ModelState
 
@@ -145,11 +145,11 @@ module SelfServiceControllerTests =
     [<Test>]
     let ``Calling register post, with username longer than 32 characters, returns expected result`` () =
         let longUsername = String.random 33
-        let expectedName = String.random 64
+        let expectedNickname = String.random 64
 
         let keyGenerator = KeyGenerator.make ()
         let controller = new SelfServiceController(mock (), keyGenerator)
-        let result = controller.Register(longUsername, expectedName)
+        let result = controller.Register(longUsername, expectedNickname)
 
         test <@ isNotNull result @>
         test <@ result :? ViewResult @>
@@ -162,7 +162,7 @@ module SelfServiceControllerTests =
 
         let actualViewModel = viewResult.Model :?> ISelfServiceRegisterViewModel
         test <@ actualViewModel.Username = longUsername @>
-        test <@ actualViewModel.Name = expectedName @>
+        test <@ actualViewModel.Nickname = expectedNickname @>
 
         let modelState = viewResult.ViewData.ModelState
 
@@ -173,11 +173,11 @@ module SelfServiceControllerTests =
     [<Test>]
     let ``Calling register post, with username in invalid format, returns expected result`` () =
         let invalidFormatUsername = sprintf "-%s-%s-" (String.random 8) (String.random 8)
-        let expectedName = String.random 64
+        let expectedNickname = String.random 64
 
         let keyGenerator = KeyGenerator.make ()
         let controller = new SelfServiceController(mock (), keyGenerator)
-        let result = controller.Register(invalidFormatUsername, expectedName)
+        let result = controller.Register(invalidFormatUsername, expectedNickname)
 
         test <@ isNotNull result @>
         test <@ result :? ViewResult @>
@@ -190,7 +190,7 @@ module SelfServiceControllerTests =
 
         let actualViewModel = viewResult.Model :?> ISelfServiceRegisterViewModel
         test <@ actualViewModel.Username = invalidFormatUsername @>
-        test <@ actualViewModel.Name = expectedName @>
+        test <@ actualViewModel.Nickname = expectedNickname @>
 
         let modelState = viewResult.ViewData.ModelState
 
@@ -200,13 +200,13 @@ module SelfServiceControllerTests =
             "Username is not in the correct format (lowercase alphanumeric)" @>
 
     [<Test>]
-    let ``Calling register post, with null name, returns expected result`` () =
+    let ``Calling register post, with null nickname, returns expected result`` () =
         let expectedUsername = String.random 32
-        let nullName:string = null
+        let nullNickname:string = null
 
         let keyGenerator = KeyGenerator.make ()
         let controller = new SelfServiceController(mock (), keyGenerator)
-        let result = controller.Register(expectedUsername, nullName)
+        let result = controller.Register(expectedUsername, nullNickname)
 
         test <@ isNotNull result @>
         test <@ result :? ViewResult @>
@@ -219,22 +219,22 @@ module SelfServiceControllerTests =
 
         let actualViewModel = viewResult.Model :?> ISelfServiceRegisterViewModel
         test <@ actualViewModel.Username = expectedUsername @>
-        test <@ actualViewModel.Name = nullName @>
+        test <@ actualViewModel.Nickname = nullNickname @>
 
         let modelState = viewResult.ViewData.ModelState
 
-        test <@ modelState.ContainsKey("name") @>
-        test <@ modelState.["name"].Errors.Count = 1 @>
-        test <@ modelState.["name"].Errors.[0].ErrorMessage = "Name is required" @>
+        test <@ modelState.ContainsKey("nickname") @>
+        test <@ modelState.["nickname"].Errors.Count = 1 @>
+        test <@ modelState.["nickname"].Errors.[0].ErrorMessage = "Nickname is required" @>
 
     [<Test>]
-    let ``Calling register post, with empty name, returns expected result`` () =
+    let ``Calling register post, with empty nickname, returns expected result`` () =
         let expectedUsername = String.random 32
-        let emptyName = String.empty
+        let emptyNickname = String.empty
 
         let keyGenerator = KeyGenerator.make ()
         let controller = new SelfServiceController(mock (), keyGenerator)
-        let result = controller.Register(expectedUsername, emptyName)
+        let result = controller.Register(expectedUsername, emptyNickname)
 
         test <@ isNotNull result @>
         test <@ result :? ViewResult @>
@@ -247,22 +247,22 @@ module SelfServiceControllerTests =
 
         let actualViewModel = viewResult.Model :?> ISelfServiceRegisterViewModel
         test <@ actualViewModel.Username = expectedUsername @>
-        test <@ actualViewModel.Name = emptyName @>
+        test <@ actualViewModel.Nickname = emptyNickname @>
 
         let modelState = viewResult.ViewData.ModelState
 
-        test <@ modelState.ContainsKey("name") @>
-        test <@ modelState.["name"].Errors.Count = 1 @>
-        test <@ modelState.["name"].Errors.[0].ErrorMessage = "Name is required" @>
+        test <@ modelState.ContainsKey("nickname") @>
+        test <@ modelState.["nickname"].Errors.Count = 1 @>
+        test <@ modelState.["nickname"].Errors.[0].ErrorMessage = "Nickname is required" @>
 
     [<Test>]
-    let ``Calling register post, with name longer than 64 characters, returns expected result`` () =
+    let ``Calling register post, with nickname longer than 64 characters, returns expected result`` () =
         let expectedUsername = String.random 32
-        let longName = String.random 65
+        let longNickname = String.random 65
 
         let keyGenerator = KeyGenerator.make ()
         let controller = new SelfServiceController(mock (), keyGenerator)
-        let result = controller.Register(expectedUsername, longName)
+        let result = controller.Register(expectedUsername, longNickname)
 
         test <@ isNotNull result @>
         test <@ result :? ViewResult @>
@@ -275,18 +275,18 @@ module SelfServiceControllerTests =
 
         let actualViewModel = viewResult.Model :?> ISelfServiceRegisterViewModel
         test <@ actualViewModel.Username = expectedUsername @>
-        test <@ actualViewModel.Name = longName @>
+        test <@ actualViewModel.Nickname = longNickname @>
 
         let modelState = viewResult.ViewData.ModelState
 
-        test <@ modelState.ContainsKey("name") @>
-        test <@ modelState.["name"].Errors.Count = 1 @>
-        test <@ modelState.["name"].Errors.[0].ErrorMessage = "Name is longer than 64 characters" @>
+        test <@ modelState.ContainsKey("nickname") @>
+        test <@ modelState.["nickname"].Errors.Count = 1 @>
+        test <@ modelState.["nickname"].Errors.[0].ErrorMessage = "Nickname is longer than 64 characters" @>
 
     [<Test>]
     let ``Calling register post, with existing username in data store, returns expected result`` () =
         let existingUsername = String.random 32
-        let expectedName = String.random 64
+        let expectedNickname = String.random 64
 
         let commandResult = SelfServiceRegister.CommandResult.usernameUnavailable
         let mediatorMock = Mock<IMediator>()
@@ -294,7 +294,7 @@ module SelfServiceControllerTests =
 
         let keyGenerator = KeyGenerator.make ()
         let controller = new SelfServiceController(mediatorMock.Object, keyGenerator)
-        let result = controller.Register(existingUsername, expectedName)
+        let result = controller.Register(existingUsername, expectedNickname)
 
         mediatorMock.Verify()
 
@@ -309,7 +309,7 @@ module SelfServiceControllerTests =
 
         let actualViewModel = viewResult.Model :?> ISelfServiceRegisterViewModel
         test <@ actualViewModel.Username = existingUsername @>
-        test <@ actualViewModel.Name = expectedName @>
+        test <@ actualViewModel.Nickname = expectedNickname @>
 
         let modelState = viewResult.ViewData.ModelState
 

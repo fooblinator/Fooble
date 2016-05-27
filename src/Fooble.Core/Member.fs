@@ -46,12 +46,12 @@ module Member =
         |> Validation.validate username "username"
 
     /// <summary>
-    /// Validates the supplied member name.
+    /// Validates the supplied member nickname.
     /// </summary>
-    /// <param name="name">The name of the member.</param>
+    /// <param name="nickname">The nickname of the member.</param>
     /// <returns>Returns a validation result.</returns>
-    [<CompiledName("ValidateName")>]
-    let validateName name =
-        [ (String.isNotNullOrEmpty), "Name is required"
-          (String.isNotLonger 64), "Name is longer than 64 characters" ]
-        |> Validation.validate name "name"
+    [<CompiledName("ValidateNickname")>]
+    let validateNickname nickname =
+        [ (String.isNotNullOrEmpty), "Nickname is required"
+          (String.isNotLonger 64), "Nickname is longer than 64 characters" ]
+        |> Validation.validate nickname "nickname"

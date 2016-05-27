@@ -27,7 +27,7 @@ module MemberControllerToDataStoreTests =
     let ``Calling detail, with matches in data store, returns expected result`` () =
         let expectedId = Guid.random ()
         let expectedUsername = String.random 32
-        let expectedName = String.random 64
+        let expectedNickname = String.random 64
 
         let connectionString = Settings.ConnectionStrings.FoobleContext
         use context = makeFoobleContext (Some connectionString)
@@ -36,7 +36,7 @@ module MemberControllerToDataStoreTests =
         Seq.iter (fun x -> context.MemberData.DeleteObject(x)) context.MemberData
 
         // add matching member to the data store
-        let memberData = MemberData(Id = expectedId, Username = expectedUsername, Name = expectedName)
+        let memberData = MemberData(Id = expectedId, Username = expectedUsername, Nickname = expectedNickname)
         context.MemberData.AddObject(memberData)
 
         // persist changes to the data store
@@ -63,7 +63,7 @@ module MemberControllerToDataStoreTests =
 
         test <@ actualViewModel.Id = expectedId @>
         test <@ actualViewModel.Username = expectedUsername @>
-        test <@ actualViewModel.Name = expectedName @>
+        test <@ actualViewModel.Nickname = expectedNickname @>
 
     [<Test>]
     let ``Calling detail, with no matches in data store, returns expected result`` () =
@@ -117,7 +117,7 @@ module MemberControllerToDataStoreTests =
 
         // add members to the data store
         let memberData = List.init 5 (fun _ ->
-            MemberData(Id = Guid.random (), Username = String.random 32, Name = String.random 64))
+            MemberData(Id = Guid.random (), Username = String.random 32, Nickname = String.random 64))
         List.iter (fun x -> context.MemberData.AddObject(x)) memberData
 
         // persist changes to the data store
@@ -143,7 +143,8 @@ module MemberControllerToDataStoreTests =
         let actualMembers = Seq.toList (viewResult.Model :?> IMemberListReadModel).Members
         test <@ (List.length actualMembers) = 5 @>
         for current in actualMembers do
-            let findResult = List.tryFind (fun (x:MemberData) -> x.Id = current.Id && x.Name = current.Name) memberData
+            let findResult =
+                List.tryFind (fun (x:MemberData) -> x.Id = current.Id && x.Nickname = current.Nickname) memberData
             test <@ findResult.IsSome @>
 
     [<Test>]

@@ -66,27 +66,27 @@ module SelfServiceRegisterCommandTests =
                 <@ x.ParamName = expectedParamName && (fixInvalidArgMessage x.Message) = expectedMessage @>)
 
     [<Test>]
-    let ``Calling make, with null name, raises expected exception`` () =
-        let expectedParamName = "name"
-        let expectedMessage = "Name is required"
+    let ``Calling make, with null nickname, raises expected exception`` () =
+        let expectedParamName = "nickname"
+        let expectedMessage = "Nickname is required"
 
         raisesWith<ArgumentException>
             <@ SelfServiceRegister.Command.make (Guid.random ()) (String.random 32) null @> (fun x ->
                 <@ x.ParamName = expectedParamName && (fixInvalidArgMessage x.Message) = expectedMessage @>)
 
     [<Test>]
-    let ``Calling make, with empty name, raises expected exception`` () =
-        let expectedParamName = "name"
-        let expectedMessage = "Name is required"
+    let ``Calling make, with empty nickname, raises expected exception`` () =
+        let expectedParamName = "nickname"
+        let expectedMessage = "Nickname is required"
 
         raisesWith<ArgumentException>
             <@ SelfServiceRegister.Command.make (Guid.random ()) (String.random 32) String.empty @> (fun x ->
                 <@ x.ParamName = expectedParamName && (fixInvalidArgMessage x.Message) = expectedMessage @>)
 
     [<Test>]
-    let ``Calling make, with name longer than 64 characters, raises expected exception`` () =
-        let expectedParamName = "name"
-        let expectedMessage = "Name is longer than 64 characters"
+    let ``Calling make, with nickname longer than 64 characters, raises expected exception`` () =
+        let expectedParamName = "nickname"
+        let expectedMessage = "Nickname is longer than 64 characters"
 
         raisesWith<ArgumentException>
             <@ SelfServiceRegister.Command.make (Guid.random ()) (String.random 32) (String.random 65) @> (fun x ->
@@ -116,9 +116,9 @@ module SelfServiceRegisterCommandTests =
         test <@ command.Username = expectedUsername @>
 
     [<Test>]
-    let ``Calling name, returns expected name`` () =
-        let expectedName = String.random 64
+    let ``Calling nickname, returns expected nickname`` () =
+        let expectedNickname = String.random 64
 
-        let command = SelfServiceRegister.Command.make (Guid.random ()) (String.random 32) expectedName
+        let command = SelfServiceRegister.Command.make (Guid.random ()) (String.random 32) expectedNickname
 
-        test <@ command.Name = expectedName @>
+        test <@ command.Nickname = expectedNickname @>

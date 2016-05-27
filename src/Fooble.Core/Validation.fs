@@ -55,10 +55,8 @@ module Validation =
         let internal valid = Valid :> IValidationResult
 
         let internal makeInvalid paramName message =
-            assert (isNotNull paramName)
-            assert (String.isNotEmpty paramName)
-            assert (isNotNull message)
-            assert (String.isNotEmpty message)
+            assert (String.isNotNullOrEmpty paramName)
+            assert (String.isNotNullOrEmpty message)
             Invalid(paramName, message) :> IValidationResult
 
 

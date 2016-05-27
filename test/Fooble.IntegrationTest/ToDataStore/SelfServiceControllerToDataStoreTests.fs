@@ -29,7 +29,7 @@ module SelfServiceControllerToDataStoreTests =
     [<Test>]
     let ``Calling register post, with existing username in data store, returns expected result`` () =
         let existingUsername = String.random 32
-        let expectedName = String.random 64
+        let expectedNickname = String.random 64
 
         let connectionString = Settings.ConnectionStrings.FoobleContext
         use context = makeFoobleContext <| Some connectionString
@@ -38,7 +38,7 @@ module SelfServiceControllerToDataStoreTests =
         Seq.iter (fun x -> context.MemberData.DeleteObject(x)) context.MemberData
 
         // add matching member to the data store
-        let memberData = MemberData(Id = Guid.random (), Username = existingUsername, Name = String.random 64)
+        let memberData = MemberData(Id = Guid.random (), Username = existingUsername, Nickname = String.random 64)
         context.MemberData.AddObject(memberData)
 
         // persist changes to the data store
@@ -52,7 +52,7 @@ module SelfServiceControllerToDataStoreTests =
 
         let keyGenerator = KeyGenerator.make ()
         let controller = new SelfServiceController(mediator, keyGenerator)
-        let result = controller.Register(existingUsername, expectedName);
+        let result = controller.Register(existingUsername, expectedNickname);
 
         test <@ isNotNull result @>
         test <@ result :? ViewResult @>
@@ -65,7 +65,7 @@ module SelfServiceControllerToDataStoreTests =
 
         let actualViewModel = viewResult.Model :?> ISelfServiceRegisterViewModel
         test <@ actualViewModel.Username = existingUsername @>
-        test <@ actualViewModel.Name = expectedName @>
+        test <@ actualViewModel.Nickname = expectedNickname @>
 
         let modelState = viewResult.ViewData.ModelState
 

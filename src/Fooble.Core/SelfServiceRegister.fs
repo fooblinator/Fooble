@@ -42,7 +42,7 @@ module SelfServiceRegister =
                         match this with
                         | Command (_, x, _) -> x
 
-                member this.Name
+                member this.Nickname
                     with get() =
                         match this with
                         | Command (_, _, x) -> x
@@ -52,14 +52,14 @@ module SelfServiceRegister =
         /// </summary>
         /// <param name="id">The id that will potentially represent the member.</param>
         /// <param name="username">The username of the potential member.</param>
-        /// <param name="name">The name of the potential member.</param>
+        /// <param name="nickname">The nickname of the potential member.</param>
         /// <returns>Returns a self-service register command.</returns>
         [<CompiledName("Make")>]
-        let make id username name =
+        let make id username nickname =
             Validation.raiseIfInvalid (Member.validateId id)
             Validation.raiseIfInvalid (Member.validateUsername username)
-            Validation.raiseIfInvalid (Member.validateName name)
-            Command (id, username, name) :> ISelfServiceRegisterCommand
+            Validation.raiseIfInvalid (Member.validateNickname nickname)
+            Command (id, username, nickname) :> ISelfServiceRegisterCommand
 
 
 
@@ -80,7 +80,7 @@ module SelfServiceRegister =
                         match this with
                         | ViewModel (x, _) -> x
 
-                member this.Name
+                member this.Nickname
                     with get() =
                         match this with
                         | ViewModel (_, x) -> x
@@ -95,15 +95,15 @@ module SelfServiceRegister =
         /// <summary>
         /// Constructs a self-service register view model.
         /// </summary>
-        /// <param name="name">The name of the potential member.</param>
-        /// <param name="name">The username of the potential member.</param>
+        /// <param name="nickname">The nickname of the potential member.</param>
+        /// <param name="username">The username of the potential member.</param>
         /// <remarks>
         /// Does not validate parameters. This allows for re-construction of the view model with previously-submitted,
         /// and potentially invalid form data. Need to manually validate and handle submitted form data.
         /// </remarks>
         /// <returns>Returns a self-service register view model.</returns>
         [<CompiledName("Make")>]
-        let make username name = ViewModel (username, name) :> ISelfServiceRegisterViewModel
+        let make username nickname = ViewModel (username, nickname) :> ISelfServiceRegisterViewModel
 
 
 
@@ -160,7 +160,7 @@ module SelfServiceRegister =
                     |> function
                         | Some _ -> CommandResult.usernameUnavailable
                         | None ->
-                            MemberData(Id = command.Id, Username = command.Username, Name = command.Name)
+                            MemberData(Id = command.Id, Username = command.Username, Nickname = command.Nickname)
                             |> this.Context.MemberData.AddObject
                             ignore <| this.Context.SaveChanges()
                             CommandResult.success

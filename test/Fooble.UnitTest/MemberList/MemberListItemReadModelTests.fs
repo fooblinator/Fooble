@@ -23,9 +23,9 @@ module MemberListItemReadModelTests =
         test <@ itemReadModel.Id = expectedId @>
 
     [<Test>]
-    let ``Calling name, returns expected name`` () =
-        let expectedName = String.random 64
+    let ``Calling nickname, returns expected nickname`` () =
+        let expectedNickname = String.random 64
 
-        let itemReadModel = MemberList.ItemReadModel.make (Guid.random ()) expectedName
+        let itemReadModel = MemberList.ItemReadModel.make (Guid.random ()) expectedNickname
 
-        test <@ itemReadModel.Name = expectedName @>
+        test <@ itemReadModel.Nickname = expectedNickname @>

@@ -28,7 +28,7 @@ module SelfServiceRegisterCommandHandlerToDataStoreTests =
         Seq.iter (fun x -> context.MemberData.DeleteObject(x)) context.MemberData
 
         // add matching member to the data store
-        let memberData = MemberData(Id = Guid.random (), Username = existingUsername, Name = String.random 64)
+        let memberData = MemberData(Id = Guid.random (), Username = existingUsername, Nickname = String.random 64)
         context.MemberData.AddObject(memberData)
 
         // persist changes to the data store

@@ -26,6 +26,6 @@ module MemberListReadModelTests =
         test <@ List.length actualMembers = 5 @>
         for current in actualMembers do
             let findResult =
-                List.tryFind (fun (x:IMemberListItemReadModel) -> x.Id = current.Id && x.Name = current.Name)
+                List.tryFind (fun (x:IMemberListItemReadModel) -> x.Id = current.Id && x.Nickname = current.Nickname)
                     expectedMembers
             test <@ findResult.IsSome @>

@@ -23,8 +23,8 @@ type IMemberDetailReadModel =
     abstract Id:Guid with get
     /// The username of the member.
     abstract Username:string with get
-    /// The name of the member.
-    abstract Name:string with get
+    /// The nickname of the member.
+    abstract Nickname:string with get
 
 /// <summary>
 /// Represents the status of a member detail query, and potential results, if successful.
@@ -52,8 +52,8 @@ type IMemberDetailQuery =
 type IMemberListItemReadModel =
     /// The id that represents the member.
     abstract Id:Guid with get
-    /// The name of the member.
-    abstract Name:string with get
+    /// The nickname of the member.
+    abstract Nickname:string with get
 
 /// Contains a list of members' information, for the purpose of presentation.
 type IMemberListReadModel =
@@ -125,13 +125,13 @@ type ISelfServiceRegisterCommand =
     abstract Id:Guid with get
     /// The username of the member.
     abstract Username:string with get
-    /// The name of the member.
-    abstract Name:string with get
+    /// The nickname of the member.
+    abstract Nickname:string with get
 
 /// Contains a potential member's detailed information to be submitted for self-service registration.
 type ISelfServiceRegisterViewModel =
-    /// The name of the member.
-    abstract Name:string with get
+    /// The nickname of the member.
+    abstract Nickname:string with get
     /// The username of the member.
     abstract Username:string with get
 

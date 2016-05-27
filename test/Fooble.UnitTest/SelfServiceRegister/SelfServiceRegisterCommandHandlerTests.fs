@@ -23,7 +23,7 @@ module SelfServiceRegisterCommandHandlerTests =
         let existingUsername = String.random 32
 
         let memberData =
-            Seq.singleton (MemberData(Id = Guid.random (), Username = existingUsername, Name = String.random 64))
+            Seq.singleton (MemberData(Id = Guid.random (), Username = existingUsername, Nickname = String.random 64))
         let memberSetMock = makeObjectSet memberData
         let contextMock = Mock<IFoobleContext>()
         contextMock.SetupFunc(fun x -> x.MemberData).Returns(memberSetMock.Object).Verifiable()

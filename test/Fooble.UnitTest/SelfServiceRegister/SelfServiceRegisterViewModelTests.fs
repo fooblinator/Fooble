@@ -26,8 +26,7 @@ module SelfServiceRegisterViewModelTests =
 
         let viewModel = SelfServiceRegister.ViewModel.empty
 
-        let actualUsername = viewModel.Username
-        test <@ actualUsername = expectedUsername @>
+        test <@ viewModel.Username = expectedUsername @>
 
     [<Test>]
     let ``Calling username, with not initial view model, returns expected username`` () =
@@ -35,23 +34,20 @@ module SelfServiceRegisterViewModelTests =
 
         let viewModel = SelfServiceRegister.ViewModel.make expectedUsername (String.random 64)
 
-        let actualUsername = viewModel.Username
-        test <@ actualUsername = expectedUsername @>
+        test <@ viewModel.Username = expectedUsername @>
 
     [<Test>]
-    let ``Calling name, with initial view model, returns expected name`` () =
-        let expectedName = String.empty
+    let ``Calling nickname, with initial view model, returns expected nickname`` () =
+        let expectedNickname = String.empty
 
         let viewModel = SelfServiceRegister.ViewModel.empty
 
-        let actualName = viewModel.Name
-        test <@ actualName = expectedName @>
+        test <@ viewModel.Nickname = expectedNickname @>
 
     [<Test>]
-    let ``Calling name, with not initial view model, returns expected name`` () =
-        let expectedName = String.random 64
+    let ``Calling nickname, with not initial view model, returns expected name`` () =
+        let expectedNickname = String.random 64
 
-        let viewModel = SelfServiceRegister.ViewModel.make (String.random 32) expectedName
+        let viewModel = SelfServiceRegister.ViewModel.make (String.random 32) expectedNickname
 
-        let actualName = viewModel.Name
-        test <@ actualName = expectedName @>
+        test <@ viewModel.Nickname = expectedNickname @>

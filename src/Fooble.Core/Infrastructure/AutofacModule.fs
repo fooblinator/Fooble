@@ -23,8 +23,7 @@ type AutofacModule =
     /// </summary>
     /// <param name="connectionString">The connection string to use.</param>
     new(connectionString) =
-        assert (isNotNull connectionString)
-        assert (String.isNotEmpty connectionString)
+        assert (String.isNotNullOrEmpty connectionString)
         { ConnectionString = Some connectionString; Context = None }
 
     internal new(context) =

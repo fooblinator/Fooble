@@ -30,9 +30,9 @@ module MemberControllerTests =
     let ``Calling detail, with matches in data store, returns expected result`` () =
         let matchingId = Guid.random ()
         let expectedUsername = String.random 32
-        let expectedName = String.random 64
+        let expectedNickname = String.random 64
 
-        let readModel = MemberDetail.ReadModel.make matchingId expectedUsername expectedName
+        let readModel = MemberDetail.ReadModel.make matchingId expectedUsername expectedNickname
         let queryResult = MemberDetail.QueryResult.makeSuccess readModel
         let mediatorMock = Mock<IMediator>()
         mediatorMock.SetupFunc(fun x -> x.Send(any ())).Returns(queryResult).Verifiable()
@@ -54,7 +54,7 @@ module MemberControllerTests =
         let actualViewModel = viewResult.Model :?> IMemberDetailReadModel
         test <@ actualViewModel.Id = matchingId @>
         test <@ actualViewModel.Username = expectedUsername @>
-        test <@ actualViewModel.Name = expectedName @>
+        test <@ actualViewModel.Nickname = expectedNickname @>
 
     [<Test>]
     let ``Calling detail, with no matches in data store, returns expected result`` () =
@@ -117,8 +117,9 @@ module MemberControllerTests =
         let actualMembers = Seq.toList (viewResult.Model :?> IMemberListReadModel).Members
         test <@ List.length actualMembers = 5 @>
         for current in actualMembers do
-            let findResult = List.tryFind (fun (x:IMemberListItemReadModel) ->
-                x.Id = current.Id && x.Name = current.Name) expectedMembers
+            let findResult =
+                List.tryFind (fun (x:IMemberListItemReadModel) ->
+                    x.Id = current.Id && x.Nickname = current.Nickname) expectedMembers
             test <@ findResult.IsSome @>
 
     [<Test>]

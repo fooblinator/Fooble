@@ -29,9 +29,9 @@ module MemberControllerToQueryHandlerTests =
     let ``Calling detail, with matches in data store, returns expected result`` () =
         let expectedId = Guid.random ()
         let expectedUsername = String.random 32
-        let expectedName = String.random 64
+        let expectedNickname = String.random 64
 
-        let memberData = MemberData(Id = expectedId, Username = expectedUsername, Name = expectedName)
+        let memberData = MemberData(Id = expectedId, Username = expectedUsername, Nickname = expectedNickname)
         let memberSetMock = makeObjectSet (Seq.singleton memberData)
         let contextMock = Mock<IFoobleContext>()
         contextMock.SetupFunc(fun x -> x.MemberData).Returns(memberSetMock.Object).Verifiable()
@@ -59,7 +59,7 @@ module MemberControllerToQueryHandlerTests =
 
         test <@ actualViewModel.Id = expectedId @>
         test <@ actualViewModel.Username = expectedUsername @>
-        test <@ actualViewModel.Name = expectedName @>
+        test <@ actualViewModel.Nickname = expectedNickname @>
 
     [<Test>]
     let ``Calling detail, with no matches in data store, returns expected result`` () =
@@ -103,7 +103,7 @@ module MemberControllerToQueryHandlerTests =
     [<Test>]
     let ``Calling list, with matches in data store, returns expected result`` () =
         let memberData = List.init 5 (fun _ ->
-            MemberData(Id = Guid.random (), Username = String.random 32, Name = String.random 64))
+            MemberData(Id = Guid.random (), Username = String.random 32, Nickname = String.random 64))
         let memberSetMock = makeObjectSet (Seq.ofList memberData)
         let contextMock = Mock<IFoobleContext>()
         contextMock.SetupFunc(fun c -> c.MemberData).Returns(memberSetMock.Object).Verifiable()
@@ -130,7 +130,8 @@ module MemberControllerToQueryHandlerTests =
         let actualMembers = Seq.toList (viewResult.Model :?> IMemberListReadModel).Members
         test <@ (List.length actualMembers) = 5 @>
         for current in actualMembers do
-            let findResult = List.tryFind (fun (x:MemberData) -> x.Id = current.Id && x.Name = current.Name) memberData
+            let findResult =
+                List.tryFind (fun (x:MemberData) -> x.Id = current.Id && x.Nickname = current.Nickname) memberData
             test <@ findResult.IsSome @>
 
     [<Test>]

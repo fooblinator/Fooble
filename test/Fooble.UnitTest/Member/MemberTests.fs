@@ -126,40 +126,40 @@ module MemberTests =
         test <@ result.IsValid @>
 
     [<Test>]
-    let ``Calling validate name, with null name, returns expected validation result`` () =
-        let expectedParamName = "name"
-        let expectedMessage = "Name is required"
+    let ``Calling validate nickname, with null nickname, returns expected validation result`` () =
+        let expectedParamName = "nickname"
+        let expectedMessage = "Nickname is required"
 
-        let result = Member.validateName null
-
-        test <@ result.IsInvalid @>
-        test <@ result.ParamName = expectedParamName @>
-        test <@ result.Message = expectedMessage @>
-
-    [<Test>]
-    let ``Calling validate name, with empty name, returns expected validation result`` () =
-        let expectedParamName = "name"
-        let expectedMessage = "Name is required"
-
-        let result = Member.validateName String.empty
+        let result = Member.validateNickname null
 
         test <@ result.IsInvalid @>
         test <@ result.ParamName = expectedParamName @>
         test <@ result.Message = expectedMessage @>
 
     [<Test>]
-    let ``Calling validate name, with name longer than 64, returns expected validation result`` () =
-        let expectedParamName = "name"
-        let expectedMessage = "Name is longer than 64 characters"
+    let ``Calling validate nickname, with empty nickname, returns expected validation result`` () =
+        let expectedParamName = "nickname"
+        let expectedMessage = "Nickname is required"
 
-        let result = Member.validateName (String.random 65)
+        let result = Member.validateNickname String.empty
 
         test <@ result.IsInvalid @>
         test <@ result.ParamName = expectedParamName @>
         test <@ result.Message = expectedMessage @>
 
     [<Test>]
-    let ``Calling validate name, with valid name, returns no messages`` () =
-        let result = Member.validateName (String.random 64)
+    let ``Calling validate nickname, with nickname longer than 64, returns expected validation result`` () =
+        let expectedParamName = "nickname"
+        let expectedMessage = "Nickname is longer than 64 characters"
+
+        let result = Member.validateNickname (String.random 65)
+
+        test <@ result.IsInvalid @>
+        test <@ result.ParamName = expectedParamName @>
+        test <@ result.Message = expectedMessage @>
+
+    [<Test>]
+    let ``Calling validate nickname, with valid nickname, returns no messages`` () =
+        let result = Member.validateNickname (String.random 64)
 
         test <@ result.IsValid @>

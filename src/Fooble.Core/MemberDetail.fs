@@ -68,20 +68,20 @@ module MemberDetail =
                         match this with
                         | ReadModel (_, x, _) -> x
 
-                member this.Name
+                member this.Nickname
                     with get() =
                         match this with
                         | ReadModel (_, _, x) -> x
 
-        let internal make id username name =
+        let internal make id username nickname =
             assert (Guid.isNotEmpty id)
-            assert (isNotNull username)
-            assert (String.isNotEmpty username)
+            assert (String.isNotNullOrEmpty username)
             assert (String.isNotShorter 3 username)
             assert (String.isNotLonger 32 username)
-            assert (isNotNull name)
-            assert (String.isNotEmpty name)
-            ReadModel (id, username, name) :> IMemberDetailReadModel
+            assert (String.isMatch "^[a-z0-9]+$" username)
+            assert (String.isNotNullOrEmpty nickname)
+            assert (String.isNotLonger 64 nickname)
+            ReadModel (id, username, nickname) :> IMemberDetailReadModel
 
 
 
@@ -144,7 +144,7 @@ module MemberDetail =
                 member this.Handle(query) =
                     assert (isNotNull <| box query)
                     Seq.tryFind (fun (x:MemberData) -> x.Id = query.Id) this.Context.MemberData
-                    |> Option.map (fun x -> ReadModel.make x.Id x.Username x.Name)
+                    |> Option.map (fun x -> ReadModel.make x.Id x.Username x.Nickname)
                     |> function
                        | Some x -> QueryResult.makeSuccess x
                        | None -> QueryResult.notFound

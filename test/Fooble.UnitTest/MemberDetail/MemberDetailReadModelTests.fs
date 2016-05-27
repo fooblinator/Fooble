@@ -31,9 +31,9 @@ module MemberDetailReadModelTests =
         test <@ readModel.Username = expectedUsername @>
 
     [<Test>]
-    let ``Calling name, returns expected name`` () =
-        let expectedName = String.random 64
+    let ``Calling name, returns expected nickname`` () =
+        let expectedNickname = String.random 64
 
-        let readModel = MemberDetail.ReadModel.make (Guid.random ()) (String.random 32) expectedName
+        let readModel = MemberDetail.ReadModel.make (Guid.random ()) (String.random 32) expectedNickname
 
-        test <@ readModel.Name = expectedName @>
+        test <@ readModel.Nickname = expectedNickname @>

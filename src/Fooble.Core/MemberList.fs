@@ -54,16 +54,16 @@ module MemberList =
                         match this with
                         | ItemReadModel (x, _) -> x
 
-                member this.Name
+                member this.Nickname
                     with get() =
                         match this with
                         | ItemReadModel (_, x) -> x
 
-        let internal make id name =
+        let internal make id nickname =
             assert (Guid.isNotEmpty id)
-            assert (isNotNull name)
-            assert (String.isNotEmpty name)
-            ItemReadModel (id, name) :> IMemberListItemReadModel
+            assert (String.isNotNullOrEmpty nickname)
+            assert (String.isNotLonger 64 nickname)
+            ItemReadModel (id, nickname) :> IMemberListItemReadModel
 
 
 
@@ -85,8 +85,7 @@ module MemberList =
                         | ReadModel xs -> xs
 
         let internal make members =
-            assert (isNotNull members)
-            assert (Seq.isNotEmpty members)
+            assert (Seq.isNotNullOrEmpty members)
             ReadModel members :> IMemberListReadModel
 
 
@@ -149,8 +148,8 @@ module MemberList =
 
                 member this.Handle(query) =
                     assert (isNotNull <| box query)
-                    Seq.sortBy (fun (x:MemberData) -> x.Name) this.Context.MemberData
-                    |> Seq.map (fun x -> ItemReadModel.make x.Id x.Name)
+                    Seq.sortBy (fun (x:MemberData) -> x.Nickname) this.Context.MemberData
+                    |> Seq.map (fun x -> ItemReadModel.make x.Id x.Nickname)
                     |> List.ofSeq // materialize the results
                     |> function
                        | [] -> QueryResult.notFound
