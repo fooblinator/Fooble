@@ -1,7 +1,7 @@
 ﻿namespace Fooble.UnitTest.MemberDetail
 
 open Fooble.Core
-open Fooble.Core.Persistence
+open Fooble.Persistence
 open Fooble.UnitTest
 open MediatR
 open Moq

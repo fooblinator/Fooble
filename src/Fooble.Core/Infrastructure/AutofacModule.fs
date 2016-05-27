@@ -3,7 +3,7 @@
 open Autofac
 open Autofac.Features.Variance
 open Fooble.Core
-open Fooble.Core.Persistence
+open Fooble.Persistence
 open MediatR
 open System.Collections.Generic
 

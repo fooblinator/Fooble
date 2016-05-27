@@ -2,7 +2,7 @@
 
 open Fooble.Core
 open Fooble.UnitTest
-open Fooble.Core.Persistence
+open Fooble.Persistence
 open MediatR
 open Moq
 open Moq.FSharp.Extensions

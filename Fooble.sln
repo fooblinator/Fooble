@@ -13,7 +13,7 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Fooble.UnitTest", "test\Foo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fooble.Web", "src\Fooble.Web\Fooble.Web.csproj", "{B8E7F59F-08FE-48AB-9640-6A0B41083496}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Fooble.Core.Persistence", "src\Fooble.Core.Persistence\Fooble.Core.Persistence.fsproj", "{6324603A-6972-4B7E-AE8B-A5E4A13A657F}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Fooble.Persistence", "src\Fooble.Persistence\Fooble.Persistence.fsproj", "{6324603A-6972-4B7E-AE8B-A5E4A13A657F}"
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Fooble.IntegrationTest", "test\Fooble.IntegrationTest\Fooble.IntegrationTest.fsproj", "{72FBC0FE-F9FB-4ED6-AD2C-4CB8D2F51C17}"
 EndProject

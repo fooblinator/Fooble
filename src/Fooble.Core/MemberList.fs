@@ -1,6 +1,6 @@
 ﻿namespace Fooble.Core
 
-open Fooble.Core.Persistence
+open Fooble.Persistence
 open MediatR
 open System
 

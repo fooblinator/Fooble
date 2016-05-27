@@ -3,7 +3,7 @@
 open Autofac
 open Fooble.Core
 open Fooble.Core.Infrastructure
-open Fooble.Core.Persistence
+open Fooble.Persistence
 open Fooble.Web.Controllers
 open MediatR
 open NUnit.Framework

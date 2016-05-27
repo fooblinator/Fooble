@@ -1,4 +1,4 @@
-﻿namespace Fooble.Core.Persistence
+﻿namespace Fooble.Persistence
 
 open FSharp.Data.TypeProviders
 open System

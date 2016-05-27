@@ -1,7 +1,7 @@
 ﻿namespace Fooble.IntegrationTest
 
 open Fooble.Core
-open Fooble.Core.Persistence
+open Fooble.Persistence
 open MediatR
 open NUnit.Framework
 open Swensen.Unquote
