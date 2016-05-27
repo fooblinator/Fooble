@@ -14,14 +14,10 @@ namespace Fooble.Web.Controllers
         public SelfServiceController(IMediator mediator, IKeyGenerator keyGenerator)
         {
             if (mediator == null)
-            {
                 throw new ArgumentNullException(nameof(mediator), "Mediator is required");
-            }
 
             if (keyGenerator == null)
-            {
                 throw new ArgumentNullException(nameof(keyGenerator), "Key generator is required");
-            }
 
             _mediator = mediator;
             _keyGenerator = keyGenerator;
@@ -36,24 +32,14 @@ namespace Fooble.Web.Controllers
         [HttpPost]
         public ActionResult Register(string username, string name)
         {
-            var usernameResult = Member.ValidateUsername(username);
+            Member.ValidateUsername(username)
+                .AddModelErrorIfNotValid(ModelState);
 
-            if (usernameResult.IsInvalid)
-            {
-                ModelState.AddModelError(usernameResult.ParamName, usernameResult.Message);
-            }
+            Member.ValidateName(name)
+                .AddModelErrorIfNotValid(ModelState);
 
-            var nameResult = Member.ValidateName(name);
-
-            if (nameResult.IsInvalid)
-            {
-                ModelState.AddModelError(nameResult.ParamName, nameResult.Message);
-            }
-
-            if (usernameResult.IsInvalid || nameResult.IsInvalid)
-            {
+            if (!ModelState.IsValid)
                 return View(SelfServiceRegister.ViewModel.Make(username, name));
-            }
 
             var id = _keyGenerator.GenerateKey();
             var command = SelfServiceRegister.Command.Make(id, username, name);
@@ -61,12 +47,10 @@ namespace Fooble.Web.Controllers
 
             Debug.Assert(result != null, "Result parameter was null");
 
-            if (result.IsUsernameUnavailable)
-            {
-                ModelState.AddModelError("username", "Username is unavailable");
+            result.AddModelErrorIfNotSuccess(ModelState);
 
+            if (!ModelState.IsValid)
                 return View(SelfServiceRegister.ViewModel.Make(username, name));
-            }
 
             return RedirectToAction("Detail", "Member", new { id = id.ToString() });
         }

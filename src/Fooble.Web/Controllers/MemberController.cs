@@ -13,9 +13,7 @@ namespace Fooble.Web.Controllers
         public MemberController(IMediator mediator)
         {
             if (mediator == null)
-            {
                 throw new ArgumentNullException(nameof(mediator), "Mediator is required");
-            }
 
             _mediator = mediator;
         }
@@ -26,9 +24,7 @@ namespace Fooble.Web.Controllers
             var validationResult = Member.ValidateId(id);
 
             if (validationResult.IsInvalid)
-            {
                 return View("MessageDisplay", validationResult.ToMessageDisplayReadModel());
-            }
 
             var actualId = Guid.Parse(id);
             var query = MemberDetail.Query.Make(actualId);
@@ -37,9 +33,7 @@ namespace Fooble.Web.Controllers
             Debug.Assert(result != null, "Result parameter was null");
 
             if (result.IsNotFound)
-            {
                 return View("MessageDisplay", result.ToMessageDisplayReadModel());
-            }
 
             return View(result.ReadModel);
         }
@@ -53,9 +47,7 @@ namespace Fooble.Web.Controllers
             Debug.Assert(result != null, "Result parameter was null");
 
             if (result.IsNotFound)
-            {
                 return View("MessageDisplay", result.ToMessageDisplayReadModel());
-            }
 
             return View(result.ReadModel);
         }

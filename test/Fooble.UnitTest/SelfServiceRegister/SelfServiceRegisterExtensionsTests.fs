@@ -1,13 +1,35 @@
 ﻿namespace Fooble.UnitTest.SelfServiceRegister
 
 open Fooble.Core
-open Fooble.UnitTest
 open NUnit.Framework
 open Swensen.Unquote
 open System
+open System.Web.Mvc
 
 [<TestFixture>]
 module SelfServiceRegisterExtensionsTests =
+
+    [<Test>]
+    let ``Calling add model error, as success result of self-service register command result, returns expected read model`` () =
+        let commandResult = SelfServiceRegister.CommandResult.success
+        let modelState = ModelStateDictionary()
+        SelfServiceRegister.addModelErrorIfNotSuccess commandResult modelState
+
+        test <@ modelState.IsValid @>
+
+    [<Test>]
+    let ``Calling add model error, as username unavailable result of self-service register command result, returns expected read model`` () =
+        let expectedKey = "username"
+        let expectedException = "Username is unavailable"
+
+        let commandResult = SelfServiceRegister.CommandResult.usernameUnavailable
+        let modelState = ModelStateDictionary()
+        SelfServiceRegister.addModelErrorIfNotSuccess commandResult modelState
+
+        test <@ not <| modelState.IsValid @>
+        test <@ modelState.ContainsKey(expectedKey) @>
+        test <@ modelState.[expectedKey].Errors.Count = 1 @>
+        test <@ modelState.[expectedKey].Errors.[0].ErrorMessage = expectedException @>
 
     [<Test>]
     let ``Calling to message display read model, as success result of self-service register command result, raises expected exception`` () =

@@ -1,7 +1,11 @@
 ﻿namespace Fooble.Core
 
+open System.Runtime.CompilerServices
+open System.Web.Mvc
+
 [<RequireQualifiedAccess>]
-module internal Validation =
+[<Extension>]
+module Validation =
 
     (* Active Patterns *)
 
@@ -71,3 +75,23 @@ module internal Validation =
         match result with
         | IsValid -> ()
         | IsInvalid (x, y) -> invalidArg x y
+
+
+
+    (* Extensions *)
+
+    [<Extension>]
+    [<CompiledName("AddModelErrorIfNotValid")>]
+    let addModelErrorIfNotValid result (modelState:ModelStateDictionary) =
+
+        [ (isNotNull << box), "Result is required" ]
+        |> validate result "result"
+        |> raiseIfInvalid
+
+        [ (isNotNull), "Model state is required" ]
+        |> validate modelState "modelState"
+        |> raiseIfInvalid
+
+        match result with
+        | IsInvalid (x, y) -> modelState.AddModelError(x, y)
+        | IsValid _ -> ()

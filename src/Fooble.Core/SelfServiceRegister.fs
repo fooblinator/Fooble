@@ -3,9 +3,12 @@
 open Fooble.Core.Persistence
 open MediatR
 open System
+open System.Runtime.CompilerServices
+open System.Web.Mvc
 
 /// Provides functionality used in the gathering and persisting of member details.
 [<RequireQualifiedAccess>]
+[<Extension>]
 module SelfServiceRegister =
 
     (* Active Patterns *)
@@ -165,3 +168,23 @@ module SelfServiceRegister =
         let internal make context =
             assert (isNotNull context)
             CommandHandler context :> IRequestHandler<ISelfServiceRegisterCommand, ISelfServiceRegisterCommandResult>
+
+
+
+    (* Extensions *)
+
+    [<Extension>]
+    [<CompiledName("AddModelErrorIfNotSuccess")>]
+    let addModelErrorIfNotSuccess result (modelState:ModelStateDictionary) =
+
+        [ (isNotNull << box), "Result is required" ]
+        |> Validation.validate result "result"
+        |> Validation.raiseIfInvalid
+
+        [ (isNotNull), "Model is required" ]
+        |> Validation.validate modelState "modelState"
+        |> Validation.raiseIfInvalid
+
+        match result with
+        | IsUsernameUnavailable -> modelState.AddModelError("username", "Username is unavailable")
+        | IsSuccess _ -> ()
