@@ -23,6 +23,8 @@ type IMemberDetailReadModel =
     abstract Id:Guid with get
     /// The username of the member.
     abstract Username:string with get
+    /// The email of the member.
+    abstract Email:string with get
     /// The nickname of the member.
     abstract Nickname:string with get
 
@@ -111,12 +113,14 @@ type IMessageDisplayReadModel =
 /// <summary>
 /// Represents the status of a self-service registration command.
 /// </summary>
-/// <remarks>The result is only one of "success" or "username unavailable".</remarks>
+/// <remarks>The result is only one of "success", "username unavailable" or "email unavailable".</remarks>
 type ISelfServiceRegisterCommandResult =
     /// Whether the result is "success" (or not).
     abstract IsSuccess:bool with get
     /// Whether the result is "username unavailable" (or not).
     abstract IsUsernameUnavailable:bool with get
+    /// Whether the result is "email unavailable" (or not).
+    abstract IsEmailUnavailable:bool with get
 
 /// Represents the self-service registration command, and contains the potential member's detailed information.
 type ISelfServiceRegisterCommand =
@@ -125,15 +129,19 @@ type ISelfServiceRegisterCommand =
     abstract Id:Guid with get
     /// The username of the member.
     abstract Username:string with get
+    /// The email of the member.
+    abstract Email:string with get
     /// The nickname of the member.
     abstract Nickname:string with get
 
 /// Contains a potential member's detailed information to be submitted for self-service registration.
 type ISelfServiceRegisterViewModel =
-    /// The nickname of the member.
-    abstract Nickname:string with get
     /// The username of the member.
     abstract Username:string with get
+    /// The email of the member.
+    abstract Email:string with get
+    /// The nickname of the member.
+    abstract Nickname:string with get
 
 
 

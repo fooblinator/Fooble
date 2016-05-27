@@ -54,34 +54,42 @@ module MemberDetail =
 
         [<DefaultAugmentation(false)>]
         type private Implementation =
-            | ReadModel of Guid * string * string
+            | ReadModel of Guid * string * string * string
 
             interface IMemberDetailReadModel with
 
                 member this.Id
                     with get() =
                         match this with
-                        | ReadModel (x, _, _) -> x
+                        | ReadModel (x, _, _, _) -> x
 
                 member this.Username
                     with get() =
                         match this with
-                        | ReadModel (_, x, _) -> x
+                        | ReadModel (_, x, _, _) -> x
+
+                member this.Email
+                    with get() =
+                        match this with
+                        | ReadModel (_, _, x, _) -> x
 
                 member this.Nickname
                     with get() =
                         match this with
-                        | ReadModel (_, _, x) -> x
+                        | ReadModel (_, _, _, x) -> x
 
-        let internal make id username nickname =
+        let internal make id username email nickname =
             assert (Guid.isNotEmpty id)
             assert (String.isNotNullOrEmpty username)
             assert (String.isNotShorter 3 username)
             assert (String.isNotLonger 32 username)
             assert (String.isMatch "^[a-z0-9]+$" username)
+            assert (String.isNotNullOrEmpty email)
+            assert (String.isNotLonger 254 email)
+            assert (String.isEmail email)
             assert (String.isNotNullOrEmpty nickname)
             assert (String.isNotLonger 64 nickname)
-            ReadModel (id, username, nickname) :> IMemberDetailReadModel
+            ReadModel (id, username, email, nickname) :> IMemberDetailReadModel
 
 
 
@@ -141,13 +149,19 @@ module MemberDetail =
 
             interface IRequestHandler<IMemberDetailQuery, IMemberDetailQueryResult> with
 
-                member this.Handle(query) =
-                    assert (isNotNull <| box query)
-                    Seq.tryFind (fun (x:MemberData) -> x.Id = query.Id) this.Context.MemberData
-                    |> Option.map (fun x -> ReadModel.make x.Id x.Username x.Nickname)
-                    |> function
-                       | Some x -> QueryResult.makeSuccess x
-                       | None -> QueryResult.notFound
+                member this.Handle(message) =
+                    assert (isNotNull <| box message)
+
+                    let readModel =
+                        query { for x in this.Context.MemberData do
+                                where (x.Id = message.Id)
+                                select x }
+                        |> Seq.tryHead
+                        |> Option.map (fun x -> ReadModel.make x.Id x.Username x.Email x.Nickname)
+
+                    match readModel with
+                    | Some x -> QueryResult.makeSuccess x
+                    | None -> QueryResult.notFound
 
         let internal make context =
             assert (isNotNull context)

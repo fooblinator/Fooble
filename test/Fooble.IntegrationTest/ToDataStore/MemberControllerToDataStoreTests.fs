@@ -27,6 +27,7 @@ module MemberControllerToDataStoreTests =
     let ``Calling detail, with matches in data store, returns expected result`` () =
         let expectedId = Guid.random ()
         let expectedUsername = String.random 32
+        let expectedEmail = sprintf "%s@%s.%s" (String.random 32) (String.random 32) (String.random 3)
         let expectedNickname = String.random 64
 
         let connectionString = Settings.ConnectionStrings.FoobleContext
@@ -36,7 +37,9 @@ module MemberControllerToDataStoreTests =
         Seq.iter (fun x -> context.MemberData.DeleteObject(x)) context.MemberData
 
         // add matching member to the data store
-        let memberData = MemberData(Id = expectedId, Username = expectedUsername, Nickname = expectedNickname)
+        let memberData =
+            MemberData(Id = expectedId, Username = expectedUsername, Email = expectedEmail,
+                Nickname = expectedNickname)
         context.MemberData.AddObject(memberData)
 
         // persist changes to the data store
@@ -63,6 +66,7 @@ module MemberControllerToDataStoreTests =
 
         test <@ actualViewModel.Id = expectedId @>
         test <@ actualViewModel.Username = expectedUsername @>
+        test <@ actualViewModel.Email = expectedEmail @>
         test <@ actualViewModel.Nickname = expectedNickname @>
 
     [<Test>]
@@ -117,7 +121,9 @@ module MemberControllerToDataStoreTests =
 
         // add members to the data store
         let memberData = List.init 5 (fun _ ->
-            MemberData(Id = Guid.random (), Username = String.random 32, Nickname = String.random 64))
+            MemberData(Id = Guid.random (), Username = String.random 32,
+                Email = (sprintf "%s@%s.%s" (String.random 32) (String.random 32) (String.random 3)),
+                Nickname = String.random 64))
         List.iter (fun x -> context.MemberData.AddObject(x)) memberData
 
         // persist changes to the data store

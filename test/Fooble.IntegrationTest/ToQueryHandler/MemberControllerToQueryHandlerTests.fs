@@ -29,9 +29,12 @@ module MemberControllerToQueryHandlerTests =
     let ``Calling detail, with matches in data store, returns expected result`` () =
         let expectedId = Guid.random ()
         let expectedUsername = String.random 32
+        let expectedEmail = sprintf "%s@%s.%s" (String.random 32) (String.random 32) (String.random 3)
         let expectedNickname = String.random 64
 
-        let memberData = MemberData(Id = expectedId, Username = expectedUsername, Nickname = expectedNickname)
+        let memberData =
+            MemberData(Id = expectedId, Username = expectedUsername, Email = expectedEmail,
+                Nickname = expectedNickname)
         let memberSetMock = makeObjectSet (Seq.singleton memberData)
         let contextMock = Mock<IFoobleContext>()
         contextMock.SetupFunc(fun x -> x.MemberData).Returns(memberSetMock.Object).Verifiable()
@@ -59,6 +62,7 @@ module MemberControllerToQueryHandlerTests =
 
         test <@ actualViewModel.Id = expectedId @>
         test <@ actualViewModel.Username = expectedUsername @>
+        test <@ actualViewModel.Email = expectedEmail @>
         test <@ actualViewModel.Nickname = expectedNickname @>
 
     [<Test>]
@@ -103,7 +107,9 @@ module MemberControllerToQueryHandlerTests =
     [<Test>]
     let ``Calling list, with matches in data store, returns expected result`` () =
         let memberData = List.init 5 (fun _ ->
-            MemberData(Id = Guid.random (), Username = String.random 32, Nickname = String.random 64))
+            MemberData(Id = Guid.random (), Username = String.random 32,
+                Email = sprintf "%s@%s.%s" (String.random 32) (String.random 32) (String.random 3),
+                Nickname = String.random 64))
         let memberSetMock = makeObjectSet (Seq.ofList memberData)
         let contextMock = Mock<IFoobleContext>()
         contextMock.SetupFunc(fun c -> c.MemberData).Returns(memberSetMock.Object).Verifiable()

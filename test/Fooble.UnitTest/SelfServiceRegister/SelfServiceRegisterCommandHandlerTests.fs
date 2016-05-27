@@ -23,12 +23,17 @@ module SelfServiceRegisterCommandHandlerTests =
         let existingUsername = String.random 32
 
         let memberData =
-            Seq.singleton (MemberData(Id = Guid.random (), Username = existingUsername, Nickname = String.random 64))
+            Seq.singleton
+                (MemberData(Id = Guid.random (), Username = existingUsername,
+                    Email = sprintf "%s@%s.%s" (String.random 32) (String.random 32) (String.random 3),
+                    Nickname = String.random 64))
         let memberSetMock = makeObjectSet memberData
         let contextMock = Mock<IFoobleContext>()
         contextMock.SetupFunc(fun x -> x.MemberData).Returns(memberSetMock.Object).Verifiable()
 
-        let command = SelfServiceRegister.Command.make (Guid.random ()) existingUsername (String.random 64)
+        let command =
+            SelfServiceRegister.Command.make (Guid.random ()) existingUsername
+                (sprintf "%s@%s.%s" (String.random 32) (String.random 32) (String.random 3)) (String.random 64)
         let handler = SelfServiceRegister.CommandHandler.make contextMock.Object
 
         let commandResult = handler.Handle(command)
@@ -37,15 +42,42 @@ module SelfServiceRegisterCommandHandlerTests =
 
         test <@ commandResult.IsUsernameUnavailable @>
         test <@ not <| commandResult.IsSuccess @>
+        test <@ not <| commandResult.IsEmailUnavailable @>
 
     [<Test>]
-    let ``Calling handle, with no existing username in data store, returns expected result`` () =
+    let ``Calling handle, with existing email in data store, and returns expected result`` () =
+        let existingEmail = sprintf "%s@%s.%s" (String.random 32) (String.random 32) (String.random 3)
+
+        let memberData =
+            Seq.singleton
+                (MemberData(Id = Guid.random (), Username = String.random 32, Email = existingEmail,
+                    Nickname = String.random 64))
+        let memberSetMock = makeObjectSet memberData
+        let contextMock = Mock<IFoobleContext>()
+        contextMock.SetupFunc(fun x -> x.MemberData).Returns(memberSetMock.Object).Verifiable()
+
+        let command =
+            SelfServiceRegister.Command.make (Guid.random ()) (String.random 32) existingEmail (String.random 64)
+        let handler = SelfServiceRegister.CommandHandler.make contextMock.Object
+
+        let commandResult = handler.Handle(command)
+
+        contextMock.Verify()
+
+        test <@ commandResult.IsEmailUnavailable @>
+        test <@ not <| commandResult.IsSuccess @>
+        test <@ not <| commandResult.IsUsernameUnavailable @>
+
+    [<Test>]
+    let ``Calling handle, with no existing username or email in data store, returns expected result`` () =
         let memberSetMock = makeObjectSet (Seq.empty<MemberData>)
         memberSetMock.SetupAction(fun x -> x.AddObject(any ())).Verifiable()
         let contextMock = Mock<IFoobleContext>()
         contextMock.SetupFunc(fun x -> x.MemberData).Returns(memberSetMock.Object).Verifiable()
 
-        let command = SelfServiceRegister.Command.make (Guid.random ()) (String.random 32) (String.random 64)
+        let command =
+            SelfServiceRegister.Command.make (Guid.random ()) (String.random 32)
+                (sprintf "%s@%s.%s" (String.random 32) (String.random 32) (String.random 3)) (String.random 64)
         let handler = SelfServiceRegister.CommandHandler.make contextMock.Object
 
         let commandResult = handler.Handle(command)
@@ -55,3 +87,4 @@ module SelfServiceRegisterCommandHandlerTests =
 
         test <@ commandResult.IsSuccess @>
         test <@ not <| commandResult.IsUsernameUnavailable @>
+        test <@ not <| commandResult.IsEmailUnavailable @>

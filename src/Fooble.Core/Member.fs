@@ -46,6 +46,18 @@ module Member =
         |> Validation.validate username "username"
 
     /// <summary>
+    /// Validates the supplied member email.
+    /// </summary>
+    /// <param name="email">The email of the member.</param>
+    /// <returns>Returns a validation result.</returns>
+    [<CompiledName("ValidateEmail")>]
+    let validateEmail email =
+        [ (String.isNotNullOrEmpty), "Email is required"
+          (String.isNotLonger 254), "Email is longer than 254 characters"
+          (String.isEmail), "Email is not in the correct format" ]
+        |> Validation.validate email "email"
+
+    /// <summary>
     /// Validates the supplied member nickname.
     /// </summary>
     /// <param name="nickname">The nickname of the member.</param>

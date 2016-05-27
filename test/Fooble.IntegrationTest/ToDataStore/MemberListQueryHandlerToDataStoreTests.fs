@@ -46,7 +46,9 @@ module MemberListQueryHandlerToDataStoreTests =
 
         // add members to the data store
         let memberData = List.init 5 (fun _ ->
-            MemberData(Id = Guid.random (), Username = String.random 32, Nickname = String.random 64))
+            MemberData(Id = Guid.random (), Username = String.random 32,
+                Email = (sprintf "%s@%s.%s" (String.random 32) (String.random 32) (String.random 3)),
+                Nickname = String.random 64))
         List.iter (fun x -> context.MemberData.AddObject(x)) memberData
 
         // persist changes to the data store

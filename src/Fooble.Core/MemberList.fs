@@ -146,16 +146,19 @@ module MemberList =
 
             interface IRequestHandler<IMemberListQuery, IMemberListQueryResult> with
 
-                member this.Handle(query) =
-                    assert (isNotNull <| box query)
-                    Seq.sortBy (fun (x:MemberData) -> x.Nickname) this.Context.MemberData
-                    |> Seq.map (fun x -> ItemReadModel.make x.Id x.Nickname)
-                    |> List.ofSeq // materialize the results
-                    |> function
-                       | [] -> QueryResult.notFound
-                       | xs -> Seq.ofList xs
-                               |> ReadModel.make
-                               |> QueryResult.makeSuccess
+                member this.Handle(message) =
+                    assert (isNotNull <| box message)
+
+                    let members =
+                        query { for x in this.Context.MemberData do
+                                sortBy x.Nickname
+                                select x }
+                        |> Seq.map (fun x -> ItemReadModel.make x.Id x.Nickname)
+                        |> List.ofSeq // materialize
+
+                    match members with
+                    | [] -> QueryResult.notFound
+                    | xs -> Seq.ofList xs |> ReadModel.make |> QueryResult.makeSuccess
 
         let internal make context =
             assert (not <| isNull context)

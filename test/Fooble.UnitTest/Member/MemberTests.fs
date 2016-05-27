@@ -126,6 +126,56 @@ module MemberTests =
         test <@ result.IsValid @>
 
     [<Test>]
+    let ``Calling validate email, with null email, returns expected validation result`` () =
+        let expectedParamName = "email"
+        let expectedMessage = "Email is required"
+
+        let result = Member.validateEmail null
+
+        test <@ result.IsInvalid @>
+        test <@ result.ParamName = expectedParamName @>
+        test <@ result.Message = expectedMessage @>
+
+    [<Test>]
+    let ``Calling validate email, with empty email, returns expected validation result`` () =
+        let expectedParamName = "email"
+        let expectedMessage = "Email is required"
+
+        let result = Member.validateEmail String.empty
+
+        test <@ result.IsInvalid @>
+        test <@ result.ParamName = expectedParamName @>
+        test <@ result.Message = expectedMessage @>
+
+    [<Test>]
+    let ``Calling validate email, with email longer than 254, returns expected validation result`` () =
+        let expectedParamName = "email"
+        let expectedMessage = "Email is longer than 254 characters"
+
+        let result = Member.validateEmail (String.random 255)
+
+        test <@ result.IsInvalid @>
+        test <@ result.ParamName = expectedParamName @>
+        test <@ result.Message = expectedMessage @>
+
+    [<Test>]
+    let ``Calling validate email, with email in invalid format, returns expected validation result`` () =
+        let expectedParamName = "email"
+        let expectedMessage = "Email is not in the correct format"
+
+        let result = Member.validateEmail (String.random 64)
+
+        test <@ result.IsInvalid @>
+        test <@ result.ParamName = expectedParamName @>
+        test <@ result.Message = expectedMessage @>
+
+    [<Test>]
+    let ``Calling validate email, with valid email, returns no messages`` () =
+        let result = Member.validateEmail (sprintf "%s@%s.%s" (String.random 32) (String.random 32) (String.random 3))
+
+        test <@ result.IsValid @>
+
+    [<Test>]
     let ``Calling validate nickname, with null nickname, returns expected validation result`` () =
         let expectedParamName = "nickname"
         let expectedMessage = "Nickname is required"

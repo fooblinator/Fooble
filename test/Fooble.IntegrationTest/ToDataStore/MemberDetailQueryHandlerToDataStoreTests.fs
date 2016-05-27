@@ -40,6 +40,7 @@ module MemberDetailQueryHandlerToDataStoreTests =
     let ``Calling handle, with matching member in data store, returns expected result`` () =
         let expectedId = Guid.random ()
         let expectedUsername = String.random 32
+        let expectedEmail = sprintf "%s@%s.%s" (String.random 32) (String.random 32) (String.random 3)
         let expectedNickname = String.random 64
 
         let connectionString = Settings.ConnectionStrings.FoobleContext
@@ -49,7 +50,9 @@ module MemberDetailQueryHandlerToDataStoreTests =
         Seq.iter (fun x -> context.MemberData.DeleteObject(x)) context.MemberData
 
         // add matching member to the data store
-        let memberData = MemberData(Id = expectedId, Username = expectedUsername, Nickname = expectedNickname)
+        let memberData =
+            MemberData(Id = expectedId, Username = expectedUsername, Email = expectedEmail,
+                Nickname = expectedNickname)
         context.MemberData.AddObject(memberData)
 
         // persist changes to the data store
@@ -67,4 +70,5 @@ module MemberDetailQueryHandlerToDataStoreTests =
 
         test <@ actualReadModel.Id = expectedId @>
         test <@ actualReadModel.Username = expectedUsername @>
+        test <@ actualReadModel.Email = expectedEmail @>
         test <@ actualReadModel.Nickname = expectedNickname @>

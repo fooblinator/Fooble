@@ -38,10 +38,13 @@ module MemberDetailQueryHandlerTests =
     let ``Calling handle, with matching member in data store, returns expected result`` () =
         let expectedId = Guid.random ()
         let expectedUsername = String.random 32
+        let expectedEmail = sprintf "%s@%s.%s" (String.random 32) (String.random 32) (String.random 3)
         let expectedNickname = String.random 64
 
         let memberData =
-            Seq.singleton (MemberData(Id = expectedId, Username = expectedUsername, Nickname = expectedNickname))
+            Seq.singleton
+                (MemberData(Id = expectedId, Username = expectedUsername, Email = expectedEmail,
+                    Nickname = expectedNickname))
         let memberSetMock = makeObjectSet memberData
         let contextMock = Mock<IFoobleContext>()
         contextMock.SetupFunc(fun x -> x.MemberData).Returns(memberSetMock.Object).Verifiable()
@@ -59,4 +62,5 @@ module MemberDetailQueryHandlerTests =
         let actualReadModel = queryResult.ReadModel
         test <@ actualReadModel.Id = expectedId @>
         test <@ actualReadModel.Username = expectedUsername @>
+        test <@ actualReadModel.Email = expectedEmail @>
         test <@ actualReadModel.Nickname = expectedNickname @>

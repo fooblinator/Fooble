@@ -37,7 +37,9 @@ module MemberListQueryHandlerTests =
     [<Test>]
     let ``Calling handle, with members in data store, returns expected result`` () =
         let memberData = List.init 5 <| fun _ ->
-            MemberData(Id = Guid.random (), Username = String.random 32, Nickname = String.random 64)
+            MemberData(Id = Guid.random (), Username = String.random 32,
+                Email = sprintf "%s@%s.%s" (String.random 32) (String.random 32) (String.random 3),
+                Nickname = String.random 64)
         let memberSetMock = makeObjectSet (Seq.ofList memberData)
         let contextMock = Mock<IFoobleContext>()
         contextMock.SetupFunc(fun x -> x.MemberData).Returns(memberSetMock.Object).Verifiable()

@@ -32,6 +32,20 @@ module SelfServiceRegisterExtensionsTests =
         test <@ modelState.[expectedKey].Errors.[0].ErrorMessage = expectedException @>
 
     [<Test>]
+    let ``Calling add model error, as email unavailable result of self-service register command result, returns expected read model`` () =
+        let expectedKey = "email"
+        let expectedException = "Email is already registered"
+
+        let commandResult = SelfServiceRegister.CommandResult.emailUnavailable
+        let modelState = ModelStateDictionary()
+        SelfServiceRegister.addModelErrorIfNotSuccess commandResult modelState
+
+        test <@ not <| modelState.IsValid @>
+        test <@ modelState.ContainsKey(expectedKey) @>
+        test <@ modelState.[expectedKey].Errors.Count = 1 @>
+        test <@ modelState.[expectedKey].Errors.[0].ErrorMessage = expectedException @>
+
+    [<Test>]
     let ``Calling to message display read model, as success result of self-service register command result, raises expected exception`` () =
         let expectedMessage = "Result was not unsuccessful"
 

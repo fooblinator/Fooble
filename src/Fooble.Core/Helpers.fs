@@ -1,6 +1,7 @@
 ﻿namespace Fooble.Core
 
 open System
+open System.Net.Mail
 open System.Text.RegularExpressions
 
 [<AutoOpen>]
@@ -28,6 +29,7 @@ module internal Helpers =
         let internal isShorter min x = String.length x < min
         let internal isNotShorter min x = not <| isShorter min x
         let internal isMatch pattern x = Regex.IsMatch(x, pattern)
+        let internal isEmail x = try ignore <| MailAddress(x); true with :? FormatException -> false
 
     [<RequireQualifiedAccess>]
     module internal Seq =

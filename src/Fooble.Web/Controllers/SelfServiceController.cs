@@ -30,19 +30,22 @@ namespace Fooble.Web.Controllers
         }
 
         [HttpPost]
-        public ActionResult Register(string username, string nickname)
+        public ActionResult Register(string username, string email, string nickname)
         {
             Member.ValidateUsername(username)
+                .AddModelErrorIfNotValid(ModelState);
+
+            Member.ValidateEmail(email)
                 .AddModelErrorIfNotValid(ModelState);
 
             Member.ValidateNickname(nickname)
                 .AddModelErrorIfNotValid(ModelState);
 
             if (!ModelState.IsValid)
-                return View(SelfServiceRegister.ViewModel.Make(username, nickname));
+                return View(SelfServiceRegister.ViewModel.Make(username, email, nickname));
 
             var id = _keyGenerator.GenerateKey();
-            var command = SelfServiceRegister.Command.Make(id, username, nickname);
+            var command = SelfServiceRegister.Command.Make(id, username, email, nickname);
             var result = _mediator.Send(command);
 
             Debug.Assert(result != null, "Result parameter was null");
@@ -50,7 +53,7 @@ namespace Fooble.Web.Controllers
             result.AddModelErrorIfNotSuccess(ModelState);
 
             if (!ModelState.IsValid)
-                return View(SelfServiceRegister.ViewModel.Make(username, nickname));
+                return View(SelfServiceRegister.ViewModel.Make(username, email, nickname));
 
             return RedirectToAction("Detail", "Member", new { id = id.ToString() });
         }

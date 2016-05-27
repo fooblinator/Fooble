@@ -208,6 +208,9 @@ module MessageDisplay =
         | SelfServiceRegister.IsUsernameUnavailable ->
             ReadModel.make "Self-Service" "Register" 400 Severity.warning "Requested username is unavailable."
 
+        | SelfServiceRegister.IsEmailUnavailable ->
+            ReadModel.make "Self-Service" "Register" 400 Severity.warning "Supplied email is already registered."
+
     /// <summary>
     /// Constructs a message display read model from a validation result.
     /// </summary>

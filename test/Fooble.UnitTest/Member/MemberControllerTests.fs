@@ -30,9 +30,10 @@ module MemberControllerTests =
     let ``Calling detail, with matches in data store, returns expected result`` () =
         let matchingId = Guid.random ()
         let expectedUsername = String.random 32
+        let expectedEmail = sprintf "%s@%s.%s" (String.random 32) (String.random 32) (String.random 3)
         let expectedNickname = String.random 64
 
-        let readModel = MemberDetail.ReadModel.make matchingId expectedUsername expectedNickname
+        let readModel = MemberDetail.ReadModel.make matchingId expectedUsername expectedEmail expectedNickname
         let queryResult = MemberDetail.QueryResult.makeSuccess readModel
         let mediatorMock = Mock<IMediator>()
         mediatorMock.SetupFunc(fun x -> x.Send(any ())).Returns(queryResult).Verifiable()
@@ -54,6 +55,7 @@ module MemberControllerTests =
         let actualViewModel = viewResult.Model :?> IMemberDetailReadModel
         test <@ actualViewModel.Id = matchingId @>
         test <@ actualViewModel.Username = expectedUsername @>
+        test <@ actualViewModel.Email = expectedEmail @>
         test <@ actualViewModel.Nickname = expectedNickname @>
 
     [<Test>]

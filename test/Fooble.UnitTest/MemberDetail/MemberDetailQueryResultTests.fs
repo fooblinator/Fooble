@@ -11,7 +11,9 @@ module MemberDetailQueryResultTests =
 
     [<Test>]
     let ``Calling make success, with valid parameters, returns query result`` () =
-        let readModel = MemberDetail.ReadModel.make (Guid.random ()) (String.random 32) (String.random 64)
+        let readModel =
+            MemberDetail.ReadModel.make (Guid.random ()) (String.random 32)
+                (sprintf "%s@%s.%s" (String.random 32) (String.random 32) (String.random 3)) (String.random 64)
         let queryResult = MemberDetail.QueryResult.makeSuccess readModel
 
         test <@ box queryResult :? IMemberDetailQueryResult @>
@@ -31,7 +33,9 @@ module MemberDetailQueryResultTests =
 
     [<Test>]
     let ``Calling read model, with success query result, returns expected read model`` () =
-        let expectedReadModel = MemberDetail.ReadModel.make (Guid.random ()) (String.random 32) (String.random 64)
+        let expectedReadModel =
+            MemberDetail.ReadModel.make (Guid.random ()) (String.random 32)
+                (sprintf "%s@%s.%s" (String.random 32) (String.random 32) (String.random 3)) (String.random 64)
 
         let queryResult = MemberDetail.QueryResult.makeSuccess expectedReadModel
 
@@ -39,7 +43,9 @@ module MemberDetailQueryResultTests =
 
     [<Test>]
     let ``Calling is success, with success query result, returns true`` () =
-        let readModel = MemberDetail.ReadModel.make (Guid.random ()) (String.random 32) (String.random 64)
+        let readModel =
+            MemberDetail.ReadModel.make (Guid.random ()) (String.random 32)
+                (sprintf "%s@%s.%s" (String.random 32) (String.random 32) (String.random 3)) (String.random 64)
         let queryResult = MemberDetail.QueryResult.makeSuccess readModel
 
         test <@ queryResult.IsSuccess @>
@@ -52,7 +58,9 @@ module MemberDetailQueryResultTests =
 
     [<Test>]
     let ``Calling is not found, with success query result, returns false`` () =
-        let readModel = MemberDetail.ReadModel.make (Guid.random ()) (String.random 32) (String.random 64)
+        let readModel =
+            MemberDetail.ReadModel.make (Guid.random ()) (String.random 32)
+                (sprintf "%s@%s.%s" (String.random 32) (String.random 32) (String.random 3)) (String.random 64)
         let queryResult = MemberDetail.QueryResult.makeSuccess readModel
 
         test <@ not <| queryResult.IsNotFound @>
