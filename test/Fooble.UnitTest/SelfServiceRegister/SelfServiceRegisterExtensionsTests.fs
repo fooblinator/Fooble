@@ -1,4 +1,4 @@
-﻿namespace Fooble.UnitTest.SelfServiceRegister
+﻿namespace Fooble.UnitTest
 
 open Fooble.Core
 open Fooble.Presentation
@@ -14,7 +14,7 @@ module SelfServiceRegisterExtensionsTests =
     let ``Calling add model error, as success result of self-service register command result, returns expected read model`` () =
         let commandResult = SelfServiceRegisterCommand.successResult
         let modelState = ModelStateDictionary()
-        SelfServiceRegister.addModelErrorIfNotSuccess commandResult modelState
+        SelfServiceRegisterExtensions.addModelErrorIfNotSuccess commandResult modelState
 
         test <@ modelState.IsValid @>
 
@@ -25,7 +25,7 @@ module SelfServiceRegisterExtensionsTests =
 
         let commandResult = SelfServiceRegisterCommand.usernameUnavailableResult
         let modelState = ModelStateDictionary()
-        SelfServiceRegister.addModelErrorIfNotSuccess commandResult modelState
+        SelfServiceRegisterExtensions.addModelErrorIfNotSuccess commandResult modelState
 
         test <@ not <| modelState.IsValid @>
         test <@ modelState.ContainsKey(expectedKey) @>
@@ -39,7 +39,7 @@ module SelfServiceRegisterExtensionsTests =
 
         let commandResult = SelfServiceRegisterCommand.emailUnavailableResult
         let modelState = ModelStateDictionary()
-        SelfServiceRegister.addModelErrorIfNotSuccess commandResult modelState
+        SelfServiceRegisterExtensions.addModelErrorIfNotSuccess commandResult modelState
 
         test <@ not <| modelState.IsValid @>
         test <@ modelState.ContainsKey(expectedKey) @>
@@ -52,7 +52,8 @@ module SelfServiceRegisterExtensionsTests =
 
         let commandResult = SelfServiceRegisterCommand.successResult
 
-        raisesWith<InvalidOperationException> <@ SelfServiceRegister.toMessageDisplayReadModel commandResult @>
+        raisesWith<InvalidOperationException>
+            <@ SelfServiceRegisterExtensions.toMessageDisplayReadModel commandResult @>
             (fun x -> <@ x.Message = expectedMessage @>)
 
     [<Test>]
@@ -60,11 +61,12 @@ module SelfServiceRegisterExtensionsTests =
         let expectedHeading = "Self-Service"
         let expectedSubHeading = "Register"
         let expectedStatusCode = 400
-        let expectedSeverity = MessageDisplay.warningSeverity
+        let expectedSeverity = MessageDisplayReadModel.warningSeverity
         let expectedMessage = "Requested username is unavailable."
 
         let readModel =
-            SelfServiceRegisterCommand.usernameUnavailableResult |> SelfServiceRegister.toMessageDisplayReadModel
+            SelfServiceRegisterCommand.usernameUnavailableResult
+            |> SelfServiceRegisterExtensions.toMessageDisplayReadModel
 
         test <@ readModel.Heading = expectedHeading @>
         test <@ readModel.SubHeading = expectedSubHeading @>

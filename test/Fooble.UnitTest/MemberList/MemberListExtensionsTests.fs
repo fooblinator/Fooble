@@ -1,4 +1,4 @@
-﻿namespace Fooble.UnitTest.MemberList
+﻿namespace Fooble.UnitTest
 
 open Fooble.Common
 open Fooble.Core
@@ -15,12 +15,12 @@ module MemberListExtensionsTests =
         let expectedMessage = "Result was not unsuccessful"
 
         let queryResult =
-            MemberListReadModel.makeItem (Guid.random ()) (String.random 64)
+            makeMemberListItemReadModel (Guid.random ()) (String.random 64)
             |> Seq.singleton
-            |> MemberListReadModel.make
+            |> makeMemberListReadModel
             |> MemberListQuery.makeSuccessResult
 
-        raisesWith<InvalidOperationException> <@ MemberList.toMessageDisplayReadModel queryResult @>
+        raisesWith<InvalidOperationException> <@ MemberListExtensions.toMessageDisplayReadModel queryResult @>
             (fun e -> <@ e.Message = expectedMessage @>)
 
     [<Test>]
@@ -28,10 +28,10 @@ module MemberListExtensionsTests =
         let expectedHeading = "Member"
         let expectedSubHeading = "List"
         let expectedStatusCode = 200
-        let expectedSeverity = MessageDisplay.informationalSeverity
+        let expectedSeverity = MessageDisplayReadModel.informationalSeverity
         let expectedMessage = "No members have yet been added."
 
-        let readModel = MemberListQuery.notFoundResult |> MemberList.toMessageDisplayReadModel
+        let readModel = MemberListQuery.notFoundResult |> MemberListExtensions.toMessageDisplayReadModel
 
         test <@ readModel.Heading = expectedHeading @>
         test <@ readModel.SubHeading = expectedSubHeading @>

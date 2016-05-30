@@ -1,20 +1,13 @@
-﻿namespace Fooble.Core
+﻿namespace Fooble.Presentation
 
 open Fooble.Common
-open Fooble.Presentation
+open Fooble.Core
 open System.Runtime.CompilerServices
 
-/// Provides functionality used in the querying and presentation of member lists.
+/// Provides presentation-related extension methods for member list.
 [<RequireQualifiedAccess>]
 [<Extension>]
-module MemberList =
-
-    /// <summary>
-    /// Constructs a member list query.
-    /// </summary>
-    /// <returns>Returns a member list query.</returns>
-    [<CompiledName("MakeQuery")>]
-    let makeQuery () = MemberListQuery.make ()
+module MemberListExtensions =
 
     /// <summary>
     /// Constructs a message display read model from a member list query result.
@@ -25,14 +18,13 @@ module MemberList =
     /// <see cref="MessageDisplay.MakeReadModel"/> directly.</remarks>
     [<Extension>]
     [<CompiledName("ToMessageDisplayReadModel")>]
-    let toMessageDisplayReadModel result =
+    let toMessageDisplayReadModel (result:IMemberListQueryResult) =
 
         [ (isNotNull << box), "Result parameter was null" ]
-        |> ValidationResult.get result "result"
-        |> ValidationResult.enforce
+        |> validate result "result" |> enforce
 
         match result with
-        | MemberListQuery.IsSuccess _ -> invalidOp "Result was not unsuccessful"
-        | MemberListQuery.IsNotFound ->
-            MessageDisplay.makeReadModel "Member" "List" 200 MessageDisplay.informationalSeverity
+        | x when x.IsNotFound ->
+            MessageDisplayReadModel.make "Member" "List" 200 MessageDisplayReadModel.informationalSeverity
                 "No members have yet been added."
+        | _ -> invalidOp "Result was not unsuccessful"

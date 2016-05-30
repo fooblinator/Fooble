@@ -1,4 +1,4 @@
-﻿namespace Fooble.UnitTest.MemberList
+﻿namespace Fooble.UnitTest
 
 open Fooble.Core
 open MediatR
@@ -10,7 +10,7 @@ module MemberListQueryTests =
 
     [<Test>]
     let ``Calling make, returns query`` () =
-        let query = MemberList.makeQuery ()
+        let query = MemberListQuery.make ()
 
         test <@ box query :? IMemberListQuery @>
         test <@ box query :? IRequest<IMemberListQueryResult> @>

@@ -54,11 +54,17 @@
     <Compile Include="..\Common\GlobalAssemblyInfo.fs">
       <Link>Properties\GlobalAssemblyInfo.fs</Link>
     </Compile>
-    <Compile Include="Persistence.fs" />
+    <Compile Include="Types.fs" />
+    <Compile Include="Helpers.fs" />
+    <Compile Include="Infrastructure\Registrations.fs" />
     <Content Include="App.config" />
     <Content Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="Autofac">
+      <HintPath>..\..\packages\Autofac.3.5.2\lib\net40\Autofac.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="FSharp.Core, Version=$(TargetFSharpCoreVersion), Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
     <Reference Include="FSharp.Data.TypeProviders">
       <HintPath>..\..\packages\FSharp.Data.TypeProviders.5.0.0.2\lib\net40\FSharp.Data.TypeProviders.dll</HintPath>
@@ -67,8 +73,21 @@
     <Reference Include="mscorlib" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
     <Reference Include="System.Data.Entity" />
     <Reference Include="System.Numerics" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Fooble.Common\Fooble.Common.fsproj">
+      <Name>Fooble.Common</Name>
+      <Project>{f61c2a8e-303c-4f38-8d8f-f364fdff3d7a}</Project>
+      <Private>True</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\Fooble.Core\Fooble.Core.fsproj">
+      <Name>Fooble.Core</Name>
+      <Project>{807e9944-9329-40c3-ac0e-74920a316cb6}</Project>
+      <Private>True</Private>
+    </ProjectReference>
   </ItemGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.

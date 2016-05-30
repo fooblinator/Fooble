@@ -1,4 +1,4 @@
-﻿namespace Fooble.UnitTest.Validation
+﻿namespace Fooble.UnitTest
 
 open Fooble.Common
 open Fooble.Core

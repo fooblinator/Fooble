@@ -208,6 +208,14 @@
       <Project>{807e9944-9329-40c3-ac0e-74920a316cb6}</Project>
       <Name>Fooble.Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Fooble.Persistence\Fooble.Persistence.fsproj">
+      <Project>{6324603a-6972-4b7e-ae8b-a5e4a13a657f}</Project>
+      <Name>Fooble.Persistence</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Fooble.Presentation\Fooble.Presentation.fsproj">
+      <Project>{6adfdc6e-b3ed-4a21-8d14-5f447082c4b1}</Project>
+      <Name>Fooble.Presentation</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

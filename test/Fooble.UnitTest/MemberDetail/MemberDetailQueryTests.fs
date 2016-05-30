@@ -1,4 +1,4 @@
-﻿namespace Fooble.UnitTest.MemberDetail
+﻿namespace Fooble.UnitTest
 
 open Fooble.Common
 open Fooble.Core
@@ -17,12 +17,12 @@ module MemberDetailQueryTests =
         let expectedMessage = "Id is required"
 
         raisesWith<ArgumentException>
-            <@ MemberDetail.makeQuery Guid.empty @> (fun x ->
+            <@ MemberDetailQuery.make Guid.empty @> (fun x ->
                 <@ x.ParamName = expectedParamName && (fixInvalidArgMessage x.Message) = expectedMessage @>)
 
     [<Test>]
     let ``Calling make, with valid parameters, returns query`` () =
-        let query = MemberDetail.makeQuery (Guid.random ())
+        let query = MemberDetailQuery.make (Guid.random ())
 
         test <@ box query :? IMemberDetailQuery @>
         test <@ box query :? IRequest<IMemberDetailQueryResult> @>
@@ -31,6 +31,6 @@ module MemberDetailQueryTests =
     let ``Calling id, returns expected id`` () =
         let expectedId = Guid.random ()
 
-        let query = MemberDetail.makeQuery expectedId
+        let query = MemberDetailQuery.make expectedId
 
         test <@ query.Id = expectedId @>

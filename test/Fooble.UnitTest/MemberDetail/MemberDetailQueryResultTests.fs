@@ -1,8 +1,7 @@
-﻿namespace Fooble.UnitTest.MemberDetail
+﻿namespace Fooble.UnitTest
 
 open Fooble.Common
 open Fooble.Core
-open Fooble.Presentation
 open NUnit.Framework
 open Swensen.Unquote
 open System
@@ -13,7 +12,7 @@ module MemberDetailQueryResultTests =
     [<Test>]
     let ``Calling make success, with valid parameters, returns query result`` () =
         let readModel =
-            MemberDetailReadModel.make (Guid.random ()) (String.random 32)
+            makeMemberDetailReadModel (Guid.random ()) (String.random 32)
                 (sprintf "%s@%s.%s" (String.random 32) (String.random 32) (String.random 3)) (String.random 64)
         let queryResult = MemberDetailQuery.makeSuccessResult readModel
 
@@ -35,7 +34,7 @@ module MemberDetailQueryResultTests =
     [<Test>]
     let ``Calling read model, with success query result, returns expected read model`` () =
         let expectedReadModel =
-            MemberDetailReadModel.make (Guid.random ()) (String.random 32)
+            makeMemberDetailReadModel (Guid.random ()) (String.random 32)
                 (sprintf "%s@%s.%s" (String.random 32) (String.random 32) (String.random 3)) (String.random 64)
 
         let queryResult = MemberDetailQuery.makeSuccessResult expectedReadModel
@@ -45,7 +44,7 @@ module MemberDetailQueryResultTests =
     [<Test>]
     let ``Calling is success, with success query result, returns true`` () =
         let readModel =
-            MemberDetailReadModel.make (Guid.random ()) (String.random 32)
+            makeMemberDetailReadModel (Guid.random ()) (String.random 32)
                 (sprintf "%s@%s.%s" (String.random 32) (String.random 32) (String.random 3)) (String.random 64)
         let queryResult = MemberDetailQuery.makeSuccessResult readModel
 
@@ -60,7 +59,7 @@ module MemberDetailQueryResultTests =
     [<Test>]
     let ``Calling is not found, with success query result, returns false`` () =
         let readModel =
-            MemberDetailReadModel.make (Guid.random ()) (String.random 32)
+            makeMemberDetailReadModel (Guid.random ()) (String.random 32)
                 (sprintf "%s@%s.%s" (String.random 32) (String.random 32) (String.random 3)) (String.random 64)
         let queryResult = MemberDetailQuery.makeSuccessResult readModel
 

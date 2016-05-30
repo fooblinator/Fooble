@@ -1,11 +1,13 @@
-﻿namespace Fooble.IntegrationTest.ToDataStore
+﻿namespace Fooble.IntegrationTest
 
 open Autofac
 open Fooble.Common
 open Fooble.Core.Infrastructure
 open Fooble.IntegrationTest
-open Fooble.Presentation
 open Fooble.Persistence
+open Fooble.Persistence.Infrastructure
+open Fooble.Presentation
+open Fooble.Presentation.Infrastructure
 open Fooble.Web.Controllers
 open MediatR
 open NUnit.Framework
@@ -17,12 +19,12 @@ module MemberControllerToDataStoreTests =
 
     [<Test>]
     let ``Constructing, with valid parameters, returns expected result`` () =
-        let connectionString = Settings.ConnectionStrings.FoobleContext
         let builder = ContainerBuilder()
-        ignore <| builder.RegisterModule(AutofacModule(connectionString))
+        ignore <| builder.RegisterModule(CoreRegistrations())
         let container = builder.Build()
 
         let mediator = container.Resolve<IMediator>()
+
         ignore <| new MemberController(mediator)
 
     [<Test>]
@@ -33,25 +35,26 @@ module MemberControllerToDataStoreTests =
         let expectedNickname = String.random 64
 
         let connectionString = Settings.ConnectionStrings.FoobleContext
-        use context = makeFoobleContext (Some connectionString)
-
-        // remove all existing members from the data store
-        Seq.iter (fun x -> context.MemberData.DeleteObject(x)) context.MemberData
-
-        // add matching member to the data store
-        let memberData =
-            MemberData(Id = expectedId, Username = expectedUsername, Email = expectedEmail,
-                Nickname = expectedNickname)
-        context.MemberData.AddObject(memberData)
-
-        // persist changes to the data store
-        ignore <| context.SaveChanges()
-
         let builder = ContainerBuilder()
-        ignore <| builder.RegisterModule(AutofacModule(context))
+        ignore <| builder.RegisterModule(CoreRegistrations())
+        ignore <| builder.RegisterModule(PersistenceRegistrations(connectionString))
+        ignore <| builder.RegisterModule(PresentationRegistrations())
         let container = builder.Build()
 
+        let context = container.Resolve<IFoobleContext>()
+        let memberDataFactory = container.Resolve<MemberDataFactory>()
         let mediator = container.Resolve<IMediator>()
+
+        // remove all existing members from the data store
+        List.iter (fun x -> context.DeleteMember(x)) (context.GetMembers())
+
+        // add matching member to the data store
+        let memberData = memberDataFactory.Invoke(expectedId, expectedUsername, expectedEmail, expectedNickname)
+        context.AddMember(memberData)
+
+        // persist changes to the data store
+        context.SaveChanges()
+
         let controller = new MemberController(mediator)
         let result = controller.Detail(expectedId.ToString())
 
@@ -77,23 +80,25 @@ module MemberControllerToDataStoreTests =
         let expectedHeading = "Member"
         let expectedSubHeading = "Detail"
         let expectedStatusCode = 404
-        let expectedSeverity = MessageDisplay.warningSeverity
+        let expectedSeverity = MessageDisplayReadModel.warningSeverity
         let expectedMessage = "No matching member could be found."
 
         let connectionString = Settings.ConnectionStrings.FoobleContext
-        use context = makeFoobleContext (Some connectionString)
-
-        // remove all existing members from the data store
-        Seq.iter (fun x -> context.MemberData.DeleteObject(x)) context.MemberData
-
-        // persist changes to the data store
-        ignore <| context.SaveChanges()
-
         let builder = ContainerBuilder()
-        ignore <| builder.RegisterModule(AutofacModule(context))
+        ignore <| builder.RegisterModule(CoreRegistrations())
+        ignore <| builder.RegisterModule(PersistenceRegistrations(connectionString))
+        ignore <| builder.RegisterModule(PresentationRegistrations())
         let container = builder.Build()
 
+        let context = container.Resolve<IFoobleContext>()
         let mediator = container.Resolve<IMediator>()
+
+        // remove all existing members from the data store
+        List.iter (fun x -> context.DeleteMember(x)) (context.GetMembers())
+
+        // persist changes to the data store
+        context.SaveChanges()
+
         let controller = new MemberController(mediator)
         let result = controller.Detail(nonMatchingId.ToString())
 
@@ -116,26 +121,28 @@ module MemberControllerToDataStoreTests =
     [<Test>]
     let ``Calling list, with matches in data store, returns expected result`` () =
         let connectionString = Settings.ConnectionStrings.FoobleContext
-        use context = makeFoobleContext (Some connectionString)
-
-        // remove all existing members from the data store
-        Seq.iter (fun x -> context.MemberData.DeleteObject(x)) context.MemberData
-
-        // add members to the data store
-        let memberData = List.init 5 (fun _ ->
-            MemberData(Id = Guid.random (), Username = String.random 32,
-                Email = (sprintf "%s@%s.%s" (String.random 32) (String.random 32) (String.random 3)),
-                Nickname = String.random 64))
-        List.iter (fun x -> context.MemberData.AddObject(x)) memberData
-
-        // persist changes to the data store
-        ignore <| context.SaveChanges()
-
         let builder = ContainerBuilder()
-        ignore <| builder.RegisterModule(AutofacModule(context))
+        ignore <| builder.RegisterModule(CoreRegistrations())
+        ignore <| builder.RegisterModule(PersistenceRegistrations(connectionString))
+        ignore <| builder.RegisterModule(PresentationRegistrations())
         let container = builder.Build()
 
+        let context = container.Resolve<IFoobleContext>()
+        let memberDataFactory = container.Resolve<MemberDataFactory>()
         let mediator = container.Resolve<IMediator>()
+
+        // remove all existing members from the data store
+        List.iter (fun x -> context.DeleteMember(x)) (context.GetMembers())
+
+        // add matching members to the data store
+        let members = List.init 5 (fun _ ->
+            memberDataFactory.Invoke(Guid.random (), String.random 32,
+                sprintf "%s@%s.%s" (String.random 32) (String.random 32) (String.random 3), String.random 64))
+        List.iter (fun x -> context.AddMember(x)) members
+
+        // persist changes to the data store
+        context.SaveChanges()
+
         let controller = new MemberController(mediator)
         let result = controller.List()
 
@@ -152,7 +159,7 @@ module MemberControllerToDataStoreTests =
         test <@ (List.length actualMembers) = 5 @>
         for current in actualMembers do
             let findResult =
-                List.tryFind (fun (x:MemberData) -> x.Id = current.Id && x.Nickname = current.Nickname) memberData
+                List.tryFind (fun (x:IMemberData) -> x.Id = current.Id && x.Nickname = current.Nickname) members
             test <@ findResult.IsSome @>
 
     [<Test>]
@@ -160,23 +167,25 @@ module MemberControllerToDataStoreTests =
         let expectedHeading = "Member"
         let expectedSubHeading = "List"
         let expectedStatusCode = 200
-        let expectedSeverity = MessageDisplay.informationalSeverity
+        let expectedSeverity = MessageDisplayReadModel.informationalSeverity
         let expectedMessage = "No members have yet been added."
 
         let connectionString = Settings.ConnectionStrings.FoobleContext
-        use context = makeFoobleContext (Some connectionString)
-
-        // remove all existing members from the data store
-        Seq.iter (fun x -> context.MemberData.DeleteObject(x)) context.MemberData
-
-        // persist changes to the data store
-        ignore <| context.SaveChanges()
-
         let builder = ContainerBuilder()
-        ignore <| builder.RegisterModule(AutofacModule(context))
+        ignore <| builder.RegisterModule(CoreRegistrations())
+        ignore <| builder.RegisterModule(PersistenceRegistrations(connectionString))
+        ignore <| builder.RegisterModule(PresentationRegistrations())
         let container = builder.Build()
 
+        let context = container.Resolve<IFoobleContext>()
         let mediator = container.Resolve<IMediator>()
+
+        // remove all existing members from the data store
+        List.iter (fun x -> context.DeleteMember(x)) (context.GetMembers())
+
+        // persist changes to the data store
+        context.SaveChanges()
+
         let controller = new MemberController(mediator)
         let result = controller.List()
 

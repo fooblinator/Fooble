@@ -3,17 +3,6 @@
 open Fooble.Common
 open System
 
-/// Contains a single member's information, for the purpose of presentation as part of a list of members.
-type IMemberListItemReadModel =
-    /// The id that represents the member.
-    abstract Id:Guid with get
-    /// The nickname of the member.
-    abstract Nickname:string with get
-
-/// Contains a list of members' information, for the purpose of presentation.
-type IMemberListReadModel =
-    abstract Members:seq<IMemberListItemReadModel>
-
 [<RequireQualifiedAccess>]
 module internal MemberListReadModel =
 

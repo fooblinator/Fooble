@@ -1,6 +1,8 @@
 ﻿using Autofac;
 using Autofac.Integration.Mvc;
 using Fooble.Core.Infrastructure;
+using Fooble.Persistence.Infrastructure;
+using Fooble.Presentation.Infrastructure;
 using System.Configuration;
 using System.Web.Mvc;
 
@@ -13,7 +15,9 @@ namespace Fooble.Web
             var connectionString = ConfigurationManager.ConnectionStrings["FoobleContext"].ConnectionString;
 
             var builder = new ContainerBuilder();
-            builder.RegisterModule(new AutofacModule(connectionString));
+            builder.RegisterModule(new CoreRegistrations());
+            builder.RegisterModule(new PersistenceRegistrations(connectionString));
+            builder.RegisterModule(new PresentationRegistrations());
             builder.RegisterControllers(typeof(MvcApplication).Assembly);
             var container = builder.Build();
 

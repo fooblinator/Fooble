@@ -1,4 +1,5 @@
 ﻿using Fooble.Core;
+using Fooble.Presentation;
 using MediatR;
 using System;
 using System.Diagnostics;
@@ -27,7 +28,7 @@ namespace Fooble.Web.Controllers
                 return View("MessageDisplay", validationResult.ToMessageDisplayReadModel());
 
             var actualId = Guid.Parse(id);
-            var query = MemberDetail.MakeQuery(actualId);
+            var query = MemberDetailQuery.Make(actualId);
             var result = _mediator.Send(query);
 
             Debug.Assert(result != null, "Result parameter was null");
@@ -41,7 +42,7 @@ namespace Fooble.Web.Controllers
         [HttpGet]
         public ActionResult List()
         {
-            var query = MemberList.MakeQuery();
+            var query = MemberListQuery.Make();
             var result = _mediator.Send(query);
 
             Debug.Assert(result != null, "Result parameter was null");

@@ -1,0 +1,24 @@
+﻿namespace Fooble.Presentation
+
+open Fooble.Common
+open Fooble.Core
+
+[<AutoOpen>]
+module internal Helpers =
+
+    (* Validation *)
+
+    let internal validate value paramName conditions =
+        assert (String.isNotNullOrEmpty paramName)
+        assert (List.isNotEmpty conditions)
+
+        let chooser (f, x) = if f value then None else Some x
+
+        match Seq.tryPick chooser conditions with
+        | None -> ValidationResult.valid
+        | Some x -> ValidationResult.makeInvalid paramName x
+
+    let internal enforce (result:IValidationResult) =
+        match result with
+        | x when x.IsInvalid -> invalidArg x.ParamName x.Message
+        | _ -> ()

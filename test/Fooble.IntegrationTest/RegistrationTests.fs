@@ -1,35 +1,25 @@
-﻿namespace Fooble.UnitTest
+﻿namespace Fooble.IntegrationTest
 
 open Autofac
 open Fooble.Common
 open Fooble.Core
-open Fooble.Persistence
 open Fooble.Core.Infrastructure
+open Fooble.Persistence.Infrastructure
+open Fooble.Presentation.Infrastructure
 open MediatR
-open Moq
 open NUnit.Framework
 open Swensen.Unquote
 
 [<TestFixture>]
-module AutofacModuleTests =
-
-    [<Test>]
-    let ``Registering autofac container, with custom data context, properly registers expected data context`` () =
-        let expectedContext = Mock.Of<IFoobleContext>()
-
-        let builder = ContainerBuilder()
-        ignore <| builder.RegisterModule(AutofacModule(expectedContext))
-        let container = builder.Build()
-
-        let actualContext = container.Resolve<IFoobleContext>()
-        test <@ isNotNull actualContext @>
-        test <@ obj.ReferenceEquals(actualContext, expectedContext) @>
+module RegistrationsTests =
 
     [<Test>]
     let ``Registering autofac container, properly registers expected query handlers`` () =
-        let context = Mock.Of<IFoobleContext>()
+        let connectionString = Settings.ConnectionStrings.FoobleContext
         let builder = ContainerBuilder()
-        ignore <| builder.RegisterModule(AutofacModule(context))
+        ignore <| builder.RegisterModule(CoreRegistrations())
+        ignore <| builder.RegisterModule(PersistenceRegistrations(connectionString))
+        ignore <| builder.RegisterModule(PresentationRegistrations())
         let container = builder.Build()
 
         let memberDetailQueryHandler =
@@ -45,9 +35,11 @@ module AutofacModuleTests =
 
     [<Test>]
     let ``Registering autofac container, properly registers expected single instance factory`` () =
-        let context = Mock.Of<IFoobleContext>()
+        let connectionString = Settings.ConnectionStrings.FoobleContext
         let builder = ContainerBuilder()
-        ignore <| builder.RegisterModule(AutofacModule(context))
+        ignore <| builder.RegisterModule(CoreRegistrations())
+        ignore <| builder.RegisterModule(PersistenceRegistrations(connectionString))
+        ignore <| builder.RegisterModule(PresentationRegistrations())
         let container = builder.Build()
 
         let singleInstanceFactory = container.Resolve<SingleInstanceFactory>()
@@ -72,9 +64,11 @@ module AutofacModuleTests =
 
     [<Test>]
     let ``Registering autofac container, properly registers expected multi instance factory`` () =
-        let context = Mock.Of<IFoobleContext>()
+        let connectionString = Settings.ConnectionStrings.FoobleContext
         let builder = ContainerBuilder()
-        ignore <| builder.RegisterModule(AutofacModule(context))
+        ignore <| builder.RegisterModule(CoreRegistrations())
+        ignore <| builder.RegisterModule(PersistenceRegistrations(connectionString))
+        ignore <| builder.RegisterModule(PresentationRegistrations())
         let container = builder.Build()
 
         let multiInstanceFactory = container.Resolve<MultiInstanceFactory>()
@@ -102,23 +96,3 @@ module AutofacModuleTests =
         test <@ (Seq.length result3) = 1 @>
         let actualResult3 = (Seq.head result3)
         test <@ actualResult3 :? IRequestHandler<ISelfServiceRegisterCommand, ISelfServiceRegisterCommandResult> @>
-
-    [<Test>]
-    let ``Registering autofac container, properly registers expected mediator`` () =
-        let context = Mock.Of<IFoobleContext>()
-        let builder = ContainerBuilder()
-        ignore <| builder.RegisterModule(AutofacModule(context))
-        let container = builder.Build()
-
-        let mediator = container.Resolve<IMediator>()
-        test <@ isNotNull mediator @>
-
-    [<Test>]
-    let ``Registering autofac container, properly registers expected key generator`` () =
-        let context = Mock.Of<IFoobleContext>()
-        let builder = ContainerBuilder()
-        ignore <| builder.RegisterModule(AutofacModule(context))
-        let container = builder.Build()
-
-        let keyGenerator = container.Resolve<IKeyGenerator>()
-        test <@ isNotNull <| box keyGenerator @>

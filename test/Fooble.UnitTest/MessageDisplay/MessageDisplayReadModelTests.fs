@@ -1,4 +1,4 @@
-﻿namespace Fooble.UnitTest.MessageDisplay
+﻿namespace Fooble.UnitTest
 
 open Fooble.Common
 open Fooble.Presentation
@@ -15,9 +15,9 @@ module MessageDisplayReadModelTests =
         let expectedParamName = "heading"
         let expectedMessage = "Heading is required"
 
-        let severity = MessageDisplay.informationalSeverity
+        let severity = MessageDisplayReadModel.informationalSeverity
         raisesWith<ArgumentException>
-            <@ MessageDisplay.makeReadModel null (String.random 64) 200 severity (String.random 64) @> (fun x ->
+            <@ MessageDisplayReadModel.make null (String.random 64) 200 severity (String.random 64) @> (fun x ->
                 <@ x.ParamName = expectedParamName && (fixInvalidArgMessage x.Message) = expectedMessage @>)
 
     [<Test>]
@@ -25,9 +25,9 @@ module MessageDisplayReadModelTests =
         let expectedParamName = "heading"
         let expectedMessage = "Heading is required"
 
-        let severity = MessageDisplay.informationalSeverity
+        let severity = MessageDisplayReadModel.informationalSeverity
         raisesWith<ArgumentException>
-            <@ MessageDisplay.makeReadModel String.empty (String.random 64) 200 severity (String.random 64) @>
+            <@ MessageDisplayReadModel.make String.empty (String.random 64) 200 severity (String.random 64) @>
                 (fun x -> <@ x.ParamName = expectedParamName && (fixInvalidArgMessage x.Message) = expectedMessage @>)
 
     [<Test>]
@@ -35,9 +35,9 @@ module MessageDisplayReadModelTests =
         let expectedParamName = "subHeading"
         let expectedMessage = "Sub-heading is required"
 
-        let severity = MessageDisplay.informationalSeverity
+        let severity = MessageDisplayReadModel.informationalSeverity
         raisesWith<ArgumentException>
-            <@ MessageDisplay.makeReadModel (String.random 64) null 200 severity (String.random 64) @> (fun x ->
+            <@ MessageDisplayReadModel.make (String.random 64) null 200 severity (String.random 64) @> (fun x ->
                 <@ x.ParamName = expectedParamName && (fixInvalidArgMessage x.Message) = expectedMessage @>)
 
     [<Test>]
@@ -45,9 +45,9 @@ module MessageDisplayReadModelTests =
         let expectedParamName = "statusCode"
         let expectedMessage = "Status code parameter is less than zero"
 
-        let severity = MessageDisplay.informationalSeverity
+        let severity = MessageDisplayReadModel.informationalSeverity
         raisesWith<ArgumentException>
-            <@ MessageDisplay.makeReadModel (String.random 64) (String.random 64) -1 severity (String.random 64) @>
+            <@ MessageDisplayReadModel.make (String.random 64) (String.random 64) -1 severity (String.random 64) @>
                 (fun x -> <@ x.ParamName = expectedParamName && (fixInvalidArgMessage x.Message) = expectedMessage @>)
 
     [<Test>]
@@ -55,9 +55,9 @@ module MessageDisplayReadModelTests =
         let expectedParamName = "message"
         let expectedMessage = "Message is required"
 
-        let severity = MessageDisplay.informationalSeverity
+        let severity = MessageDisplayReadModel.informationalSeverity
         raisesWith<ArgumentException>
-            <@ MessageDisplay.makeReadModel (String.random 64) (String.random 64) 200 severity null @> (fun x ->
+            <@ MessageDisplayReadModel.make (String.random 64) (String.random 64) 200 severity null @> (fun x ->
                 <@ x.ParamName = expectedParamName && (fixInvalidArgMessage x.Message) = expectedMessage @>)
 
     [<Test>]
@@ -65,16 +65,16 @@ module MessageDisplayReadModelTests =
         let expectedParamName = "message"
         let expectedMessage = "Message is required"
 
-        let severity = MessageDisplay.informationalSeverity
+        let severity = MessageDisplayReadModel.informationalSeverity
         raisesWith<ArgumentException>
-            <@ MessageDisplay.makeReadModel (String.random 64) (String.random 64) 200 severity String.empty @>
+            <@ MessageDisplayReadModel.make (String.random 64) (String.random 64) 200 severity String.empty @>
                 (fun x -> <@ x.ParamName = expectedParamName && (fixInvalidArgMessage x.Message) = expectedMessage @>)
 
     [<Test>]
     let ``Calling make, with valid parameters, returns read model`` () =
         let readModel =
-            MessageDisplay.makeReadModel (String.random 64) (String.random 64) 200
-                MessageDisplay.informationalSeverity (String.random 64)
+            MessageDisplayReadModel.make (String.random 64) (String.random 64) 200
+                MessageDisplayReadModel.informationalSeverity (String.random 64)
 
         test <@ box readModel :? IMessageDisplayReadModel @>
 
@@ -83,8 +83,8 @@ module MessageDisplayReadModelTests =
         let expectedHeading = String.random 64
 
         let readModel =
-            MessageDisplay.makeReadModel expectedHeading (String.random 64) 200
-                MessageDisplay.informationalSeverity (String.random 64)
+            MessageDisplayReadModel.make expectedHeading (String.random 64) 200
+                MessageDisplayReadModel.informationalSeverity (String.random 64)
 
         test <@ readModel.Heading = expectedHeading @>
 
@@ -93,8 +93,8 @@ module MessageDisplayReadModelTests =
         let expectedSubHeading = String.random 64
 
         let readModel =
-            MessageDisplay.makeReadModel (String.random 64) expectedSubHeading 200
-                MessageDisplay.informationalSeverity (String.random 64)
+            MessageDisplayReadModel.make (String.random 64) expectedSubHeading 200
+                MessageDisplayReadModel.informationalSeverity (String.random 64)
 
         test <@ readModel.SubHeading = expectedSubHeading @>
 
@@ -103,17 +103,17 @@ module MessageDisplayReadModelTests =
         let expectedStatusCode = 200
 
         let readModel =
-            MessageDisplay.makeReadModel (String.random 64) (String.random 64) expectedStatusCode
-                MessageDisplay.informationalSeverity (String.random 64)
+            MessageDisplayReadModel.make (String.random 64) (String.random 64) expectedStatusCode
+                MessageDisplayReadModel.informationalSeverity (String.random 64)
 
         test <@ readModel.StatusCode = expectedStatusCode @>
 
     [<Test>]
     let ``Calling severity, returns expected severity`` () =
-        let expectedSeverity = MessageDisplay.informationalSeverity
+        let expectedSeverity = MessageDisplayReadModel.informationalSeverity
 
         let readModel =
-            MessageDisplay.makeReadModel (String.random 64) (String.random 64) 200 expectedSeverity (String.random 64)
+            MessageDisplayReadModel.make (String.random 64) (String.random 64) 200 expectedSeverity (String.random 64)
 
         test <@ readModel.Severity = expectedSeverity @>
 
@@ -122,7 +122,7 @@ module MessageDisplayReadModelTests =
         let expectedMessage = String.random 64
 
         let readModel =
-            MessageDisplay.makeReadModel (String.random 64) (String.random 64) 200
-                MessageDisplay.informationalSeverity expectedMessage
+            MessageDisplayReadModel.make (String.random 64) (String.random 64) 200
+                MessageDisplayReadModel.informationalSeverity expectedMessage
 
         test <@ readModel.Message = expectedMessage @>

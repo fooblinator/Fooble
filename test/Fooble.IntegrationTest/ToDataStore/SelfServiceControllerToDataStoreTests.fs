@@ -1,4 +1,4 @@
-﻿namespace Fooble.IntegrationTest.ToDataStore
+﻿namespace Fooble.IntegrationTest
 
 open Autofac
 open Fooble.Common
@@ -6,11 +6,11 @@ open Fooble.Core
 open Fooble.Core.Infrastructure
 open Fooble.IntegrationTest
 open Fooble.Presentation
+open Fooble.Presentation.Infrastructure
 open Fooble.Persistence
+open Fooble.Persistence.Infrastructure
 open Fooble.Web.Controllers
 open MediatR
-open Moq
-open Moq.FSharp.Extensions
 open NUnit.Framework
 open Swensen.Unquote
 open System.Web.Mvc
@@ -20,9 +20,8 @@ module SelfServiceControllerToDataStoreTests =
 
     [<Test>]
     let ``Constructing, with valid parameters, returns expected result`` () =
-        let connectionString = Settings.ConnectionStrings.FoobleContext
         let builder = ContainerBuilder()
-        ignore <| builder.RegisterModule(AutofacModule(connectionString))
+        ignore <| builder.RegisterModule(CoreRegistrations())
         let container = builder.Build()
 
         let mediator = container.Resolve<IMediator>()
@@ -36,28 +35,29 @@ module SelfServiceControllerToDataStoreTests =
         let expectedNickname = String.random 64
 
         let connectionString = Settings.ConnectionStrings.FoobleContext
-        use context = makeFoobleContext <| Some connectionString
+        let builder = ContainerBuilder()
+        ignore <| builder.RegisterModule(CoreRegistrations())
+        ignore <| builder.RegisterModule(PersistenceRegistrations(connectionString))
+        ignore <| builder.RegisterModule(PresentationRegistrations())
+        let container = builder.Build()
+
+        let context = container.Resolve<IFoobleContext>()
+        let memberDataFactory = container.Resolve<MemberDataFactory>()
+        let mediator = container.Resolve<IMediator>()
+        let keyGenerator = container.Resolve<IKeyGenerator>()
 
         // remove all existing members from the data store
-        Seq.iter (fun x -> context.MemberData.DeleteObject(x)) context.MemberData
+        List.iter (fun x -> context.DeleteMember(x)) (context.GetMembers())
 
         // add matching member to the data store
         let memberData =
-            MemberData(Id = Guid.random (), Username = existingUsername,
-                Email = sprintf "%s@%s.%s" (String.random 32) (String.random 32) (String.random 3),
-                Nickname = String.random 64)
-        context.MemberData.AddObject(memberData)
+            memberDataFactory.Invoke(Guid.random (), existingUsername,
+                sprintf "%s@%s.%s" (String.random 32) (String.random 32) (String.random 3), String.random 64)
+        context.AddMember(memberData)
 
         // persist changes to the data store
-        ignore <| context.SaveChanges()
+        context.SaveChanges()
 
-        let builder = ContainerBuilder()
-        ignore <| builder.RegisterModule(AutofacModule(context))
-        let container = builder.Build()
-
-        let mediator = container.Resolve<IMediator>()
-
-        let keyGenerator = KeyGenerator.make ()
         let controller = new SelfServiceController(mediator, keyGenerator)
         let result = controller.Register(existingUsername, expectedEmail, expectedNickname);
 
@@ -88,27 +88,27 @@ module SelfServiceControllerToDataStoreTests =
         let expectedNickname = String.random 64
 
         let connectionString = Settings.ConnectionStrings.FoobleContext
-        use context = makeFoobleContext <| Some connectionString
-
-        // remove all existing members from the data store
-        Seq.iter (fun x -> context.MemberData.DeleteObject(x)) context.MemberData
-
-        // add matching member to the data store
-        let memberData =
-            MemberData(Id = Guid.random (), Username = String.random 32, Email = existingEmail,
-                Nickname = String.random 64)
-        context.MemberData.AddObject(memberData)
-
-        // persist changes to the data store
-        ignore <| context.SaveChanges()
-
         let builder = ContainerBuilder()
-        ignore <| builder.RegisterModule(AutofacModule(context))
+        ignore <| builder.RegisterModule(CoreRegistrations())
+        ignore <| builder.RegisterModule(PersistenceRegistrations(connectionString))
+        ignore <| builder.RegisterModule(PresentationRegistrations())
         let container = builder.Build()
 
+        let context = container.Resolve<IFoobleContext>()
+        let memberDataFactory = container.Resolve<MemberDataFactory>()
         let mediator = container.Resolve<IMediator>()
+        let keyGenerator = container.Resolve<IKeyGenerator>()
 
-        let keyGenerator = KeyGenerator.make ()
+        // remove all existing members from the data store
+        List.iter (fun x -> context.DeleteMember(x)) (context.GetMembers())
+
+        // add matching member to the data store
+        let memberData = memberDataFactory.Invoke(Guid.random (), String.random 32, existingEmail, String.random 64)
+        context.AddMember(memberData)
+
+        // persist changes to the data store
+        context.SaveChanges()
+
         let controller = new SelfServiceController(mediator, keyGenerator)
         let result = controller.Register(expectedUsername, existingEmail, expectedNickname);
 
@@ -137,29 +137,26 @@ module SelfServiceControllerToDataStoreTests =
         let expectedId = Guid.random ()
 
         let connectionString = Settings.ConnectionStrings.FoobleContext
-        use context = makeFoobleContext <| Some connectionString
-
-        // remove all existing members from the data store
-        Seq.iter (fun x -> context.MemberData.DeleteObject(x)) context.MemberData
-
-        // persist changes to the data store
-        ignore <| context.SaveChanges()
-
         let builder = ContainerBuilder()
-        ignore <| builder.RegisterModule(AutofacModule(context))
+        ignore <| builder.RegisterModule(CoreRegistrations())
+        ignore <| builder.RegisterModule(PersistenceRegistrations(connectionString))
+        ignore <| builder.RegisterModule(PresentationRegistrations())
         let container = builder.Build()
 
+        let context = container.Resolve<IFoobleContext>()
         let mediator = container.Resolve<IMediator>()
+        let keyGenerator = makeKeyGenerator (Some expectedId)
 
-        let keyGeneratorMock = Mock<IKeyGenerator>()
-        keyGeneratorMock.SetupFunc(fun x -> x.GenerateKey()).Returns(expectedId).Verifiable()
+        // remove all existing members from the data store
+        List.iter (fun x -> context.DeleteMember(x)) (context.GetMembers())
 
-        let controller = new SelfServiceController(mediator, keyGeneratorMock.Object)
+        // persist changes to the data store
+        context.SaveChanges()
+
+        let controller = new SelfServiceController(mediator, keyGenerator)
         let result =
             controller.Register(String.random 32,
                 sprintf "%s@%s.%s" (String.random 32) (String.random 32) (String.random 3), String.random 64);
-
-        keyGeneratorMock.Verify()
 
         test <@ isNotNull result @>
         test <@ result :? RedirectToRouteResult @>

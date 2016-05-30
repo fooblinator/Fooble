@@ -24,12 +24,9 @@ type IMemberDetailQuery =
     /// The member id to search for.
     abstract Id:Guid with get
 
+/// Provides query-related helpers for member detail.
 [<RequireQualifiedAccess>]
-module internal MemberDetailQuery =
-
-    let internal (|IsSuccess|IsNotFound|) (result:IMemberDetailQueryResult) =
-        if result.IsSuccess then Choice1Of2 result.ReadModel
-        else Choice2Of2 () // IsNotFound
+module MemberDetailQuery =
 
     [<DefaultAugmentation(false)>]
     type private MemberDetailQueryImplementation =
@@ -42,8 +39,14 @@ module internal MemberDetailQuery =
                     match this with
                     | Query x -> x
 
-    let internal make id =
-        assert (Guid.isNotEmpty id)
+    /// <summary>
+    /// Constructs a member detail query.
+    /// </summary>
+    /// <param name="id">The member id to search for.</param>
+    /// <returns>Returns a member detail query.</returns>
+    [<CompiledName("Make")>]
+    let make id =
+        enforce (Member.validateId id)
         Query id :> IMemberDetailQuery
 
     [<DefaultAugmentation(false)>]
@@ -78,12 +81,17 @@ module internal MemberDetailQuery =
     [<DefaultAugmentation(false)>]
     [<NoComparison>]
     type private MemberDetailQueryHandlerImplementation =
-        | QueryHandler of IFoobleContext
+        | QueryHandler of IFoobleContext * MemberDetailReadModelFactory
 
         member private this.Context
             with get() =
                 match this with
-                | QueryHandler x -> x
+                | QueryHandler (x, _) -> x
+
+        member private this.ReadModelFactory
+            with get() =
+                match this with
+                | QueryHandler (_, x) -> x
 
         interface IRequestHandler<IMemberDetailQuery, IMemberDetailQueryResult> with
 
@@ -91,16 +99,13 @@ module internal MemberDetailQuery =
                 assert (isNotNull <| box message)
 
                 let readModel =
-                    query { for x in this.Context.MemberData do
-                            where (x.Id = message.Id)
-                            select x }
-                    |> Seq.tryHead
-                    |> Option.map (fun x -> MemberDetailReadModel.make x.Id x.Username x.Email x.Nickname)
+                    this.Context.GetMember(message.Id)
+                    |> Option.map (fun x -> this.ReadModelFactory.Invoke(x.Id, x.Username, x.Email, x.Nickname))
 
                 match readModel with
                 | Some x -> makeSuccessResult x
                 | None -> notFoundResult
 
-    let internal makeHandler context =
+    let internal makeHandler context readModelFactory =
         assert (isNotNull context)
-        QueryHandler context :> IRequestHandler<IMemberDetailQuery, IMemberDetailQueryResult>
+        QueryHandler (context, readModelFactory) :> IRequestHandler<IMemberDetailQuery, IMemberDetailQueryResult>

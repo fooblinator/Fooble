@@ -1,4 +1,4 @@
-﻿namespace Fooble.UnitTest.MemberDetail
+﻿namespace Fooble.UnitTest
 
 open Fooble.Common
 open Fooble.Core
@@ -15,22 +15,22 @@ module MemberDetailExtensionsTests =
         let expectedMessage = "Result was not unsuccessful"
 
         let queryResult =
-            MemberDetailReadModel.make (Guid.random ()) (String.random 32)
+            makeMemberDetailReadModel (Guid.random ()) (String.random 32)
                 (sprintf "%s@%s.%s" (String.random 32) (String.random 32) (String.random 3)) (String.random 64)
             |> MemberDetailQuery.makeSuccessResult
 
-        raisesWith<InvalidOperationException> <@ MemberDetail.toMessageDisplayReadModel queryResult @> (fun x ->
-            <@ x.Message = expectedMessage @>)
+        raisesWith<InvalidOperationException> <@ MemberDetailExtensions.toMessageDisplayReadModel queryResult @>
+            (fun x -> <@ x.Message = expectedMessage @>)
 
     [<Test>]
     let ``Calling to message display read model, as not found result of member detail query result, returns expected read model`` () =
         let expectedHeading = "Member"
         let expectedSubHeading = "Detail"
         let expectedStatusCode = 404
-        let expectedSeverity = MessageDisplay.warningSeverity
+        let expectedSeverity = MessageDisplayReadModel.warningSeverity
         let expectedMessage = "No matching member could be found."
 
-        let readModel = MemberDetailQuery.notFoundResult |> MemberDetail.toMessageDisplayReadModel
+        let readModel = MemberDetailQuery.notFoundResult |> MemberDetailExtensions.toMessageDisplayReadModel
 
         test <@ readModel.Heading = expectedHeading @>
         test <@ readModel.SubHeading = expectedSubHeading @>

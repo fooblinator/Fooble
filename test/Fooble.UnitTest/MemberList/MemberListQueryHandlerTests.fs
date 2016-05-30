@@ -1,4 +1,4 @@
-﻿namespace Fooble.UnitTest.MemberList
+﻿namespace Fooble.UnitTest
 
 open Fooble.Common
 open Fooble.Core
@@ -15,19 +15,22 @@ module MemberListQueryHandlerTests =
 
     [<Test>]
     let ``Calling make, with valid parameters, returns query handler`` () =
-        let handler = MemberListQuery.makeHandler <| mock ()
+        let handler =
+            MemberListQuery.makeHandler (mock ()) (makeMemberListItemReadModelFactory ())
+                (makeMemberListReadModelFactory ())
 
         test <@ box handler :? IRequestHandler<IMemberListQuery, IMemberListQueryResult> @>
 
     [<Test>]
     let ``Calling handle, with no members in data store, returns expected result`` () =
-        let memberSetMock = makeObjectSet Seq.empty<MemberData>
         let contextMock = Mock<IFoobleContext>()
-        contextMock.SetupFunc(fun x -> x.MemberData).Returns(memberSetMock.Object).Verifiable()
+        contextMock.SetupFunc(fun x -> x.GetMembers()).Returns([]).Verifiable()
 
-        let query = MemberList.makeQuery ()
-        let handler = MemberListQuery.makeHandler contextMock.Object
+        let handler =
+            MemberListQuery.makeHandler contextMock.Object (makeMemberListItemReadModelFactory ())
+                (makeMemberListReadModelFactory ())
 
+        let query = MemberListQuery.make ()
         let queryResult = handler.Handle(query)
 
         contextMock.Verify()
@@ -37,17 +40,17 @@ module MemberListQueryHandlerTests =
 
     [<Test>]
     let ``Calling handle, with members in data store, returns expected result`` () =
-        let memberData = List.init 5 <| fun _ ->
-            MemberData(Id = Guid.random (), Username = String.random 32,
-                Email = sprintf "%s@%s.%s" (String.random 32) (String.random 32) (String.random 3),
-                Nickname = String.random 64)
-        let memberSetMock = makeObjectSet (Seq.ofList memberData)
+        let members = List.init 5 <| fun _ ->
+            makeMemberData (Guid.random ()) (String.random 32) (sprintf "%s@%s.%s" (String.random 32)
+                (String.random 32) (String.random 3)) (String.random 64)
         let contextMock = Mock<IFoobleContext>()
-        contextMock.SetupFunc(fun x -> x.MemberData).Returns(memberSetMock.Object).Verifiable()
+        contextMock.SetupFunc(fun x -> x.GetMembers()).Returns(members).Verifiable()
 
-        let query = MemberList.makeQuery ()
-        let handler = MemberListQuery.makeHandler contextMock.Object
+        let handler =
+            MemberListQuery.makeHandler contextMock.Object (makeMemberListItemReadModelFactory ())
+                (makeMemberListReadModelFactory ())
 
+        let query = MemberListQuery.make ()
         let queryResult = handler.Handle(query)
 
         contextMock.Verify()
@@ -59,5 +62,5 @@ module MemberListQueryHandlerTests =
         test <@ List.length actualMembers = 5 @>
         for current in actualMembers do
             let findResult =
-                List.tryFind (fun (x:MemberData) -> x.Id = current.Id && x.Nickname = current.Nickname) memberData
+                List.tryFind (fun (x:IMemberData) -> x.Id = current.Id && x.Nickname = current.Nickname) members
             test <@ findResult.IsSome @>

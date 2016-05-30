@@ -9,5 +9,4 @@ open System.Runtime.InteropServices
 [<assembly:Guid("807e9944-9329-40c3-ac0e-74920a316cb6")>]
 [<assembly:InternalsVisibleTo("Fooble.IntegrationTest")>]
 [<assembly:InternalsVisibleTo("Fooble.UnitTest")>]
-[<assembly:InternalsVisibleTo("DynamicProxyGenAssembly2")>]
 do ()

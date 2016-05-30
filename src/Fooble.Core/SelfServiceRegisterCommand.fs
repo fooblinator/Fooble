@@ -29,13 +29,9 @@ type ISelfServiceRegisterCommand =
     /// The nickname of the member.
     abstract Nickname:string with get
 
+/// Provides command-related helpers for self-service register.
 [<RequireQualifiedAccess>]
-module internal SelfServiceRegisterCommand =
-
-    let internal (|IsSuccess|IsUsernameUnavailable|IsEmailUnavailable|) (result:ISelfServiceRegisterCommandResult) =
-        if result.IsSuccess then Choice1Of3 ()
-        elif result.IsUsernameUnavailable then Choice2Of3 ()
-        else Choice3Of3 () // IsEmailUnavailable
+module SelfServiceRegisterCommand =
 
     [<DefaultAugmentation(false)>]
     type private SelfServiceRegisterCommandImplementation =
@@ -63,17 +59,20 @@ module internal SelfServiceRegisterCommand =
                     match this with
                     | Command (_, _, _, x) -> x
 
-    let internal make id username email nickname =
-        assert (Guid.isNotEmpty id)
-        assert (String.isNotNullOrEmpty username)
-        assert (String.isNotShorter 3 username)
-        assert (String.isNotLonger 32 username)
-        assert (String.isMatch "^[a-z0-9]+$" username)
-        assert (String.isNotNullOrEmpty email)
-        assert (String.isNotLonger 254 email)
-        assert (String.isEmail email)
-        assert (String.isNotNullOrEmpty nickname)
-        assert (String.isNotLonger 64 nickname)
+    /// <summary>
+    /// Constructs a self-service register command.
+    /// </summary>
+    /// <param name="id">The id that will potentially represent the member.</param>
+    /// <param name="username">The username of the potential member.</param>
+    /// <param name="email">The email of the potential member.</param>
+    /// <param name="nickname">The nickname of the potential member.</param>
+    /// <returns>Returns a self-service register command.</returns>
+    [<CompiledName("Make")>]
+    let make id username email nickname =
+        enforce (Member.validateId id)
+        enforce (Member.validateUsername username)
+        enforce (Member.validateEmail email)
+        enforce (Member.validateNickname nickname)
         Command (id, username, email, nickname) :> ISelfServiceRegisterCommand
 
     [<DefaultAugmentation(false)>]
@@ -109,39 +108,37 @@ module internal SelfServiceRegisterCommand =
     [<DefaultAugmentation(false)>]
     [<NoComparison>]
     type private SelfServiceRegisterCommandHandlerImplementation =
-        | CommandHandler of IFoobleContext
+        | CommandHandler of IFoobleContext * MemberDataFactory
 
         member private this.Context
             with get() =
                 match this with
-                | CommandHandler x -> x
+                | CommandHandler (x, _) -> x
+
+        member private this.MemberDataFactory
+            with get() =
+                match this with
+                | CommandHandler (_, x) -> x
 
         interface IRequestHandler<ISelfServiceRegisterCommand, ISelfServiceRegisterCommandResult> with
 
             member this.Handle(message) =
                 assert (isNotNull <| box message)
 
-                let usernameFound =
-                    query { for x in this.Context.MemberData do
-                            select x.Username
-                            contains message.Username }
-
-                let emailFound =
-                    query { for x in this.Context.MemberData do
-                            select x.Email
-                            contains message.Email }
+                let usernameFound = this.Context.ExistsMemberUsername(message.Username)
+                let emailFound = this.Context.ExistsMemberEmail(message.Email)
 
                 match (usernameFound, emailFound) with
                 | (true, _) -> usernameUnavailableResult
                 | (_, true) -> emailUnavailableResult
                 | _ ->
-
-                    MemberData(Id = message.Id, Username = message.Username, Email = message.Email,
-                        Nickname = message.Nickname)
-                    |> this.Context.MemberData.AddObject
-                    ignore <| this.Context.SaveChanges()
+                    this.MemberDataFactory.Invoke(message.Id, message.Username, message.Email, message.Nickname)
+                    |> this.Context.AddMember
+                    this.Context.SaveChanges()
                     successResult
 
-    let internal makeHandler context =
+    let internal makeHandler context memberDataFactory =
         assert (isNotNull context)
-        CommandHandler context :> IRequestHandler<ISelfServiceRegisterCommand, ISelfServiceRegisterCommandResult>
+        assert (isNotNull memberDataFactory)
+        CommandHandler (context, memberDataFactory) :>
+            IRequestHandler<ISelfServiceRegisterCommand, ISelfServiceRegisterCommandResult>

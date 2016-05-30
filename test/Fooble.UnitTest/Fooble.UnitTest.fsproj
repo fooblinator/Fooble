@@ -79,22 +79,28 @@
     <Compile Include="SelfServiceRegister\SelfServiceRegisterViewModelTests.fs" />
     <Compile Include="Validation\ValidationExtensionsTests.fs" />
     <Compile Include="Validation\ValidationResultTests.fs" />
-    <Compile Include="AutofacModuleTests.fs" />
     <Compile Include="KeyGeneratorTests.fs" />
     <Content Include="App.config" />
     <Content Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Autofac">
-      <HintPath>..\..\packages\Autofac.3.5.2\lib\net40\Autofac.dll</HintPath>
+    <ProjectReference Include="..\..\src\Fooble.Persistence\Fooble.Persistence.fsproj">
+      <Name>Fooble.Persistence</Name>
+      <Project>{6324603a-6972-4b7e-ae8b-a5e4a13a657f}</Project>
       <Private>True</Private>
-    </Reference>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\Fooble.Presentation\Fooble.Presentation.fsproj">
+      <Name>Fooble.Presentation</Name>
+      <Project>{6adfdc6e-b3ed-4a21-8d14-5f447082c4b1}</Project>
+      <Private>True</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\Fooble.Web\Fooble.Web.csproj">
+      <Name>Fooble.Web</Name>
+      <Project>{b8e7f59f-08fe-48ab-9640-6a0b41083496}</Project>
+      <Private>True</Private>
+    </ProjectReference>
     <Reference Include="Castle.Core">
       <HintPath>..\..\packages\Castle.Core.3.3.3\lib\net45\Castle.Core.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="FSharp.Configuration">
-      <HintPath>..\..\packages\FSharp.Configuration.0.6.0\lib\net40\FSharp.Configuration.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="FSharp.Core, Version=$(TargetFSharpCoreVersion), Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
@@ -120,15 +126,9 @@
       <HintPath>..\..\packages\NUnit.3.2.1\lib\net45\nunit.framework.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="SharpYaml">
-      <HintPath>..\..\packages\FSharp.Configuration.0.6.0\lib\net40\SharpYaml.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Data.Entity" />
     <Reference Include="System.Numerics" />
     <ProjectReference Include="..\..\src\Fooble.Common\Fooble.Common.fsproj">
       <Name>Fooble.Common</Name>
@@ -138,16 +138,6 @@
     <ProjectReference Include="..\..\src\Fooble.Core\Fooble.Core.fsproj">
       <Name>Fooble.Core</Name>
       <Project>{807e9944-9329-40c3-ac0e-74920a316cb6}</Project>
-      <Private>True</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\src\Fooble.Persistence\Fooble.Persistence.fsproj">
-      <Name>Fooble.Persistence</Name>
-      <Project>{6324603a-6972-4b7e-ae8b-a5e4a13a657f}</Project>
-      <Private>True</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\src\Fooble.Web\Fooble.Web.csproj">
-      <Name>Fooble.Web</Name>
-      <Project>{b8e7f59f-08fe-48ab-9640-6a0b41083496}</Project>
       <Private>True</Private>
     </ProjectReference>
     <Reference Include="System.Web" />

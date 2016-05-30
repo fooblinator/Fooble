@@ -1,4 +1,4 @@
-﻿namespace Fooble.UnitTest.SelfServiceRegister
+﻿namespace Fooble.UnitTest
 
 open Fooble.Common
 open Fooble.Core
@@ -15,28 +15,20 @@ module SelfServiceRegisterCommandHandlerTests =
 
     [<Test>]
     let ``Calling make, with valid parameters, returns command handler`` () =
-        let handler = SelfServiceRegisterCommand.makeHandler (mock ())
+        let handler = SelfServiceRegisterCommand.makeHandler (mock ()) (makeMemberDataFactory ())
 
         test <@ box handler :? IRequestHandler<ISelfServiceRegisterCommand, ISelfServiceRegisterCommandResult> @>
 
     [<Test>]
     let ``Calling handle, with existing username in data store, and returns expected result`` () =
-        let existingUsername = String.random 32
-
-        let memberData =
-            Seq.singleton
-                (MemberData(Id = Guid.random (), Username = existingUsername,
-                    Email = sprintf "%s@%s.%s" (String.random 32) (String.random 32) (String.random 3),
-                    Nickname = String.random 64))
-        let memberSetMock = makeObjectSet memberData
         let contextMock = Mock<IFoobleContext>()
-        contextMock.SetupFunc(fun x -> x.MemberData).Returns(memberSetMock.Object).Verifiable()
+        contextMock.SetupFunc(fun x -> x.ExistsMemberUsername(any ())).Returns(true).Verifiable()
+
+        let handler = SelfServiceRegisterCommand.makeHandler contextMock.Object (makeMemberDataFactory ())
 
         let command =
-            SelfServiceRegister.makeCommand (Guid.random ()) existingUsername
+            SelfServiceRegisterCommand.make (Guid.random ()) (String.random 32)
                 (sprintf "%s@%s.%s" (String.random 32) (String.random 32) (String.random 3)) (String.random 64)
-        let handler = SelfServiceRegisterCommand.makeHandler contextMock.Object
-
         let commandResult = handler.Handle(command)
 
         contextMock.Verify()
@@ -47,20 +39,14 @@ module SelfServiceRegisterCommandHandlerTests =
 
     [<Test>]
     let ``Calling handle, with existing email in data store, and returns expected result`` () =
-        let existingEmail = sprintf "%s@%s.%s" (String.random 32) (String.random 32) (String.random 3)
-
-        let memberData =
-            Seq.singleton
-                (MemberData(Id = Guid.random (), Username = String.random 32, Email = existingEmail,
-                    Nickname = String.random 64))
-        let memberSetMock = makeObjectSet memberData
         let contextMock = Mock<IFoobleContext>()
-        contextMock.SetupFunc(fun x -> x.MemberData).Returns(memberSetMock.Object).Verifiable()
+        contextMock.SetupFunc(fun x -> x.ExistsMemberEmail(any ())).Returns(true).Verifiable()
+
+        let handler = SelfServiceRegisterCommand.makeHandler contextMock.Object (makeMemberDataFactory ())
 
         let command =
-            SelfServiceRegister.makeCommand (Guid.random ()) (String.random 32) existingEmail (String.random 64)
-        let handler = SelfServiceRegisterCommand.makeHandler contextMock.Object
-
+            SelfServiceRegisterCommand.make (Guid.random ()) (String.random 32)
+                (sprintf "%s@%s.%s" (String.random 32) (String.random 32) (String.random 3)) (String.random 64)
         let commandResult = handler.Handle(command)
 
         contextMock.Verify()
@@ -71,19 +57,17 @@ module SelfServiceRegisterCommandHandlerTests =
 
     [<Test>]
     let ``Calling handle, with no existing username or email in data store, returns expected result`` () =
-        let memberSetMock = makeObjectSet (Seq.empty<MemberData>)
-        memberSetMock.SetupAction(fun x -> x.AddObject(any ())).Verifiable()
         let contextMock = Mock<IFoobleContext>()
-        contextMock.SetupFunc(fun x -> x.MemberData).Returns(memberSetMock.Object).Verifiable()
+        contextMock.SetupFunc(fun x -> x.ExistsMemberUsername(any ())).Returns(false).Verifiable()
+        contextMock.SetupFunc(fun x -> x.ExistsMemberEmail(any ())).Returns(false).Verifiable()
+
+        let handler = SelfServiceRegisterCommand.makeHandler contextMock.Object (makeMemberDataFactory ())
 
         let command =
-            SelfServiceRegister.makeCommand (Guid.random ()) (String.random 32)
+            SelfServiceRegisterCommand.make (Guid.random ()) (String.random 32)
                 (sprintf "%s@%s.%s" (String.random 32) (String.random 32) (String.random 3)) (String.random 64)
-        let handler = SelfServiceRegisterCommand.makeHandler contextMock.Object
-
         let commandResult = handler.Handle(command)
 
-        memberSetMock.Verify()
         contextMock.Verify()
 
         test <@ commandResult.IsSuccess @>

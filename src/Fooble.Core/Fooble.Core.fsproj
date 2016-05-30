@@ -55,22 +55,15 @@
     <Compile Include="..\Common\GlobalAssemblyInfo.fs">
       <Link>Properties\GlobalAssemblyInfo.fs</Link>
     </Compile>
-    <Compile Include="ValidationResult.fs" />
-    <Compile Include="Presentation\MessageDisplayReadModel.fs" />
-    <Compile Include="Presentation\MessageDisplay.fs" />
-    <Compile Include="Presentation\MemberDetailReadModel.fs" />
-    <Compile Include="Presentation\MemberListReadModel.fs" />
-    <Compile Include="Presentation\SelfServiceRegisterViewModel.fs" />
+    <Compile Include="PersistenceTypes.fs" />
+    <Compile Include="PresentationTypes.fs" />
     <Compile Include="Validation.fs" />
     <Compile Include="Member.fs" />
     <Compile Include="MemberDetailQuery.fs" />
-    <Compile Include="MemberDetail.fs" />
     <Compile Include="MemberListQuery.fs" />
-    <Compile Include="MemberList.fs" />
     <Compile Include="SelfServiceRegisterCommand.fs" />
-    <Compile Include="SelfServiceRegister.fs" />
     <Compile Include="KeyGenerator.fs" />
-    <Compile Include="Infrastructure\AutofacModule.fs" />
+    <Compile Include="Infrastructure\Registrations.fs" />
     <Content Include="App.config" />
     <Content Include="packages.config" />
   </ItemGroup>
@@ -79,57 +72,21 @@
       <HintPath>..\..\packages\Autofac.3.5.2\lib\net40\Autofac.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="FSharp.Core, Version=$(TargetFSharpCoreVersion), Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
     <Reference Include="MediatR">
       <HintPath>..\..\packages\MediatR.2.0.2\lib\net45\MediatR.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="FSharp.Core, Version=$(TargetFSharpCoreVersion), Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
-    <Reference Include="Microsoft.Web.Infrastructure">
-      <HintPath>..\..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="mscorlib" />
     <Reference Include="System" />
-    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Data.Entity" />
     <Reference Include="System.Numerics" />
-    <Reference Include="System.Web" />
-    <Reference Include="System.Web.Helpers">
-      <HintPath>..\..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.Helpers.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System.Web.Mvc">
-      <HintPath>..\..\packages\Microsoft.AspNet.Mvc.5.2.3\lib\net45\System.Web.Mvc.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System.Web.Razor">
-      <HintPath>..\..\packages\Microsoft.AspNet.Razor.3.2.3\lib\net45\System.Web.Razor.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System.Web.WebPages">
-      <HintPath>..\..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System.Web.WebPages.Deployment">
-      <HintPath>..\..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.Deployment.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System.Web.WebPages.Razor">
-      <HintPath>..\..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Fooble.Common\Fooble.Common.fsproj">
       <Name>Fooble.Common</Name>
       <Project>{f61c2a8e-303c-4f38-8d8f-f364fdff3d7a}</Project>
-      <Private>True</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\Fooble.Persistence\Fooble.Persistence.fsproj">
-      <Name>Fooble.Persistence</Name>
-      <Project>{6324603a-6972-4b7e-ae8b-a5e4a13a657f}</Project>
       <Private>True</Private>
     </ProjectReference>
   </ItemGroup>

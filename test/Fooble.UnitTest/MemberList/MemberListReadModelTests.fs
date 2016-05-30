@@ -1,4 +1,4 @@
-﻿namespace Fooble.UnitTest.MemberList
+﻿namespace Fooble.UnitTest
 
 open Fooble.Common
 open Fooble.Presentation
@@ -10,17 +10,17 @@ module MemberListReadModelTests =
 
     [<Test>]
     let ``Calling make, with valid parameters, returns read model`` () =
-        let members = Seq.init 5 (fun _ -> MemberListReadModel.makeItem (Guid.random ()) (String.random 64))
-        let readModel = MemberListReadModel.make members
+        let members = Seq.init 5 (fun _ -> makeMemberListItemReadModel (Guid.random ()) (String.random 64))
+        let readModel = makeMemberListReadModel members
 
         test <@ box readModel :? IMemberListReadModel @>
 
     [<Test>]
     let ``Calling members, returns expected members`` () =
         let expectedMembers = List.init 5 (fun _ ->
-            MemberListReadModel.makeItem (Guid.random ()) (String.random 64))
+            makeMemberListItemReadModel (Guid.random ()) (String.random 64))
 
-        let readModel = MemberListReadModel.make (Seq.ofList expectedMembers)
+        let readModel = makeMemberListReadModel (Seq.ofList expectedMembers)
 
         let actualMembers = Seq.toList readModel.Members
         test <@ List.length actualMembers = 5 @>

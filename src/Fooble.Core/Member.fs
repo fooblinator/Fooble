@@ -14,7 +14,7 @@ module Member =
     [<CompiledName("ValidateId")>]
     let validateId id =
         [ (Guid.isNotEmpty), "Id is required" ]
-        |> ValidationResult.get id "id"
+        |> validate id "id"
 
     /// <summary>
     /// Validates the supplied member id.
@@ -30,7 +30,7 @@ module Member =
     let validateIdString id =
         [ (String.isNotNullOrEmpty), "Id is required"
           (String.isGuid), "Id is not in the correct format (GUID)" ]
-        |> ValidationResult.get id "id"
+        |> validate id "id"
 
     /// <summary>
     /// Validates the supplied member username.
@@ -43,7 +43,7 @@ module Member =
           (String.isNotShorter 3), "Username is shorter than 3 characters"
           (String.isNotLonger 32), "Username is longer than 32 characters"
           (String.isMatch "^[a-z0-9]+$"), "Username is not in the correct format (lowercase alphanumeric)" ]
-        |> ValidationResult.get username "username"
+        |> validate username "username"
 
     /// <summary>
     /// Validates the supplied member email.
@@ -55,7 +55,7 @@ module Member =
         [ (String.isNotNullOrEmpty), "Email is required"
           (String.isNotLonger 254), "Email is longer than 254 characters"
           (String.isEmail), "Email is not in the correct format" ]
-        |> ValidationResult.get email "email"
+        |> validate email "email"
 
     /// <summary>
     /// Validates the supplied member nickname.
@@ -66,4 +66,4 @@ module Member =
     let validateNickname nickname =
         [ (String.isNotNullOrEmpty), "Nickname is required"
           (String.isNotLonger 64), "Nickname is longer than 64 characters" ]
-        |> ValidationResult.get nickname "nickname"
+        |> validate nickname "nickname"

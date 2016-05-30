@@ -3,17 +3,6 @@
 open Fooble.Common
 open System
 
-/// Contains a single member's detailed information, for the purpose of presentation.
-type IMemberDetailReadModel =
-    /// The id that represents the member.
-    abstract Id:Guid with get
-    /// The username of the member.
-    abstract Username:string with get
-    /// The email of the member.
-    abstract Email:string with get
-    /// The nickname of the member.
-    abstract Nickname:string with get
-
 [<RequireQualifiedAccess>]
 module internal MemberDetailReadModel =
 

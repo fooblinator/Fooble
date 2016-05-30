@@ -1,4 +1,4 @@
-﻿namespace Fooble.UnitTest.SelfServiceRegister
+﻿namespace Fooble.UnitTest
 
 open Fooble.Core
 open NUnit.Framework

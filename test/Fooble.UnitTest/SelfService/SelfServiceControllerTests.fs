@@ -1,4 +1,4 @@
-﻿namespace Fooble.UnitTest.SelfService
+﻿namespace Fooble.UnitTest
 
 open Fooble.Common
 open Fooble.Core
@@ -21,7 +21,7 @@ module SelfServiceControllerTests =
         let expectedParamName = "mediator"
         let expectedMessage = "Mediator is required"
 
-        let keyGenerator = KeyGenerator.make ()
+        let keyGenerator = makeKeyGenerator None
         raisesWith<ArgumentException> <@ new SelfServiceController(null, keyGenerator) @> (fun x ->
             <@ x.ParamName = expectedParamName && (fixInvalidArgMessage x.Message) = expectedMessage @>)
 
@@ -35,7 +35,7 @@ module SelfServiceControllerTests =
 
     [<Test>]
     let ``Constructing, with valid parameters, returns expected result`` () =
-        let keyGenerator = KeyGenerator.make ()
+        let keyGenerator = makeKeyGenerator None
         ignore <| new SelfServiceController(mock (), keyGenerator)
 
     [<Test>]
@@ -44,7 +44,7 @@ module SelfServiceControllerTests =
         let emptyEmail = String.empty
         let emptyNickname = String.empty
 
-        let keyGenerator = KeyGenerator.make ()
+        let keyGenerator = makeKeyGenerator None
         let controller = new SelfServiceController(mock (), keyGenerator)
         let result = controller.Register()
 
@@ -68,7 +68,7 @@ module SelfServiceControllerTests =
         let expectedEmail = sprintf "%s@%s.%s" (String.random 32) (String.random 32) (String.random 3)
         let expectedNickname = String.random 64
 
-        let keyGenerator = KeyGenerator.make ()
+        let keyGenerator = makeKeyGenerator None
         let controller = new SelfServiceController(mock (), keyGenerator)
         let result = controller.Register(nullUsername, expectedEmail, expectedNickname)
 
@@ -98,7 +98,7 @@ module SelfServiceControllerTests =
         let expectedEmail = sprintf "%s@%s.%s" (String.random 32) (String.random 32) (String.random 3)
         let expectedNickname = String.random 64
 
-        let keyGenerator = KeyGenerator.make ()
+        let keyGenerator = makeKeyGenerator None
         let controller = new SelfServiceController(mock (), keyGenerator)
         let result = controller.Register(emptyUsername, expectedEmail, expectedNickname)
 
@@ -128,7 +128,7 @@ module SelfServiceControllerTests =
         let expectedEmail = sprintf "%s@%s.%s" (String.random 32) (String.random 32) (String.random 3)
         let expectedNickname = String.random 64
 
-        let keyGenerator = KeyGenerator.make ()
+        let keyGenerator = makeKeyGenerator None
         let controller = new SelfServiceController(mock (), keyGenerator)
         let result = controller.Register(shortUsername, expectedEmail, expectedNickname)
 
@@ -158,7 +158,7 @@ module SelfServiceControllerTests =
         let expectedEmail = sprintf "%s@%s.%s" (String.random 32) (String.random 32) (String.random 3)
         let expectedNickname = String.random 64
 
-        let keyGenerator = KeyGenerator.make ()
+        let keyGenerator = makeKeyGenerator None
         let controller = new SelfServiceController(mock (), keyGenerator)
         let result = controller.Register(longUsername, expectedEmail, expectedNickname)
 
@@ -188,7 +188,7 @@ module SelfServiceControllerTests =
         let expectedEmail = sprintf "%s@%s.%s" (String.random 32) (String.random 32) (String.random 3)
         let expectedNickname = String.random 64
 
-        let keyGenerator = KeyGenerator.make ()
+        let keyGenerator = makeKeyGenerator None
         let controller = new SelfServiceController(mock (), keyGenerator)
         let result = controller.Register(invalidFormatUsername, expectedEmail, expectedNickname)
 
@@ -219,7 +219,7 @@ module SelfServiceControllerTests =
         let nullEmail:string = null
         let expectedNickname = String.random 64
 
-        let keyGenerator = KeyGenerator.make ()
+        let keyGenerator = makeKeyGenerator None
         let controller = new SelfServiceController(mock (), keyGenerator)
         let result = controller.Register(expectedUsername, nullEmail, expectedNickname)
 
@@ -249,7 +249,7 @@ module SelfServiceControllerTests =
         let emptyEmail = String.empty
         let expectedNickname = String.random 64
 
-        let keyGenerator = KeyGenerator.make ()
+        let keyGenerator = makeKeyGenerator None
         let controller = new SelfServiceController(mock (), keyGenerator)
         let result = controller.Register(expectedUsername, emptyEmail, expectedNickname)
 
@@ -279,7 +279,7 @@ module SelfServiceControllerTests =
         let longEmail = String.random 255
         let expectedNickname = String.random 64
 
-        let keyGenerator = KeyGenerator.make ()
+        let keyGenerator = makeKeyGenerator None
         let controller = new SelfServiceController(mock (), keyGenerator)
         let result = controller.Register(expectedUsername, longEmail, expectedNickname)
 
@@ -309,7 +309,7 @@ module SelfServiceControllerTests =
         let invalidFormatEmail = String.random 64
         let expectedNickname = String.random 64
 
-        let keyGenerator = KeyGenerator.make ()
+        let keyGenerator = makeKeyGenerator None
         let controller = new SelfServiceController(mock (), keyGenerator)
         let result = controller.Register(expectedUsername, invalidFormatEmail, expectedNickname)
 
@@ -339,7 +339,7 @@ module SelfServiceControllerTests =
         let expectedEmail = sprintf "%s@%s.%s" (String.random 32) (String.random 32) (String.random 3)
         let nullNickname:string = null
 
-        let keyGenerator = KeyGenerator.make ()
+        let keyGenerator = makeKeyGenerator None
         let controller = new SelfServiceController(mock (), keyGenerator)
         let result = controller.Register(expectedUsername, expectedEmail, nullNickname)
 
@@ -369,7 +369,7 @@ module SelfServiceControllerTests =
         let expectedEmail = sprintf "%s@%s.%s" (String.random 32) (String.random 32) (String.random 3)
         let emptyNickname = String.empty
 
-        let keyGenerator = KeyGenerator.make ()
+        let keyGenerator = makeKeyGenerator None
         let controller = new SelfServiceController(mock (), keyGenerator)
         let result = controller.Register(expectedUsername, expectedEmail, emptyNickname)
 
@@ -399,7 +399,7 @@ module SelfServiceControllerTests =
         let expectedEmail = sprintf "%s@%s.%s" (String.random 32) (String.random 32) (String.random 3)
         let longNickname = String.random 65
 
-        let keyGenerator = KeyGenerator.make ()
+        let keyGenerator = makeKeyGenerator None
         let controller = new SelfServiceController(mock (), keyGenerator)
         let result = controller.Register(expectedUsername, expectedEmail, longNickname)
 
@@ -433,7 +433,7 @@ module SelfServiceControllerTests =
         let mediatorMock = Mock<IMediator>()
         mediatorMock.SetupFunc(fun x -> x.Send(any ())).Returns(commandResult).Verifiable()
 
-        let keyGenerator = KeyGenerator.make ()
+        let keyGenerator = makeKeyGenerator None
         let controller = new SelfServiceController(mediatorMock.Object, keyGenerator)
         let result = controller.Register(existingUsername, expectedEmail, expectedNickname)
 
@@ -469,7 +469,7 @@ module SelfServiceControllerTests =
         let mediatorMock = Mock<IMediator>()
         mediatorMock.SetupFunc(fun x -> x.Send(any ())).Returns(commandResult).Verifiable()
 
-        let keyGenerator = KeyGenerator.make ()
+        let keyGenerator = makeKeyGenerator None
         let controller = new SelfServiceController(mediatorMock.Object, keyGenerator)
         let result = controller.Register(expectedUsername, existingEmail, expectedNickname)
 
@@ -503,16 +503,13 @@ module SelfServiceControllerTests =
         let mediatorMock = Mock<IMediator>()
         mediatorMock.SetupFunc(fun x -> x.Send(any ())).Returns(commandResult).Verifiable()
 
-        let keyGeneratorMock = Mock<IKeyGenerator>()
-        keyGeneratorMock.SetupFunc(fun x -> x.GenerateKey()).Returns(expectedId).Verifiable()
-
-        let controller = new SelfServiceController(mediatorMock.Object, keyGeneratorMock.Object)
+        let keyGenerator = makeKeyGenerator (Some expectedId)
+        let controller = new SelfServiceController(mediatorMock.Object, keyGenerator)
         let result =
             controller.Register(String.random 32,
                 sprintf "%s@%s.%s" (String.random 32) (String.random 32) (String.random 3), String.random 64)
 
         mediatorMock.Verify()
-        keyGeneratorMock.Verify()
 
         test <@ isNotNull result @>
         test <@ result :? RedirectToRouteResult @>

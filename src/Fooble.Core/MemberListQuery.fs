@@ -21,12 +21,9 @@ type IMemberListQueryResult =
 type IMemberListQuery =
     inherit IRequest<IMemberListQueryResult>
 
+/// Provides query-related helpers for member list.
 [<RequireQualifiedAccess>]
-module internal MemberListQuery =
-
-    let internal (|IsSuccess|IsNotFound|) (result:IMemberListQueryResult) =
-        if result.IsSuccess then Choice1Of2 result.ReadModel
-        else Choice2Of2 () // IsNotFound
+module MemberListQuery =
 
     [<DefaultAugmentation(false)>]
     type private MemberListQueryImplementation =
@@ -34,7 +31,12 @@ module internal MemberListQuery =
 
         interface IMemberListQuery
 
-    let internal make () = Query :> IMemberListQuery
+    /// <summary>
+    /// Constructs a member list query.
+    /// </summary>
+    /// <returns>Returns a member list query.</returns>
+    [<CompiledName("Make")>]
+    let make () = Query :> IMemberListQuery
 
     [<DefaultAugmentation(false)>]
     [<NoComparison>]
@@ -68,12 +70,22 @@ module internal MemberListQuery =
     [<DefaultAugmentation(false)>]
     [<NoComparison>]
     type private MemberListQueryHandlerImplementation =
-        | QueryHandler of IFoobleContext
+        | QueryHandler of IFoobleContext * MemberListItemReadModelFactory * MemberListReadModelFactory
 
         member private this.Context
             with get() =
                 match this with
-                | QueryHandler x -> x
+                | QueryHandler (x, _, _) -> x
+
+        member private this.ItemReadModelFactory
+            with get() =
+                match this with
+                | QueryHandler (_, x, _) -> x
+
+        member private this.ReadModelFactory
+            with get() =
+                match this with
+                | QueryHandler (_, _, x) -> x
 
         interface IRequestHandler<IMemberListQuery, IMemberListQueryResult> with
 
@@ -81,16 +93,17 @@ module internal MemberListQuery =
                 assert (isNotNull <| box message)
 
                 let members =
-                    query { for x in this.Context.MemberData do
-                            sortBy x.Nickname
-                            select x }
-                    |> Seq.map (fun x -> MemberListReadModel.makeItem x.Id x.Nickname)
-                    |> List.ofSeq // materialize
+                    this.Context.GetMembers()
+                    |> List.map (fun x -> this.ItemReadModelFactory.Invoke(x.Id, x.Nickname))
 
                 match members with
                 | [] -> notFoundResult
-                | xs -> Seq.ofList xs |> MemberListReadModel.make |> makeSuccessResult
+                | xs ->
+                    Seq.ofList xs
+                    |> this.ReadModelFactory.Invoke
+                    |> makeSuccessResult
 
-    let internal makeHandler context =
+    let internal makeHandler context itemReadModelFactory readModelFactory =
         assert (not <| isNull context)
-        QueryHandler context :> IRequestHandler<IMemberListQuery, IMemberListQueryResult>
+        QueryHandler (context, itemReadModelFactory, readModelFactory) :>
+            IRequestHandler<IMemberListQuery, IMemberListQueryResult>

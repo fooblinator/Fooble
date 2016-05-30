@@ -1,4 +1,5 @@
 ﻿using Fooble.Core;
+using Fooble.Presentation;
 using MediatR;
 using System;
 using System.Diagnostics;
@@ -26,7 +27,7 @@ namespace Fooble.Web.Controllers
         [HttpGet]
         public ActionResult Register()
         {
-            return View(SelfServiceRegister.EmptyViewModel);
+            return View(SelfServiceRegisterViewModel.Empty);
         }
 
         [HttpPost]
@@ -42,10 +43,10 @@ namespace Fooble.Web.Controllers
                 .AddModelErrorIfNotValid(ModelState);
 
             if (!ModelState.IsValid)
-                return View(SelfServiceRegister.MakeViewModel(username, email, nickname));
+                return View(SelfServiceRegisterViewModel.Make(username, email, nickname));
 
             var id = _keyGenerator.GenerateKey();
-            var command = SelfServiceRegister.MakeCommand(id, username, email, nickname);
+            var command = SelfServiceRegisterCommand.Make(id, username, email, nickname);
             var result = _mediator.Send(command);
 
             Debug.Assert(result != null, "Result parameter was null");
@@ -53,7 +54,7 @@ namespace Fooble.Web.Controllers
             result.AddModelErrorIfNotSuccess(ModelState);
 
             if (!ModelState.IsValid)
-                return View(SelfServiceRegister.MakeViewModel(username, email, nickname));
+                return View(SelfServiceRegisterViewModel.Make(username, email, nickname));
 
             return RedirectToAction("Detail", "Member", new { id = id.ToString() });
         }
