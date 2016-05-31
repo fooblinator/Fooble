@@ -59,6 +59,7 @@
     <Compile Include="MemberDetailReadModel.fs" />
     <Compile Include="MemberListReadModel.fs" />
     <Compile Include="SelfServiceRegisterViewModel.fs" />
+    <Compile Include="FoobleModelBinder.fs" />
     <Compile Include="MemberDetailExtensions.fs" />
     <Compile Include="MemberListExtensions.fs" />
     <Compile Include="SelfServiceRegisterExtensions.fs" />

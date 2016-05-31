@@ -4,7 +4,6 @@ open Autofac
 open Fooble.Common
 open Fooble.Core
 open Fooble.Core.Infrastructure
-open Fooble.IntegrationTest
 open Fooble.Presentation
 open Fooble.Presentation.Infrastructure
 open Fooble.Persistence
@@ -48,7 +47,9 @@ module SelfServiceControllerToCommandHandlerTests =
         let mediator = container.Resolve<IMediator>()
         let keyGenerator = container.Resolve<IKeyGenerator>()
         let controller = new SelfServiceController(mediator, keyGenerator)
-        let result = controller.Register(existingUsername, expectedEmail, expectedNickname)
+        let result =
+            makeSelfServiceRegisterViewModel existingUsername expectedEmail expectedNickname
+            |> controller.Register
 
         contextMock.Verify()
 
@@ -90,7 +91,9 @@ module SelfServiceControllerToCommandHandlerTests =
         let mediator = container.Resolve<IMediator>()
         let keyGenerator = container.Resolve<IKeyGenerator>()
         let controller = new SelfServiceController(mediator, keyGenerator)
-        let result = controller.Register(expectedUsername, existingEmail, expectedNickname)
+        let result =
+            makeSelfServiceRegisterViewModel expectedUsername existingEmail expectedNickname
+            |> controller.Register
 
         contextMock.Verify()
 
@@ -132,8 +135,9 @@ module SelfServiceControllerToCommandHandlerTests =
         let keyGenerator = makeKeyGenerator (Some expectedId)
         let controller = new SelfServiceController(mediator, keyGenerator)
         let result =
-            controller.Register(String.random 32,
-                sprintf "%s@%s.%s" (String.random 32) (String.random 32) (String.random 3), String.random 64);
+            makeSelfServiceRegisterViewModel (String.random 32)
+                (sprintf "%s@%s.%s" (String.random 32) (String.random 32) (String.random 3)) (String.random 64)
+            |> controller.Register
 
         contextMock.Verify()
 

@@ -59,7 +59,9 @@ module SelfServiceControllerToDataStoreTests =
         context.SaveChanges()
 
         let controller = new SelfServiceController(mediator, keyGenerator)
-        let result = controller.Register(existingUsername, expectedEmail, expectedNickname);
+        let result =
+            makeSelfServiceRegisterViewModel existingUsername expectedEmail expectedNickname
+            |> controller.Register
 
         test <@ isNotNull result @>
         test <@ result :? ViewResult @>
@@ -110,7 +112,9 @@ module SelfServiceControllerToDataStoreTests =
         context.SaveChanges()
 
         let controller = new SelfServiceController(mediator, keyGenerator)
-        let result = controller.Register(expectedUsername, existingEmail, expectedNickname);
+        let result =
+            makeSelfServiceRegisterViewModel expectedUsername existingEmail expectedNickname
+            |> controller.Register
 
         test <@ isNotNull result @>
         test <@ result :? ViewResult @>
@@ -155,8 +159,9 @@ module SelfServiceControllerToDataStoreTests =
 
         let controller = new SelfServiceController(mediator, keyGenerator)
         let result =
-            controller.Register(String.random 32,
-                sprintf "%s@%s.%s" (String.random 32) (String.random 32) (String.random 3), String.random 64);
+            makeSelfServiceRegisterViewModel (String.random 32)
+                (sprintf "%s@%s.%s" (String.random 32) (String.random 32) (String.random 3)) (String.random 64)
+            |> controller.Register
 
         test <@ isNotNull result @>
         test <@ result :? RedirectToRouteResult @>

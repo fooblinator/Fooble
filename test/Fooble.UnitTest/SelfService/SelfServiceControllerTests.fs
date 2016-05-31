@@ -70,7 +70,10 @@ module SelfServiceControllerTests =
 
         let keyGenerator = makeKeyGenerator None
         let controller = new SelfServiceController(mock (), keyGenerator)
-        let result = controller.Register(nullUsername, expectedEmail, expectedNickname)
+        controller.ModelState.AddModelError("username", "Username is required")
+        let result =
+            makeSelfServiceRegisterViewModel nullUsername expectedEmail expectedNickname
+            |> controller.Register
 
         test <@ isNotNull result @>
         test <@ result :? ViewResult @>
@@ -100,7 +103,10 @@ module SelfServiceControllerTests =
 
         let keyGenerator = makeKeyGenerator None
         let controller = new SelfServiceController(mock (), keyGenerator)
-        let result = controller.Register(emptyUsername, expectedEmail, expectedNickname)
+        controller.ModelState.AddModelError("username", "Username is required")
+        let result =
+            makeSelfServiceRegisterViewModel emptyUsername expectedEmail expectedNickname
+            |> controller.Register
 
         test <@ isNotNull result @>
         test <@ result :? ViewResult @>
@@ -130,7 +136,10 @@ module SelfServiceControllerTests =
 
         let keyGenerator = makeKeyGenerator None
         let controller = new SelfServiceController(mock (), keyGenerator)
-        let result = controller.Register(shortUsername, expectedEmail, expectedNickname)
+        controller.ModelState.AddModelError("username", "Username is shorter than 3 characters")
+        let result =
+            makeSelfServiceRegisterViewModel shortUsername expectedEmail expectedNickname
+            |> controller.Register
 
         test <@ isNotNull result @>
         test <@ result :? ViewResult @>
@@ -160,7 +169,10 @@ module SelfServiceControllerTests =
 
         let keyGenerator = makeKeyGenerator None
         let controller = new SelfServiceController(mock (), keyGenerator)
-        let result = controller.Register(longUsername, expectedEmail, expectedNickname)
+        controller.ModelState.AddModelError("username", "Username is longer than 32 characters")
+        let result =
+            makeSelfServiceRegisterViewModel longUsername expectedEmail expectedNickname
+            |> controller.Register
 
         test <@ isNotNull result @>
         test <@ result :? ViewResult @>
@@ -190,7 +202,11 @@ module SelfServiceControllerTests =
 
         let keyGenerator = makeKeyGenerator None
         let controller = new SelfServiceController(mock (), keyGenerator)
-        let result = controller.Register(invalidFormatUsername, expectedEmail, expectedNickname)
+        controller.ModelState.AddModelError("username",
+            "Username is not in the correct format (lowercase alphanumeric)")
+        let result =
+            makeSelfServiceRegisterViewModel invalidFormatUsername expectedEmail expectedNickname
+            |> controller.Register
 
         test <@ isNotNull result @>
         test <@ result :? ViewResult @>
@@ -221,7 +237,10 @@ module SelfServiceControllerTests =
 
         let keyGenerator = makeKeyGenerator None
         let controller = new SelfServiceController(mock (), keyGenerator)
-        let result = controller.Register(expectedUsername, nullEmail, expectedNickname)
+        controller.ModelState.AddModelError("email", "Email is required")
+        let result =
+            makeSelfServiceRegisterViewModel expectedUsername nullEmail expectedNickname
+            |> controller.Register
 
         test <@ isNotNull result @>
         test <@ result :? ViewResult @>
@@ -251,7 +270,10 @@ module SelfServiceControllerTests =
 
         let keyGenerator = makeKeyGenerator None
         let controller = new SelfServiceController(mock (), keyGenerator)
-        let result = controller.Register(expectedUsername, emptyEmail, expectedNickname)
+        controller.ModelState.AddModelError("email", "Email is required")
+        let result =
+            makeSelfServiceRegisterViewModel expectedUsername emptyEmail expectedNickname
+            |> controller.Register
 
         test <@ isNotNull result @>
         test <@ result :? ViewResult @>
@@ -274,14 +296,17 @@ module SelfServiceControllerTests =
         test <@ modelState.["email"].Errors.[0].ErrorMessage = "Email is required" @>
 
     [<Test>]
-    let ``Calling register post, with email longer than 32 characters, returns expected result`` () =
+    let ``Calling register post, with email longer than 254 characters, returns expected result`` () =
         let expectedUsername = String.random 32
         let longEmail = String.random 255
         let expectedNickname = String.random 64
 
         let keyGenerator = makeKeyGenerator None
         let controller = new SelfServiceController(mock (), keyGenerator)
-        let result = controller.Register(expectedUsername, longEmail, expectedNickname)
+        controller.ModelState.AddModelError("email", "Email is longer than 254 characters")
+        let result =
+            makeSelfServiceRegisterViewModel expectedUsername longEmail expectedNickname
+            |> controller.Register
 
         test <@ isNotNull result @>
         test <@ result :? ViewResult @>
@@ -311,7 +336,10 @@ module SelfServiceControllerTests =
 
         let keyGenerator = makeKeyGenerator None
         let controller = new SelfServiceController(mock (), keyGenerator)
-        let result = controller.Register(expectedUsername, invalidFormatEmail, expectedNickname)
+        controller.ModelState.AddModelError("email", "Email is not in the correct format")
+        let result =
+            makeSelfServiceRegisterViewModel expectedUsername invalidFormatEmail expectedNickname
+            |> controller.Register
 
         test <@ isNotNull result @>
         test <@ result :? ViewResult @>
@@ -341,7 +369,10 @@ module SelfServiceControllerTests =
 
         let keyGenerator = makeKeyGenerator None
         let controller = new SelfServiceController(mock (), keyGenerator)
-        let result = controller.Register(expectedUsername, expectedEmail, nullNickname)
+        controller.ModelState.AddModelError("nickname", "Nickname is required")
+        let result =
+            makeSelfServiceRegisterViewModel expectedUsername expectedEmail nullNickname
+            |> controller.Register
 
         test <@ isNotNull result @>
         test <@ result :? ViewResult @>
@@ -371,7 +402,10 @@ module SelfServiceControllerTests =
 
         let keyGenerator = makeKeyGenerator None
         let controller = new SelfServiceController(mock (), keyGenerator)
-        let result = controller.Register(expectedUsername, expectedEmail, emptyNickname)
+        controller.ModelState.AddModelError("nickname", "Nickname is required")
+        let result =
+            makeSelfServiceRegisterViewModel expectedUsername expectedEmail emptyNickname
+            |> controller.Register
 
         test <@ isNotNull result @>
         test <@ result :? ViewResult @>
@@ -401,7 +435,10 @@ module SelfServiceControllerTests =
 
         let keyGenerator = makeKeyGenerator None
         let controller = new SelfServiceController(mock (), keyGenerator)
-        let result = controller.Register(expectedUsername, expectedEmail, longNickname)
+        controller.ModelState.AddModelError("nickname", "Nickname is longer than 64 characters")
+        let result =
+            makeSelfServiceRegisterViewModel expectedUsername expectedEmail longNickname
+            |> controller.Register
 
         test <@ isNotNull result @>
         test <@ result :? ViewResult @>
@@ -435,7 +472,9 @@ module SelfServiceControllerTests =
 
         let keyGenerator = makeKeyGenerator None
         let controller = new SelfServiceController(mediatorMock.Object, keyGenerator)
-        let result = controller.Register(existingUsername, expectedEmail, expectedNickname)
+        let result =
+            makeSelfServiceRegisterViewModel existingUsername expectedEmail expectedNickname
+            |> controller.Register
 
         mediatorMock.Verify()
 
@@ -471,7 +510,9 @@ module SelfServiceControllerTests =
 
         let keyGenerator = makeKeyGenerator None
         let controller = new SelfServiceController(mediatorMock.Object, keyGenerator)
-        let result = controller.Register(expectedUsername, existingEmail, expectedNickname)
+        let result =
+            makeSelfServiceRegisterViewModel expectedUsername existingEmail expectedNickname
+            |> controller.Register
 
         mediatorMock.Verify()
 
@@ -506,8 +547,9 @@ module SelfServiceControllerTests =
         let keyGenerator = makeKeyGenerator (Some expectedId)
         let controller = new SelfServiceController(mediatorMock.Object, keyGenerator)
         let result =
-            controller.Register(String.random 32,
-                sprintf "%s@%s.%s" (String.random 32) (String.random 32) (String.random 3), String.random 64)
+            makeSelfServiceRegisterViewModel (String.random 32)
+                (sprintf "%s@%s.%s" (String.random 32) (String.random 32) (String.random 3)) (String.random 64)
+            |> controller.Register
 
         mediatorMock.Verify()
 

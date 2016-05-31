@@ -87,6 +87,12 @@ module internal Helpers =
 
     let internal makeMemberListReadModelFactory () = MemberListReadModelFactory(makeMemberListReadModel)
 
+    let internal makeSelfServiceRegisterViewModel username email nickname =
+        { new ISelfServiceRegisterViewModel with
+            member this.Username with get() = username
+            member this.Email with get() = email
+            member this.Nickname with get() = nickname }
+
     let internal makeKeyGenerator key =
         { new IKeyGenerator with
             member this.GenerateKey() =

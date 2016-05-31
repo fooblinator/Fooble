@@ -31,30 +31,21 @@ namespace Fooble.Web.Controllers
         }
 
         [HttpPost]
-        public ActionResult Register(string username, string email, string nickname)
+        public ActionResult Register([ModelBinder(typeof(FoobleModelBinder))] ISelfServiceRegisterViewModel viewModel)
         {
-            Member.ValidateUsername(username)
-                .AddModelErrorIfNotValid(ModelState);
+            Debug.Assert(viewModel != null, "View model is required");
 
-            Member.ValidateEmail(email)
-                .AddModelErrorIfNotValid(ModelState);
-
-            Member.ValidateNickname(nickname)
-                .AddModelErrorIfNotValid(ModelState);
-
-            if (!ModelState.IsValid)
-                return View(SelfServiceRegisterViewModel.Make(username, email, nickname));
+            if (!ModelState.IsValid) return View(viewModel);
 
             var id = _keyGenerator.GenerateKey();
-            var command = SelfServiceRegisterCommand.Make(id, username, email, nickname);
+            var command = viewModel.ToCommand(id);
             var result = _mediator.Send(command);
 
-            Debug.Assert(result != null, "Result parameter was null");
+            Debug.Assert(result != null, "Result was null");
 
             result.AddModelErrorIfNotSuccess(ModelState);
 
-            if (!ModelState.IsValid)
-                return View(SelfServiceRegisterViewModel.Make(username, email, nickname));
+            if (!ModelState.IsValid) return View(viewModel);
 
             return RedirectToAction("Detail", "Member", new { id = id.ToString() });
         }

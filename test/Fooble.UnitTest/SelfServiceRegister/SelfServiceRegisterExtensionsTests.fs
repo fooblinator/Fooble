@@ -1,5 +1,6 @@
 ﻿namespace Fooble.UnitTest
 
+open Fooble.Common
 open Fooble.Core
 open Fooble.Presentation
 open NUnit.Framework
@@ -73,3 +74,28 @@ module SelfServiceRegisterExtensionsTests =
         test <@ readModel.StatusCode = expectedStatusCode @>
         test <@ readModel.Severity = expectedSeverity @>
         test <@ readModel.Message = expectedMessage @>
+
+//    [<Test>]
+//    let ``Calling to command, as null self-service register view model, raises expected exception`` () =
+//        let expectedParamName = "viewModel"
+//        let expectedMessage = "View model is required"
+//
+//        raisesWith<ArgumentException>
+//            <@ SelfServiceRegisterExtensions.toCommand null (Guid.random ()) @>
+//            (fun x -> <@ x.ParamName = expectedParamName && (fixInvalidArgMessage x.Message) = expectedMessage @>)
+
+    [<Test>]
+    let ``Calling to command, as self-service register view model, returns expected read model`` () =
+        let expectedId = Guid.random ()
+        let expectedUsername = String.random 32
+        let expectedEmail = sprintf "%s@%s.%s" (String.random 32) (String.random 32) (String.random 3)
+        let expectedNickname = String.random 64
+
+        let viewModel = makeSelfServiceRegisterViewModel expectedUsername expectedEmail expectedNickname
+
+        let actualCommand = SelfServiceRegisterExtensions.toCommand viewModel expectedId
+
+        test <@ actualCommand.Id = expectedId @>
+        test <@ actualCommand.Username = expectedUsername @>
+        test <@ actualCommand.Email = expectedEmail @>
+        test <@ actualCommand.Nickname = expectedNickname @>

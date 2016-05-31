@@ -43,7 +43,7 @@ module SelfServiceRegisterExtensions =
     [<CompiledName("ToMessageDisplayReadModel")>]
     let toMessageDisplayReadModel (result:ISelfServiceRegisterCommandResult) =
 
-        [ (isNotNull << box), "Result parameter was null" ]
+        [ (isNotNull << box), "Result is required" ]
         |> validate result "result" |> enforce
 
         match result with
@@ -54,3 +54,17 @@ module SelfServiceRegisterExtensions =
             MessageDisplayReadModel.make "Self-Service" "Register" 400 MessageDisplayReadModel.warningSeverity
                 "Supplied email is already registered."
         | _ -> invalidOp "Result was not unsuccessful"
+
+    /// <summary>
+    /// Constructs a self-service register command from a self-service register view model.
+    /// </summary>
+    /// <param name="viewModel">The self-service register view model to extend.</param>
+    /// <param name="id">The member id to add to the command.</param>
+    [<Extension>]
+    [<CompiledName("ToCommand")>]
+    let toCommand (viewModel:ISelfServiceRegisterViewModel) id =
+
+        [ (isNotNull << box), "View model is required" ]
+        |> validate viewModel "result" |> enforce
+
+        SelfServiceRegisterCommand.make id viewModel.Username viewModel.Email viewModel.Nickname
