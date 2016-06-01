@@ -17,9 +17,14 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Fooble.Persistence", "src\F
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Fooble.IntegrationTest", "test\Fooble.IntegrationTest\Fooble.IntegrationTest.fsproj", "{72FBC0FE-F9FB-4ED6-AD2C-4CB8D2F51C17}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Fooble.Common", "src\Fooble.Common\Fooble.Common.fsproj", "{F61C2A8E-303C-4F38-8D8F-F364FDFF3D7A}"
-EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Fooble.Presentation", "src\Fooble.Presentation\Fooble.Presentation.fsproj", "{6ADFDC6E-B3ED-4A21-8D14-5F447082C4B1}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{79D1FB1D-5C20-4E07-B677-A6C9DE6866A7}"
+	ProjectSection(SolutionItems) = preProject
+		src\Common\CommonHelpers.fs = src\Common\CommonHelpers.fs
+		src\Common\GlobalAssemblyInfo.cs = src\Common\GlobalAssemblyInfo.cs
+		src\Common\GlobalAssemblyInfo.fs = src\Common\GlobalAssemblyInfo.fs
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -48,10 +53,6 @@ Global
 		{72FBC0FE-F9FB-4ED6-AD2C-4CB8D2F51C17}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{72FBC0FE-F9FB-4ED6-AD2C-4CB8D2F51C17}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{72FBC0FE-F9FB-4ED6-AD2C-4CB8D2F51C17}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F61C2A8E-303C-4F38-8D8F-F364FDFF3D7A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F61C2A8E-303C-4F38-8D8F-F364FDFF3D7A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F61C2A8E-303C-4F38-8D8F-F364FDFF3D7A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F61C2A8E-303C-4F38-8D8F-F364FDFF3D7A}.Release|Any CPU.Build.0 = Release|Any CPU
 		{6ADFDC6E-B3ED-4A21-8D14-5F447082C4B1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{6ADFDC6E-B3ED-4A21-8D14-5F447082C4B1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6ADFDC6E-B3ED-4A21-8D14-5F447082C4B1}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -66,7 +67,7 @@ Global
 		{B8E7F59F-08FE-48AB-9640-6A0B41083496} = {AFBA107A-3E09-4144-9A81-98E9D0546E19}
 		{6324603A-6972-4B7E-AE8B-A5E4A13A657F} = {AFBA107A-3E09-4144-9A81-98E9D0546E19}
 		{72FBC0FE-F9FB-4ED6-AD2C-4CB8D2F51C17} = {D4A4769A-F440-44D7-B71F-317DB3FA7CF5}
-		{F61C2A8E-303C-4F38-8D8F-F364FDFF3D7A} = {AFBA107A-3E09-4144-9A81-98E9D0546E19}
 		{6ADFDC6E-B3ED-4A21-8D14-5F447082C4B1} = {AFBA107A-3E09-4144-9A81-98E9D0546E19}
+		{79D1FB1D-5C20-4E07-B677-A6C9DE6866A7} = {AFBA107A-3E09-4144-9A81-98E9D0546E19}
 	EndGlobalSection
 EndGlobal

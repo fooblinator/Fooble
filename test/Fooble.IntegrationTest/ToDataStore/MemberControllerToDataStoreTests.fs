@@ -21,7 +21,7 @@ module MemberControllerToDataStoreTests =
     let ``Constructing, with valid parameters, returns expected result`` () =
         let builder = ContainerBuilder()
         ignore <| builder.RegisterModule(CoreRegistrations())
-        let container = builder.Build()
+        use container = builder.Build()
 
         let mediator = container.Resolve<IMediator>()
 
@@ -31,7 +31,7 @@ module MemberControllerToDataStoreTests =
     let ``Calling detail, with matches in data store, returns expected result`` () =
         let expectedId = Guid.random ()
         let expectedUsername = String.random 32
-        let expectedEmail = sprintf "%s@%s.%s" (String.random 32) (String.random 32) (String.random 3)
+        let expectedEmail = EmailAddress.random ()
         let expectedNickname = String.random 64
 
         let connectionString = Settings.ConnectionStrings.FoobleContext
@@ -39,7 +39,7 @@ module MemberControllerToDataStoreTests =
         ignore <| builder.RegisterModule(CoreRegistrations())
         ignore <| builder.RegisterModule(PersistenceRegistrations(connectionString))
         ignore <| builder.RegisterModule(PresentationRegistrations())
-        let container = builder.Build()
+        use container = builder.Build()
 
         let context = container.Resolve<IFoobleContext>()
         let memberDataFactory = container.Resolve<MemberDataFactory>()
@@ -88,7 +88,7 @@ module MemberControllerToDataStoreTests =
         ignore <| builder.RegisterModule(CoreRegistrations())
         ignore <| builder.RegisterModule(PersistenceRegistrations(connectionString))
         ignore <| builder.RegisterModule(PresentationRegistrations())
-        let container = builder.Build()
+        use container = builder.Build()
 
         let context = container.Resolve<IFoobleContext>()
         let mediator = container.Resolve<IMediator>()
@@ -125,7 +125,7 @@ module MemberControllerToDataStoreTests =
         ignore <| builder.RegisterModule(CoreRegistrations())
         ignore <| builder.RegisterModule(PersistenceRegistrations(connectionString))
         ignore <| builder.RegisterModule(PresentationRegistrations())
-        let container = builder.Build()
+        use container = builder.Build()
 
         let context = container.Resolve<IFoobleContext>()
         let memberDataFactory = container.Resolve<MemberDataFactory>()
@@ -135,9 +135,9 @@ module MemberControllerToDataStoreTests =
         List.iter (fun x -> context.DeleteMember(x)) (context.GetMembers())
 
         // add matching members to the data store
-        let members = List.init 5 (fun _ ->
-            memberDataFactory.Invoke(Guid.random (), String.random 32,
-                sprintf "%s@%s.%s" (String.random 32) (String.random 32) (String.random 3), String.random 64))
+        let members =
+            List.init 5 (fun _ ->
+                memberDataFactory.Invoke(Guid.random (), String.random 32, EmailAddress.random (), String.random 64))
         List.iter (fun x -> context.AddMember(x)) members
 
         // persist changes to the data store
@@ -175,7 +175,7 @@ module MemberControllerToDataStoreTests =
         ignore <| builder.RegisterModule(CoreRegistrations())
         ignore <| builder.RegisterModule(PersistenceRegistrations(connectionString))
         ignore <| builder.RegisterModule(PresentationRegistrations())
-        let container = builder.Build()
+        use container = builder.Build()
 
         let context = container.Resolve<IFoobleContext>()
         let mediator = container.Resolve<IMediator>()

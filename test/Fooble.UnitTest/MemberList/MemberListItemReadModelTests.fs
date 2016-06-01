@@ -10,7 +10,7 @@ module MemberListItemReadModelTests =
 
     [<Test>]
     let ``Calling make, with valid parameters, returns read model`` () =
-        let readModel = makeMemberListItemReadModel (Guid.random ()) (String.random 64)
+        let readModel = makeTestMemberListItemReadModel (Guid.random ()) (String.random 64)
 
         test <@ box readModel :? IMemberListItemReadModel @>
 
@@ -18,7 +18,7 @@ module MemberListItemReadModelTests =
     let ``Calling id, returns expected id`` () =
         let expectedId = Guid.random ()
 
-        let itemReadModel = makeMemberListItemReadModel expectedId (String.random 64)
+        let itemReadModel = makeTestMemberListItemReadModel expectedId (String.random 64)
 
         test <@ itemReadModel.Id = expectedId @>
 
@@ -26,6 +26,6 @@ module MemberListItemReadModelTests =
     let ``Calling nickname, returns expected nickname`` () =
         let expectedNickname = String.random 64
 
-        let itemReadModel = makeMemberListItemReadModel (Guid.random ()) expectedNickname
+        let itemReadModel = makeTestMemberListItemReadModel (Guid.random ()) expectedNickname
 
         test <@ itemReadModel.Nickname = expectedNickname @>

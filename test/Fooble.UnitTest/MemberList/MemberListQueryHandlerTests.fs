@@ -15,9 +15,7 @@ module MemberListQueryHandlerTests =
 
     [<Test>]
     let ``Calling make, with valid parameters, returns query handler`` () =
-        let handler =
-            MemberListQuery.makeHandler (mock ()) (makeMemberListItemReadModelFactory ())
-                (makeMemberListReadModelFactory ())
+        let handler = MemberListQuery.makeHandler (mock ()) (mock ()) (mock ())
 
         test <@ box handler :? IRequestHandler<IMemberListQuery, IMemberListQueryResult> @>
 
@@ -26,9 +24,7 @@ module MemberListQueryHandlerTests =
         let contextMock = Mock<IFoobleContext>()
         contextMock.SetupFunc(fun x -> x.GetMembers()).Returns([]).Verifiable()
 
-        let handler =
-            MemberListQuery.makeHandler contextMock.Object (makeMemberListItemReadModelFactory ())
-                (makeMemberListReadModelFactory ())
+        let handler = MemberListQuery.makeHandler contextMock.Object (mock ()) (mock ())
 
         let query = MemberListQuery.make ()
         let queryResult = handler.Handle(query)
@@ -40,15 +36,15 @@ module MemberListQueryHandlerTests =
 
     [<Test>]
     let ``Calling handle, with members in data store, returns expected result`` () =
-        let members = List.init 5 <| fun _ ->
-            makeMemberData (Guid.random ()) (String.random 32) (sprintf "%s@%s.%s" (String.random 32)
-                (String.random 32) (String.random 3)) (String.random 64)
+        let members =
+            List.init 5 <| fun _ ->
+                makeTestMemberData (Guid.random ()) (String.random 32) (EmailAddress.random ()) (String.random 64)
         let contextMock = Mock<IFoobleContext>()
         contextMock.SetupFunc(fun x -> x.GetMembers()).Returns(members).Verifiable()
 
         let handler =
-            MemberListQuery.makeHandler contextMock.Object (makeMemberListItemReadModelFactory ())
-                (makeMemberListReadModelFactory ())
+            MemberListQuery.makeHandler contextMock.Object (makeTestMemberListItemReadModelFactory ())
+                (makeTestMemberListReadModelFactory ())
 
         let query = MemberListQuery.make ()
         let queryResult = handler.Handle(query)

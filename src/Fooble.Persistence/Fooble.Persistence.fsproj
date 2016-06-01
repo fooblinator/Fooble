@@ -54,8 +54,16 @@
     <Compile Include="..\Common\GlobalAssemblyInfo.fs">
       <Link>Properties\GlobalAssemblyInfo.fs</Link>
     </Compile>
-    <Compile Include="Types.fs" />
-    <Compile Include="Helpers.fs" />
+    <Compile Include="..\Common\CommonHelpers.fs">
+      <Link>CommonHelpers.fs</Link>
+    </Compile>
+    <Compile Include="..\Common\ValidationHelpers.fs">
+      <Link>ValidationHelpers.fs</Link>
+    </Compile>
+    <Compile Include="..\Common\MemberHelpers.fs">
+      <Link>MemberHelpers.fs</Link>
+    </Compile>
+    <Compile Include="Persistence.fs" />
     <Compile Include="Infrastructure\Registrations.fs" />
     <Content Include="App.config" />
     <Content Include="packages.config" />
@@ -78,11 +86,6 @@
     <Reference Include="System.Numerics" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Fooble.Common\Fooble.Common.fsproj">
-      <Name>Fooble.Common</Name>
-      <Project>{f61c2a8e-303c-4f38-8d8f-f364fdff3d7a}</Project>
-      <Private>True</Private>
-    </ProjectReference>
     <ProjectReference Include="..\Fooble.Core\Fooble.Core.fsproj">
       <Name>Fooble.Core</Name>
       <Project>{807e9944-9329-40c3-ac0e-74920a316cb6}</Project>

@@ -7,7 +7,6 @@ open Fooble.Core.Infrastructure
 open Fooble.Presentation
 open Fooble.Presentation.Infrastructure
 open Fooble.Persistence
-open Fooble.Persistence.Infrastructure
 open Fooble.Web.Controllers
 open MediatR
 open Moq
@@ -23,7 +22,7 @@ module SelfServiceControllerToCommandHandlerTests =
     let ``Constructing, with valid parameters, returns expected result`` () =
         let builder = ContainerBuilder()
         ignore <| builder.RegisterModule(CoreRegistrations())
-        let container = builder.Build()
+        use container = builder.Build()
 
         let mediator = container.Resolve<IMediator>()
         let keyGenerator = container.Resolve<IKeyGenerator>()
@@ -32,23 +31,22 @@ module SelfServiceControllerToCommandHandlerTests =
     [<Test>]
     let ``Calling register post, with existing username in data store, returns expected result`` () =
         let existingUsername = String.random 32
-        let expectedEmail = sprintf "%s@%s.%s" (String.random 32) (String.random 32) (String.random 3)
+        let expectedEmail = EmailAddress.random ()
         let expectedNickname = String.random 64
 
         let contextMock = Mock<IFoobleContext>()
         contextMock.SetupFunc(fun x -> x.ExistsMemberUsername(any ())).Returns(true).Verifiable()
 
         let builder = ContainerBuilder()
-        ignore <| builder.RegisterModule(CoreRegistrations())
-        ignore <| builder.RegisterModule(PersistenceRegistrations(contextMock.Object, makeMemberDataFactory ()))
+        ignore <| builder.RegisterModule(CoreRegistrations(contextMock.Object, mock ()))
         ignore <| builder.RegisterModule(PresentationRegistrations())
-        let container = builder.Build()
+        use container = builder.Build()
 
         let mediator = container.Resolve<IMediator>()
         let keyGenerator = container.Resolve<IKeyGenerator>()
         let controller = new SelfServiceController(mediator, keyGenerator)
         let result =
-            makeSelfServiceRegisterViewModel existingUsername expectedEmail expectedNickname
+            SelfServiceRegisterViewModel.make existingUsername expectedEmail expectedNickname
             |> controller.Register
 
         contextMock.Verify()
@@ -76,23 +74,22 @@ module SelfServiceControllerToCommandHandlerTests =
     [<Test>]
     let ``Calling register post, with existing email in data store, returns expected result`` () =
         let expectedUsername = String.random 32
-        let existingEmail = sprintf "%s@%s.%s" (String.random 32) (String.random 32) (String.random 3)
+        let existingEmail = EmailAddress.random ()
         let expectedNickname = String.random 64
 
         let contextMock = Mock<IFoobleContext>()
         contextMock.SetupFunc(fun x -> x.ExistsMemberEmail(any ())).Returns(true).Verifiable()
 
         let builder = ContainerBuilder()
-        ignore <| builder.RegisterModule(CoreRegistrations())
-        ignore <| builder.RegisterModule(PersistenceRegistrations(contextMock.Object, makeMemberDataFactory ()))
+        ignore <| builder.RegisterModule(CoreRegistrations(contextMock.Object, mock ()))
         ignore <| builder.RegisterModule(PresentationRegistrations())
-        let container = builder.Build()
+        use container = builder.Build()
 
         let mediator = container.Resolve<IMediator>()
         let keyGenerator = container.Resolve<IKeyGenerator>()
         let controller = new SelfServiceController(mediator, keyGenerator)
         let result =
-            makeSelfServiceRegisterViewModel expectedUsername existingEmail expectedNickname
+            SelfServiceRegisterViewModel.make expectedUsername existingEmail expectedNickname
             |> controller.Register
 
         contextMock.Verify()
@@ -126,17 +123,15 @@ module SelfServiceControllerToCommandHandlerTests =
         contextMock.SetupFunc(fun x -> x.ExistsMemberEmail(any ())).Returns(false).Verifiable()
 
         let builder = ContainerBuilder()
-        ignore <| builder.RegisterModule(CoreRegistrations())
-        ignore <| builder.RegisterModule(PersistenceRegistrations(contextMock.Object, makeMemberDataFactory ()))
+        ignore <| builder.RegisterModule(CoreRegistrations(contextMock.Object, mock ()))
         ignore <| builder.RegisterModule(PresentationRegistrations())
-        let container = builder.Build()
+        use container = builder.Build()
 
         let mediator = container.Resolve<IMediator>()
-        let keyGenerator = makeKeyGenerator (Some expectedId)
+        let keyGenerator = makeTestKeyGenerator (Some expectedId)
         let controller = new SelfServiceController(mediator, keyGenerator)
         let result =
-            makeSelfServiceRegisterViewModel (String.random 32)
-                (sprintf "%s@%s.%s" (String.random 32) (String.random 32) (String.random 3)) (String.random 64)
+            SelfServiceRegisterViewModel.make (String.random 32) (EmailAddress.random ()) (String.random 64)
             |> controller.Register
 
         contextMock.Verify()

@@ -22,7 +22,7 @@ module SelfServiceControllerToDataStoreTests =
     let ``Constructing, with valid parameters, returns expected result`` () =
         let builder = ContainerBuilder()
         ignore <| builder.RegisterModule(CoreRegistrations())
-        let container = builder.Build()
+        use container = builder.Build()
 
         let mediator = container.Resolve<IMediator>()
         let keyGenerator = container.Resolve<IKeyGenerator>()
@@ -31,7 +31,7 @@ module SelfServiceControllerToDataStoreTests =
     [<Test>]
     let ``Calling register post, with existing username in data store, returns expected result`` () =
         let existingUsername = String.random 32
-        let expectedEmail = sprintf "%s@%s.%s" (String.random 32) (String.random 32) (String.random 3)
+        let expectedEmail = EmailAddress.random ()
         let expectedNickname = String.random 64
 
         let connectionString = Settings.ConnectionStrings.FoobleContext
@@ -39,7 +39,7 @@ module SelfServiceControllerToDataStoreTests =
         ignore <| builder.RegisterModule(CoreRegistrations())
         ignore <| builder.RegisterModule(PersistenceRegistrations(connectionString))
         ignore <| builder.RegisterModule(PresentationRegistrations())
-        let container = builder.Build()
+        use container = builder.Build()
 
         let context = container.Resolve<IFoobleContext>()
         let memberDataFactory = container.Resolve<MemberDataFactory>()
@@ -51,8 +51,7 @@ module SelfServiceControllerToDataStoreTests =
 
         // add matching member to the data store
         let memberData =
-            memberDataFactory.Invoke(Guid.random (), existingUsername,
-                sprintf "%s@%s.%s" (String.random 32) (String.random 32) (String.random 3), String.random 64)
+            memberDataFactory.Invoke(Guid.random (), existingUsername, EmailAddress.random (), String.random 64)
         context.AddMember(memberData)
 
         // persist changes to the data store
@@ -60,7 +59,7 @@ module SelfServiceControllerToDataStoreTests =
 
         let controller = new SelfServiceController(mediator, keyGenerator)
         let result =
-            makeSelfServiceRegisterViewModel existingUsername expectedEmail expectedNickname
+            SelfServiceRegisterViewModel.make existingUsername expectedEmail expectedNickname
             |> controller.Register
 
         test <@ isNotNull result @>
@@ -86,7 +85,7 @@ module SelfServiceControllerToDataStoreTests =
     [<Test>]
     let ``Calling register post, with existing email in data store, returns expected result`` () =
         let expectedUsername = String.random 32
-        let existingEmail = sprintf "%s@%s.%s" (String.random 32) (String.random 32) (String.random 3)
+        let existingEmail = EmailAddress.random ()
         let expectedNickname = String.random 64
 
         let connectionString = Settings.ConnectionStrings.FoobleContext
@@ -94,7 +93,7 @@ module SelfServiceControllerToDataStoreTests =
         ignore <| builder.RegisterModule(CoreRegistrations())
         ignore <| builder.RegisterModule(PersistenceRegistrations(connectionString))
         ignore <| builder.RegisterModule(PresentationRegistrations())
-        let container = builder.Build()
+        use container = builder.Build()
 
         let context = container.Resolve<IFoobleContext>()
         let memberDataFactory = container.Resolve<MemberDataFactory>()
@@ -113,7 +112,7 @@ module SelfServiceControllerToDataStoreTests =
 
         let controller = new SelfServiceController(mediator, keyGenerator)
         let result =
-            makeSelfServiceRegisterViewModel expectedUsername existingEmail expectedNickname
+            SelfServiceRegisterViewModel.make expectedUsername existingEmail expectedNickname
             |> controller.Register
 
         test <@ isNotNull result @>
@@ -145,11 +144,11 @@ module SelfServiceControllerToDataStoreTests =
         ignore <| builder.RegisterModule(CoreRegistrations())
         ignore <| builder.RegisterModule(PersistenceRegistrations(connectionString))
         ignore <| builder.RegisterModule(PresentationRegistrations())
-        let container = builder.Build()
+        use container = builder.Build()
 
         let context = container.Resolve<IFoobleContext>()
         let mediator = container.Resolve<IMediator>()
-        let keyGenerator = makeKeyGenerator (Some expectedId)
+        let keyGenerator = makeTestKeyGenerator (Some expectedId)
 
         // remove all existing members from the data store
         List.iter (fun x -> context.DeleteMember(x)) (context.GetMembers())
@@ -159,8 +158,7 @@ module SelfServiceControllerToDataStoreTests =
 
         let controller = new SelfServiceController(mediator, keyGenerator)
         let result =
-            makeSelfServiceRegisterViewModel (String.random 32)
-                (sprintf "%s@%s.%s" (String.random 32) (String.random 32) (String.random 3)) (String.random 64)
+            SelfServiceRegisterViewModel.make (String.random 32) (EmailAddress.random ()) (String.random 64)
             |> controller.Register
 
         test <@ isNotNull result @>

@@ -15,9 +15,9 @@ module MemberListExtensionsTests =
         let expectedMessage = "Result was not unsuccessful"
 
         let queryResult =
-            makeMemberListItemReadModel (Guid.random ()) (String.random 64)
+            makeTestMemberListItemReadModel (Guid.random ()) (String.random 64)
             |> Seq.singleton
-            |> makeMemberListReadModel
+            |> makeTestMemberListReadModel
             |> MemberListQuery.makeSuccessResult
 
         raisesWith<InvalidOperationException> <@ MemberListExtensions.toMessageDisplayReadModel queryResult @>

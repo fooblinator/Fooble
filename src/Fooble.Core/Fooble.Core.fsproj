@@ -57,8 +57,18 @@
     </Compile>
     <Compile Include="PersistenceTypes.fs" />
     <Compile Include="PresentationTypes.fs" />
+    <Compile Include="CoreTypes.fs" />
+    <Compile Include="..\Common\CommonHelpers.fs">
+      <Link>CommonHelpers.fs</Link>
+    </Compile>
     <Compile Include="Validation.fs" />
+    <Compile Include="..\Common\ValidationHelpers.fs">
+      <Link>ValidationHelpers.fs</Link>
+    </Compile>
     <Compile Include="Member.fs" />
+    <Compile Include="..\Common\MemberHelpers.fs">
+      <Link>MemberHelpers.fs</Link>
+    </Compile>
     <Compile Include="MemberDetailQuery.fs" />
     <Compile Include="MemberListQuery.fs" />
     <Compile Include="SelfServiceRegisterCommand.fs" />
@@ -82,13 +92,6 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Numerics" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Fooble.Common\Fooble.Common.fsproj">
-      <Name>Fooble.Common</Name>
-      <Project>{f61c2a8e-303c-4f38-8d8f-f364fdff3d7a}</Project>
-      <Private>True</Private>
-    </ProjectReference>
   </ItemGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.

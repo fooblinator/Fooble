@@ -5,22 +5,6 @@ open Fooble.Persistence
 open Fooble.Presentation
 open MediatR
 
-/// <summary>
-/// Represents the status of a member list query, and potential results, if successful.
-/// </summary>
-/// <remarks>The result is only one of "success" or "not found".</remarks>
-type IMemberListQueryResult =
-    /// The list of members' information to be presented.
-    abstract ReadModel:IMemberListReadModel with get
-    /// Whether the result is "success" (or not).
-    abstract IsSuccess:bool with get
-    /// Whether the result is "not found" (or not).
-    abstract IsNotFound:bool with get
-
-/// Contains a request for a list of members' information, for the purpose of presentation.
-type IMemberListQuery =
-    inherit IRequest<IMemberListQueryResult>
-
 /// Provides query-related helpers for member list.
 [<RequireQualifiedAccess>]
 module MemberListQuery =

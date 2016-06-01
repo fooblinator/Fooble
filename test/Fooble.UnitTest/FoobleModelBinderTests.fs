@@ -11,7 +11,7 @@ module FoobleModelBinderTests =
     [<Test>]
     let ``Binding to a self-service register view model, with null username, adds expected model state error`` () =
         let nullUsername:string = null
-        let expectedEmail = sprintf "%s@%s.%s" (String.random 32) (String.random 32) (String.random 3)
+        let expectedEmail = EmailAddress.random ()
         let expectedNickname = String.random 64
 
         let (actualViewModel, modelState) =
@@ -33,7 +33,7 @@ module FoobleModelBinderTests =
     [<Test>]
     let ``Binding to a self-service register view model, with empty username, adds expected model state error`` () =
         let emptyUsername = String.empty
-        let expectedEmail = sprintf "%s@%s.%s" (String.random 32) (String.random 32) (String.random 3)
+        let expectedEmail = EmailAddress.random ()
         let expectedNickname = String.random 64
 
         let (actualViewModel, modelState) =
@@ -55,7 +55,7 @@ module FoobleModelBinderTests =
     [<Test>]
     let ``Binding to a self-service register view model, with username shorter than 3 characters, adds expected model state error`` () =
         let shortUsername = String.random 2
-        let expectedEmail = sprintf "%s@%s.%s" (String.random 32) (String.random 32) (String.random 3)
+        let expectedEmail = EmailAddress.random ()
         let expectedNickname = String.random 64
 
         let (actualViewModel, modelState) =
@@ -77,7 +77,7 @@ module FoobleModelBinderTests =
     [<Test>]
     let ``Binding to a self-service register view model, with username longer than 32 characters, adds expected model state error`` () =
         let longUsername = String.random 33
-        let expectedEmail = sprintf "%s@%s.%s" (String.random 32) (String.random 32) (String.random 3)
+        let expectedEmail = EmailAddress.random ()
         let expectedNickname = String.random 64
 
         let (actualViewModel, modelState) =
@@ -99,7 +99,7 @@ module FoobleModelBinderTests =
     [<Test>]
     let ``Binding to a self-service register view model, with username in invalid format, adds expected model state error`` () =
         let invalidFormatUsername = sprintf "-%s-%s-" (String.random 8) (String.random 8)
-        let expectedEmail = sprintf "%s@%s.%s" (String.random 32) (String.random 32) (String.random 3)
+        let expectedEmail = EmailAddress.random ()
         let expectedNickname = String.random 64
 
         let (actualViewModel, modelState) =
@@ -201,7 +201,7 @@ module FoobleModelBinderTests =
         test <@ actualViewModel.Username = expectedUsername @>
         test <@ actualViewModel.Email = invalidFormatEmail @>
         test <@ actualViewModel.Nickname = expectedNickname @>
-        
+
         test <@ not (modelState.IsValid) @>
         test <@ modelState.ContainsKey("email") @>
         test <@ modelState.["email"].Errors.Count = 1 @>
@@ -210,7 +210,7 @@ module FoobleModelBinderTests =
     [<Test>]
     let ``Binding to a self-service register view model, with null nickname, adds expected model state error`` () =
         let expectedUsername = String.random 32
-        let expectedEmail = sprintf "%s@%s.%s" (String.random 32) (String.random 32) (String.random 3)
+        let expectedEmail = EmailAddress.random ()
         let nullNickname:string = null
 
         let (actualViewModel, modelState) =
@@ -232,7 +232,7 @@ module FoobleModelBinderTests =
     [<Test>]
     let ``Binding to a self-service register view model, with empty nickname, adds expected model state error`` () =
         let expectedUsername = String.random 32
-        let expectedEmail = sprintf "%s@%s.%s" (String.random 32) (String.random 32) (String.random 3)
+        let expectedEmail = EmailAddress.random ()
         let emptyNickname = String.empty
 
         let (actualViewModel, modelState) =
@@ -254,7 +254,7 @@ module FoobleModelBinderTests =
     [<Test>]
     let ``Binding to a self-service register view model, with nickname longer than 64 characters, adds expected model state error`` () =
         let expectedUsername = String.random 32
-        let expectedEmail = sprintf "%s@%s.%s" (String.random 32) (String.random 32) (String.random 3)
+        let expectedEmail = EmailAddress.random ()
         let longNickname = String.random 65
 
         let (actualViewModel, modelState) =
@@ -276,7 +276,7 @@ module FoobleModelBinderTests =
     [<Test>]
     let ``Binding to a self-service register view model, with valid parameters, adds no model state errors`` () =
         let expectedUsername = String.random 32
-        let expectedEmail = sprintf "%s@%s.%s" (String.random 32) (String.random 32) (String.random 3)
+        let expectedEmail = EmailAddress.random ()
         let expectedNickname = String.random 64
 
         let (actualViewModel, modelState) =

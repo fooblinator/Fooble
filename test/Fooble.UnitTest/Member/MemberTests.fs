@@ -171,7 +171,7 @@ module MemberTests =
 
     [<Test>]
     let ``Calling validate email, with valid email, returns no messages`` () =
-        let result = Member.validateEmail (sprintf "%s@%s.%s" (String.random 32) (String.random 32) (String.random 3))
+        let result = Member.validateEmail (EmailAddress.random ())
 
         test <@ result.IsValid @>
 

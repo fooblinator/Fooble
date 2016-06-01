@@ -11,8 +11,26 @@ open System.Collections.Generic
 
 /// Provides the proper Autofac container registrations for the Fooble.Core assembly.
 [<AllowNullLiteral>]
-type CoreRegistrations() =
-    inherit Module()
+type CoreRegistrations =
+    inherit Module
+
+    val private Context:IFoobleContext option
+    val private MemberDataFactory:MemberDataFactory option
+
+    /// Constructs an instance of the Autofac module for the Fooble.Persistence assembly.
+    new() = { Context = None; MemberDataFactory = None }
+
+    /// <summary>
+    /// Constructs an instance of the Autofac module for the Fooble.Persistence assembly.
+    /// </summary>
+    /// <param name="context">The data context to use.</param>
+    /// <param name="memberDataFactory">The member data factory to use.</param>
+    new(context, memberDataFactory) =
+        [ (isNotNull), "Context is required" ]
+        |> validate context "context" |> enforce
+        [ (isNotNull), "Member data factory is required" ]
+        |> validate memberDataFactory "memberDataFactory" |> enforce
+        { Context = Some context; MemberDataFactory = Some memberDataFactory }
 
     override this.Load(builder:ContainerBuilder) =
         assert (isNotNull builder)
@@ -33,6 +51,14 @@ type CoreRegistrations() =
         ignore <| builder.RegisterType<Mediator>().As<IMediator>()
 
         (* Fooble.Core *)
+
+        match this.Context with
+        | Some x -> ignore <| builder.RegisterInstance(x).ExternallyOwned()
+        | None -> ()
+
+        match this.MemberDataFactory with
+        | Some x -> ignore <| builder.RegisterInstance(x).ExternallyOwned()
+        | None -> ()
 
         ignore <| builder.Register(fun _ -> KeyGenerator.make ())
 

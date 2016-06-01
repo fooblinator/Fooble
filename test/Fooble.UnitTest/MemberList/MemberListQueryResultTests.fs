@@ -11,8 +11,8 @@ module MemberListQueryResultTests =
 
     [<Test>]
     let ``Calling make success, with valid parameters, returns query result`` () =
-        let members = Seq.init 5 (fun _ -> makeMemberListItemReadModel (Guid.random ()) (String.random 64))
-        let readModel = makeMemberListReadModel members
+        let members = Seq.init 5 (fun _ -> makeTestMemberListItemReadModel (Guid.random ()) (String.random 64))
+        let readModel = makeTestMemberListReadModel members
         let queryResult = MemberListQuery.makeSuccessResult readModel
 
         test <@ box queryResult :? IMemberListQueryResult @>
@@ -32,8 +32,8 @@ module MemberListQueryResultTests =
 
     [<Test>]
     let ``Calling read model, with success query result, returns expected read model`` () =
-        let members = Seq.init 5 (fun _ -> makeMemberListItemReadModel (Guid.random ()) (String.random 64))
-        let expectedReadModel = makeMemberListReadModel members
+        let members = Seq.init 5 (fun _ -> makeTestMemberListItemReadModel (Guid.random ()) (String.random 64))
+        let expectedReadModel = makeTestMemberListReadModel members
 
         let queryResult = MemberListQuery.makeSuccessResult expectedReadModel
 
@@ -41,8 +41,8 @@ module MemberListQueryResultTests =
 
     [<Test>]
     let ``Calling is success, with success query result, returns true`` () =
-        let members = Seq.init 5 (fun _ -> makeMemberListItemReadModel (Guid.random ()) (String.random 64))
-        let readModel = makeMemberListReadModel members
+        let members = Seq.init 5 (fun _ -> makeTestMemberListItemReadModel (Guid.random ()) (String.random 64))
+        let readModel = makeTestMemberListReadModel members
 
         let queryResult = MemberListQuery.makeSuccessResult readModel
 
@@ -56,8 +56,8 @@ module MemberListQueryResultTests =
 
     [<Test>]
     let ``Calling is not found, with success query result, returns false`` () =
-        let members = Seq.init 5 (fun _ -> makeMemberListItemReadModel (Guid.random ()) (String.random 64))
-        let readModel = makeMemberListReadModel members
+        let members = Seq.init 5 (fun _ -> makeTestMemberListItemReadModel (Guid.random ()) (String.random 64))
+        let readModel = makeTestMemberListReadModel members
 
         let queryResult = MemberListQuery.makeSuccessResult readModel
 

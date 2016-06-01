@@ -88,10 +88,10 @@ module SelfServiceRegisterExtensionsTests =
     let ``Calling to command, as self-service register view model, returns expected read model`` () =
         let expectedId = Guid.random ()
         let expectedUsername = String.random 32
-        let expectedEmail = sprintf "%s@%s.%s" (String.random 32) (String.random 32) (String.random 3)
+        let expectedEmail = EmailAddress.random ()
         let expectedNickname = String.random 64
 
-        let viewModel = makeSelfServiceRegisterViewModel expectedUsername expectedEmail expectedNickname
+        let viewModel = SelfServiceRegisterViewModel.make expectedUsername expectedEmail expectedNickname
 
         let actualCommand = SelfServiceRegisterExtensions.toCommand viewModel expectedId
 

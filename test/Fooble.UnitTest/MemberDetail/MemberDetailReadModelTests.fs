@@ -11,8 +11,8 @@ module MemberDetailReadModelTests =
     [<Test>]
     let ``Calling make, with valid parameters, returns read model`` () =
         let readModel =
-            makeMemberDetailReadModel (Guid.random ()) (String.random 32)
-                (sprintf "%s@%s.%s" (String.random 32) (String.random 32) (String.random 3)) (String.random 64)
+            makeTestMemberDetailReadModel (Guid.random ()) (String.random 32) (EmailAddress.random ())
+                (String.random 64)
 
         test <@ box readModel :? IMemberDetailReadModel @>
 
@@ -21,8 +21,7 @@ module MemberDetailReadModelTests =
         let expectedId = Guid.random ()
 
         let readModel =
-            makeMemberDetailReadModel expectedId (String.random 32)
-                (sprintf "%s@%s.%s" (String.random 32) (String.random 32) (String.random 3)) (String.random 64)
+            makeTestMemberDetailReadModel expectedId (String.random 32) (EmailAddress.random ()) (String.random 64)
 
         test <@ readModel.Id = expectedId @>
 
@@ -31,17 +30,16 @@ module MemberDetailReadModelTests =
         let expectedUsername = String.random 32
 
         let readModel =
-            makeMemberDetailReadModel (Guid.random ()) expectedUsername
-                (sprintf "%s@%s.%s" (String.random 32) (String.random 32) (String.random 3)) (String.random 64)
+            makeTestMemberDetailReadModel (Guid.random ()) expectedUsername (EmailAddress.random ()) (String.random 64)
 
         test <@ readModel.Username = expectedUsername @>
 
     [<Test>]
     let ``Calling email, returns expected email`` () =
-        let expectedEmail = sprintf "%s@%s.%s" (String.random 32) (String.random 32) (String.random 3)
+        let expectedEmail = EmailAddress.random ()
 
         let readModel =
-            makeMemberDetailReadModel (Guid.random ()) (String.random 32) expectedEmail (String.random 64)
+            makeTestMemberDetailReadModel (Guid.random ()) (String.random 32) expectedEmail (String.random 64)
 
         test <@ readModel.Email = expectedEmail @>
 
@@ -50,7 +48,6 @@ module MemberDetailReadModelTests =
         let expectedNickname = String.random 64
 
         let readModel =
-            makeMemberDetailReadModel (Guid.random ()) (String.random 32)
-                (sprintf "%s@%s.%s" (String.random 32) (String.random 32) (String.random 3)) expectedNickname
+            makeTestMemberDetailReadModel (Guid.random ()) (String.random 32) (EmailAddress.random ()) expectedNickname
 
         test <@ readModel.Nickname = expectedNickname @>

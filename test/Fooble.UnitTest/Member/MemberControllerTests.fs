@@ -20,8 +20,8 @@ module MemberControllerTests =
         let expectedParamName = "mediator"
         let expectedMessage = "Mediator is required"
 
-        raisesWith<ArgumentException> <@ new MemberController(null) @> (fun x ->
-            <@ x.ParamName = expectedParamName && (fixInvalidArgMessage x.Message) = expectedMessage @>)
+        raisesWith<ArgumentException> <@ new MemberController(null) @>
+            (fun x -> <@ x.ParamName = expectedParamName && (fixInvalidArgMessage x.Message) = expectedMessage @>)
 
     [<Test>]
     let ``Constructing, with valid parameters, returns expected result`` () =
@@ -31,11 +31,11 @@ module MemberControllerTests =
     let ``Calling detail, with matches in data store, returns expected result`` () =
         let matchingId = Guid.random ()
         let expectedUsername = String.random 32
-        let expectedEmail = sprintf "%s@%s.%s" (String.random 32) (String.random 32) (String.random 3)
+        let expectedEmail = EmailAddress.random ()
         let expectedNickname = String.random 64
 
         let queryResult =
-            makeMemberDetailReadModel matchingId expectedUsername expectedEmail expectedNickname
+            makeTestMemberDetailReadModel matchingId expectedUsername expectedEmail expectedNickname
             |> MemberDetailQuery.makeSuccessResult
         let mediatorMock = Mock<IMediator>()
         mediatorMock.SetupFunc(fun x -> x.Send(any ())).Returns(queryResult).Verifiable()
@@ -97,10 +97,10 @@ module MemberControllerTests =
     [<Test>]
     let ``Calling list, with matches in data store, returns expected result`` () =
         let expectedMembers = List.init 5 (fun _ ->
-            makeMemberListItemReadModel (Guid.random ()) (String.random 64))
+            makeTestMemberListItemReadModel (Guid.random ()) (String.random 64))
 
         let queryResult =
-            makeMemberListReadModel <| Seq.ofList expectedMembers
+            makeTestMemberListReadModel <| Seq.ofList expectedMembers
             |> MemberListQuery.makeSuccessResult
         let mediatorMock = Mock<IMediator>()
         mediatorMock.SetupFunc(fun x -> x.Send(any ())).Returns(queryResult).Verifiable()

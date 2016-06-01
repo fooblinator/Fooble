@@ -54,7 +54,10 @@
     <Compile Include="..\..\src\Common\GlobalAssemblyInfo.fs">
       <Link>Properties\GlobalAssemblyInfo.fs</Link>
     </Compile>
-    <Compile Include="Helpers.fs" />
+    <Compile Include="..\..\src\Common\CommonHelpers.fs">
+      <Link>CommonHelpers.fs</Link>
+    </Compile>
+    <Compile Include="IntegrationTestHelpers.fs" />
     <Compile Include="ToDataStore\MemberControllerToDataStoreTests.fs" />
     <Compile Include="ToDataStore\MemberDetailQueryHandlerToDataStoreTests.fs" />
     <Compile Include="ToDataStore\MemberListQueryHandlerToDataStoreTests.fs" />
@@ -122,11 +125,6 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Data.Entity" />
     <Reference Include="System.Numerics" />
-    <ProjectReference Include="..\..\src\Fooble.Common\Fooble.Common.fsproj">
-      <Name>Fooble.Common</Name>
-      <Project>{f61c2a8e-303c-4f38-8d8f-f364fdff3d7a}</Project>
-      <Private>True</Private>
-    </ProjectReference>
     <ProjectReference Include="..\..\src\Fooble.Core\Fooble.Core.fsproj">
       <Name>Fooble.Core</Name>
       <Project>{807e9944-9329-40c3-ac0e-74920a316cb6}</Project>

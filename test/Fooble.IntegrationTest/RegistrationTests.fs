@@ -20,7 +20,7 @@ module RegistrationsTests =
         ignore <| builder.RegisterModule(CoreRegistrations())
         ignore <| builder.RegisterModule(PersistenceRegistrations(connectionString))
         ignore <| builder.RegisterModule(PresentationRegistrations())
-        let container = builder.Build()
+        use container = builder.Build()
 
         let memberDetailQueryHandler =
             container.Resolve<IRequestHandler<IMemberDetailQuery, IMemberDetailQueryResult>>()
@@ -40,7 +40,7 @@ module RegistrationsTests =
         ignore <| builder.RegisterModule(CoreRegistrations())
         ignore <| builder.RegisterModule(PersistenceRegistrations(connectionString))
         ignore <| builder.RegisterModule(PresentationRegistrations())
-        let container = builder.Build()
+        use container = builder.Build()
 
         let singleInstanceFactory = container.Resolve<SingleInstanceFactory>()
         test <@ isNotNull singleInstanceFactory @>
@@ -69,7 +69,7 @@ module RegistrationsTests =
         ignore <| builder.RegisterModule(CoreRegistrations())
         ignore <| builder.RegisterModule(PersistenceRegistrations(connectionString))
         ignore <| builder.RegisterModule(PresentationRegistrations())
-        let container = builder.Build()
+        use container = builder.Build()
 
         let multiInstanceFactory = container.Resolve<MultiInstanceFactory>()
         test <@ isNotNull multiInstanceFactory @>

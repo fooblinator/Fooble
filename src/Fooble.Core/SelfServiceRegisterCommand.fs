@@ -5,30 +5,6 @@ open Fooble.Persistence
 open MediatR
 open System
 
-/// <summary>
-/// Represents the status of a self-service registration command.
-/// </summary>
-/// <remarks>The result is only one of "success", "username unavailable" or "email unavailable".</remarks>
-type ISelfServiceRegisterCommandResult =
-    /// Whether the result is "success" (or not).
-    abstract IsSuccess:bool with get
-    /// Whether the result is "username unavailable" (or not).
-    abstract IsUsernameUnavailable:bool with get
-    /// Whether the result is "email unavailable" (or not).
-    abstract IsEmailUnavailable:bool with get
-
-/// Represents the self-service registration command, and contains the potential member's detailed information.
-type ISelfServiceRegisterCommand =
-    inherit IRequest<ISelfServiceRegisterCommandResult>
-    /// The id that will potentially represent the member.
-    abstract Id:Guid with get
-    /// The username of the member.
-    abstract Username:string with get
-    /// The email of the member.
-    abstract Email:string with get
-    /// The nickname of the member.
-    abstract Nickname:string with get
-
 /// Provides command-related helpers for self-service register.
 [<RequireQualifiedAccess>]
 module SelfServiceRegisterCommand =

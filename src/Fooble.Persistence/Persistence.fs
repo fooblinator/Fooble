@@ -1,11 +1,19 @@
 ﻿namespace Fooble.Persistence
 
-open System
+open Fooble.Common
+open FSharp.Data.TypeProviders
+
+type internal EntityConnection = SqlEntityConnection<ConnectionStringName = "FoobleContext">
+type internal FoobleContext = EntityConnection.ServiceTypes.EntityContainer
+type internal MemberData = EntityConnection.ServiceTypes.MemberData
+
+type internal IExposeWrapped<'T> = abstract Inner:'T with get
 
 [<AutoOpen>]
-module internal Helpers =
+module internal PersistenceHelpers =
 
-    let internal wrapMemberData (memberData:MemberData) =
+    let wrapMemberData (memberData:MemberData) =
+        assert (isNotNull memberData)
         { new IMemberData with
 
               member this.Id
@@ -29,14 +37,16 @@ module internal Helpers =
               member this.Inner
                   with get() = memberData }
 
-    let internal unwrapMemberData (memberData:IMemberData) =
+    let private unwrapMemberData (memberData:IMemberData) =
         assert (memberData :? IExposeWrapped<MemberData>)
         (memberData :?> IExposeWrapped<MemberData>).Inner
 
-    let internal wrapFoobleContext (context:FoobleContext) =
+    let wrapFoobleContext (context:FoobleContext) =
+        assert (isNotNull context)
         { new IFoobleContext with
 
-            member this.GetMember(id:Guid) : IMemberData option =
+            member this.GetMember(id) =
+                assertMemberId id
                 query { for x in context.MemberData do
                         where (x.Id = id)
                         select x
@@ -44,28 +54,32 @@ module internal Helpers =
                 |> Option.ofObj
                 |> Option.map wrapMemberData
 
-            member this.GetMembers() : IMemberData list =
+            member this.GetMembers() =
                 query { for x in context.MemberData do
-                        sortBy x.Nickname 
+                        sortBy x.Nickname
                         select x }
                 |> Seq.map wrapMemberData
                 |> List.ofSeq
 
-            member this.ExistsMemberUsername(username:string) : bool =
+            member this.ExistsMemberUsername(username) =
+                assertMemberUsername username
                 query { for x in context.MemberData do
                         select x.Username
                         contains username }
 
-            member this.ExistsMemberEmail(email:string) : bool =
+            member this.ExistsMemberEmail(email) =
+                assertMemberEmail email
                 query { for x in context.MemberData do
                         select x.Email
                         contains email }
 
-            member this.AddMember(memberData:IMemberData) =
+            member this.AddMember(memberData) =
+                assertMemberData memberData
                 unwrapMemberData memberData
                 |> context.MemberData.AddObject
 
-            member this.DeleteMember(memberData:IMemberData) =
+            member this.DeleteMember(memberData) =
+                assertMemberData memberData
                 unwrapMemberData memberData
                 |> context.MemberData.DeleteObject
 

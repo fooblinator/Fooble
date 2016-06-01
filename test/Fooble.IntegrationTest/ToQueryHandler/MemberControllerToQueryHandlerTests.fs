@@ -5,7 +5,6 @@ open Fooble.Common
 open Fooble.Core.Infrastructure
 open Fooble.IntegrationTest
 open Fooble.Persistence
-open Fooble.Persistence.Infrastructure
 open Fooble.Presentation
 open Fooble.Presentation.Infrastructure
 open Fooble.Web.Controllers
@@ -23,7 +22,7 @@ module MemberControllerToQueryHandlerTests =
     let ``Constructing, with valid parameters, returns expected result`` () =
         let builder = ContainerBuilder()
         ignore <| builder.RegisterModule(CoreRegistrations())
-        let container = builder.Build()
+        use container = builder.Build()
 
         let mediator = container.Resolve<IMediator>()
         ignore <| new MemberController(mediator)
@@ -32,18 +31,17 @@ module MemberControllerToQueryHandlerTests =
     let ``Calling detail, with match in data store, returns expected result`` () =
         let expectedId = Guid.random ()
         let expectedUsername = String.random 32
-        let expectedEmail = sprintf "%s@%s.%s" (String.random 32) (String.random 32) (String.random 3)
+        let expectedEmail = EmailAddress.random ()
         let expectedNickname = String.random 64
 
-        let memberData = makeMemberData expectedId expectedUsername expectedEmail expectedNickname
+        let memberData = makeTestMemberData expectedId expectedUsername expectedEmail expectedNickname
         let contextMock = Mock<IFoobleContext>()
         contextMock.SetupFunc(fun x -> x.GetMember(any ())).Returns(Some memberData).Verifiable()
 
         let builder = ContainerBuilder()
-        ignore <| builder.RegisterModule(CoreRegistrations())
-        ignore <| builder.RegisterModule(PersistenceRegistrations(contextMock.Object, makeMemberDataFactory ()))
+        ignore <| builder.RegisterModule(CoreRegistrations(contextMock.Object, mock ()))
         ignore <| builder.RegisterModule(PresentationRegistrations())
-        let container = builder.Build()
+        use container = builder.Build()
 
         let mediator = container.Resolve<IMediator>()
         let controller = new MemberController(mediator)
@@ -80,10 +78,9 @@ module MemberControllerToQueryHandlerTests =
         contextMock.SetupFunc(fun x -> x.GetMember(any ())).Returns(None).Verifiable()
 
         let builder = ContainerBuilder()
-        ignore <| builder.RegisterModule(CoreRegistrations())
-        ignore <| builder.RegisterModule(PersistenceRegistrations(contextMock.Object, makeMemberDataFactory ()))
+        ignore <| builder.RegisterModule(CoreRegistrations(contextMock.Object, mock ()))
         ignore <| builder.RegisterModule(PresentationRegistrations())
-        let container = builder.Build()
+        use container = builder.Build()
 
         let mediator = container.Resolve<IMediator>()
         let controller = new MemberController(mediator)
@@ -109,17 +106,16 @@ module MemberControllerToQueryHandlerTests =
 
     [<Test>]
     let ``Calling list, with matches in data store, returns expected result`` () =
-        let members = List.init 5 (fun _ ->
-            makeMemberData (Guid.random ()) (String.random 32)
-                (sprintf "%s@%s.%s" (String.random 32) (String.random 32) (String.random 3)) (String.random 64))
+        let members =
+            List.init 5 (fun _ ->
+                makeTestMemberData (Guid.random ()) (String.random 32) (EmailAddress.random ()) (String.random 64))
         let contextMock = Mock<IFoobleContext>()
         contextMock.SetupFunc(fun x -> x.GetMembers()).Returns(members).Verifiable()
 
         let builder = ContainerBuilder()
-        ignore <| builder.RegisterModule(CoreRegistrations())
-        ignore <| builder.RegisterModule(PersistenceRegistrations(contextMock.Object, makeMemberDataFactory ()))
+        ignore <| builder.RegisterModule(CoreRegistrations(contextMock.Object, mock ()))
         ignore <| builder.RegisterModule(PresentationRegistrations())
-        let container = builder.Build()
+        use container = builder.Build()
 
         let mediator = container.Resolve<IMediator>()
         let controller = new MemberController(mediator)
@@ -155,10 +151,9 @@ module MemberControllerToQueryHandlerTests =
         contextMock.SetupFunc(fun x -> x.GetMembers()).Returns([]).Verifiable()
 
         let builder = ContainerBuilder()
-        ignore <| builder.RegisterModule(CoreRegistrations())
-        ignore <| builder.RegisterModule(PersistenceRegistrations(contextMock.Object, makeMemberDataFactory ()))
+        ignore <| builder.RegisterModule(CoreRegistrations(contextMock.Object, mock ()))
         ignore <| builder.RegisterModule(PresentationRegistrations())
-        let container = builder.Build()
+        use container = builder.Build()
 
         let mediator = container.Resolve<IMediator>()
         let controller = new MemberController(mediator)

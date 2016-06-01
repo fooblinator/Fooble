@@ -15,7 +15,7 @@ module MemberDetailQueryHandlerTests =
 
     [<Test>]
     let ``Calling make, with valid parameters, returns query handler`` () =
-        let handler = MemberDetailQuery.makeHandler (mock ()) (makeMemberDetailReadModelFactory ())
+        let handler = MemberDetailQuery.makeHandler (mock ()) (mock ())
 
         test <@ box handler :? IRequestHandler<IMemberDetailQuery, IMemberDetailQueryResult> @>
 
@@ -24,7 +24,7 @@ module MemberDetailQueryHandlerTests =
         let contextMock = Mock<IFoobleContext>()
         contextMock.SetupFunc(fun x -> x.GetMember(any ())).Returns(None).Verifiable()
 
-        let handler = MemberDetailQuery.makeHandler contextMock.Object (makeMemberDetailReadModelFactory ())
+        let handler = MemberDetailQuery.makeHandler contextMock.Object (mock ())
 
         let query = MemberDetailQuery.make (Guid.random ())
         let queryResult = handler.Handle(query)
@@ -38,14 +38,14 @@ module MemberDetailQueryHandlerTests =
     let ``Calling handle, with matching member in data store, returns expected result`` () =
         let expectedId = Guid.random ()
         let expectedUsername = String.random 32
-        let expectedEmail = sprintf "%s@%s.%s" (String.random 32) (String.random 32) (String.random 3)
+        let expectedEmail = EmailAddress.random ()
         let expectedNickname = String.random 64
 
-        let memberData = makeMemberData expectedId expectedUsername expectedEmail expectedNickname
+        let memberData = makeTestMemberData expectedId expectedUsername expectedEmail expectedNickname
         let contextMock = Mock<IFoobleContext>()
         contextMock.SetupFunc(fun x -> x.GetMember(any ())).Returns(Some memberData).Verifiable()
 
-        let handler = MemberDetailQuery.makeHandler contextMock.Object (makeMemberDetailReadModelFactory ())
+        let handler = MemberDetailQuery.makeHandler contextMock.Object (makeTestMemberDetailReadModelFactory ())
 
         let query = MemberDetailQuery.make expectedId
         let queryResult = handler.Handle(query)

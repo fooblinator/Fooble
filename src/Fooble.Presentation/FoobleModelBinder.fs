@@ -9,7 +9,7 @@ type FoobleModelBinder() =
     override this.BindModel(controllerContext, bindingContext) =
         match bindingContext.ModelType with
 
-        | x when x = typeof<ISelfServiceRegisterViewModel> -> 
+        | x when x = typeof<ISelfServiceRegisterViewModel> ->
             let form = controllerContext.HttpContext.Request.Form
 
             let username = form.Get("username")

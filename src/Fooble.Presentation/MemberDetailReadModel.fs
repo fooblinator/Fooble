@@ -1,7 +1,9 @@
 ﻿namespace Fooble.Presentation
 
 open Fooble.Common
+open Fooble.Core
 open System
+open System.Runtime.CompilerServices
 
 [<RequireQualifiedAccess>]
 module internal MemberDetailReadModel =
@@ -33,15 +35,34 @@ module internal MemberDetailReadModel =
                     match this with
                     | ReadModel (_, _, _, x) -> x
 
-    let internal make id username email nickname =
-        assert (Guid.isNotEmpty id)
-        assert (String.isNotNullOrEmpty username)
-        assert (String.isNotShorter 3 username)
-        assert (String.isNotLonger 32 username)
-        assert (String.isMatch "^[a-z0-9]+$" username)
-        assert (String.isNotNullOrEmpty email)
-        assert (String.isNotLonger 254 email)
-        assert (String.isEmail email)
-        assert (String.isNotNullOrEmpty nickname)
-        assert (String.isNotLonger 64 nickname)
+    let make id username email nickname =
+        assertMemberId id
+        assertMemberUsername username
+        assertMemberEmail email
+        assertMemberNickname nickname
         ReadModel (id, username, email, nickname) :> IMemberDetailReadModel
+
+/// Provides presentation-related extension methods for member detail.
+[<RequireQualifiedAccess>]
+[<Extension>]
+module MemberDetailExtensions =
+
+    /// <summary>
+    /// Constructs a message display read model from a member detail query result.
+    /// </summary>
+    /// <param name="result">The member detail query result to extend.</param>
+    /// <returns>Returns a message display read model.</returns>
+    /// <remarks>This method should only be called on unsuccessful results. For displaying a "success" result, use
+    /// <see cref="MessageDisplay.MakeReadModel"/> directly.</remarks>
+    [<Extension>]
+    [<CompiledName("ToMessageDisplayReadModel")>]
+    let toMessageDisplayReadModel (result:IMemberDetailQueryResult) =
+
+        [ (isNotNull << box), "Result parameter was null" ]
+        |> validate result "result" |> enforce
+
+        match result with
+        | x when x.IsNotFound ->
+            MessageDisplayReadModel.make "Member" "Detail" 404 MessageDisplayReadModel.warningSeverity
+                "No matching member could be found."
+        | _ -> invalidOp "Result was not unsuccessful"

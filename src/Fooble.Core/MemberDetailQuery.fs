@@ -6,24 +6,6 @@ open Fooble.Presentation
 open MediatR
 open System
 
-/// <summary>
-/// Represents the status of a member detail query, and potential results, if successful.
-/// </summary>
-/// <remarks>The result is only one of "success" or "not found".</remarks>
-type IMemberDetailQueryResult =
-    /// The single member's detail information to be presented.
-    abstract ReadModel:IMemberDetailReadModel with get
-    /// Whether the result is "success" (or not).
-    abstract IsSuccess:bool with get
-    /// Whether the result is "not found" (or not).
-    abstract IsNotFound:bool with get
-
-/// Contains a request for a single member's detailed information, for the purpose of presentation.
-type IMemberDetailQuery =
-    inherit IRequest<IMemberDetailQueryResult>
-    /// The member id to search for.
-    abstract Id:Guid with get
-
 /// Provides query-related helpers for member detail.
 [<RequireQualifiedAccess>]
 module MemberDetailQuery =

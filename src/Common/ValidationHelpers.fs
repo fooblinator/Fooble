@@ -1,14 +1,11 @@
-﻿namespace Fooble.Presentation
+﻿namespace Fooble.Common
 
-open Fooble.Common
 open Fooble.Core
 
 [<AutoOpen>]
-module internal Helpers =
+module internal ValidationHelpers =
 
-    (* Validation *)
-
-    let internal validate value paramName conditions =
+    let validate value paramName conditions =
         assert (String.isNotNullOrEmpty paramName)
         assert (List.isNotEmpty conditions)
 
@@ -18,7 +15,7 @@ module internal Helpers =
         | None -> ValidationResult.valid
         | Some x -> ValidationResult.makeInvalid paramName x
 
-    let internal enforce (result:IValidationResult) =
+    let enforce (result:IValidationResult) =
         match result with
         | x when x.IsInvalid -> invalidArg x.ParamName x.Message
         | _ -> ()

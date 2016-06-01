@@ -2,20 +2,6 @@
 
 open Fooble.Common
 
-/// <summary>
-/// Represents the status of parameter validation, and potential results, if invalid.
-/// </summary>
-/// <remarks>The result is only one of "valid" or "invalid".</remarks>
-type IValidationResult =
-    /// The name of the invalid parameter.
-    abstract ParamName:string with get
-    /// The message describing why the parameter is invalid.
-    abstract Message:string with get
-    /// Whether the result is "valid" (or not).
-    abstract IsValid:bool with get
-    /// Whether the result is "invalid" (or not).
-    abstract IsInvalid:bool with get
-
 [<RequireQualifiedAccess>]
 module ValidationResult =
 
@@ -68,21 +54,3 @@ module ValidationResult =
         if String.isNullOrEmpty paramName then invalidArg "paramName" "Param name is required"
         if String.isNullOrEmpty message then invalidArg "message" "Message is required"
         Invalid (paramName, message) :> IValidationResult
-
-[<AutoOpen>]
-module internal ValidationHelpers =
-
-    let internal validate value paramName conditions =
-        assert (String.isNotNullOrEmpty paramName)
-        assert (List.isNotEmpty conditions)
-
-        let chooser (f, x) = if f value then None else Some x
-
-        match Seq.tryPick chooser conditions with
-        | None -> ValidationResult.valid
-        | Some x -> ValidationResult.makeInvalid paramName x
-
-    let internal enforce (result:IValidationResult) =
-        match result with
-        | x when x.IsInvalid -> invalidArg x.ParamName x.Message
-        | _ -> ()

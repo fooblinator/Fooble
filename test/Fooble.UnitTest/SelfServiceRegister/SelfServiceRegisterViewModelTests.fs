@@ -1,7 +1,6 @@
 ﻿namespace Fooble.UnitTest
 
 open Fooble.Common
-open Fooble.Core
 open Fooble.Presentation
 open NUnit.Framework
 open Swensen.Unquote
@@ -18,8 +17,7 @@ module SelfServiceRegisterViewModelTests =
     [<Test>]
     let ``Calling make, with valid parameters, returns view model`` () =
         let viewModel =
-            SelfServiceRegisterViewModel.make (String.random 32)
-                (sprintf "%s@%s.%s" (String.random 32) (String.random 32) (String.random 3)) (String.random 64)
+            SelfServiceRegisterViewModel.make (String.random 32) (EmailAddress.random ()) (String.random 64)
 
         test <@ box viewModel :? ISelfServiceRegisterViewModel @>
 
@@ -35,9 +33,7 @@ module SelfServiceRegisterViewModelTests =
     let ``Calling username, with not initial view model, returns expected username`` () =
         let expectedUsername = String.random 32
 
-        let viewModel =
-            SelfServiceRegisterViewModel.make expectedUsername
-                (sprintf "%s@%s.%s" (String.random 32) (String.random 32) (String.random 3)) (String.random 64)
+        let viewModel = SelfServiceRegisterViewModel.make expectedUsername (EmailAddress.random ()) (String.random 64)
 
         test <@ viewModel.Username = expectedUsername @>
 
@@ -51,7 +47,7 @@ module SelfServiceRegisterViewModelTests =
 
     [<Test>]
     let ``Calling email, with not initial view model, returns expected email`` () =
-        let expectedEmail = sprintf "%s@%s.%s" (String.random 32) (String.random 32) (String.random 3)
+        let expectedEmail = EmailAddress.random ()
 
         let viewModel = SelfServiceRegisterViewModel.make (String.random 32) expectedEmail (String.random 64)
 
@@ -69,8 +65,6 @@ module SelfServiceRegisterViewModelTests =
     let ``Calling nickname, with not initial view model, returns expected name`` () =
         let expectedNickname = String.random 64
 
-        let viewModel =
-            SelfServiceRegisterViewModel.make (String.random 32)
-                (sprintf "%s@%s.%s" (String.random 32) (String.random 32) (String.random 3)) expectedNickname
+        let viewModel = SelfServiceRegisterViewModel.make (String.random 32) (EmailAddress.random ()) expectedNickname
 
         test <@ viewModel.Nickname = expectedNickname @>

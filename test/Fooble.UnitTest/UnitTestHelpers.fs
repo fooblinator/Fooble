@@ -11,13 +11,47 @@ open System.Web
 open System.Web.Mvc
 
 [<AutoOpen>]
-module internal Helpers =
+module internal UnitTestHelpers =
 
-    let internal fixInvalidArgMessage (message:string) =
+    let bindModel<'T> formValues =
+        let modelType = typeof<'T>
+
+        let formValues' = NameValueCollection()
+        Map.iter (fun k v -> formValues'.Add(k, v)) formValues
+
+        let valueProvider = NameValueCollectionValueProvider(formValues', null)
+
+        let modelMetadata = ModelMetadataProviders.Current.GetMetadataForType(null, modelType)
+
+        let bindingContext =
+            ModelBindingContext(ModelName = modelType.Name, ValueProvider = valueProvider,
+                ModelMetadata = modelMetadata)
+
+        let httpRequestMock = Mock<HttpRequestBase>()
+        httpRequestMock.SetupFunc(fun x -> x.Form).Returns(formValues').End
+
+        let httpContextMock = Mock<HttpContextBase>()
+        httpContextMock.SetupFunc(fun x -> x.Request).Returns(httpRequestMock.Object).End
+
+        let controllerContext = ControllerContext()
+        controllerContext.HttpContext <- httpContextMock.Object
+
+        let binder = FoobleModelBinder()
+
+        (binder.BindModel(controllerContext, bindingContext) :?> 'T, bindingContext.ModelState)
+
+    let fixInvalidArgMessage (message:string) =
         let i = message.IndexOf("Parameter name: ")
         message.Remove(i).Trim()
 
-    let internal makeMemberData id username email nickname =
+    let makeTestKeyGenerator key =
+        { new IKeyGenerator with
+            member this.GenerateKey() =
+                match key with
+                | Some x -> x
+                | None -> Guid.random () }
+
+    let makeTestMemberData id username email nickname =
         assert (Guid.isNotEmpty id)
         assert (String.isNotNullOrEmpty username)
         assert (String.isNotShorter 3 username)
@@ -52,9 +86,10 @@ module internal Helpers =
                   with get () = !nicknameRef
                   and set (v) = nicknameRef := v }
 
-    let internal makeMemberDataFactory () = MemberDataFactory(makeMemberData)
+    let makeTestMemberDataFactory () =
+        MemberDataFactory(makeTestMemberData)
 
-    let internal makeMemberDetailReadModel id username email nickname =
+    let makeTestMemberDetailReadModel id username email nickname =
         assert (Guid.isNotEmpty id)
         assert (String.isNotNullOrEmpty username)
         assert (String.isNotShorter 3 username)
@@ -72,9 +107,10 @@ module internal Helpers =
             member this.Email with get() = email
             member this.Nickname with get() = nickname }
 
-    let internal makeMemberDetailReadModelFactory () = MemberDetailReadModelFactory(makeMemberDetailReadModel)
+    let makeTestMemberDetailReadModelFactory () =
+        MemberDetailReadModelFactory(makeTestMemberDetailReadModel)
 
-    let internal makeMemberListItemReadModel id nickname =
+    let makeTestMemberListItemReadModel id nickname =
         assert (Guid.isNotEmpty id)
         assert (String.isNotNullOrEmpty nickname)
         assert (String.isNotLonger 64 nickname)
@@ -83,53 +119,14 @@ module internal Helpers =
             member this.Id with get() = id
             member this.Nickname with get() = nickname }
 
-    let internal makeMemberListItemReadModelFactory () = MemberListItemReadModelFactory(makeMemberListItemReadModel)
+    let makeTestMemberListItemReadModelFactory () =
+        MemberListItemReadModelFactory(makeTestMemberListItemReadModel)
 
-    let internal makeMemberListReadModel members =
+    let makeTestMemberListReadModel members =
         assert (Seq.isNotNullOrEmpty members)
 
         { new IMemberListReadModel with
             member this.Members with get() = members }
 
-    let internal makeMemberListReadModelFactory () = MemberListReadModelFactory(makeMemberListReadModel)
-
-    let internal makeSelfServiceRegisterViewModel username email nickname =
-        { new ISelfServiceRegisterViewModel with
-            member this.Username with get() = username
-            member this.Email with get() = email
-            member this.Nickname with get() = nickname }
-
-    let internal makeKeyGenerator key =
-        { new IKeyGenerator with
-            member this.GenerateKey() =
-                match key with
-                | Some x -> x
-                | None -> Guid.random () }
-
-    let internal bindModel<'T> formValues =
-        let modelType = typeof<'T>
-
-        let formValues' = NameValueCollection()
-        Map.iter (fun k v -> formValues'.Add(k, v)) formValues
-
-        let valueProvider = NameValueCollectionValueProvider(formValues', null)
-
-        let modelMetadata = ModelMetadataProviders.Current.GetMetadataForType(null, modelType)
-
-        let bindingContext =
-            ModelBindingContext(ModelName = modelType.Name, ValueProvider = valueProvider,
-                ModelMetadata = modelMetadata)
-
-        let httpRequestMock = Mock<HttpRequestBase>()
-        httpRequestMock.SetupFunc(fun x -> x.Form).Returns(formValues').End
-
-        let httpContextMock = Mock<HttpContextBase>()
-        httpContextMock.SetupFunc(fun x -> x.Request).Returns(httpRequestMock.Object).End
-
-        let controllerContext = ControllerContext()
-        controllerContext.HttpContext <- httpContextMock.Object
-
-        let binder = FoobleModelBinder()
-
-        (binder.BindModel(controllerContext, bindingContext) :?> 'T, bindingContext.ModelState)
-
+    let makeTestMemberListReadModelFactory () =
+        MemberListReadModelFactory(makeTestMemberListReadModel)
