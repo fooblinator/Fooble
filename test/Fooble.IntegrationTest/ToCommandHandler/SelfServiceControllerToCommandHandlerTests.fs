@@ -47,14 +47,9 @@ module SelfServiceControllerToCommandHandlerTests =
         let keyGenerator = container.Resolve<IKeyGenerator>()
         let controller = new SelfServiceController(mediator, keyGenerator)
 
-        let (viewModel, _) =
-            Map.empty
-                .Add("Username", existingUsername)
-                .Add("Password", expectedPassword)
-                .Add("ConfirmPassword", expectedPassword)
-                .Add("Email", expectedEmail)
-                .Add("Nickname", expectedNickname)
-            |> bindModel<ISelfServiceRegisterViewModel>
+        let viewModel =
+            bindSelfServiceRegisterViewModel existingUsername expectedPassword expectedPassword expectedEmail
+                expectedNickname
         let result = controller.Register viewModel
 
         contextMock.Verify()
@@ -69,16 +64,11 @@ module SelfServiceControllerToCommandHandlerTests =
         test <@ viewResult.Model :? ISelfServiceRegisterViewModel @>
 
         let actualViewModel = viewResult.Model :?> ISelfServiceRegisterViewModel
-        test <@ actualViewModel.Username = existingUsername @>
-        test <@ actualViewModel.Password = expectedPassword @>
-        test <@ actualViewModel.Email = expectedEmail @>
-        test <@ actualViewModel.Nickname = expectedNickname @>
+        testSelfServiceRegisterViewModel actualViewModel existingUsername expectedPassword expectedEmail
+            expectedNickname
 
         let actualModelState = viewResult.ViewData.ModelState
-        test <@ not (actualModelState.IsValid) @>
-        test <@ actualModelState.ContainsKey("username") @>
-        test <@ actualModelState.["username"].Errors.Count = 1 @>
-        test <@ actualModelState.["username"].Errors.[0].ErrorMessage = "Username is unavailable" @>
+        testModelState actualModelState "username" "Username is unavailable"
 
     [<Test>]
     let ``Calling register post, with existing email in data store, returns expected result`` () =
@@ -99,14 +89,9 @@ module SelfServiceControllerToCommandHandlerTests =
         let keyGenerator = container.Resolve<IKeyGenerator>()
         let controller = new SelfServiceController(mediator, keyGenerator)
 
-        let (viewModel, _) =
-            Map.empty
-                .Add("Username", expectedUsername)
-                .Add("Password", expectedPassword)
-                .Add("ConfirmPassword", expectedPassword)
-                .Add("Email", existingEmail)
-                .Add("Nickname", expectedNickname)
-            |> bindModel<ISelfServiceRegisterViewModel>
+        let viewModel =
+            bindSelfServiceRegisterViewModel expectedUsername expectedPassword expectedPassword existingEmail
+                expectedNickname
         let result = controller.Register viewModel
 
         contextMock.Verify()
@@ -121,16 +106,11 @@ module SelfServiceControllerToCommandHandlerTests =
         test <@ viewResult.Model :? ISelfServiceRegisterViewModel @>
 
         let actualViewModel = viewResult.Model :?> ISelfServiceRegisterViewModel
-        test <@ actualViewModel.Username = expectedUsername @>
-        test <@ actualViewModel.Password = expectedPassword @>
-        test <@ actualViewModel.Email = existingEmail @>
-        test <@ actualViewModel.Nickname = expectedNickname @>
+        testSelfServiceRegisterViewModel actualViewModel expectedUsername expectedPassword existingEmail
+            expectedNickname
 
         let actualModelState = viewResult.ViewData.ModelState
-        test <@ not (actualModelState.IsValid) @>
-        test <@ actualModelState.ContainsKey("email") @>
-        test <@ actualModelState.["email"].Errors.Count = 1 @>
-        test <@ actualModelState.["email"].Errors.[0].ErrorMessage = "Email is already registered" @>
+        testModelState actualModelState "email" "Email is already registered"
 
     [<Test>]
     let ``Calling register post, with no existing username or email in data store, returns expected result`` () =
@@ -150,15 +130,10 @@ module SelfServiceControllerToCommandHandlerTests =
         let controller = new SelfServiceController(mediator, keyGenerator)
 
         let password = Password.random 32
-        let (actualViewModel, _) =
-            Map.empty
-                .Add("Username", String.random 32)
-                .Add("Password", password)
-                .Add("ConfirmPassword", password)
-                .Add("Email", EmailAddress.random ())
-                .Add("Nickname", String.random 64)
-            |> bindModel<ISelfServiceRegisterViewModel>
-        let result = controller.Register actualViewModel
+        let viewModel =
+            bindSelfServiceRegisterViewModel (String.random 32) password password (EmailAddress.random ())
+                (String.random 64)
+        let result = controller.Register viewModel
 
         contextMock.Verify()
 

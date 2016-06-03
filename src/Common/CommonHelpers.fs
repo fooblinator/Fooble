@@ -1,14 +1,17 @@
 ﻿namespace Fooble.Common
 
 open System
+open System.Diagnostics
 open System.Net.Mail
 open System.Text.RegularExpressions
 
+[<DebuggerStepThrough>]
 [<AutoOpen>]
 module internal CommonHelpers =
 
     let isNotNull x = not <| isNull x
 
+[<DebuggerStepThrough>]
 [<RequireQualifiedAccess>]
 module internal Guid =
 
@@ -27,6 +30,7 @@ module internal Guid =
 
     let toString (x:Guid) = x.ToString()
 
+[<DebuggerStepThrough>]
 [<RequireQualifiedAccess>]
 module internal String =
 
@@ -67,6 +71,7 @@ module internal String =
         |> Array.take len
         |> ofArray
 
+[<DebuggerStepThrough>]
 [<RequireQualifiedAccess>]
 module internal Password =
 
@@ -96,11 +101,13 @@ module internal Password =
             | _ -> generate len
         fun len -> assert (len > 0); generate len
 
+[<DebuggerStepThrough>]
 [<RequireQualifiedAccess>]
 module internal EmailAddress =
 
     let random () = sprintf "%s@%s.%s" (String.random 14) (String.random 14) (String.random 2)
 
+[<DebuggerStepThrough>]
 [<RequireQualifiedAccess>]
 module internal Seq =
 
@@ -109,6 +116,7 @@ module internal Seq =
     let isNullOrEmpty x = isNull x || Seq.isEmpty x
     let isNotNullOrEmpty x = not <| isNullOrEmpty x
 
+[<DebuggerStepThrough>]
 [<RequireQualifiedAccess>]
 module internal List =
 

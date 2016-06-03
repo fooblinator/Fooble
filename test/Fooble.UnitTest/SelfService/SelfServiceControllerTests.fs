@@ -59,10 +59,7 @@ module SelfServiceControllerTests =
         test <@ viewResult.Model :? ISelfServiceRegisterViewModel @>
 
         let actualViewModel = viewResult.Model :?> ISelfServiceRegisterViewModel
-        test <@ actualViewModel.Username = emptyUsername @>
-        test <@ actualViewModel.Password = emptyPassword @>
-        test <@ actualViewModel.Email = emptyEmail @>
-        test <@ actualViewModel.Nickname = emptyNickname @>
+        testSelfServiceRegisterViewModel actualViewModel emptyUsername emptyPassword emptyEmail emptyNickname
 
     [<Test>]
     let ``Calling register post, with null username, returns expected result`` () =
@@ -75,14 +72,9 @@ module SelfServiceControllerTests =
         let controller = new SelfServiceController(mock (), keyGenerator)
         controller.ModelState.AddModelError("username", "Username is required")
 
-        let (viewModel, _) =
-            Map.empty
-                .Add("Username", nullUsername)
-                .Add("Password", expectedPassword)
-                .Add("ConfirmPassword", expectedPassword)
-                .Add("Email", expectedEmail)
-                .Add("Nickname", expectedNickname)
-            |> bindModel<ISelfServiceRegisterViewModel>
+        let viewModel =
+            bindSelfServiceRegisterViewModel2 nullUsername expectedPassword expectedPassword expectedEmail
+                expectedNickname
         let result = controller.Register viewModel
 
         test <@ isNotNull result @>
@@ -95,16 +87,10 @@ module SelfServiceControllerTests =
         test <@ viewResult.Model :? ISelfServiceRegisterViewModel @>
 
         let actualViewModel = viewResult.Model :?> ISelfServiceRegisterViewModel
-        test <@ actualViewModel.Username = nullUsername @>
-        test <@ actualViewModel.Password = expectedPassword @>
-        test <@ actualViewModel.Email = expectedEmail @>
-        test <@ actualViewModel.Nickname = expectedNickname @>
+        testSelfServiceRegisterViewModel actualViewModel nullUsername expectedPassword expectedEmail expectedNickname
 
         let actualModelState = viewResult.ViewData.ModelState
-        test <@ not (actualModelState.IsValid) @>
-        test <@ actualModelState.ContainsKey("username") @>
-        test <@ actualModelState.["username"].Errors.Count = 1 @>
-        test <@ actualModelState.["username"].Errors.[0].ErrorMessage = "Username is required" @>
+        testModelState actualModelState "username" "Username is required"
 
     [<Test>]
     let ``Calling register post, with empty username, returns expected result`` () =
@@ -117,14 +103,9 @@ module SelfServiceControllerTests =
         let controller = new SelfServiceController(mock (), keyGenerator)
         controller.ModelState.AddModelError("username", "Username is required")
 
-        let (viewModel, _) =
-            Map.empty
-                .Add("Username", emptyUsername)
-                .Add("Password", expectedPassword)
-                .Add("ConfirmPassword", expectedPassword)
-                .Add("Email", expectedEmail)
-                .Add("Nickname", expectedNickname)
-            |> bindModel<ISelfServiceRegisterViewModel>
+        let viewModel =
+            bindSelfServiceRegisterViewModel2 emptyUsername expectedPassword expectedPassword expectedEmail
+                expectedNickname
         let result = controller.Register viewModel
 
         test <@ isNotNull result @>
@@ -137,16 +118,10 @@ module SelfServiceControllerTests =
         test <@ viewResult.Model :? ISelfServiceRegisterViewModel @>
 
         let actualViewModel = viewResult.Model :?> ISelfServiceRegisterViewModel
-        test <@ actualViewModel.Username = emptyUsername @>
-        test <@ actualViewModel.Password = expectedPassword @>
-        test <@ actualViewModel.Email = expectedEmail @>
-        test <@ actualViewModel.Nickname = expectedNickname @>
+        testSelfServiceRegisterViewModel actualViewModel emptyUsername expectedPassword expectedEmail expectedNickname
 
         let actualModelState = viewResult.ViewData.ModelState
-        test <@ not (actualModelState.IsValid) @>
-        test <@ actualModelState.ContainsKey("username") @>
-        test <@ actualModelState.["username"].Errors.Count = 1 @>
-        test <@ actualModelState.["username"].Errors.[0].ErrorMessage = "Username is required" @>
+        testModelState actualModelState "username" "Username is required"
 
     [<Test>]
     let ``Calling register post, with username shorter than 3 characters, returns expected result`` () =
@@ -159,14 +134,9 @@ module SelfServiceControllerTests =
         let controller = new SelfServiceController(mock (), keyGenerator)
         controller.ModelState.AddModelError("username", "Username is shorter than 3 characters")
 
-        let (viewModel, _) =
-            Map.empty
-                .Add("Username", shortUsername)
-                .Add("Password", expectedPassword)
-                .Add("ConfirmPassword", expectedPassword)
-                .Add("Email", expectedEmail)
-                .Add("Nickname", expectedNickname)
-            |> bindModel<ISelfServiceRegisterViewModel>
+        let viewModel =
+            bindSelfServiceRegisterViewModel2 shortUsername expectedPassword expectedPassword expectedEmail
+                expectedNickname
         let result = controller.Register viewModel
 
         test <@ isNotNull result @>
@@ -179,16 +149,10 @@ module SelfServiceControllerTests =
         test <@ viewResult.Model :? ISelfServiceRegisterViewModel @>
 
         let actualViewModel = viewResult.Model :?> ISelfServiceRegisterViewModel
-        test <@ actualViewModel.Username = shortUsername @>
-        test <@ actualViewModel.Password = expectedPassword @>
-        test <@ actualViewModel.Email = expectedEmail @>
-        test <@ actualViewModel.Nickname = expectedNickname @>
+        testSelfServiceRegisterViewModel actualViewModel shortUsername expectedPassword expectedEmail expectedNickname
 
         let actualModelState = viewResult.ViewData.ModelState
-        test <@ not (actualModelState.IsValid) @>
-        test <@ actualModelState.ContainsKey("username") @>
-        test <@ actualModelState.["username"].Errors.Count = 1 @>
-        test <@ actualModelState.["username"].Errors.[0].ErrorMessage = "Username is shorter than 3 characters" @>
+        testModelState actualModelState "username" "Username is shorter than 3 characters"
 
     [<Test>]
     let ``Calling register post, with username longer than 32 characters, returns expected result`` () =
@@ -201,14 +165,9 @@ module SelfServiceControllerTests =
         let controller = new SelfServiceController(mock (), keyGenerator)
         controller.ModelState.AddModelError("username", "Username is longer than 32 characters")
 
-        let (viewModel, _) =
-            Map.empty
-                .Add("Username", longUsername)
-                .Add("Password", expectedPassword)
-                .Add("ConfirmPassword", expectedPassword)
-                .Add("Email", expectedEmail)
-                .Add("Nickname", expectedNickname)
-            |> bindModel<ISelfServiceRegisterViewModel>
+        let viewModel =
+            bindSelfServiceRegisterViewModel2 longUsername expectedPassword expectedPassword expectedEmail
+                expectedNickname
         let result = controller.Register viewModel
 
         test <@ isNotNull result @>
@@ -221,16 +180,10 @@ module SelfServiceControllerTests =
         test <@ viewResult.Model :? ISelfServiceRegisterViewModel @>
 
         let actualViewModel = viewResult.Model :?> ISelfServiceRegisterViewModel
-        test <@ actualViewModel.Username = longUsername @>
-        test <@ actualViewModel.Password = expectedPassword @>
-        test <@ actualViewModel.Email = expectedEmail @>
-        test <@ actualViewModel.Nickname = expectedNickname @>
+        testSelfServiceRegisterViewModel actualViewModel longUsername expectedPassword expectedEmail expectedNickname
 
         let actualModelState = viewResult.ViewData.ModelState
-        test <@ not (actualModelState.IsValid) @>
-        test <@ actualModelState.ContainsKey("username") @>
-        test <@ actualModelState.["username"].Errors.Count = 1 @>
-        test <@ actualModelState.["username"].Errors.[0].ErrorMessage = "Username is longer than 32 characters" @>
+        testModelState actualModelState "username" "Username is longer than 32 characters"
 
     [<Test>]
     let ``Calling register post, with username in invalid format, returns expected result`` () =
@@ -244,14 +197,9 @@ module SelfServiceControllerTests =
         controller.ModelState.AddModelError("username",
             "Username is not in the correct format (lowercase alphanumeric)")
 
-        let (viewModel, _) =
-            Map.empty
-                .Add("Username", invalidFormatUsername)
-                .Add("Password", expectedPassword)
-                .Add("ConfirmPassword", expectedPassword)
-                .Add("Email", expectedEmail)
-                .Add("Nickname", expectedNickname)
-            |> bindModel<ISelfServiceRegisterViewModel>
+        let viewModel =
+            bindSelfServiceRegisterViewModel2 invalidFormatUsername expectedPassword expectedPassword expectedEmail
+                expectedNickname
         let result = controller.Register viewModel
 
         test <@ isNotNull result @>
@@ -264,17 +212,11 @@ module SelfServiceControllerTests =
         test <@ viewResult.Model :? ISelfServiceRegisterViewModel @>
 
         let actualViewModel = viewResult.Model :?> ISelfServiceRegisterViewModel
-        test <@ actualViewModel.Username = invalidFormatUsername @>
-        test <@ actualViewModel.Password = expectedPassword @>
-        test <@ actualViewModel.Email = expectedEmail @>
-        test <@ actualViewModel.Nickname = expectedNickname @>
+        testSelfServiceRegisterViewModel actualViewModel invalidFormatUsername expectedPassword expectedEmail
+            expectedNickname
 
         let actualModelState = viewResult.ViewData.ModelState
-        test <@ not (actualModelState.IsValid) @>
-        test <@ actualModelState.ContainsKey("username") @>
-        test <@ actualModelState.["username"].Errors.Count = 1 @>
-        test <@ actualModelState.["username"].Errors.[0].ErrorMessage =
-            "Username is not in the correct format (lowercase alphanumeric)" @>
+        testModelState actualModelState "username" "Username is not in the correct format (lowercase alphanumeric)"
 
     [<Test>]
     let ``Calling register post, with null password, returns expected result`` () =
@@ -287,14 +229,8 @@ module SelfServiceControllerTests =
         let controller = new SelfServiceController(mock (), keyGenerator)
         controller.ModelState.AddModelError("password", "Password is required")
 
-        let (viewModel, _) =
-            Map.empty
-                .Add("Username", expectedUsername)
-                .Add("Password", nullPassword)
-                .Add("ConfirmPassword", nullPassword)
-                .Add("Email", expectedEmail)
-                .Add("Nickname", expectedNickname)
-            |> bindModel<ISelfServiceRegisterViewModel>
+        let viewModel =
+            bindSelfServiceRegisterViewModel2 expectedUsername nullPassword nullPassword expectedEmail expectedNickname
         let result = controller.Register viewModel
 
         test <@ isNotNull result @>
@@ -307,16 +243,10 @@ module SelfServiceControllerTests =
         test <@ viewResult.Model :? ISelfServiceRegisterViewModel @>
 
         let actualViewModel = viewResult.Model :?> ISelfServiceRegisterViewModel
-        test <@ actualViewModel.Username = expectedUsername @>
-        test <@ actualViewModel.Password = String.empty @>
-        test <@ actualViewModel.Email = expectedEmail @>
-        test <@ actualViewModel.Nickname = expectedNickname @>
+        testSelfServiceRegisterViewModel actualViewModel expectedUsername String.empty expectedEmail expectedNickname
 
         let actualModelState = viewResult.ViewData.ModelState
-        test <@ not (actualModelState.IsValid) @>
-        test <@ actualModelState.ContainsKey("password") @>
-        test <@ actualModelState.["password"].Errors.Count = 1 @>
-        test <@ actualModelState.["password"].Errors.[0].ErrorMessage = "Password is required" @>
+        testModelState actualModelState "password" "Password is required"
 
     [<Test>]
     let ``Calling register post, with empty password, returns expected result`` () =
@@ -329,14 +259,9 @@ module SelfServiceControllerTests =
         let controller = new SelfServiceController(mock (), keyGenerator)
         controller.ModelState.AddModelError("password", "Password is required")
 
-        let (viewModel, _) =
-            Map.empty
-                .Add("Username", expectedUsername)
-                .Add("Password", emptyPassword)
-                .Add("ConfirmPassword", emptyPassword)
-                .Add("Email", expectedEmail)
-                .Add("Nickname", expectedNickname)
-            |> bindModel<ISelfServiceRegisterViewModel>
+        let viewModel =
+            bindSelfServiceRegisterViewModel2 expectedUsername emptyPassword emptyPassword expectedEmail
+                expectedNickname
         let result = controller.Register viewModel
 
         test <@ isNotNull result @>
@@ -349,16 +274,10 @@ module SelfServiceControllerTests =
         test <@ viewResult.Model :? ISelfServiceRegisterViewModel @>
 
         let actualViewModel = viewResult.Model :?> ISelfServiceRegisterViewModel
-        test <@ actualViewModel.Username = expectedUsername @>
-        test <@ actualViewModel.Password = String.empty @>
-        test <@ actualViewModel.Email = expectedEmail @>
-        test <@ actualViewModel.Nickname = expectedNickname @>
+        testSelfServiceRegisterViewModel actualViewModel expectedUsername String.empty expectedEmail expectedNickname
 
         let actualModelState = viewResult.ViewData.ModelState
-        test <@ not (actualModelState.IsValid) @>
-        test <@ actualModelState.ContainsKey("password") @>
-        test <@ actualModelState.["password"].Errors.Count = 1 @>
-        test <@ actualModelState.["password"].Errors.[0].ErrorMessage = "Password is required" @>
+        testModelState actualModelState "password" "Password is required"
 
     [<Test>]
     let ``Calling register post, with password shorter than 8 characters, returns expected result`` () =
@@ -371,14 +290,9 @@ module SelfServiceControllerTests =
         let controller = new SelfServiceController(mock (), keyGenerator)
         controller.ModelState.AddModelError("password", "Password is shorter than 8 characters")
 
-        let (viewModel, _) =
-            Map.empty
-                .Add("Username", expectedUsername)
-                .Add("Password", shortPassword)
-                .Add("ConfirmPassword", shortPassword)
-                .Add("Email", expectedEmail)
-                .Add("Nickname", expectedNickname)
-            |> bindModel<ISelfServiceRegisterViewModel>
+        let viewModel =
+            bindSelfServiceRegisterViewModel2 expectedUsername shortPassword shortPassword expectedEmail
+                expectedNickname
         let result = controller.Register viewModel
 
         test <@ isNotNull result @>
@@ -391,16 +305,10 @@ module SelfServiceControllerTests =
         test <@ viewResult.Model :? ISelfServiceRegisterViewModel @>
 
         let actualViewModel = viewResult.Model :?> ISelfServiceRegisterViewModel
-        test <@ actualViewModel.Username = expectedUsername @>
-        test <@ actualViewModel.Password = String.empty @>
-        test <@ actualViewModel.Email = expectedEmail @>
-        test <@ actualViewModel.Nickname = expectedNickname @>
+        testSelfServiceRegisterViewModel actualViewModel expectedUsername String.empty expectedEmail expectedNickname
 
         let actualModelState = viewResult.ViewData.ModelState
-        test <@ not (actualModelState.IsValid) @>
-        test <@ actualModelState.ContainsKey("password") @>
-        test <@ actualModelState.["password"].Errors.Count = 1 @>
-        test <@ actualModelState.["password"].Errors.[0].ErrorMessage = "Password is shorter than 8 characters" @>
+        testModelState actualModelState "password" "Password is shorter than 8 characters"
 
     [<Test>]
     let ``Calling register post, with password longer than 32 characters, returns expected result`` () =
@@ -413,14 +321,8 @@ module SelfServiceControllerTests =
         let controller = new SelfServiceController(mock (), keyGenerator)
         controller.ModelState.AddModelError("password", "Password is longer than 32 characters")
 
-        let (viewModel, _) =
-            Map.empty
-                .Add("Username", expectedUsername)
-                .Add("Password", longPassword)
-                .Add("ConfirmPassword", longPassword)
-                .Add("Email", expectedEmail)
-                .Add("Nickname", expectedNickname)
-            |> bindModel<ISelfServiceRegisterViewModel>
+        let viewModel =
+            bindSelfServiceRegisterViewModel2 expectedUsername longPassword longPassword expectedEmail expectedNickname
         let result = controller.Register viewModel
 
         test <@ isNotNull result @>
@@ -433,16 +335,10 @@ module SelfServiceControllerTests =
         test <@ viewResult.Model :? ISelfServiceRegisterViewModel @>
 
         let actualViewModel = viewResult.Model :?> ISelfServiceRegisterViewModel
-        test <@ actualViewModel.Username = expectedUsername @>
-        test <@ actualViewModel.Password = String.empty @>
-        test <@ actualViewModel.Email = expectedEmail @>
-        test <@ actualViewModel.Nickname = expectedNickname @>
+        testSelfServiceRegisterViewModel actualViewModel expectedUsername String.empty expectedEmail expectedNickname
 
         let actualModelState = viewResult.ViewData.ModelState
-        test <@ not (actualModelState.IsValid) @>
-        test <@ actualModelState.ContainsKey("password") @>
-        test <@ actualModelState.["password"].Errors.Count = 1 @>
-        test <@ actualModelState.["password"].Errors.[0].ErrorMessage = "Password is longer than 32 characters" @>
+        testModelState actualModelState "password" "Password is longer than 32 characters"
 
     [<Test>]
     let ``Calling register post, with password without digits, returns expected result`` () =
@@ -455,14 +351,9 @@ module SelfServiceControllerTests =
         let controller = new SelfServiceController(mock (), keyGenerator)
         controller.ModelState.AddModelError("password", "Password does not contain any numbers")
 
-        let (viewModel, _) =
-            Map.empty
-                .Add("Username", expectedUsername)
-                .Add("Password", noDigitsPassword)
-                .Add("ConfirmPassword", noDigitsPassword)
-                .Add("Email", expectedEmail)
-                .Add("Nickname", expectedNickname)
-            |> bindModel<ISelfServiceRegisterViewModel>
+        let viewModel =
+            bindSelfServiceRegisterViewModel2 expectedUsername noDigitsPassword noDigitsPassword expectedEmail
+                expectedNickname
         let result = controller.Register viewModel
 
         test <@ isNotNull result @>
@@ -475,16 +366,10 @@ module SelfServiceControllerTests =
         test <@ viewResult.Model :? ISelfServiceRegisterViewModel @>
 
         let actualViewModel = viewResult.Model :?> ISelfServiceRegisterViewModel
-        test <@ actualViewModel.Username = expectedUsername @>
-        test <@ actualViewModel.Password = String.empty @>
-        test <@ actualViewModel.Email = expectedEmail @>
-        test <@ actualViewModel.Nickname = expectedNickname @>
+        testSelfServiceRegisterViewModel actualViewModel expectedUsername String.empty expectedEmail expectedNickname
 
         let actualModelState = viewResult.ViewData.ModelState
-        test <@ not (actualModelState.IsValid) @>
-        test <@ actualModelState.ContainsKey("password") @>
-        test <@ actualModelState.["password"].Errors.Count = 1 @>
-        test <@ actualModelState.["password"].Errors.[0].ErrorMessage = "Password does not contain any numbers" @>
+        testModelState actualModelState "password" "Password does not contain any numbers"
 
     [<Test>]
     let ``Calling register post, with password without lower alphas, returns expected result`` () =
@@ -497,14 +382,9 @@ module SelfServiceControllerTests =
         let controller = new SelfServiceController(mock (), keyGenerator)
         controller.ModelState.AddModelError("password", "Password does not contain any lower-case letters")
 
-        let (viewModel, _) =
-            Map.empty
-                .Add("Username", expectedUsername)
-                .Add("Password", noLowerAlphasPassword)
-                .Add("ConfirmPassword", noLowerAlphasPassword)
-                .Add("Email", expectedEmail)
-                .Add("Nickname", expectedNickname)
-            |> bindModel<ISelfServiceRegisterViewModel>
+        let viewModel =
+            bindSelfServiceRegisterViewModel2 expectedUsername noLowerAlphasPassword noLowerAlphasPassword
+                expectedEmail expectedNickname
         let result = controller.Register viewModel
 
         test <@ isNotNull result @>
@@ -517,16 +397,10 @@ module SelfServiceControllerTests =
         test <@ viewResult.Model :? ISelfServiceRegisterViewModel @>
 
         let actualViewModel = viewResult.Model :?> ISelfServiceRegisterViewModel
-        test <@ actualViewModel.Username = expectedUsername @>
-        test <@ actualViewModel.Password = String.empty @>
-        test <@ actualViewModel.Email = expectedEmail @>
-        test <@ actualViewModel.Nickname = expectedNickname @>
+        testSelfServiceRegisterViewModel actualViewModel expectedUsername String.empty expectedEmail expectedNickname
 
         let actualModelState = viewResult.ViewData.ModelState
-        test <@ not (actualModelState.IsValid) @>
-        test <@ actualModelState.ContainsKey("password") @>
-        test <@ actualModelState.["password"].Errors.Count = 1 @>
-        test <@ actualModelState.["password"].Errors.[0].ErrorMessage = "Password does not contain any lower-case letters" @>
+        testModelState actualModelState "password" "Password does not contain any lower-case letters"
 
     [<Test>]
     let ``Calling register post, with password without upper alphas, returns expected result`` () =
@@ -539,14 +413,9 @@ module SelfServiceControllerTests =
         let controller = new SelfServiceController(mock (), keyGenerator)
         controller.ModelState.AddModelError("password", "Password does not contain any upper-case letters")
 
-        let (viewModel, _) =
-            Map.empty
-                .Add("Username", expectedUsername)
-                .Add("Password", noUpperAlphasPassword)
-                .Add("ConfirmPassword", noUpperAlphasPassword)
-                .Add("Email", expectedEmail)
-                .Add("Nickname", expectedNickname)
-            |> bindModel<ISelfServiceRegisterViewModel>
+        let viewModel =
+            bindSelfServiceRegisterViewModel2 expectedUsername noUpperAlphasPassword noUpperAlphasPassword
+                expectedEmail expectedNickname
         let result = controller.Register viewModel
 
         test <@ isNotNull result @>
@@ -559,16 +428,10 @@ module SelfServiceControllerTests =
         test <@ viewResult.Model :? ISelfServiceRegisterViewModel @>
 
         let actualViewModel = viewResult.Model :?> ISelfServiceRegisterViewModel
-        test <@ actualViewModel.Username = expectedUsername @>
-        test <@ actualViewModel.Password = String.empty @>
-        test <@ actualViewModel.Email = expectedEmail @>
-        test <@ actualViewModel.Nickname = expectedNickname @>
+        testSelfServiceRegisterViewModel actualViewModel expectedUsername String.empty expectedEmail expectedNickname
 
         let actualModelState = viewResult.ViewData.ModelState
-        test <@ not (actualModelState.IsValid) @>
-        test <@ actualModelState.ContainsKey("password") @>
-        test <@ actualModelState.["password"].Errors.Count = 1 @>
-        test <@ actualModelState.["password"].Errors.[0].ErrorMessage = "Password does not contain any upper-case letters" @>
+        testModelState actualModelState "password" "Password does not contain any upper-case letters"
 
     [<Test>]
     let ``Calling register post, with password without special chars, returns expected result`` () =
@@ -581,14 +444,9 @@ module SelfServiceControllerTests =
         let controller = new SelfServiceController(mock (), keyGenerator)
         controller.ModelState.AddModelError("password", "Password  does not contain any special characters")
 
-        let (viewModel, _) =
-            Map.empty
-                .Add("Username", expectedUsername)
-                .Add("Password", noSpecialCharsPassword)
-                .Add("ConfirmPassword", noSpecialCharsPassword)
-                .Add("Email", expectedEmail)
-                .Add("Nickname", expectedNickname)
-            |> bindModel<ISelfServiceRegisterViewModel>
+        let viewModel =
+            bindSelfServiceRegisterViewModel2 expectedUsername noSpecialCharsPassword noSpecialCharsPassword
+                expectedEmail expectedNickname
         let result = controller.Register viewModel
 
         test <@ isNotNull result @>
@@ -601,17 +459,10 @@ module SelfServiceControllerTests =
         test <@ viewResult.Model :? ISelfServiceRegisterViewModel @>
 
         let actualViewModel = viewResult.Model :?> ISelfServiceRegisterViewModel
-        test <@ actualViewModel.Username = expectedUsername @>
-        test <@ actualViewModel.Password = String.empty @>
-        test <@ actualViewModel.Email = expectedEmail @>
-        test <@ actualViewModel.Nickname = expectedNickname @>
+        testSelfServiceRegisterViewModel actualViewModel expectedUsername String.empty expectedEmail expectedNickname
 
         let actualModelState = viewResult.ViewData.ModelState
-        test <@ not (actualModelState.IsValid) @>
-        test <@ actualModelState.ContainsKey("password") @>
-        test <@ actualModelState.["password"].Errors.Count = 1 @>
-        test <@ actualModelState.["password"].Errors.[0].ErrorMessage =
-            "Password  does not contain any special characters" @>
+        testModelState actualModelState "password" "Password  does not contain any special characters"
 
     [<Test>]
     let ``Calling register post, with password without invalid chars, returns expected result`` () =
@@ -624,14 +475,9 @@ module SelfServiceControllerTests =
         let controller = new SelfServiceController(mock (), keyGenerator)
         controller.ModelState.AddModelError("password", "Password contains invalid characters")
 
-        let (viewModel, _) =
-            Map.empty
-                .Add("Username", expectedUsername)
-                .Add("Password", invalidCharsPassword)
-                .Add("ConfirmPassword", invalidCharsPassword)
-                .Add("Email", expectedEmail)
-                .Add("Nickname", expectedNickname)
-            |> bindModel<ISelfServiceRegisterViewModel>
+        let viewModel =
+            bindSelfServiceRegisterViewModel2 expectedUsername invalidCharsPassword invalidCharsPassword expectedEmail
+                expectedNickname
         let result = controller.Register viewModel
 
         test <@ isNotNull result @>
@@ -644,16 +490,10 @@ module SelfServiceControllerTests =
         test <@ viewResult.Model :? ISelfServiceRegisterViewModel @>
 
         let actualViewModel = viewResult.Model :?> ISelfServiceRegisterViewModel
-        test <@ actualViewModel.Username = expectedUsername @>
-        test <@ actualViewModel.Password = String.empty @>
-        test <@ actualViewModel.Email = expectedEmail @>
-        test <@ actualViewModel.Nickname = expectedNickname @>
+        testSelfServiceRegisterViewModel actualViewModel expectedUsername String.empty expectedEmail expectedNickname
 
         let actualModelState = viewResult.ViewData.ModelState
-        test <@ not (actualModelState.IsValid) @>
-        test <@ actualModelState.ContainsKey("password") @>
-        test <@ actualModelState.["password"].Errors.Count = 1 @>
-        test <@ actualModelState.["password"].Errors.[0].ErrorMessage = "Password contains invalid characters" @>
+        testModelState actualModelState "password" "Password contains invalid characters"
 
     [<Test>]
     let ``Calling register post, with non-matching passwords, returns expected result`` () =
@@ -666,14 +506,9 @@ module SelfServiceControllerTests =
         let controller = new SelfServiceController(mock (), keyGenerator)
         controller.ModelState.AddModelError("confirmPassword", "Passwords do not match")
 
-        let (viewModel, _) =
-            Map.empty
-                .Add("Username", expectedUsername)
-                .Add("Password", Password.random 32)
-                .Add("ConfirmPassword", nonMatchingConfirmPassword)
-                .Add("Email", expectedEmail)
-                .Add("Nickname", expectedNickname)
-            |> bindModel<ISelfServiceRegisterViewModel>
+        let viewModel =
+            bindSelfServiceRegisterViewModel2 expectedUsername (Password.random 32) nonMatchingConfirmPassword
+                expectedEmail expectedNickname
         let result = controller.Register viewModel
 
         test <@ isNotNull result @>
@@ -686,16 +521,10 @@ module SelfServiceControllerTests =
         test <@ viewResult.Model :? ISelfServiceRegisterViewModel @>
 
         let actualViewModel = viewResult.Model :?> ISelfServiceRegisterViewModel
-        test <@ actualViewModel.Username = expectedUsername @>
-        test <@ actualViewModel.Password = String.empty @>
-        test <@ actualViewModel.Email = expectedEmail @>
-        test <@ actualViewModel.Nickname = expectedNickname @>
+        testSelfServiceRegisterViewModel actualViewModel expectedUsername String.empty expectedEmail expectedNickname
 
         let actualModelState = viewResult.ViewData.ModelState
-        test <@ not (actualModelState.IsValid) @>
-        test <@ actualModelState.ContainsKey("confirmPassword") @>
-        test <@ actualModelState.["confirmPassword"].Errors.Count = 1 @>
-        test <@ actualModelState.["confirmPassword"].Errors.[0].ErrorMessage = "Passwords do not match" @>
+        testModelState actualModelState "confirmPassword" "Passwords do not match"
 
     [<Test>]
     let ``Calling register post, with null email, returns expected result`` () =
@@ -708,14 +537,9 @@ module SelfServiceControllerTests =
         let controller = new SelfServiceController(mock (), keyGenerator)
         controller.ModelState.AddModelError("email", "Email is required")
 
-        let (viewModel, _) =
-            Map.empty
-                .Add("Username", expectedUsername)
-                .Add("Password", expectedPassword)
-                .Add("ConfirmPassword", expectedPassword)
-                .Add("Email", nullEmail)
-                .Add("Nickname", expectedNickname)
-            |> bindModel<ISelfServiceRegisterViewModel>
+        let viewModel =
+            bindSelfServiceRegisterViewModel2 expectedUsername expectedPassword expectedPassword nullEmail
+                expectedNickname
         let result = controller.Register viewModel
 
         test <@ isNotNull result @>
@@ -728,16 +552,10 @@ module SelfServiceControllerTests =
         test <@ viewResult.Model :? ISelfServiceRegisterViewModel @>
 
         let actualViewModel = viewResult.Model :?> ISelfServiceRegisterViewModel
-        test <@ actualViewModel.Username = expectedUsername @>
-        test <@ actualViewModel.Password = expectedPassword @>
-        test <@ actualViewModel.Email = nullEmail @>
-        test <@ actualViewModel.Nickname = expectedNickname @>
+        testSelfServiceRegisterViewModel actualViewModel expectedUsername expectedPassword nullEmail expectedNickname
 
         let actualModelState = viewResult.ViewData.ModelState
-        test <@ not (actualModelState.IsValid) @>
-        test <@ actualModelState.ContainsKey("email") @>
-        test <@ actualModelState.["email"].Errors.Count = 1 @>
-        test <@ actualModelState.["email"].Errors.[0].ErrorMessage = "Email is required" @>
+        testModelState actualModelState "email" "Email is required"
 
     [<Test>]
     let ``Calling register post, with empty email, returns expected result`` () =
@@ -750,14 +568,9 @@ module SelfServiceControllerTests =
         let controller = new SelfServiceController(mock (), keyGenerator)
         controller.ModelState.AddModelError("email", "Email is required")
 
-        let (viewModel, _) =
-            Map.empty
-                .Add("Username", expectedUsername)
-                .Add("Password", expectedPassword)
-                .Add("ConfirmPassword", expectedPassword)
-                .Add("Email", emptyEmail)
-                .Add("Nickname", expectedNickname)
-            |> bindModel<ISelfServiceRegisterViewModel>
+        let viewModel =
+            bindSelfServiceRegisterViewModel2 expectedUsername expectedPassword expectedPassword emptyEmail
+                expectedNickname
         let result = controller.Register viewModel
 
         test <@ isNotNull result @>
@@ -770,16 +583,10 @@ module SelfServiceControllerTests =
         test <@ viewResult.Model :? ISelfServiceRegisterViewModel @>
 
         let actualViewModel = viewResult.Model :?> ISelfServiceRegisterViewModel
-        test <@ actualViewModel.Username = expectedUsername @>
-        test <@ actualViewModel.Password = expectedPassword @>
-        test <@ actualViewModel.Email = emptyEmail @>
-        test <@ actualViewModel.Nickname = expectedNickname @>
+        testSelfServiceRegisterViewModel actualViewModel expectedUsername expectedPassword emptyEmail expectedNickname
 
         let actualModelState = viewResult.ViewData.ModelState
-        test <@ not (actualModelState.IsValid) @>
-        test <@ actualModelState.ContainsKey("email") @>
-        test <@ actualModelState.["email"].Errors.Count = 1 @>
-        test <@ actualModelState.["email"].Errors.[0].ErrorMessage = "Email is required" @>
+        testModelState actualModelState "email" "Email is required"
 
     [<Test>]
     let ``Calling register post, with email longer than 254 characters, returns expected result`` () =
@@ -792,14 +599,9 @@ module SelfServiceControllerTests =
         let controller = new SelfServiceController(mock (), keyGenerator)
         controller.ModelState.AddModelError("email", "Email is longer than 254 characters")
 
-        let (viewModel, _) =
-            Map.empty
-                .Add("Username", expectedUsername)
-                .Add("Password", expectedPassword)
-                .Add("ConfirmPassword", expectedPassword)
-                .Add("Email", longEmail)
-                .Add("Nickname", expectedNickname)
-            |> bindModel<ISelfServiceRegisterViewModel>
+        let viewModel =
+            bindSelfServiceRegisterViewModel2 expectedUsername expectedPassword expectedPassword longEmail
+                expectedNickname
         let result = controller.Register viewModel
 
         test <@ isNotNull result @>
@@ -812,16 +614,10 @@ module SelfServiceControllerTests =
         test <@ viewResult.Model :? ISelfServiceRegisterViewModel @>
 
         let actualViewModel = viewResult.Model :?> ISelfServiceRegisterViewModel
-        test <@ actualViewModel.Username = expectedUsername @>
-        test <@ actualViewModel.Password = expectedPassword @>
-        test <@ actualViewModel.Email = longEmail @>
-        test <@ actualViewModel.Nickname = expectedNickname @>
+        testSelfServiceRegisterViewModel actualViewModel expectedUsername expectedPassword longEmail expectedNickname
 
         let actualModelState = viewResult.ViewData.ModelState
-        test <@ not (actualModelState.IsValid) @>
-        test <@ actualModelState.ContainsKey("email") @>
-        test <@ actualModelState.["email"].Errors.Count = 1 @>
-        test <@ actualModelState.["email"].Errors.[0].ErrorMessage = "Email is longer than 254 characters" @>
+        testModelState actualModelState "email" "Email is longer than 254 characters"
 
     [<Test>]
     let ``Calling register post, with email in invalid format, returns expected result`` () =
@@ -834,14 +630,9 @@ module SelfServiceControllerTests =
         let controller = new SelfServiceController(mock (), keyGenerator)
         controller.ModelState.AddModelError("email", "Email is not in the correct format")
 
-        let (viewModel, _) =
-            Map.empty
-                .Add("Username", expectedUsername)
-                .Add("Password", expectedPassword)
-                .Add("ConfirmPassword", expectedPassword)
-                .Add("Email", invalidFormatEmail)
-                .Add("Nickname", expectedNickname)
-            |> bindModel<ISelfServiceRegisterViewModel>
+        let viewModel =
+            bindSelfServiceRegisterViewModel2 expectedUsername expectedPassword expectedPassword invalidFormatEmail
+                expectedNickname
         let result = controller.Register viewModel
 
         test <@ isNotNull result @>
@@ -854,16 +645,11 @@ module SelfServiceControllerTests =
         test <@ viewResult.Model :? ISelfServiceRegisterViewModel @>
 
         let actualViewModel = viewResult.Model :?> ISelfServiceRegisterViewModel
-        test <@ actualViewModel.Username = expectedUsername @>
-        test <@ actualViewModel.Password = expectedPassword @>
-        test <@ actualViewModel.Email = invalidFormatEmail @>
-        test <@ actualViewModel.Nickname = expectedNickname @>
+        testSelfServiceRegisterViewModel actualViewModel expectedUsername expectedPassword invalidFormatEmail
+            expectedNickname
 
         let actualModelState = viewResult.ViewData.ModelState
-        test <@ not (actualModelState.IsValid) @>
-        test <@ actualModelState.ContainsKey("email") @>
-        test <@ actualModelState.["email"].Errors.Count = 1 @>
-        test <@ actualModelState.["email"].Errors.[0].ErrorMessage = "Email is not in the correct format" @>
+        testModelState actualModelState "email" "Email is not in the correct format"
 
     [<Test>]
     let ``Calling register post, with null nickname, returns expected result`` () =
@@ -876,14 +662,9 @@ module SelfServiceControllerTests =
         let controller = new SelfServiceController(mock (), keyGenerator)
         controller.ModelState.AddModelError("nickname", "Nickname is required")
 
-        let (viewModel, _) =
-            Map.empty
-                .Add("Username", expectedUsername)
-                .Add("Password", expectedPassword)
-                .Add("ConfirmPassword", expectedPassword)
-                .Add("Email", expectedEmail)
-                .Add("Nickname", nullNickname)
-            |> bindModel<ISelfServiceRegisterViewModel>
+        let viewModel =
+            bindSelfServiceRegisterViewModel2 expectedUsername expectedPassword expectedPassword expectedEmail
+                nullNickname
         let result = controller.Register viewModel
 
         test <@ isNotNull result @>
@@ -896,16 +677,10 @@ module SelfServiceControllerTests =
         test <@ viewResult.Model :? ISelfServiceRegisterViewModel @>
 
         let actualViewModel = viewResult.Model :?> ISelfServiceRegisterViewModel
-        test <@ actualViewModel.Username = expectedUsername @>
-        test <@ actualViewModel.Password = expectedPassword @>
-        test <@ actualViewModel.Email = expectedEmail @>
-        test <@ actualViewModel.Nickname = nullNickname @>
+        testSelfServiceRegisterViewModel actualViewModel expectedUsername expectedPassword expectedEmail nullNickname
 
         let actualModelState = viewResult.ViewData.ModelState
-        test <@ not (actualModelState.IsValid) @>
-        test <@ actualModelState.ContainsKey("nickname") @>
-        test <@ actualModelState.["nickname"].Errors.Count = 1 @>
-        test <@ actualModelState.["nickname"].Errors.[0].ErrorMessage = "Nickname is required" @>
+        testModelState actualModelState "nickname" "Nickname is required"
 
     [<Test>]
     let ``Calling register post, with empty nickname, returns expected result`` () =
@@ -918,14 +693,9 @@ module SelfServiceControllerTests =
         let controller = new SelfServiceController(mock (), keyGenerator)
         controller.ModelState.AddModelError("nickname", "Nickname is required")
 
-        let (viewModel, _) =
-            Map.empty
-                .Add("Username", expectedUsername)
-                .Add("Password", expectedPassword)
-                .Add("ConfirmPassword", expectedPassword)
-                .Add("Email", expectedEmail)
-                .Add("Nickname", emptyNickname)
-            |> bindModel<ISelfServiceRegisterViewModel>
+        let viewModel =
+            bindSelfServiceRegisterViewModel2 expectedUsername expectedPassword expectedPassword expectedEmail
+                emptyNickname
         let result = controller.Register viewModel
 
         test <@ isNotNull result @>
@@ -938,16 +708,10 @@ module SelfServiceControllerTests =
         test <@ viewResult.Model :? ISelfServiceRegisterViewModel @>
 
         let actualViewModel = viewResult.Model :?> ISelfServiceRegisterViewModel
-        test <@ actualViewModel.Username = expectedUsername @>
-        test <@ actualViewModel.Password = expectedPassword @>
-        test <@ actualViewModel.Email = expectedEmail @>
-        test <@ actualViewModel.Nickname = emptyNickname @>
+        testSelfServiceRegisterViewModel actualViewModel expectedUsername expectedPassword expectedEmail emptyNickname
 
         let actualModelState = viewResult.ViewData.ModelState
-        test <@ not (actualModelState.IsValid) @>
-        test <@ actualModelState.ContainsKey("nickname") @>
-        test <@ actualModelState.["nickname"].Errors.Count = 1 @>
-        test <@ actualModelState.["nickname"].Errors.[0].ErrorMessage = "Nickname is required" @>
+        testModelState actualModelState "nickname" "Nickname is required"
 
     [<Test>]
     let ``Calling register post, with nickname longer than 64 characters, returns expected result`` () =
@@ -960,14 +724,9 @@ module SelfServiceControllerTests =
         let controller = new SelfServiceController(mock (), keyGenerator)
         controller.ModelState.AddModelError("nickname", "Nickname is longer than 64 characters")
 
-        let (viewModel, _) =
-            Map.empty
-                .Add("Username", expectedUsername)
-                .Add("Password", expectedPassword)
-                .Add("ConfirmPassword", expectedPassword)
-                .Add("Email", expectedEmail)
-                .Add("Nickname", longNickname)
-            |> bindModel<ISelfServiceRegisterViewModel>
+        let viewModel =
+            bindSelfServiceRegisterViewModel2 expectedUsername expectedPassword expectedPassword expectedEmail
+                longNickname
         let result = controller.Register viewModel
 
         test <@ isNotNull result @>
@@ -980,16 +739,10 @@ module SelfServiceControllerTests =
         test <@ viewResult.Model :? ISelfServiceRegisterViewModel @>
 
         let actualViewModel = viewResult.Model :?> ISelfServiceRegisterViewModel
-        test <@ actualViewModel.Username = expectedUsername @>
-        test <@ actualViewModel.Password = expectedPassword @>
-        test <@ actualViewModel.Email = expectedEmail @>
-        test <@ actualViewModel.Nickname = longNickname @>
+        testSelfServiceRegisterViewModel actualViewModel expectedUsername expectedPassword expectedEmail longNickname
 
         let actualModelState = viewResult.ViewData.ModelState
-        test <@ not (actualModelState.IsValid) @>
-        test <@ actualModelState.ContainsKey("nickname") @>
-        test <@ actualModelState.["nickname"].Errors.Count = 1 @>
-        test <@ actualModelState.["nickname"].Errors.[0].ErrorMessage = "Nickname is longer than 64 characters" @>
+        testModelState actualModelState "nickname" "Nickname is longer than 64 characters"
 
     [<Test>]
     let ``Calling register post, with existing username in data store, returns expected result`` () =
@@ -1005,14 +758,9 @@ module SelfServiceControllerTests =
         let keyGenerator = makeTestKeyGenerator None
         let controller = new SelfServiceController(mediatorMock.Object, keyGenerator)
 
-        let (viewModel, _) =
-            Map.empty
-                .Add("Username", existingUsername)
-                .Add("Password", expectedPassword)
-                .Add("ConfirmPassword", expectedPassword)
-                .Add("Email", expectedEmail)
-                .Add("Nickname", expectedNickname)
-            |> bindModel<ISelfServiceRegisterViewModel>
+        let viewModel =
+            bindSelfServiceRegisterViewModel2 existingUsername expectedPassword expectedPassword expectedEmail
+                expectedNickname
         let result = controller.Register viewModel
 
         mediatorMock.Verify()
@@ -1027,16 +775,11 @@ module SelfServiceControllerTests =
         test <@ viewResult.Model :? ISelfServiceRegisterViewModel @>
 
         let actualViewModel = viewResult.Model :?> ISelfServiceRegisterViewModel
-        test <@ actualViewModel.Username = existingUsername @>
-        test <@ actualViewModel.Password = expectedPassword @>
-        test <@ actualViewModel.Email = expectedEmail @>
-        test <@ actualViewModel.Nickname = expectedNickname @>
+        testSelfServiceRegisterViewModel actualViewModel existingUsername expectedPassword expectedEmail
+            expectedNickname
 
         let actualModelState = viewResult.ViewData.ModelState
-        test <@ not (actualModelState.IsValid) @>
-        test <@ actualModelState.ContainsKey("username") @>
-        test <@ actualModelState.["username"].Errors.Count = 1 @>
-        test <@ actualModelState.["username"].Errors.[0].ErrorMessage = "Username is unavailable" @>
+        testModelState actualModelState "username" "Username is unavailable"
 
     [<Test>]
     let ``Calling register post, with existing email in data store, returns expected result`` () =
@@ -1052,14 +795,9 @@ module SelfServiceControllerTests =
         let keyGenerator = makeTestKeyGenerator None
         let controller = new SelfServiceController(mediatorMock.Object, keyGenerator)
 
-        let (viewModel, _) =
-            Map.empty
-                .Add("Username", expectedUsername)
-                .Add("Password", expectedPassword)
-                .Add("ConfirmPassword", expectedPassword)
-                .Add("Email", existingEmail)
-                .Add("Nickname", expectedNickname)
-            |> bindModel<ISelfServiceRegisterViewModel>
+        let viewModel =
+            bindSelfServiceRegisterViewModel2 expectedUsername expectedPassword expectedPassword existingEmail
+                expectedNickname
         let result = controller.Register viewModel
 
         mediatorMock.Verify()
@@ -1074,16 +812,11 @@ module SelfServiceControllerTests =
         test <@ viewResult.Model :? ISelfServiceRegisterViewModel @>
 
         let actualViewModel = viewResult.Model :?> ISelfServiceRegisterViewModel
-        test <@ actualViewModel.Username = expectedUsername @>
-        test <@ actualViewModel.Password = expectedPassword @>
-        test <@ actualViewModel.Email = existingEmail @>
-        test <@ actualViewModel.Nickname = expectedNickname @>
+        testSelfServiceRegisterViewModel actualViewModel expectedUsername expectedPassword existingEmail
+            expectedNickname
 
         let actualModelState = viewResult.ViewData.ModelState
-        test <@ not (actualModelState.IsValid) @>
-        test <@ actualModelState.ContainsKey("email") @>
-        test <@ actualModelState.["email"].Errors.Count = 1 @>
-        test <@ actualModelState.["email"].Errors.[0].ErrorMessage = "Email is already registered" @>
+        testModelState actualModelState "email" "Email is already registered"
 
     [<Test>]
     let ``Calling register post, with no existing username or email in data store, returns expected result`` () =
@@ -1097,14 +830,9 @@ module SelfServiceControllerTests =
         let controller = new SelfServiceController(mediatorMock.Object, keyGenerator)
 
         let password = Password.random 32
-        let (viewModel, _) =
-            Map.empty
-                .Add("Username", String.random 32)
-                .Add("Password", password)
-                .Add("ConfirmPassword", password)
-                .Add("Email", EmailAddress.random ())
-                .Add("Nickname", Password.random 32)
-            |> bindModel<ISelfServiceRegisterViewModel>
+        let viewModel =
+            bindSelfServiceRegisterViewModel2 (String.random 32) password password (EmailAddress.random ())
+                (Password.random 32)
         let result = controller.Register viewModel
 
         mediatorMock.Verify()

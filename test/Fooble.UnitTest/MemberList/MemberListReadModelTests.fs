@@ -20,12 +20,6 @@ module MemberListReadModelTests =
         let expectedMembers = List.init 5 (fun _ ->
             makeTestMemberListItemReadModel (Guid.random ()) (String.random 64))
 
-        let readModel = makeTestMemberListReadModel (Seq.ofList expectedMembers)
+        let actualReadModel = makeTestMemberListReadModel (Seq.ofList expectedMembers)
 
-        let actualMembers = Seq.toList readModel.Members
-        test <@ List.length actualMembers = 5 @>
-        for current in actualMembers do
-            let findResult =
-                List.tryFind (fun (x:IMemberListItemReadModel) -> x.Id = current.Id && x.Nickname = current.Nickname)
-                    expectedMembers
-            test <@ findResult.IsSome @>
+        testMemberListReadModel2 actualReadModel expectedMembers

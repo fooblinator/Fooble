@@ -75,7 +75,4 @@ module MemberDetailQueryHandlerToDataStoreTests =
         test <@ not <| queryResult.IsNotFound @>
 
         let actualReadModel = queryResult.ReadModel
-        test <@ actualReadModel.Id = expectedId @>
-        test <@ actualReadModel.Username = expectedUsername @>
-        test <@ actualReadModel.Email = expectedEmail @>
-        test <@ actualReadModel.Nickname = expectedNickname @>
+        testMemberDetailReadModel actualReadModel expectedId expectedUsername expectedEmail expectedNickname

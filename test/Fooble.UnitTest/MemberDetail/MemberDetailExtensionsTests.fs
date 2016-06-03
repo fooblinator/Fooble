@@ -30,10 +30,7 @@ module MemberDetailExtensionsTests =
         let expectedSeverity = MessageDisplayReadModel.warningSeverity
         let expectedMessage = "No matching member could be found."
 
-        let readModel = MemberDetailQuery.notFoundResult |> MemberDetailExtensions.toMessageDisplayReadModel
+        let actualReadModel = MemberDetailQuery.notFoundResult |> MemberDetailExtensions.toMessageDisplayReadModel
 
-        test <@ readModel.Heading = expectedHeading @>
-        test <@ readModel.SubHeading = expectedSubHeading @>
-        test <@ readModel.StatusCode = expectedStatusCode @>
-        test <@ readModel.Severity = expectedSeverity @>
-        test <@ readModel.Message = expectedMessage @>
+        testMessageDisplayReadModel actualReadModel expectedHeading expectedSubHeading expectedStatusCode
+            expectedSeverity expectedMessage

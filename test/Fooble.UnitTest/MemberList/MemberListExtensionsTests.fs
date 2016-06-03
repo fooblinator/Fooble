@@ -31,10 +31,7 @@ module MemberListExtensionsTests =
         let expectedSeverity = MessageDisplayReadModel.informationalSeverity
         let expectedMessage = "No members have yet been added."
 
-        let readModel = MemberListQuery.notFoundResult |> MemberListExtensions.toMessageDisplayReadModel
+        let actualReadModel = MemberListQuery.notFoundResult |> MemberListExtensions.toMessageDisplayReadModel
 
-        test <@ readModel.Heading = expectedHeading @>
-        test <@ readModel.SubHeading = expectedSubHeading @>
-        test <@ readModel.StatusCode = expectedStatusCode @>
-        test <@ readModel.Severity = expectedSeverity @>
-        test <@ readModel.Message = expectedMessage @>
+        testMessageDisplayReadModel actualReadModel expectedHeading expectedSubHeading expectedStatusCode
+            expectedSeverity expectedMessage

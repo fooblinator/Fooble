@@ -28,10 +28,7 @@ module SelfServiceRegisterExtensionsTests =
         let modelState = ModelStateDictionary()
         SelfServiceRegisterExtensions.addModelErrorIfNotSuccess commandResult modelState
 
-        test <@ not <| modelState.IsValid @>
-        test <@ modelState.ContainsKey(expectedKey) @>
-        test <@ modelState.[expectedKey].Errors.Count = 1 @>
-        test <@ modelState.[expectedKey].Errors.[0].ErrorMessage = expectedException @>
+        testModelState modelState expectedKey expectedException
 
     [<Test>]
     let ``Calling add model error, as email unavailable result of self-service register command result, returns expected read model`` () =
@@ -42,10 +39,7 @@ module SelfServiceRegisterExtensionsTests =
         let modelState = ModelStateDictionary()
         SelfServiceRegisterExtensions.addModelErrorIfNotSuccess commandResult modelState
 
-        test <@ not <| modelState.IsValid @>
-        test <@ modelState.ContainsKey(expectedKey) @>
-        test <@ modelState.[expectedKey].Errors.Count = 1 @>
-        test <@ modelState.[expectedKey].Errors.[0].ErrorMessage = expectedException @>
+        testModelState modelState expectedKey expectedException
 
     [<Test>]
     let ``Calling to message display read model, as success result of self-service register command result, raises expected exception`` () =
@@ -65,15 +59,12 @@ module SelfServiceRegisterExtensionsTests =
         let expectedSeverity = MessageDisplayReadModel.warningSeverity
         let expectedMessage = "Requested username is unavailable."
 
-        let readModel =
+        let actualReadModel =
             SelfServiceRegisterCommand.usernameUnavailableResult
             |> SelfServiceRegisterExtensions.toMessageDisplayReadModel
 
-        test <@ readModel.Heading = expectedHeading @>
-        test <@ readModel.SubHeading = expectedSubHeading @>
-        test <@ readModel.StatusCode = expectedStatusCode @>
-        test <@ readModel.Severity = expectedSeverity @>
-        test <@ readModel.Message = expectedMessage @>
+        testMessageDisplayReadModel actualReadModel expectedHeading expectedSubHeading expectedStatusCode
+            expectedSeverity expectedMessage
 
 //    [<Test>]
 //    let ``Calling to command, as null self-service register view model, raises expected exception`` () =
@@ -85,25 +76,18 @@ module SelfServiceRegisterExtensionsTests =
 //            (fun x -> <@ x.ParamName = expectedParamName && (fixInvalidArgMessage x.Message) = expectedMessage @>)
 
     [<Test>]
-    let ``Calling to command, as self-service register view model, returns expected read model`` () =
+    let ``Calling to command, as self-service register view model, returns expected command`` () =
         let expectedId = Guid.random ()
         let expectedUsername = String.random 32
         let expectedPassword = Password.random 32
         let expectedEmail = EmailAddress.random ()
         let expectedNickname = String.random 64
 
-        let (viewModel, _) =
-            Map.empty
-                .Add("Username", expectedUsername)
-                .Add("Password", expectedPassword)
-                .Add("ConfirmPassword", expectedPassword)
-                .Add("Email", expectedEmail)
-                .Add("Nickname", expectedNickname)
-            |> bindModel<ISelfServiceRegisterViewModel>
+        let viewModel =
+            bindSelfServiceRegisterViewModel2 expectedUsername expectedPassword expectedPassword expectedEmail
+                expectedNickname
 
         let actualCommand = SelfServiceRegisterExtensions.toCommand viewModel expectedId
-        test <@ actualCommand.Id = expectedId @>
-        test <@ actualCommand.Username = expectedUsername @>
-        test <@ actualCommand.Password = expectedPassword @>
-        test <@ actualCommand.Email = expectedEmail @>
-        test <@ actualCommand.Nickname = expectedNickname @>
+
+        testSelfServiceRegisterCommand actualCommand expectedId expectedUsername expectedPassword expectedEmail
+            expectedNickname

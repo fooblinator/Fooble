@@ -28,10 +28,7 @@ module ValidationExtensionsTests =
         let modelState = ModelStateDictionary()
         ValidationExtensions.addModelErrorIfNotValid validationResult modelState
 
-        test <@ not <| modelState.IsValid @>
-        test <@ modelState.ContainsKey(expectedKey) @>
-        test <@ modelState.[expectedKey].Errors.Count = 1 @>
-        test <@ modelState.[expectedKey].Errors.[0].ErrorMessage = expectedException @>
+        testModelState modelState expectedKey expectedException
 
     [<Test>]
     let ``Calling to message display read model, as valid result of validation result, raises expected exception`` () =
@@ -50,12 +47,9 @@ module ValidationExtensionsTests =
         let expectedSeverity = MessageDisplayReadModel.errorSeverity
         let expectedMessage = sprintf "Validation was not successful and returned: \"%s\"" innerMessage
 
-        let readModel =
+        let actualReadModel =
             ValidationResult.makeInvalid (String.random 64) innerMessage
             |> ValidationExtensions.toMessageDisplayReadModel
 
-        test <@ readModel.Heading = expectedHeading @>
-        test <@ readModel.SubHeading = expectedSubHeading @>
-        test <@ readModel.StatusCode = expectedStatusCode @>
-        test <@ readModel.Severity = expectedSeverity @>
-        test <@ readModel.Message = expectedMessage @>
+        testMessageDisplayReadModel actualReadModel expectedHeading expectedSubHeading expectedStatusCode
+            expectedSeverity expectedMessage

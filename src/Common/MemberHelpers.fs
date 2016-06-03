@@ -1,7 +1,9 @@
 ﻿namespace Fooble.Common
 
 open Fooble.Persistence
+open System.Diagnostics
 
+[<DebuggerStepThrough>]
 [<AutoOpen>]
 module internal MemberHelpers =
 

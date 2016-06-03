@@ -55,9 +55,4 @@ module MemberListQueryHandlerTests =
         test <@ queryResult.IsSuccess @>
         test <@ not <| queryResult.IsNotFound @>
 
-        let actualMembers = Seq.toList queryResult.ReadModel.Members
-        test <@ List.length actualMembers = 5 @>
-        for current in actualMembers do
-            let findResult =
-                List.tryFind (fun (x:IMemberData) -> x.Id = current.Id && x.Nickname = current.Nickname) members
-            test <@ findResult.IsSome @>
+        testMemberListReadModel queryResult.ReadModel members

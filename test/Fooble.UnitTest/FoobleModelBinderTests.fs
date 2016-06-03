@@ -1,7 +1,6 @@
 ﻿namespace Fooble.UnitTest
 
 open Fooble.Common
-open Fooble.Presentation
 open NUnit.Framework
 open Swensen.Unquote
 
@@ -16,23 +15,12 @@ module FoobleModelBinderTests =
         let expectedNickname = String.random 64
 
         let (actualViewModel, modelState) =
-            Map.empty
-                .Add("Username", nullUsername)
-                .Add("Password", expectedPassword)
-                .Add("ConfirmPassword", expectedPassword)
-                .Add("Email", expectedEmail)
-                .Add("Nickname", expectedNickname)
-            |> bindModel<ISelfServiceRegisterViewModel>
+            bindSelfServiceRegisterViewModel nullUsername expectedPassword expectedPassword expectedEmail
+                expectedNickname
 
-        test <@ actualViewModel.Username = nullUsername @>
-        test <@ actualViewModel.Password = expectedPassword @>
-        test <@ actualViewModel.Email = expectedEmail @>
-        test <@ actualViewModel.Nickname = expectedNickname @>
+        testSelfServiceRegisterViewModel actualViewModel nullUsername expectedPassword expectedEmail expectedNickname
 
-        test <@ not (modelState.IsValid) @>
-        test <@ modelState.ContainsKey("username") @>
-        test <@ modelState.["username"].Errors.Count = 1 @>
-        test <@ modelState.["username"].Errors.[0].ErrorMessage = "Username is required" @>
+        testModelState modelState "username" "Username is required"
 
     [<Test>]
     let ``Binding to a self-service register view model, with empty username, adds expected model state error`` () =
@@ -42,23 +30,12 @@ module FoobleModelBinderTests =
         let expectedNickname = String.random 64
 
         let (actualViewModel, modelState) =
-            Map.empty
-                .Add("Username", emptyUsername)
-                .Add("Password", expectedPassword)
-                .Add("ConfirmPassword", expectedPassword)
-                .Add("Email", expectedEmail)
-                .Add("Nickname", expectedNickname)
-            |> bindModel<ISelfServiceRegisterViewModel>
+            bindSelfServiceRegisterViewModel emptyUsername expectedPassword expectedPassword expectedEmail
+                expectedNickname
 
-        test <@ actualViewModel.Username = emptyUsername @>
-        test <@ actualViewModel.Password = expectedPassword @>
-        test <@ actualViewModel.Email = expectedEmail @>
-        test <@ actualViewModel.Nickname = expectedNickname @>
+        testSelfServiceRegisterViewModel actualViewModel emptyUsername expectedPassword expectedEmail expectedNickname
 
-        test <@ not (modelState.IsValid) @>
-        test <@ modelState.ContainsKey("username") @>
-        test <@ modelState.["username"].Errors.Count = 1 @>
-        test <@ modelState.["username"].Errors.[0].ErrorMessage = "Username is required" @>
+        testModelState modelState "username" "Username is required"
 
     [<Test>]
     let ``Binding to a self-service register view model, with username shorter than 3 characters, adds expected model state error`` () =
@@ -68,23 +45,12 @@ module FoobleModelBinderTests =
         let expectedNickname = String.random 64
 
         let (actualViewModel, modelState) =
-            Map.empty
-                .Add("Username", shortUsername)
-                .Add("Password", expectedPassword)
-                .Add("ConfirmPassword", expectedPassword)
-                .Add("Email", expectedEmail)
-                .Add("Nickname", expectedNickname)
-            |> bindModel<ISelfServiceRegisterViewModel>
+            bindSelfServiceRegisterViewModel shortUsername expectedPassword expectedPassword expectedEmail
+                expectedNickname
 
-        test <@ actualViewModel.Username = shortUsername @>
-        test <@ actualViewModel.Password = expectedPassword @>
-        test <@ actualViewModel.Email = expectedEmail @>
-        test <@ actualViewModel.Nickname = expectedNickname @>
+        testSelfServiceRegisterViewModel actualViewModel shortUsername expectedPassword expectedEmail expectedNickname
 
-        test <@ not (modelState.IsValid) @>
-        test <@ modelState.ContainsKey("username") @>
-        test <@ modelState.["username"].Errors.Count = 1 @>
-        test <@ modelState.["username"].Errors.[0].ErrorMessage = "Username is shorter than 3 characters" @>
+        testModelState modelState "username" "Username is shorter than 3 characters"
 
     [<Test>]
     let ``Binding to a self-service register view model, with username longer than 32 characters, adds expected model state error`` () =
@@ -94,23 +60,12 @@ module FoobleModelBinderTests =
         let expectedNickname = String.random 64
 
         let (actualViewModel, modelState) =
-            Map.empty
-                .Add("Username", longUsername)
-                .Add("Password", expectedPassword)
-                .Add("ConfirmPassword", expectedPassword)
-                .Add("Email", expectedEmail)
-                .Add("Nickname", expectedNickname)
-            |> bindModel<ISelfServiceRegisterViewModel>
+            bindSelfServiceRegisterViewModel longUsername expectedPassword expectedPassword expectedEmail
+                expectedNickname
 
-        test <@ actualViewModel.Username = longUsername @>
-        test <@ actualViewModel.Password = expectedPassword @>
-        test <@ actualViewModel.Email = expectedEmail @>
-        test <@ actualViewModel.Nickname = expectedNickname @>
+        testSelfServiceRegisterViewModel actualViewModel longUsername expectedPassword expectedEmail expectedNickname
 
-        test <@ not (modelState.IsValid) @>
-        test <@ modelState.ContainsKey("username") @>
-        test <@ modelState.["username"].Errors.Count = 1 @>
-        test <@ modelState.["username"].Errors.[0].ErrorMessage = "Username is longer than 32 characters" @>
+        testModelState modelState "username" "Username is longer than 32 characters"
 
     [<Test>]
     let ``Binding to a self-service register view model, with username in invalid format, adds expected model state error`` () =
@@ -120,24 +75,13 @@ module FoobleModelBinderTests =
         let expectedNickname = String.random 64
 
         let (actualViewModel, modelState) =
-            Map.empty
-                .Add("Username", invalidFormatUsername)
-                .Add("Password", expectedPassword)
-                .Add("ConfirmPassword", expectedPassword)
-                .Add("Email", expectedEmail)
-                .Add("Nickname", expectedNickname)
-            |> bindModel<ISelfServiceRegisterViewModel>
+            bindSelfServiceRegisterViewModel invalidFormatUsername expectedPassword expectedPassword expectedEmail
+                expectedNickname
 
-        test <@ actualViewModel.Username = invalidFormatUsername @>
-        test <@ actualViewModel.Password = expectedPassword @>
-        test <@ actualViewModel.Email = expectedEmail @>
-        test <@ actualViewModel.Nickname = expectedNickname @>
+        testSelfServiceRegisterViewModel actualViewModel invalidFormatUsername expectedPassword expectedEmail
+            expectedNickname
 
-        test <@ not (modelState.IsValid) @>
-        test <@ modelState.ContainsKey("username") @>
-        test <@ modelState.["username"].Errors.Count = 1 @>
-        test <@ modelState.["username"].Errors.[0].ErrorMessage =
-            "Username is not in the correct format (lowercase alphanumeric)" @>
+        testModelState modelState "username" "Username is not in the correct format (lowercase alphanumeric)"
 
     [<Test>]
     let ``Binding to a self-service register view model, with null password, adds expected model state error`` () =
@@ -147,24 +91,12 @@ module FoobleModelBinderTests =
         let expectedNickname = String.random 64
 
         let (actualViewModel, modelState) =
-            Map.empty
-                .Add("Username", expectedUsername)
-                .Add("Password", nullPassword)
-                .Add("ConfirmPassword", nullPassword)
-                .Add("Email", expectedEmail)
-                .Add("Nickname", expectedNickname)
-            |> bindModel<ISelfServiceRegisterViewModel>
+            bindSelfServiceRegisterViewModel expectedUsername nullPassword nullPassword expectedEmail expectedNickname
 
-        test <@ actualViewModel.Username = expectedUsername @>
-        test <@ actualViewModel.Password = String.empty @>
-        test <@ actualViewModel.Email = expectedEmail @>
-        test <@ actualViewModel.Nickname = expectedNickname @>
+        testSelfServiceRegisterViewModel actualViewModel expectedUsername String.empty expectedEmail expectedNickname
 
-        test <@ not (modelState.IsValid) @>
-        test <@ modelState.ContainsKey("password") @>
-        test <@ modelState.["password"].Errors.Count = 1 @>
-        test <@ modelState.["password"].Errors.[0].ErrorMessage = "Password is required" @>
-
+        testModelState modelState "password" "Password is required"
+ 
     [<Test>]
     let ``Binding to a self-service register view model, with empty password, adds expected model state error`` () =
         let expectedUsername = String.random 32
@@ -173,23 +105,12 @@ module FoobleModelBinderTests =
         let expectedNickname = String.random 64
 
         let (actualViewModel, modelState) =
-            Map.empty
-                .Add("Username", expectedUsername)
-                .Add("Password", emptyPassword)
-                .Add("ConfirmPassword", emptyPassword)
-                .Add("Email", expectedEmail)
-                .Add("Nickname", expectedNickname)
-            |> bindModel<ISelfServiceRegisterViewModel>
+            bindSelfServiceRegisterViewModel expectedUsername emptyPassword emptyPassword expectedEmail
+                expectedNickname
 
-        test <@ actualViewModel.Username = expectedUsername @>
-        test <@ actualViewModel.Password = String.empty @>
-        test <@ actualViewModel.Email = expectedEmail @>
-        test <@ actualViewModel.Nickname = expectedNickname @>
+        testSelfServiceRegisterViewModel actualViewModel expectedUsername String.empty expectedEmail expectedNickname
 
-        test <@ not (modelState.IsValid) @>
-        test <@ modelState.ContainsKey("password") @>
-        test <@ modelState.["password"].Errors.Count = 1 @>
-        test <@ modelState.["password"].Errors.[0].ErrorMessage = "Password is required" @>
+        testModelState modelState "password" "Password is required"
 
     [<Test>]
     let ``Binding to a self-service register view model, with password shorter than 8 characters, adds expected model state error`` () =
@@ -199,23 +120,12 @@ module FoobleModelBinderTests =
         let expectedNickname = String.random 64
 
         let (actualViewModel, modelState) =
-            Map.empty
-                .Add("Username", expectedUsername)
-                .Add("Password", shortPassword)
-                .Add("ConfirmPassword", shortPassword)
-                .Add("Email", expectedEmail)
-                .Add("Nickname", expectedNickname)
-            |> bindModel<ISelfServiceRegisterViewModel>
+            bindSelfServiceRegisterViewModel expectedUsername shortPassword shortPassword expectedEmail
+                expectedNickname
 
-        test <@ actualViewModel.Username = expectedUsername @>
-        test <@ actualViewModel.Password = String.empty @>
-        test <@ actualViewModel.Email = expectedEmail @>
-        test <@ actualViewModel.Nickname = expectedNickname @>
+        testSelfServiceRegisterViewModel actualViewModel expectedUsername String.empty expectedEmail expectedNickname
 
-        test <@ not (modelState.IsValid) @>
-        test <@ modelState.ContainsKey("password") @>
-        test <@ modelState.["password"].Errors.Count = 1 @>
-        test <@ modelState.["password"].Errors.[0].ErrorMessage = "Password is shorter than 8 characters" @>
+        testModelState modelState "password" "Password is shorter than 8 characters"
 
     [<Test>]
     let ``Binding to a self-service register view model, with password longer than 32 characters, adds expected model state error`` () =
@@ -225,23 +135,11 @@ module FoobleModelBinderTests =
         let expectedNickname = String.random 64
 
         let (actualViewModel, modelState) =
-            Map.empty
-                .Add("Username", expectedUsername)
-                .Add("Password", longPassword)
-                .Add("ConfirmPassword", longPassword)
-                .Add("Email", expectedEmail)
-                .Add("Nickname", expectedNickname)
-            |> bindModel<ISelfServiceRegisterViewModel>
+            bindSelfServiceRegisterViewModel expectedUsername longPassword longPassword expectedEmail expectedNickname
 
-        test <@ actualViewModel.Username = expectedUsername @>
-        test <@ actualViewModel.Password = String.empty @>
-        test <@ actualViewModel.Email = expectedEmail @>
-        test <@ actualViewModel.Nickname = expectedNickname @>
+        testSelfServiceRegisterViewModel actualViewModel expectedUsername String.empty expectedEmail expectedNickname
 
-        test <@ not (modelState.IsValid) @>
-        test <@ modelState.ContainsKey("password") @>
-        test <@ modelState.["password"].Errors.Count = 1 @>
-        test <@ modelState.["password"].Errors.[0].ErrorMessage = "Password is longer than 32 characters" @>
+        testModelState modelState "password" "Password is longer than 32 characters"
 
     [<Test>]
     let ``Binding to a self-service register view model, with password without digits, adds expected model state error`` () =
@@ -251,23 +149,12 @@ module FoobleModelBinderTests =
         let expectedNickname = String.random 64
 
         let (actualViewModel, modelState) =
-            Map.empty
-                .Add("Username", expectedUsername)
-                .Add("Password", noDigitsPassword)
-                .Add("ConfirmPassword", noDigitsPassword)
-                .Add("Email", expectedEmail)
-                .Add("Nickname", expectedNickname)
-            |> bindModel<ISelfServiceRegisterViewModel>
+            bindSelfServiceRegisterViewModel expectedUsername noDigitsPassword noDigitsPassword expectedEmail
+                expectedNickname
 
-        test <@ actualViewModel.Username = expectedUsername @>
-        test <@ actualViewModel.Password = String.empty @>
-        test <@ actualViewModel.Email = expectedEmail @>
-        test <@ actualViewModel.Nickname = expectedNickname @>
+        testSelfServiceRegisterViewModel actualViewModel expectedUsername String.empty expectedEmail expectedNickname
 
-        test <@ not (modelState.IsValid) @>
-        test <@ modelState.ContainsKey("password") @>
-        test <@ modelState.["password"].Errors.Count = 1 @>
-        test <@ modelState.["password"].Errors.[0].ErrorMessage = "Password does not contain any numbers" @>
+        testModelState modelState "password" "Password does not contain any numbers"
 
     [<Test>]
     let ``Binding to a self-service register view model, with password without lower alphas, adds expected model state error`` () =
@@ -277,23 +164,12 @@ module FoobleModelBinderTests =
         let expectedNickname = String.random 64
 
         let (actualViewModel, modelState) =
-            Map.empty
-                .Add("Username", expectedUsername)
-                .Add("Password", noLowerAlphasPassword)
-                .Add("ConfirmPassword", noLowerAlphasPassword)
-                .Add("Email", expectedEmail)
-                .Add("Nickname", expectedNickname)
-            |> bindModel<ISelfServiceRegisterViewModel>
+            bindSelfServiceRegisterViewModel expectedUsername noLowerAlphasPassword noLowerAlphasPassword expectedEmail
+                expectedNickname
 
-        test <@ actualViewModel.Username = expectedUsername @>
-        test <@ actualViewModel.Password = String.empty @>
-        test <@ actualViewModel.Email = expectedEmail @>
-        test <@ actualViewModel.Nickname = expectedNickname @>
+        testSelfServiceRegisterViewModel actualViewModel expectedUsername String.empty expectedEmail expectedNickname
 
-        test <@ not (modelState.IsValid) @>
-        test <@ modelState.ContainsKey("password") @>
-        test <@ modelState.["password"].Errors.Count = 1 @>
-        test <@ modelState.["password"].Errors.[0].ErrorMessage = "Password does not contain any lower-case letters" @>
+        testModelState modelState "password" "Password does not contain any lower-case letters"
 
     [<Test>]
     let ``Binding to a self-service register view model, with password without upper alphas, adds expected model state error`` () =
@@ -303,23 +179,12 @@ module FoobleModelBinderTests =
         let expectedNickname = String.random 64
 
         let (actualViewModel, modelState) =
-            Map.empty
-                .Add("Username", expectedUsername)
-                .Add("Password", noUpperAlphasPassword)
-                .Add("ConfirmPassword", noUpperAlphasPassword)
-                .Add("Email", expectedEmail)
-                .Add("Nickname", expectedNickname)
-            |> bindModel<ISelfServiceRegisterViewModel>
+            bindSelfServiceRegisterViewModel expectedUsername noUpperAlphasPassword noUpperAlphasPassword expectedEmail
+                expectedNickname
 
-        test <@ actualViewModel.Username = expectedUsername @>
-        test <@ actualViewModel.Password = String.empty @>
-        test <@ actualViewModel.Email = expectedEmail @>
-        test <@ actualViewModel.Nickname = expectedNickname @>
+        testSelfServiceRegisterViewModel actualViewModel expectedUsername String.empty expectedEmail expectedNickname
 
-        test <@ not (modelState.IsValid) @>
-        test <@ modelState.ContainsKey("password") @>
-        test <@ modelState.["password"].Errors.Count = 1 @>
-        test <@ modelState.["password"].Errors.[0].ErrorMessage = "Password does not contain any upper-case letters" @>
+        testModelState modelState "password" "Password does not contain any upper-case letters"
 
     [<Test>]
     let ``Binding to a self-service register view model, with password without special chars, adds expected model state error`` () =
@@ -329,23 +194,12 @@ module FoobleModelBinderTests =
         let expectedNickname = String.random 64
 
         let (actualViewModel, modelState) =
-            Map.empty
-                .Add("Username", expectedUsername)
-                .Add("Password", noSpecialCharsPassword)
-                .Add("ConfirmPassword", noSpecialCharsPassword)
-                .Add("Email", expectedEmail)
-                .Add("Nickname", expectedNickname)
-            |> bindModel<ISelfServiceRegisterViewModel>
+            bindSelfServiceRegisterViewModel expectedUsername noSpecialCharsPassword noSpecialCharsPassword
+                expectedEmail expectedNickname
 
-        test <@ actualViewModel.Username = expectedUsername @>
-        test <@ actualViewModel.Password = String.empty @>
-        test <@ actualViewModel.Email = expectedEmail @>
-        test <@ actualViewModel.Nickname = expectedNickname @>
+        testSelfServiceRegisterViewModel actualViewModel expectedUsername String.empty expectedEmail expectedNickname
 
-        test <@ not (modelState.IsValid) @>
-        test <@ modelState.ContainsKey("password") @>
-        test <@ modelState.["password"].Errors.Count = 1 @>
-        test <@ modelState.["password"].Errors.[0].ErrorMessage = "Password does not contain any special characters" @>
+        testModelState modelState "password" "Password does not contain any special characters"
 
     [<Test>]
     let ``Binding to a self-service register view model, with password without invalid chars, adds expected model state error`` () =
@@ -355,23 +209,12 @@ module FoobleModelBinderTests =
         let expectedNickname = String.random 64
 
         let (actualViewModel, modelState) =
-            Map.empty
-                .Add("Username", expectedUsername)
-                .Add("Password", invalidCharsPassword)
-                .Add("ConfirmPassword", invalidCharsPassword)
-                .Add("Email", expectedEmail)
-                .Add("Nickname", expectedNickname)
-            |> bindModel<ISelfServiceRegisterViewModel>
+            bindSelfServiceRegisterViewModel expectedUsername invalidCharsPassword invalidCharsPassword expectedEmail
+                expectedNickname
 
-        test <@ actualViewModel.Username = expectedUsername @>
-        test <@ actualViewModel.Password = String.empty @>
-        test <@ actualViewModel.Email = expectedEmail @>
-        test <@ actualViewModel.Nickname = expectedNickname @>
+        testSelfServiceRegisterViewModel actualViewModel expectedUsername String.empty expectedEmail expectedNickname
 
-        test <@ not (modelState.IsValid) @>
-        test <@ modelState.ContainsKey("password") @>
-        test <@ modelState.["password"].Errors.Count = 1 @>
-        test <@ modelState.["password"].Errors.[0].ErrorMessage = "Password contains invalid characters" @>
+        testModelState modelState "password" "Password contains invalid characters"
 
     [<Test>]
     let ``Binding to a self-service register view model, with non-matching passwords, adds expected model state error`` () =
@@ -381,23 +224,12 @@ module FoobleModelBinderTests =
         let expectedNickname = String.random 64
 
         let (actualViewModel, modelState) =
-            Map.empty
-                .Add("Username", expectedUsername)
-                .Add("Password", Password.random 32)
-                .Add("ConfirmPassword", nonMatchingConfirmPassword)
-                .Add("Email", expectedEmail)
-                .Add("Nickname", expectedNickname)
-            |> bindModel<ISelfServiceRegisterViewModel>
+            bindSelfServiceRegisterViewModel expectedUsername (Password.random 32) nonMatchingConfirmPassword
+                expectedEmail expectedNickname
 
-        test <@ actualViewModel.Username = expectedUsername @>
-        test <@ actualViewModel.Password = String.empty @>
-        test <@ actualViewModel.Email = expectedEmail @>
-        test <@ actualViewModel.Nickname = expectedNickname @>
+        testSelfServiceRegisterViewModel actualViewModel expectedUsername String.empty expectedEmail expectedNickname
 
-        test <@ not (modelState.IsValid) @>
-        test <@ modelState.ContainsKey("confirmPassword") @>
-        test <@ modelState.["confirmPassword"].Errors.Count = 1 @>
-        test <@ modelState.["confirmPassword"].Errors.[0].ErrorMessage = "Passwords do not match" @>
+        testModelState modelState "confirmPassword" "Passwords do not match"
 
     [<Test>]
     let ``Binding to a self-service register view model, with null email, adds expected model state error`` () =
@@ -407,23 +239,12 @@ module FoobleModelBinderTests =
         let expectedNickname = String.random 64
 
         let (actualViewModel, modelState) =
-            Map.empty
-                .Add("Username", expectedUsername)
-                .Add("Password", expectedPassword)
-                .Add("ConfirmPassword", expectedPassword)
-                .Add("Email", nullEmail)
-                .Add("Nickname", expectedNickname)
-            |> bindModel<ISelfServiceRegisterViewModel>
+            bindSelfServiceRegisterViewModel expectedUsername expectedPassword expectedPassword nullEmail
+                expectedNickname
 
-        test <@ actualViewModel.Username = expectedUsername @>
-        test <@ actualViewModel.Password = expectedPassword @>
-        test <@ actualViewModel.Email = nullEmail @>
-        test <@ actualViewModel.Nickname = expectedNickname @>
+        testSelfServiceRegisterViewModel actualViewModel expectedUsername expectedPassword nullEmail expectedNickname
 
-        test <@ not (modelState.IsValid) @>
-        test <@ modelState.ContainsKey("email") @>
-        test <@ modelState.["email"].Errors.Count = 1 @>
-        test <@ modelState.["email"].Errors.[0].ErrorMessage = "Email is required" @>
+        testModelState modelState "email" "Email is required"
 
     [<Test>]
     let ``Binding to a self-service register view model, with empty email, adds expected model state error`` () =
@@ -433,23 +254,12 @@ module FoobleModelBinderTests =
         let expectedNickname = String.random 64
 
         let (actualViewModel, modelState) =
-            Map.empty
-                .Add("Username", expectedUsername)
-                .Add("Password", expectedPassword)
-                .Add("ConfirmPassword", expectedPassword)
-                .Add("Email", emptyEmail)
-                .Add("Nickname", expectedNickname)
-            |> bindModel<ISelfServiceRegisterViewModel>
+            bindSelfServiceRegisterViewModel expectedUsername expectedPassword expectedPassword emptyEmail
+                expectedNickname
 
-        test <@ actualViewModel.Username = expectedUsername @>
-        test <@ actualViewModel.Password = expectedPassword @>
-        test <@ actualViewModel.Email = emptyEmail @>
-        test <@ actualViewModel.Nickname = expectedNickname @>
+        testSelfServiceRegisterViewModel actualViewModel expectedUsername expectedPassword emptyEmail expectedNickname
 
-        test <@ not (modelState.IsValid) @>
-        test <@ modelState.ContainsKey("email") @>
-        test <@ modelState.["email"].Errors.Count = 1 @>
-        test <@ modelState.["email"].Errors.[0].ErrorMessage = "Email is required" @>
+        testModelState modelState "email" "Email is required"
 
     [<Test>]
     let ``Binding to a self-service register view model, with email longer than 254 characters, adds expected model state error`` () =
@@ -459,23 +269,12 @@ module FoobleModelBinderTests =
         let expectedNickname = String.random 64
 
         let (actualViewModel, modelState) =
-            Map.empty
-                .Add("Username", expectedUsername)
-                .Add("Password", expectedPassword)
-                .Add("ConfirmPassword", expectedPassword)
-                .Add("Email", longEmail)
-                .Add("Nickname", expectedNickname)
-            |> bindModel<ISelfServiceRegisterViewModel>
+            bindSelfServiceRegisterViewModel expectedUsername expectedPassword expectedPassword longEmail
+                expectedNickname
 
-        test <@ actualViewModel.Username = expectedUsername @>
-        test <@ actualViewModel.Password = expectedPassword @>
-        test <@ actualViewModel.Email = longEmail @>
-        test <@ actualViewModel.Nickname = expectedNickname @>
+        testSelfServiceRegisterViewModel actualViewModel expectedUsername expectedPassword longEmail expectedNickname
 
-        test <@ not (modelState.IsValid) @>
-        test <@ modelState.ContainsKey("email") @>
-        test <@ modelState.["email"].Errors.Count = 1 @>
-        test <@ modelState.["email"].Errors.[0].ErrorMessage = "Email is longer than 254 characters" @>
+        testModelState modelState "email" "Email is longer than 254 characters"
 
     [<Test>]
     let ``Binding to a self-service register view model, with email in invalid format, adds expected model state error`` () =
@@ -485,23 +284,13 @@ module FoobleModelBinderTests =
         let expectedNickname = String.random 64
 
         let (actualViewModel, modelState) =
-            Map.empty
-                .Add("Username", expectedUsername)
-                .Add("Password", expectedPassword)
-                .Add("ConfirmPassword", expectedPassword)
-                .Add("Email", invalidFormatEmail)
-                .Add("Nickname", expectedNickname)
-            |> bindModel<ISelfServiceRegisterViewModel>
+            bindSelfServiceRegisterViewModel expectedUsername expectedPassword expectedPassword invalidFormatEmail
+                expectedNickname
 
-        test <@ actualViewModel.Username = expectedUsername @>
-        test <@ actualViewModel.Password = expectedPassword @>
-        test <@ actualViewModel.Email = invalidFormatEmail @>
-        test <@ actualViewModel.Nickname = expectedNickname @>
+        testSelfServiceRegisterViewModel actualViewModel expectedUsername expectedPassword invalidFormatEmail
+            expectedNickname
 
-        test <@ not (modelState.IsValid) @>
-        test <@ modelState.ContainsKey("email") @>
-        test <@ modelState.["email"].Errors.Count = 1 @>
-        test <@ modelState.["email"].Errors.[0].ErrorMessage = "Email is not in the correct format" @>
+        testModelState modelState "email" "Email is not in the correct format"
 
     [<Test>]
     let ``Binding to a self-service register view model, with null nickname, adds expected model state error`` () =
@@ -511,23 +300,12 @@ module FoobleModelBinderTests =
         let nullNickname:string = null
 
         let (actualViewModel, modelState) =
-            Map.empty
-                .Add("Username", expectedUsername)
-                .Add("Password", expectedPassword)
-                .Add("ConfirmPassword", expectedPassword)
-                .Add("Email", expectedEmail)
-                .Add("Nickname", nullNickname)
-            |> bindModel<ISelfServiceRegisterViewModel>
+            bindSelfServiceRegisterViewModel expectedUsername expectedPassword expectedPassword expectedEmail
+                nullNickname
 
-        test <@ actualViewModel.Username = expectedUsername @>
-        test <@ actualViewModel.Password = expectedPassword @>
-        test <@ actualViewModel.Email = expectedEmail @>
-        test <@ actualViewModel.Nickname = nullNickname @>
+        testSelfServiceRegisterViewModel actualViewModel expectedUsername expectedPassword expectedEmail nullNickname
 
-        test <@ not (modelState.IsValid) @>
-        test <@ modelState.ContainsKey("nickname") @>
-        test <@ modelState.["nickname"].Errors.Count = 1 @>
-        test <@ modelState.["nickname"].Errors.[0].ErrorMessage = "Nickname is required" @>
+        testModelState modelState "nickname" "Nickname is required"
 
     [<Test>]
     let ``Binding to a self-service register view model, with empty nickname, adds expected model state error`` () =
@@ -537,23 +315,12 @@ module FoobleModelBinderTests =
         let emptyNickname = String.empty
 
         let (actualViewModel, modelState) =
-            Map.empty
-                .Add("Username", expectedUsername)
-                .Add("Password", expectedPassword)
-                .Add("ConfirmPassword", expectedPassword)
-                .Add("Email", expectedEmail)
-                .Add("Nickname", emptyNickname)
-            |> bindModel<ISelfServiceRegisterViewModel>
+            bindSelfServiceRegisterViewModel expectedUsername expectedPassword expectedPassword expectedEmail
+                emptyNickname
 
-        test <@ actualViewModel.Username = expectedUsername @>
-        test <@ actualViewModel.Password = expectedPassword @>
-        test <@ actualViewModel.Email = expectedEmail @>
-        test <@ actualViewModel.Nickname = emptyNickname @>
+        testSelfServiceRegisterViewModel actualViewModel expectedUsername expectedPassword expectedEmail emptyNickname
 
-        test <@ not (modelState.IsValid) @>
-        test <@ modelState.ContainsKey("nickname") @>
-        test <@ modelState.["nickname"].Errors.Count = 1 @>
-        test <@ modelState.["nickname"].Errors.[0].ErrorMessage = "Nickname is required" @>
+        testModelState modelState "nickname" "Nickname is required"
 
     [<Test>]
     let ``Binding to a self-service register view model, with nickname longer than 64 characters, adds expected model state error`` () =
@@ -563,23 +330,12 @@ module FoobleModelBinderTests =
         let longNickname = String.random 65
 
         let (actualViewModel, modelState) =
-            Map.empty
-                .Add("Username", expectedUsername)
-                .Add("Password", expectedPassword)
-                .Add("ConfirmPassword", expectedPassword)
-                .Add("Email", expectedEmail)
-                .Add("Nickname", longNickname)
-            |> bindModel<ISelfServiceRegisterViewModel>
+            bindSelfServiceRegisterViewModel expectedUsername expectedPassword expectedPassword expectedEmail
+                longNickname
 
-        test <@ actualViewModel.Username = expectedUsername @>
-        test <@ actualViewModel.Password = expectedPassword @>
-        test <@ actualViewModel.Email = expectedEmail @>
-        test <@ actualViewModel.Nickname = longNickname @>
+        testSelfServiceRegisterViewModel actualViewModel expectedUsername expectedPassword expectedEmail longNickname
 
-        test <@ not (modelState.IsValid) @>
-        test <@ modelState.ContainsKey("nickname") @>
-        test <@ modelState.["nickname"].Errors.Count = 1 @>
-        test <@ modelState.["nickname"].Errors.[0].ErrorMessage = "Nickname is longer than 64 characters" @>
+        testModelState modelState "nickname" "Nickname is longer than 64 characters"
 
     [<Test>]
     let ``Binding to a self-service register view model, with valid parameters, adds no model state errors`` () =
@@ -589,17 +345,10 @@ module FoobleModelBinderTests =
         let expectedNickname = String.random 64
 
         let (actualViewModel, modelState) =
-            Map.empty
-                .Add("Username", expectedUsername)
-                .Add("Password", expectedPassword)
-                .Add("ConfirmPassword", expectedPassword)
-                .Add("Email", expectedEmail)
-                .Add("Nickname", expectedNickname)
-            |> bindModel<ISelfServiceRegisterViewModel>
+            bindSelfServiceRegisterViewModel expectedUsername expectedPassword expectedPassword expectedEmail
+                expectedNickname
 
-        test <@ actualViewModel.Username = expectedUsername @>
-        test <@ actualViewModel.Password = expectedPassword @>
-        test <@ actualViewModel.Email = expectedEmail @>
-        test <@ actualViewModel.Nickname = expectedNickname @>
+        testSelfServiceRegisterViewModel actualViewModel expectedUsername expectedPassword expectedEmail
+            expectedNickname
 
         test <@ modelState.IsValid @>

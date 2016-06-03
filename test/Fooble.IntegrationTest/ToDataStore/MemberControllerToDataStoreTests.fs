@@ -68,12 +68,8 @@ module MemberControllerToDataStoreTests =
         test <@ isNotNull viewResult.Model @>
         test <@ viewResult.Model :? IMemberDetailReadModel @>
 
-        let actualViewModel = viewResult.Model :?> IMemberDetailReadModel
-
-        test <@ actualViewModel.Id = expectedId @>
-        test <@ actualViewModel.Username = expectedUsername @>
-        test <@ actualViewModel.Email = expectedEmail @>
-        test <@ actualViewModel.Nickname = expectedNickname @>
+        let actualReadModel = viewResult.Model :?> IMemberDetailReadModel
+        testMemberDetailReadModel actualReadModel expectedId expectedUsername expectedEmail expectedNickname
 
     [<Test>]
     let ``Calling detail, with no matches in data store, returns expected result`` () =
@@ -113,11 +109,8 @@ module MemberControllerToDataStoreTests =
         test <@ viewResult.Model :? IMessageDisplayReadModel @>
 
         let actualReadModel = viewResult.Model :?> IMessageDisplayReadModel
-        test <@ actualReadModel.Heading = expectedHeading @>
-        test <@ actualReadModel.SubHeading = expectedSubHeading @>
-        test <@ actualReadModel.StatusCode = expectedStatusCode @>
-        test <@ actualReadModel.Severity = expectedSeverity @>
-        test <@ actualReadModel.Message = expectedMessage @>
+        testMessageDisplayReadModel actualReadModel expectedHeading expectedSubHeading expectedStatusCode
+            expectedSeverity expectedMessage
 
     [<Test>]
     let ``Calling list, with matches in data store, returns expected result`` () =
@@ -157,12 +150,8 @@ module MemberControllerToDataStoreTests =
         test <@ isNotNull viewResult.Model @>
         test <@ viewResult.Model :? IMemberListReadModel @>
 
-        let actualMembers = Seq.toList (viewResult.Model :?> IMemberListReadModel).Members
-        test <@ (List.length actualMembers) = 5 @>
-        for current in actualMembers do
-            let findResult =
-                List.tryFind (fun (x:IMemberData) -> x.Id = current.Id && x.Nickname = current.Nickname) members
-            test <@ findResult.IsSome @>
+        let actualReadModel = viewResult.Model :?> IMemberListReadModel
+        testMemberListReadModel actualReadModel members
 
     [<Test>]
     let ``Calling list, with no matches in data store, returns expected result`` () =
@@ -201,8 +190,5 @@ module MemberControllerToDataStoreTests =
         test <@ viewResult.Model :? IMessageDisplayReadModel @>
 
         let actualReadModel = viewResult.Model :?> IMessageDisplayReadModel
-        test <@ actualReadModel.Heading = expectedHeading @>
-        test <@ actualReadModel.SubHeading = expectedSubHeading @>
-        test <@ actualReadModel.StatusCode = expectedStatusCode @>
-        test <@ actualReadModel.Severity = expectedSeverity @>
-        test <@ actualReadModel.Message = expectedMessage @>
+        testMessageDisplayReadModel actualReadModel expectedHeading expectedSubHeading expectedStatusCode
+            expectedSeverity expectedMessage
