@@ -61,8 +61,9 @@ module MemberDetailQueryHandlerToDataStoreTests =
         List.iter (fun x -> context.DeleteMember(x)) (context.GetMembers())
 
         // add matching member to the data store
+        let passwordData = Crypto.hash (Password.random 32) 100
         let memberData =
-            memberDataFactory.Invoke(expectedId, expectedUsername, Password.random 32, expectedEmail, expectedNickname)
+            memberDataFactory.Invoke(expectedId, expectedUsername, passwordData, expectedEmail, expectedNickname)
         context.AddMember(memberData)
 
         // persist changes to the data store

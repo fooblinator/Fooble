@@ -62,16 +62,16 @@ module internal IntegrationTestHelpers =
                 | Some x -> x
                 | None -> Guid.random () }
 
-    let makeTestMemberData id username password email nickname =
+    let makeTestMemberData id username passwordData email nickname =
         assertMemberId id
         assertMemberUsername username
-        assertMemberPassword password
+        assertMemberPasswordData passwordData
         assertMemberEmail email
         assertMemberNickname nickname
 
         let idRef = ref id
         let usernameRef = ref username
-        let passwordRef = ref password
+        let passwordDataRef = ref passwordData
         let emailRef = ref email
         let nicknameRef = ref nickname
 
@@ -85,9 +85,9 @@ module internal IntegrationTestHelpers =
                   with get () = !usernameRef
                   and set (v) = usernameRef := v
 
-              member this.Password
-                  with get () = !passwordRef
-                  and set (v) = passwordRef := v
+              member this.PasswordData
+                  with get () = !passwordDataRef
+                  and set (v) = passwordDataRef := v
 
               member this.Email
                   with get () = !emailRef

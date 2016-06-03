@@ -2,16 +2,14 @@
 
 open System
 
-// TODO: Need to enable encryption of passwords
-
 /// Represents the data record for members.
 type IMemberData =
     /// The id that will potentially represent the member.
     abstract Id:Guid with get, set
     /// The username of the member.
     abstract Username:string with get, set
-    /// The password of the member.
-    abstract Password:string with get, set
+    /// The password data for the member.
+    abstract PasswordData:string with get, set
     /// The email of the member.
     abstract Email:string with get, set
     /// The nickname of the member.

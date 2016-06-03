@@ -2,6 +2,7 @@
 
 open Autofac
 open Fooble.Common
+open Fooble.Core
 open Fooble.Core.Infrastructure
 open Fooble.IntegrationTest
 open Fooble.Persistence
@@ -34,8 +35,8 @@ module MemberControllerToQueryHandlerTests =
         let expectedEmail = EmailAddress.random ()
         let expectedNickname = String.random 64
 
-        let memberData =
-            makeTestMemberData expectedId expectedUsername (Password.random 32) expectedEmail expectedNickname
+        let passwordData = Crypto.hash (Password.random 32) 100
+        let memberData = makeTestMemberData expectedId expectedUsername passwordData expectedEmail expectedNickname
         let contextMock = Mock<IFoobleContext>()
         contextMock.SetupFunc(fun x -> x.GetMember(any ())).Returns(Some memberData).Verifiable()
 
@@ -102,7 +103,8 @@ module MemberControllerToQueryHandlerTests =
     let ``Calling list, with matches in data store, returns expected result`` () =
         let members =
             List.init 5 (fun _ ->
-                makeTestMemberData (Guid.random ()) (String.random 32) (Password.random 32) (EmailAddress.random ())
+                let passwordData = Crypto.hash (Password.random 32) 100
+                makeTestMemberData (Guid.random ()) (String.random 32) passwordData (EmailAddress.random ())
                     (String.random 64))
         let contextMock = Mock<IFoobleContext>()
         contextMock.SetupFunc(fun x -> x.GetMembers()).Returns(members).Verifiable()

@@ -58,7 +58,8 @@ module MemberListQueryHandlerToDataStoreTests =
         // add members to the data store
         let members =
             List.init 5 (fun _ ->
-                memberDataFactory.Invoke(Guid.random (), String.random 32, Password.random 32, EmailAddress.random (),
+                let passwordData = Crypto.hash (Password.random 32) 100
+                memberDataFactory.Invoke(Guid.random (), String.random 32, passwordData, EmailAddress.random (),
                     String.random 64))
         List.iter (fun x -> context.AddMember(x)) members
 

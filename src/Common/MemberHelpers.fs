@@ -1,9 +1,7 @@
 ﻿namespace Fooble.Common
 
 open Fooble.Persistence
-open System.Diagnostics
 
-[<DebuggerStepThrough>]
 [<AutoOpen>]
 module internal MemberHelpers =
 
@@ -31,6 +29,11 @@ module internal MemberHelpers =
         assert (Password.hasSpecialChars password)
         assert (Password.isMatch password)
 
+    let assertMemberPasswordData passwordData =
+        assert (String.isNotNullOrEmpty passwordData)
+        assert (String.isNotShorter 64 passwordData)
+        assert (String.isNotLonger 128 passwordData)
+
     let assertMemberNickname nickname =
         assert (String.isNotNullOrEmpty nickname)
         assert (String.isNotLonger 64 nickname)
@@ -38,6 +41,6 @@ module internal MemberHelpers =
     let assertMemberData (memberData:IMemberData) =
         assertMemberId memberData.Id
         assertMemberUsername memberData.Username
-        assertMemberPassword memberData.Password
+        assertMemberPasswordData memberData.PasswordData
         assertMemberEmail memberData.Email
         assertMemberNickname memberData.Nickname

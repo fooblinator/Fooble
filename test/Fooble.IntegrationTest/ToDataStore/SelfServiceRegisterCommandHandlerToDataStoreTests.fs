@@ -34,7 +34,8 @@ module SelfServiceRegisterCommandHandlerToDataStoreTests =
 
         // add matching member to the data store
         let memberData =
-            memberDataFactory.Invoke(Guid.random (), existingUsername, Password.random 32, EmailAddress.random (),
+            let passwordData = Crypto.hash (Password.random 32) 100
+            memberDataFactory.Invoke(Guid.random (), existingUsername, passwordData, EmailAddress.random (),
                 String.random 64)
         context.AddMember(memberData)
 
@@ -70,7 +71,8 @@ module SelfServiceRegisterCommandHandlerToDataStoreTests =
 
         // add matching member to the data store
         let memberData =
-            memberDataFactory.Invoke(Guid.random (), String.random 32, Password.random 32, existingEmail,
+            let passwordData = Crypto.hash (Password.random 32) 100
+            memberDataFactory.Invoke(Guid.random (), String.random 32, passwordData, existingEmail,
                 String.random 64)
         context.AddMember(memberData)
 

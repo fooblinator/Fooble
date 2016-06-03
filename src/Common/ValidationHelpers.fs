@@ -1,9 +1,7 @@
 ﻿namespace Fooble.Common
 
 open Fooble.Core
-open System.Diagnostics
 
-[<DebuggerStepThrough>]
 [<AutoOpen>]
 module internal ValidationHelpers =
 

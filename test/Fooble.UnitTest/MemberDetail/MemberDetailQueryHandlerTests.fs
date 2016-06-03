@@ -41,8 +41,9 @@ module MemberDetailQueryHandlerTests =
         let expectedEmail = EmailAddress.random ()
         let expectedNickname = String.random 64
 
+        let passwordData = Crypto.hash (Password.random 32) 100
         let memberData =
-            makeTestMemberData expectedId expectedUsername (Password.random 32) expectedEmail expectedNickname
+            makeTestMemberData expectedId expectedUsername passwordData expectedEmail expectedNickname
         let contextMock = Mock<IFoobleContext>()
         contextMock.SetupFunc(fun x -> x.GetMember(any ())).Returns(Some memberData).Verifiable()
 

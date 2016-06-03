@@ -96,7 +96,7 @@ module FoobleModelBinderTests =
         testSelfServiceRegisterViewModel actualViewModel expectedUsername String.empty expectedEmail expectedNickname
 
         testModelState modelState "password" "Password is required"
- 
+
     [<Test>]
     let ``Binding to a self-service register view model, with empty password, adds expected model state error`` () =
         let expectedUsername = String.random 32

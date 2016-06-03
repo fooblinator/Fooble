@@ -2,6 +2,7 @@
 
 open Autofac
 open Fooble.Common
+open Fooble.Core
 open Fooble.Core.Infrastructure
 open Fooble.IntegrationTest
 open Fooble.Persistence
@@ -49,8 +50,9 @@ module MemberControllerToDataStoreTests =
         List.iter (fun x -> context.DeleteMember(x)) (context.GetMembers())
 
         // add matching member to the data store
+        let passwordData = Crypto.hash (Password.random 32) 100
         let memberData =
-            memberDataFactory.Invoke(expectedId, expectedUsername, Password.random 32, expectedEmail, expectedNickname)
+            memberDataFactory.Invoke(expectedId, expectedUsername, passwordData, expectedEmail, expectedNickname)
         context.AddMember(memberData)
 
         // persist changes to the data store
@@ -131,7 +133,8 @@ module MemberControllerToDataStoreTests =
         // add matching members to the data store
         let members =
             List.init 5 (fun _ ->
-                memberDataFactory.Invoke(Guid.random (), String.random 32, Password.random 32, EmailAddress.random (),
+                let passwordData = Crypto.hash (Password.random 32) 100
+                memberDataFactory.Invoke(Guid.random (), String.random 32, passwordData, EmailAddress.random (),
                     String.random 64))
         List.iter (fun x -> context.AddMember(x)) members
 

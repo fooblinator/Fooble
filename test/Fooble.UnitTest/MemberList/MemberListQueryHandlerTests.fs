@@ -38,7 +38,8 @@ module MemberListQueryHandlerTests =
     let ``Calling handle, with members in data store, returns expected result`` () =
         let members =
             List.init 5 <| fun _ ->
-                makeTestMemberData (Guid.random ()) (String.random 32) (Password.random 32) (EmailAddress.random ())
+                let passwordData = Crypto.hash (Password.random 32) 100
+                makeTestMemberData (Guid.random ()) (String.random 32) passwordData (EmailAddress.random ())
                     (String.random 64)
         let contextMock = Mock<IFoobleContext>()
         contextMock.SetupFunc(fun x -> x.GetMembers()).Returns(members).Verifiable()

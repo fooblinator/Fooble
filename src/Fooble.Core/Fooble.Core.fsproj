@@ -61,6 +61,7 @@
     <Compile Include="..\Common\CommonHelpers.fs">
       <Link>CommonHelpers.fs</Link>
     </Compile>
+    <Compile Include="CryptoHelpers.fs" />
     <Compile Include="Validation.fs" />
     <Compile Include="..\Common\ValidationHelpers.fs">
       <Link>ValidationHelpers.fs</Link>
