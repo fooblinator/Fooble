@@ -31,6 +31,7 @@ module SelfServiceControllerToDataStoreTests =
     [<Test>]
     let ``Calling register post, with existing username in data store, returns expected result`` () =
         let existingUsername = String.random 32
+        let expectedPassword = Password.random 32
         let expectedEmail = EmailAddress.random ()
         let expectedNickname = String.random 64
 
@@ -51,16 +52,24 @@ module SelfServiceControllerToDataStoreTests =
 
         // add matching member to the data store
         let memberData =
-            memberDataFactory.Invoke(Guid.random (), existingUsername, EmailAddress.random (), String.random 64)
+            memberDataFactory.Invoke(Guid.random (), existingUsername, Password.random 32, EmailAddress.random (),
+                String.random 64)
         context.AddMember(memberData)
 
         // persist changes to the data store
         context.SaveChanges()
 
         let controller = new SelfServiceController(mediator, keyGenerator)
-        let result =
-            SelfServiceRegisterViewModel.make existingUsername expectedEmail expectedNickname
-            |> controller.Register
+
+        let (viewModel, _) =
+            Map.empty
+                .Add("Username", existingUsername)
+                .Add("Password", expectedPassword)
+                .Add("ConfirmPassword", expectedPassword)
+                .Add("Email", expectedEmail)
+                .Add("Nickname", expectedNickname)
+            |> bindModel<ISelfServiceRegisterViewModel>
+        let result = controller.Register viewModel
 
         test <@ isNotNull result @>
         test <@ result :? ViewResult @>
@@ -73,18 +82,20 @@ module SelfServiceControllerToDataStoreTests =
 
         let actualViewModel = viewResult.Model :?> ISelfServiceRegisterViewModel
         test <@ actualViewModel.Username = existingUsername @>
+        test <@ actualViewModel.Password = expectedPassword @>
         test <@ actualViewModel.Email = expectedEmail @>
         test <@ actualViewModel.Nickname = expectedNickname @>
 
-        let modelState = viewResult.ViewData.ModelState
-
-        test <@ modelState.ContainsKey("username") @>
-        test <@ modelState.["username"].Errors.Count = 1 @>
-        test <@ modelState.["username"].Errors.[0].ErrorMessage = "Username is unavailable" @>
+        let actualModelState = viewResult.ViewData.ModelState
+        test <@ not (actualModelState.IsValid) @>
+        test <@ actualModelState.ContainsKey("username") @>
+        test <@ actualModelState.["username"].Errors.Count = 1 @>
+        test <@ actualModelState.["username"].Errors.[0].ErrorMessage = "Username is unavailable" @>
 
     [<Test>]
     let ``Calling register post, with existing email in data store, returns expected result`` () =
         let expectedUsername = String.random 32
+        let expectedPassword = Password.random 32
         let existingEmail = EmailAddress.random ()
         let expectedNickname = String.random 64
 
@@ -104,16 +115,25 @@ module SelfServiceControllerToDataStoreTests =
         List.iter (fun x -> context.DeleteMember(x)) (context.GetMembers())
 
         // add matching member to the data store
-        let memberData = memberDataFactory.Invoke(Guid.random (), String.random 32, existingEmail, String.random 64)
+        let memberData =
+            memberDataFactory.Invoke(Guid.random (), String.random 32, Password.random 32, existingEmail,
+                String.random 64)
         context.AddMember(memberData)
 
         // persist changes to the data store
         context.SaveChanges()
 
         let controller = new SelfServiceController(mediator, keyGenerator)
-        let result =
-            SelfServiceRegisterViewModel.make expectedUsername existingEmail expectedNickname
-            |> controller.Register
+
+        let (viewModel, _) =
+            Map.empty
+                .Add("Username", expectedUsername)
+                .Add("Password", expectedPassword)
+                .Add("ConfirmPassword", expectedPassword)
+                .Add("Email", existingEmail)
+                .Add("Nickname", expectedNickname)
+            |> bindModel<ISelfServiceRegisterViewModel>
+        let result = controller.Register viewModel
 
         test <@ isNotNull result @>
         test <@ result :? ViewResult @>
@@ -126,14 +146,15 @@ module SelfServiceControllerToDataStoreTests =
 
         let actualViewModel = viewResult.Model :?> ISelfServiceRegisterViewModel
         test <@ actualViewModel.Username = expectedUsername @>
+        test <@ actualViewModel.Password = expectedPassword @>
         test <@ actualViewModel.Email = existingEmail @>
         test <@ actualViewModel.Nickname = expectedNickname @>
 
-        let modelState = viewResult.ViewData.ModelState
-
-        test <@ modelState.ContainsKey("email") @>
-        test <@ modelState.["email"].Errors.Count = 1 @>
-        test <@ modelState.["email"].Errors.[0].ErrorMessage = "Email is already registered" @>
+        let actualModelState = viewResult.ViewData.ModelState
+        test <@ not (actualModelState.IsValid) @>
+        test <@ actualModelState.ContainsKey("email") @>
+        test <@ actualModelState.["email"].Errors.Count = 1 @>
+        test <@ actualModelState.["email"].Errors.[0].ErrorMessage = "Email is already registered" @>
 
     [<Test>]
     let ``Calling register post, with no existing username or email in data store, returns expected result`` () =
@@ -157,9 +178,17 @@ module SelfServiceControllerToDataStoreTests =
         context.SaveChanges()
 
         let controller = new SelfServiceController(mediator, keyGenerator)
-        let result =
-            SelfServiceRegisterViewModel.make (String.random 32) (EmailAddress.random ()) (String.random 64)
-            |> controller.Register
+
+        let password = Password.random 32
+        let (viewModel, _) =
+            Map.empty
+                .Add("Username", String.random 32)
+                .Add("Password", password)
+                .Add("ConfirmPassword", password)
+                .Add("Email", EmailAddress.random ())
+                .Add("Nickname", String.random 64)
+            |> bindModel<ISelfServiceRegisterViewModel>
+        let result = controller.Register viewModel
 
         test <@ isNotNull result @>
         test <@ result :? RedirectToRouteResult @>

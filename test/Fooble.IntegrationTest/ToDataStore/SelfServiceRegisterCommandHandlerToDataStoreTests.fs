@@ -34,15 +34,16 @@ module SelfServiceRegisterCommandHandlerToDataStoreTests =
 
         // add matching member to the data store
         let memberData =
-            memberDataFactory.Invoke(Guid.random (), existingUsername, EmailAddress.random (), String.random 64)
+            memberDataFactory.Invoke(Guid.random (), existingUsername, Password.random 32, EmailAddress.random (),
+                String.random 64)
         context.AddMember(memberData)
 
         // persist changes to the data store
         context.SaveChanges()
 
         let command =
-            SelfServiceRegisterCommand.make (Guid.random ()) existingUsername (EmailAddress.random ())
-                (String.random 64)
+            SelfServiceRegisterCommand.make (Guid.random ()) existingUsername (Password.random 32)
+                (EmailAddress.random ()) (String.random 64)
         let commandResult = handler.Handle(command)
 
         test <@ commandResult.IsUsernameUnavailable @>
@@ -68,14 +69,17 @@ module SelfServiceRegisterCommandHandlerToDataStoreTests =
         List.iter (fun x -> context.DeleteMember(x)) (context.GetMembers())
 
         // add matching member to the data store
-        let memberData = memberDataFactory.Invoke(Guid.random (), String.random 32, existingEmail, String.random 64)
+        let memberData =
+            memberDataFactory.Invoke(Guid.random (), String.random 32, Password.random 32, existingEmail,
+                String.random 64)
         context.AddMember(memberData)
 
         // persist changes to the data store
         context.SaveChanges()
 
         let command =
-            SelfServiceRegisterCommand.make (Guid.random ()) (String.random 32) existingEmail (String.random 64)
+            SelfServiceRegisterCommand.make (Guid.random ()) (String.random 32) (Password.random 32) existingEmail
+                (String.random 64)
         let commandResult = handler.Handle(command)
 
         test <@ commandResult.IsEmailUnavailable @>
@@ -101,8 +105,8 @@ module SelfServiceRegisterCommandHandlerToDataStoreTests =
         context.SaveChanges()
 
         let command =
-            SelfServiceRegisterCommand.make (Guid.random ()) (String.random 32) (EmailAddress.random ())
-                (String.random 64)
+            SelfServiceRegisterCommand.make (Guid.random ()) (String.random 32) (Password.random 32)
+                (EmailAddress.random ()) (String.random 64)
         let commandResult = handler.Handle(command)
 
         test <@ commandResult.IsSuccess @>

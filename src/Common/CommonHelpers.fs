@@ -68,6 +68,35 @@ module internal String =
         |> ofArray
 
 [<RequireQualifiedAccess>]
+module internal Password =
+
+    let specialCharsPattern = """ ~!@#$%\^&*_\-+=`|\\(){}[\]:;"'<>,.?/"""
+
+    let hasDigits x = String.isMatch "[0-9]" x
+    let hasLowerAlphas x = String.isMatch "[a-z]" x
+    let hasUpperAlphas x = String.isMatch "[A-Z]" x
+    let hasSpecialChars x = String.isMatch (sprintf "[%s]" specialCharsPattern) x
+
+    let isMatch x = String.isMatch (sprintf "^[0-9a-zA-Z%s]+$" specialCharsPattern) x
+    let isNotMatch x = not (isMatch x)
+
+    let charset =
+        Array.concat [ [| '0' .. '9' |]; [| 'a' .. 'z' |]; [| 'A' .. 'Z' |] ]
+        |> Array.append (String.toArray specialCharsPattern)
+        |> Set.ofArray
+
+    let random =
+        let chars = Set.toList charset
+        let charsLen = chars.Length
+        let random = Random()
+        let rec generate len =
+            let res = [| for _ in 0..len-1 -> chars.[random.Next(charsLen)] |] |> String
+            match (hasDigits res, hasLowerAlphas res, hasUpperAlphas res, hasSpecialChars res) with
+            | (true, true, true, true) -> res
+            | _ -> generate len
+        fun len -> assert (len > 0); generate len
+
+[<RequireQualifiedAccess>]
 module internal EmailAddress =
 
     let random () = sprintf "%s@%s.%s" (String.random 14) (String.random 14) (String.random 2)

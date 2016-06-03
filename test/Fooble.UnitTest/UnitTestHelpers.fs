@@ -6,6 +6,7 @@ open Fooble.Persistence
 open Fooble.Presentation
 open Moq
 open Moq.FSharp.Extensions
+open System
 open System.Collections.Specialized
 open System.Web
 open System.Web.Mvc
@@ -44,6 +45,60 @@ module internal UnitTestHelpers =
         let i = message.IndexOf("Parameter name: ")
         message.Remove(i).Trim()
 
+    let private makeBadPasswordWith charset =
+        let chars = Set.toList charset
+        let charsLen = chars.Length
+        let random = Random()
+        fun len -> [| for _ in 0..len-1 -> chars.[random.Next(charsLen)] |] |> String
+
+    let makeBadPasswordWithoutDigits =
+        let charset =
+            Set.ofList [ '0' .. '9' ]
+            |> Set.difference Password.charset
+        let rec generate len =
+            let res = makeBadPasswordWith charset len
+            match (Password.hasLowerAlphas res, Password.hasUpperAlphas res, Password.hasSpecialChars res) with
+            | (true, true, true) -> res
+            | _ -> generate len
+        fun len -> assert (len > 0); generate len
+
+    let makeBadPasswordWithoutLowerAlphas =
+        let charset =
+            Set.ofList [ 'a' .. 'z' ]
+            |> Set.difference Password.charset
+        let rec generate len =
+            let res = makeBadPasswordWith charset len
+            match (Password.hasDigits res, Password.hasUpperAlphas res, Password.hasSpecialChars res) with
+            | (true, true, true) -> res
+            | _ -> generate len
+        fun len -> assert (len > 0); generate len
+
+    let makeBadPasswordWithoutUpperAlphas =
+        let charset =
+            Set.ofList [ 'A' .. 'Z' ]
+            |> Set.difference Password.charset
+        let rec generate len =
+            let res = makeBadPasswordWith charset len
+            match (Password.hasDigits res, Password.hasLowerAlphas res, Password.hasSpecialChars res) with
+            | (true, true, true) -> res
+            | _ -> generate len
+        fun len -> assert (len > 0); generate len
+
+    let makeBadPasswordWithoutSpecialChars =
+        let charset =
+            String.toArray Password.specialCharsPattern
+            |> Set.ofArray
+            |> Set.difference Password.charset
+        let rec generate len =
+            let res = makeBadPasswordWith charset len
+            match (Password.hasDigits res, Password.hasLowerAlphas res, Password.hasUpperAlphas res) with
+            | (true, true, true) -> res
+            | _ -> generate len
+        fun len -> assert (len > 0); generate len
+
+    let makeBadPasswordWithInvalidChars len =
+        Password.random (len - 2) |> sprintf "%c%s" Char.MinValue
+
     let makeTestKeyGenerator key =
         { new IKeyGenerator with
             member this.GenerateKey() =
@@ -51,20 +106,16 @@ module internal UnitTestHelpers =
                 | Some x -> x
                 | None -> Guid.random () }
 
-    let makeTestMemberData id username email nickname =
-        assert (Guid.isNotEmpty id)
-        assert (String.isNotNullOrEmpty username)
-        assert (String.isNotShorter 3 username)
-        assert (String.isNotLonger 32 username)
-        assert (String.isMatch "^[a-z0-9]+$" username)
-        assert (String.isNotNullOrEmpty email)
-        assert (String.isNotLonger 254 email)
-        assert (String.isEmail email)
-        assert (String.isNotNullOrEmpty nickname)
-        assert (String.isNotLonger 64 nickname)
+    let makeTestMemberData id username password email nickname =
+        assertMemberId id
+        assertMemberUsername username
+        assertMemberPassword password
+        assertMemberEmail email
+        assertMemberNickname nickname
 
         let idRef = ref id
         let usernameRef = ref username
+        let passwordRef = ref password
         let emailRef = ref email
         let nicknameRef = ref nickname
 
@@ -78,6 +129,10 @@ module internal UnitTestHelpers =
                   with get () = !usernameRef
                   and set (v) = usernameRef := v
 
+              member this.Password
+                  with get () = !passwordRef
+                  and set (v) = passwordRef := v
+
               member this.Email
                   with get () = !emailRef
                   and set (v) = emailRef := v
@@ -90,16 +145,10 @@ module internal UnitTestHelpers =
         MemberDataFactory(makeTestMemberData)
 
     let makeTestMemberDetailReadModel id username email nickname =
-        assert (Guid.isNotEmpty id)
-        assert (String.isNotNullOrEmpty username)
-        assert (String.isNotShorter 3 username)
-        assert (String.isNotLonger 32 username)
-        assert (String.isMatch "^[a-z0-9]+$" username)
-        assert (String.isNotNullOrEmpty email)
-        assert (String.isNotLonger 254 email)
-        assert (String.isEmail email)
-        assert (String.isNotNullOrEmpty nickname)
-        assert (String.isNotLonger 64 nickname)
+        assertMemberId id
+        assertMemberUsername username
+        assertMemberEmail email
+        assertMemberNickname nickname
 
         { new IMemberDetailReadModel with
             member this.Id with get() = id
@@ -111,9 +160,8 @@ module internal UnitTestHelpers =
         MemberDetailReadModelFactory(makeTestMemberDetailReadModel)
 
     let makeTestMemberListItemReadModel id nickname =
-        assert (Guid.isNotEmpty id)
-        assert (String.isNotNullOrEmpty nickname)
-        assert (String.isNotLonger 64 nickname)
+        assertMemberId id
+        assertMemberNickname nickname
 
         { new IMemberListItemReadModel with
             member this.Id with get() = id

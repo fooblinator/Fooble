@@ -46,6 +46,38 @@ module Member =
         |> validate username "username"
 
     /// <summary>
+    /// Validates the supplied member password.
+    /// </summary>
+    /// <param name="password">The password of the member.</param>
+    /// <returns>Returns a validation result.</returns>
+    [<CompiledName("ValidatePassword")>]
+    let validatePassword password =
+        [ (String.isNotNullOrEmpty), "Password is required"
+          (String.isNotShorter 8), "Password is shorter than 8 characters"
+          (String.isNotLonger 32), "Password is longer than 32 characters"
+          (Password.hasDigits), "Password does not contain any numbers"
+          (Password.hasLowerAlphas), "Password does not contain any lower-case letters"
+          (Password.hasUpperAlphas), "Password does not contain any upper-case letters"
+          (Password.hasSpecialChars), "Password does not contain any special characters"
+          (Password.isMatch), "Password contains invalid characters" ]
+        |> validate password "password"
+
+    /// <summary>
+    /// Validates the supplied member password and confirm password.
+    /// </summary>
+    /// <param name="password">The password of the member.</param>
+    /// <param name="confirmPassword">The confirm password of the member.</param>
+    /// <returns>Returns a validation result.</returns>
+    [<CompiledName("ValidatePasswords")>]
+    let validatePasswords password confirmPassword =
+        match validatePassword password with
+        | x when x.IsInvalid -> x
+        | _ ->
+            match confirmPassword = password with
+            | false -> ValidationResult.makeInvalid "confirmPassword" "Passwords do not match"
+            | _ -> ValidationResult.valid
+
+    /// <summary>
     /// Validates the supplied member email.
     /// </summary>
     /// <param name="email">The email of the member.</param>

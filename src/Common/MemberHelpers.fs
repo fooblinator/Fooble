@@ -19,6 +19,16 @@ module internal MemberHelpers =
         assert (String.isNotLonger 254 email)
         assert (String.isEmail email)
 
+    let assertMemberPassword password =
+        assert (String.isNotNullOrEmpty password)
+        assert (String.isNotShorter 8 password)
+        assert (String.isNotLonger 32 password)
+        assert (Password.hasDigits password)
+        assert (Password.hasLowerAlphas password)
+        assert (Password.hasUpperAlphas password)
+        assert (Password.hasSpecialChars password)
+        assert (Password.isMatch password)
+
     let assertMemberNickname nickname =
         assert (String.isNotNullOrEmpty nickname)
         assert (String.isNotLonger 64 nickname)
@@ -26,5 +36,6 @@ module internal MemberHelpers =
     let assertMemberData (memberData:IMemberData) =
         assertMemberId memberData.Id
         assertMemberUsername memberData.Username
+        assertMemberPassword memberData.Password
         assertMemberEmail memberData.Email
         assertMemberNickname memberData.Nickname

@@ -2,12 +2,16 @@
 
 open System
 
+// TODO: Need to enable encryption of passwords
+
 /// Represents the data record for members.
 type IMemberData =
     /// The id that will potentially represent the member.
     abstract Id:Guid with get, set
     /// The username of the member.
     abstract Username:string with get, set
+    /// The password of the member.
+    abstract Password:string with get, set
     /// The email of the member.
     abstract Email:string with get, set
     /// The nickname of the member.
@@ -49,4 +53,4 @@ type IFoobleContext =
 
 /// Represents the function to invoke to construct a new IMemberData instance.
 type MemberDataFactory =
-    delegate of id:Guid * username:string * email:string * nickname:string -> IMemberData
+    delegate of id:Guid * username:string * password:string * email:string * nickname:string -> IMemberData

@@ -49,7 +49,8 @@ module MemberControllerToDataStoreTests =
         List.iter (fun x -> context.DeleteMember(x)) (context.GetMembers())
 
         // add matching member to the data store
-        let memberData = memberDataFactory.Invoke(expectedId, expectedUsername, expectedEmail, expectedNickname)
+        let memberData =
+            memberDataFactory.Invoke(expectedId, expectedUsername, Password.random 32, expectedEmail, expectedNickname)
         context.AddMember(memberData)
 
         // persist changes to the data store
@@ -137,7 +138,8 @@ module MemberControllerToDataStoreTests =
         // add matching members to the data store
         let members =
             List.init 5 (fun _ ->
-                memberDataFactory.Invoke(Guid.random (), String.random 32, EmailAddress.random (), String.random 64))
+                memberDataFactory.Invoke(Guid.random (), String.random 32, Password.random 32, EmailAddress.random (),
+                    String.random 64))
         List.iter (fun x -> context.AddMember(x)) members
 
         // persist changes to the data store

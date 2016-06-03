@@ -24,6 +24,10 @@ module internal PersistenceHelpers =
                   with get() = memberData.Username
                   and set(x) = memberData.Username <- x
 
+              member this.Password
+                  with get() = memberData.Password
+                  and set(x) = memberData.Password <- x
+
               member this.Email
                   with get() = memberData.Email
                   and set(x) = memberData.Email <- x

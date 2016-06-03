@@ -11,24 +11,29 @@ module SelfServiceRegisterViewModel =
 
     [<DefaultAugmentation(false)>]
     type private SelfServiceRegisterViewModelImplementation =
-        | ViewModel of string * string * string
+        | ViewModel of username:string * password:string * email:string * nickname:string
 
         interface ISelfServiceRegisterViewModel with
 
             member this.Username
                 with get() =
                     match this with
-                    | ViewModel (x, _, _) -> x
+                    | ViewModel (username = x) -> x
+
+            member this.Password
+                with get() =
+                    match this with
+                    | ViewModel(password = x) -> x
 
             member this.Email
                 with get() =
                     match this with
-                    | ViewModel (_, x, _) -> x
+                    | ViewModel(email = x) -> x
 
             member this.Nickname
                 with get() =
                     match this with
-                    | ViewModel (_, _, x) -> x
+                    | ViewModel(nickname = x) -> x
 
     /// <summary>
     /// Represents an empty self-service register view model.
@@ -36,22 +41,10 @@ module SelfServiceRegisterViewModel =
     /// <returns>Returns an empty self-service register view model.</returns>
     [<CompiledName("Empty")>]
     let empty =
-        ViewModel (String.empty, String.empty, String.empty) :> ISelfServiceRegisterViewModel
+        ViewModel(String.empty, String.empty, String.empty, String.empty) :> ISelfServiceRegisterViewModel
 
-    /// <summary>
-    /// Constructs a self-service register view model.
-    /// </summary>
-    /// <param name="username">The username of the potential member.</param>
-    /// <param name="email">The email of the potential member.</param>
-    /// <param name="nickname">The nickname of the potential member.</param>
-    /// <remarks>
-    /// Does not validate parameters. This allows for re-construction of the view model with previously-submitted,
-    /// and potentially invalid form data. Need to manually validate and handle submitted form data.
-    /// </remarks>
-    /// <returns>Returns a self-service register view model.</returns>
-    [<CompiledName("Make")>]
-    let make username email nickname =
-        ViewModel (username, email, nickname) :> ISelfServiceRegisterViewModel
+    let internal make username password email nickname =
+        ViewModel(username, password, email, nickname) :> ISelfServiceRegisterViewModel
 
 /// Provides presentation-related extension methods for self-service register.
 [<RequireQualifiedAccess>]
@@ -115,4 +108,4 @@ module SelfServiceRegisterExtensions =
         [ (isNotNull << box), "View model is required" ]
         |> validate viewModel "result" |> enforce
 
-        SelfServiceRegisterCommand.make id viewModel.Username viewModel.Email viewModel.Nickname
+        SelfServiceRegisterCommand.make id viewModel.Username viewModel.Password viewModel.Email viewModel.Nickname

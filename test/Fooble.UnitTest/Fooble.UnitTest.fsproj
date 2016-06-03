@@ -58,6 +58,9 @@
     <Compile Include="..\..\src\Common\CommonHelpers.fs">
       <Link>CommonHelpers.fs</Link>
     </Compile>
+    <Compile Include="..\..\src\Common\MemberHelpers.fs">
+      <Link>MemberHelpers.fs</Link>
+    </Compile>
     <Compile Include="UnitTestHelpers.fs" />
     <Compile Include="Member\MemberControllerTests.fs" />
     <Compile Include="Member\MemberTests.fs" />

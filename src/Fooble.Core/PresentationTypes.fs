@@ -53,6 +53,8 @@ type IMemberListReadModel =
 type ISelfServiceRegisterViewModel =
     /// The username of the member.
     abstract Username:string with get
+    /// The password of the member.
+    abstract Password:string with get
     /// The email of the member.
     abstract Email:string with get
     /// The nickname of the member.

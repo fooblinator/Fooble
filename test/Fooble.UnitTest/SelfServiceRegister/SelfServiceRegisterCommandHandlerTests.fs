@@ -27,8 +27,8 @@ module SelfServiceRegisterCommandHandlerTests =
         let handler = SelfServiceRegisterCommand.makeHandler contextMock.Object (mock ())
 
         let command =
-            SelfServiceRegisterCommand.make (Guid.random ()) (String.random 32) (EmailAddress.random ())
-                (String.random 64)
+            SelfServiceRegisterCommand.make (Guid.random ()) (String.random 32) (Password.random 32)
+                (EmailAddress.random ()) (String.random 64)
         let commandResult = handler.Handle(command)
 
         contextMock.Verify()
@@ -45,8 +45,8 @@ module SelfServiceRegisterCommandHandlerTests =
         let handler = SelfServiceRegisterCommand.makeHandler contextMock.Object (mock ())
 
         let command =
-            SelfServiceRegisterCommand.make (Guid.random ()) (String.random 32) (EmailAddress.random ())
-                (String.random 64)
+            SelfServiceRegisterCommand.make (Guid.random ()) (String.random 32) (Password.random 32)
+                (EmailAddress.random ()) (String.random 64)
         let commandResult = handler.Handle(command)
 
         contextMock.Verify()
@@ -68,8 +68,8 @@ module SelfServiceRegisterCommandHandlerTests =
         let handler = SelfServiceRegisterCommand.makeHandler contextMock.Object (makeTestMemberDataFactory ())
 
         let command =
-            SelfServiceRegisterCommand.make (Guid.random ()) (String.random 32) (EmailAddress.random ())
-                (String.random 64)
+            SelfServiceRegisterCommand.make (Guid.random ()) (String.random 32) (Password.random 32)
+                (EmailAddress.random ()) (String.random 64)
         let commandResult = handler.Handle(command)
 
         contextMock.Verify()

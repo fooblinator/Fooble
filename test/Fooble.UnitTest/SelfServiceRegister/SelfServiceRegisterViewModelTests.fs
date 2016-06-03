@@ -16,8 +16,15 @@ module SelfServiceRegisterViewModelTests =
 
     [<Test>]
     let ``Calling make, with valid parameters, returns view model`` () =
-        let viewModel =
-            SelfServiceRegisterViewModel.make (String.random 32) (EmailAddress.random ()) (String.random 64)
+        let password = Password.random 32
+        let (viewModel, _) =
+            Map.empty
+                .Add("Username", String.random 32)
+                .Add("Password", password)
+                .Add("ConfirmPassword", password)
+                .Add("Email", EmailAddress.random ())
+                .Add("Nickname", String.random 64)
+            |> bindModel<ISelfServiceRegisterViewModel>
 
         test <@ box viewModel :? ISelfServiceRegisterViewModel @>
 
@@ -33,9 +40,40 @@ module SelfServiceRegisterViewModelTests =
     let ``Calling username, with not initial view model, returns expected username`` () =
         let expectedUsername = String.random 32
 
-        let viewModel = SelfServiceRegisterViewModel.make expectedUsername (EmailAddress.random ()) (String.random 64)
+        let password = Password.random 32
+        let (viewModel, _) =
+            Map.empty
+                .Add("Username", expectedUsername)
+                .Add("Password", password)
+                .Add("ConfirmPassword", password)
+                .Add("Email", EmailAddress.random ())
+                .Add("Nickname", String.random 64)
+            |> bindModel<ISelfServiceRegisterViewModel>
 
         test <@ viewModel.Username = expectedUsername @>
+
+    [<Test>]
+    let ``Calling password, with initial view model, returns expected passwords`` () =
+        let expectedPassword = String.empty
+
+        let viewModel = SelfServiceRegisterViewModel.empty
+
+        test <@ viewModel.Password = expectedPassword @>
+
+    [<Test>]
+    let ``Calling password, with not initial view model, returns expected passwords`` () =
+        let expectedPassword = Password.random 32
+
+        let (viewModel, _) =
+            Map.empty
+                .Add("Password", String.random 32)
+                .Add("Password", expectedPassword)
+                .Add("ConfirmPassword", expectedPassword)
+                .Add("Email", EmailAddress.random ())
+                .Add("Nickname", String.random 64)
+            |> bindModel<ISelfServiceRegisterViewModel>
+
+        test <@ viewModel.Password = expectedPassword @>
 
     [<Test>]
     let ``Calling email, with initial view model, returns expected email`` () =
@@ -49,7 +87,15 @@ module SelfServiceRegisterViewModelTests =
     let ``Calling email, with not initial view model, returns expected email`` () =
         let expectedEmail = EmailAddress.random ()
 
-        let viewModel = SelfServiceRegisterViewModel.make (String.random 32) expectedEmail (String.random 64)
+        let password = Password.random 32
+        let (viewModel, _) =
+            Map.empty
+                .Add("Username", String.random 32)
+                .Add("Password", password)
+                .Add("ConfirmPassword", password)
+                .Add("Email", expectedEmail)
+                .Add("Nickname", String.random 64)
+            |> bindModel<ISelfServiceRegisterViewModel>
 
         test <@ viewModel.Email = expectedEmail @>
 
@@ -65,6 +111,14 @@ module SelfServiceRegisterViewModelTests =
     let ``Calling nickname, with not initial view model, returns expected name`` () =
         let expectedNickname = String.random 64
 
-        let viewModel = SelfServiceRegisterViewModel.make (String.random 32) (EmailAddress.random ()) expectedNickname
+        let password = Password.random 32
+        let (viewModel, _) =
+            Map.empty
+                .Add("Username", String.random 32)
+                .Add("Password", password)
+                .Add("ConfirmPassword", password)
+                .Add("Email", EmailAddress.random ())
+                .Add("Nickname", expectedNickname)
+            |> bindModel<ISelfServiceRegisterViewModel>
 
         test <@ viewModel.Nickname = expectedNickname @>

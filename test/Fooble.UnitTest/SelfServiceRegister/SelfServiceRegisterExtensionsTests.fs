@@ -88,14 +88,22 @@ module SelfServiceRegisterExtensionsTests =
     let ``Calling to command, as self-service register view model, returns expected read model`` () =
         let expectedId = Guid.random ()
         let expectedUsername = String.random 32
+        let expectedPassword = Password.random 32
         let expectedEmail = EmailAddress.random ()
         let expectedNickname = String.random 64
 
-        let viewModel = SelfServiceRegisterViewModel.make expectedUsername expectedEmail expectedNickname
+        let (viewModel, _) =
+            Map.empty
+                .Add("Username", expectedUsername)
+                .Add("Password", expectedPassword)
+                .Add("ConfirmPassword", expectedPassword)
+                .Add("Email", expectedEmail)
+                .Add("Nickname", expectedNickname)
+            |> bindModel<ISelfServiceRegisterViewModel>
 
         let actualCommand = SelfServiceRegisterExtensions.toCommand viewModel expectedId
-
         test <@ actualCommand.Id = expectedId @>
         test <@ actualCommand.Username = expectedUsername @>
+        test <@ actualCommand.Password = expectedPassword @>
         test <@ actualCommand.Email = expectedEmail @>
         test <@ actualCommand.Nickname = expectedNickname @>

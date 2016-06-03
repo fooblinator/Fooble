@@ -27,5 +27,6 @@ type PersistenceRegistrations =
             EntityConnection.GetDataContext(this.ConnectionString).DataContext :?> FoobleContext |> wrapFoobleContext)
 
         ignore <| builder.Register(fun _ ->
-            MemberDataFactory(fun id username email nickname ->
-                MemberData(Id = id, Username = username, Email = email, Nickname = nickname) |> wrapMemberData))
+            MemberDataFactory(fun id username password email nickname ->
+                MemberData(Id = id, Username = username, Password = password, Email = email, Nickname = nickname)
+                |> wrapMemberData))
