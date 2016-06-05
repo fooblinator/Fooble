@@ -1,7 +1,6 @@
 ﻿namespace Fooble.IntegrationTest
 
 open Autofac
-open Fooble.Common
 open Fooble.Core
 open Fooble.Core.Infrastructure
 open Fooble.Persistence.Infrastructure
@@ -17,82 +16,82 @@ module RegistrationsTests =
     let ``Registering autofac container, properly registers expected query handlers`` () =
         let connectionString = Settings.ConnectionStrings.FoobleContext
         let builder = ContainerBuilder()
-        ignore <| builder.RegisterModule(CoreRegistrations())
-        ignore <| builder.RegisterModule(PersistenceRegistrations(connectionString))
-        ignore <| builder.RegisterModule(PresentationRegistrations())
+        ignore (builder.RegisterModule(CoreRegistrations()))
+        ignore (builder.RegisterModule(PersistenceRegistrations(connectionString)))
+        ignore (builder.RegisterModule(PresentationRegistrations()))
         use container = builder.Build()
 
         let memberDetailQueryHandler =
             container.Resolve<IRequestHandler<IMemberDetailQuery, IMemberDetailQueryResult>>()
-        test <@ isNotNull memberDetailQueryHandler @>
+        isNull memberDetailQueryHandler =! false
 
         let memberListQueryHandler = container.Resolve<IRequestHandler<IMemberListQuery, IMemberListQueryResult>>()
-        test <@ isNotNull memberListQueryHandler @>
+        isNull memberListQueryHandler =! false
 
         let selfServiceRegisterCommandHandler =
             container.Resolve<IRequestHandler<ISelfServiceRegisterCommand, ISelfServiceRegisterCommandResult>>()
-        test <@ isNotNull selfServiceRegisterCommandHandler @>
+        isNull selfServiceRegisterCommandHandler =! false
 
     [<Test>]
     let ``Registering autofac container, properly registers expected single instance factory`` () =
         let connectionString = Settings.ConnectionStrings.FoobleContext
         let builder = ContainerBuilder()
-        ignore <| builder.RegisterModule(CoreRegistrations())
-        ignore <| builder.RegisterModule(PersistenceRegistrations(connectionString))
-        ignore <| builder.RegisterModule(PresentationRegistrations())
+        ignore (builder.RegisterModule(CoreRegistrations()))
+        ignore (builder.RegisterModule(PersistenceRegistrations(connectionString)))
+        ignore (builder.RegisterModule(PresentationRegistrations()))
         use container = builder.Build()
 
         let singleInstanceFactory = container.Resolve<SingleInstanceFactory>()
-        test <@ isNotNull singleInstanceFactory @>
+        isNull singleInstanceFactory =! false
 
         (* test resolution of known request handler types using the factory *)
 
-        let result1 =
+        let result =
             singleInstanceFactory.Invoke(typeof<IRequestHandler<IMemberDetailQuery, IMemberDetailQueryResult>>)
-        test <@ isNotNull result1 @>
-        test <@ result1 :? IRequestHandler<IMemberDetailQuery, IMemberDetailQueryResult> @>
+        isNull result =! false
+        result :? IRequestHandler<IMemberDetailQuery, IMemberDetailQueryResult> =! true
 
-        let result2 = singleInstanceFactory.Invoke(typeof<IRequestHandler<IMemberListQuery, IMemberListQueryResult>>)
-        test <@ isNotNull result2 @>
-        test <@ result2 :? IRequestHandler<IMemberListQuery, IMemberListQueryResult> @>
+        let result = singleInstanceFactory.Invoke(typeof<IRequestHandler<IMemberListQuery, IMemberListQueryResult>>)
+        isNull result =! false
+        result :? IRequestHandler<IMemberListQuery, IMemberListQueryResult> =! true
 
-        let result3 =
+        let result =
             singleInstanceFactory
                 .Invoke(typeof<IRequestHandler<ISelfServiceRegisterCommand, ISelfServiceRegisterCommandResult>>)
-        test <@ isNotNull result3 @>
-        test <@ result3 :? IRequestHandler<ISelfServiceRegisterCommand, ISelfServiceRegisterCommandResult> @>
+        isNull result =! false
+        result :? IRequestHandler<ISelfServiceRegisterCommand, ISelfServiceRegisterCommandResult> =! true
 
     [<Test>]
     let ``Registering autofac container, properly registers expected multi instance factory`` () =
         let connectionString = Settings.ConnectionStrings.FoobleContext
         let builder = ContainerBuilder()
-        ignore <| builder.RegisterModule(CoreRegistrations())
-        ignore <| builder.RegisterModule(PersistenceRegistrations(connectionString))
-        ignore <| builder.RegisterModule(PresentationRegistrations())
+        ignore (builder.RegisterModule(CoreRegistrations()))
+        ignore (builder.RegisterModule(PersistenceRegistrations(connectionString)))
+        ignore (builder.RegisterModule(PresentationRegistrations()))
         use container = builder.Build()
 
         let multiInstanceFactory = container.Resolve<MultiInstanceFactory>()
-        test <@ isNotNull multiInstanceFactory @>
+        isNull multiInstanceFactory =! false
 
         (* test resolution of known request handler types using the factory *)
 
-        let result1 =
+        let result =
             multiInstanceFactory.Invoke(typeof<IRequestHandler<IMemberDetailQuery, IMemberDetailQueryResult>>)
-        test <@ isNotNull result1 @>
-        test <@ (Seq.length result1) = 1 @>
-        let actualResult1 = (Seq.head result1)
-        test <@ actualResult1 :? IRequestHandler<IMemberDetailQuery, IMemberDetailQueryResult> @>
+        isNull result =! false
+        Seq.length result =! 1
+        let actualResult = (Seq.head result)
+        actualResult :? IRequestHandler<IMemberDetailQuery, IMemberDetailQueryResult> =! true
 
-        let result2 = multiInstanceFactory.Invoke(typeof<IRequestHandler<IMemberListQuery, IMemberListQueryResult>>)
-        test <@ isNotNull result2 @>
-        test <@ (Seq.length result2) = 1 @>
-        let actualResult2 = (Seq.head result2)
-        test <@ actualResult2 :? IRequestHandler<IMemberListQuery, IMemberListQueryResult> @>
+        let result = multiInstanceFactory.Invoke(typeof<IRequestHandler<IMemberListQuery, IMemberListQueryResult>>)
+        isNull result =! false
+        Seq.length result =! 1
+        let actualResult = (Seq.head result)
+        actualResult :? IRequestHandler<IMemberListQuery, IMemberListQueryResult> =! true
 
-        let result3 =
+        let result =
             multiInstanceFactory
                 .Invoke(typeof<IRequestHandler<ISelfServiceRegisterCommand, ISelfServiceRegisterCommandResult>>)
-        test <@ isNotNull result3 @>
-        test <@ (Seq.length result3) = 1 @>
-        let actualResult3 = (Seq.head result3)
-        test <@ actualResult3 :? IRequestHandler<ISelfServiceRegisterCommand, ISelfServiceRegisterCommandResult> @>
+        isNull result =! false
+        Seq.length result =! 1
+        let actualResult = (Seq.head result)
+        actualResult :? IRequestHandler<ISelfServiceRegisterCommand, ISelfServiceRegisterCommandResult> =! true

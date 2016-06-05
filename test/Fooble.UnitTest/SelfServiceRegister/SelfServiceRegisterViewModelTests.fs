@@ -12,16 +12,16 @@ module SelfServiceRegisterViewModelTests =
     let ``Calling make initial, returns view model`` () =
         let viewModel = SelfServiceRegisterViewModel.empty
 
-        test <@ box viewModel :? ISelfServiceRegisterViewModel @>
+        box viewModel :? ISelfServiceRegisterViewModel =! true
 
     [<Test>]
     let ``Calling make, with valid parameters, returns view model`` () =
         let password = Password.random 32
         let viewModel =
-            bindSelfServiceRegisterViewModel2 (String.random 32) password password (EmailAddress.random ())
+            bindSelfServiceRegisterViewModel2 (String.random 32) password password (EmailAddress.random 32)
                 (String.random 64)
 
-        test <@ box viewModel :? ISelfServiceRegisterViewModel @>
+        box viewModel :? ISelfServiceRegisterViewModel =! true
 
     [<Test>]
     let ``Calling username, with initial view model, returns expected username`` () =
@@ -29,7 +29,7 @@ module SelfServiceRegisterViewModelTests =
 
         let viewModel = SelfServiceRegisterViewModel.empty
 
-        test <@ viewModel.Username = expectedUsername @>
+        viewModel.Username =! expectedUsername
 
     [<Test>]
     let ``Calling username, with not initial view model, returns expected username`` () =
@@ -37,10 +37,10 @@ module SelfServiceRegisterViewModelTests =
 
         let password = Password.random 32
         let viewModel =
-            bindSelfServiceRegisterViewModel2 expectedUsername password password (EmailAddress.random ())
+            bindSelfServiceRegisterViewModel2 expectedUsername password password (EmailAddress.random 32)
                 (String.random 64)
 
-        test <@ viewModel.Username = expectedUsername @>
+        viewModel.Username =! expectedUsername
 
     [<Test>]
     let ``Calling password, with initial view model, returns expected passwords`` () =
@@ -48,7 +48,7 @@ module SelfServiceRegisterViewModelTests =
 
         let viewModel = SelfServiceRegisterViewModel.empty
 
-        test <@ viewModel.Password = expectedPassword @>
+        viewModel.Password =! expectedPassword
 
     [<Test>]
     let ``Calling password, with not initial view model, returns expected passwords`` () =
@@ -56,9 +56,9 @@ module SelfServiceRegisterViewModelTests =
 
         let viewModel =
             bindSelfServiceRegisterViewModel2 (String.random 32) expectedPassword expectedPassword
-                (EmailAddress.random ()) (String.random 64)
+                (EmailAddress.random 32) (String.random 64)
 
-        test <@ viewModel.Password = expectedPassword @>
+        viewModel.Password =! expectedPassword
 
     [<Test>]
     let ``Calling email, with initial view model, returns expected email`` () =
@@ -66,17 +66,17 @@ module SelfServiceRegisterViewModelTests =
 
         let viewModel = SelfServiceRegisterViewModel.empty
 
-        test <@ viewModel.Email = expectedEmail @>
+        viewModel.Email =! expectedEmail
 
     [<Test>]
     let ``Calling email, with not initial view model, returns expected email`` () =
-        let expectedEmail = EmailAddress.random ()
+        let expectedEmail = EmailAddress.random 32
 
         let password = Password.random 32
         let viewModel =
             bindSelfServiceRegisterViewModel2 (String.random 32) password password expectedEmail (String.random 64)
 
-        test <@ viewModel.Email = expectedEmail @>
+        viewModel.Email =! expectedEmail
 
     [<Test>]
     let ``Calling nickname, with initial view model, returns expected nickname`` () =
@@ -84,7 +84,7 @@ module SelfServiceRegisterViewModelTests =
 
         let viewModel = SelfServiceRegisterViewModel.empty
 
-        test <@ viewModel.Nickname = expectedNickname @>
+        viewModel.Nickname =! expectedNickname
 
     [<Test>]
     let ``Calling nickname, with not initial view model, returns expected name`` () =
@@ -92,7 +92,7 @@ module SelfServiceRegisterViewModelTests =
 
         let password = Password.random 32
         let viewModel =
-            bindSelfServiceRegisterViewModel2 (String.random 32) password password (EmailAddress.random ())
+            bindSelfServiceRegisterViewModel2 (String.random 32) password password (EmailAddress.random 32)
                 expectedNickname
 
-        test <@ viewModel.Nickname = expectedNickname @>
+        viewModel.Nickname =! expectedNickname

@@ -21,25 +21,25 @@ module SelfServiceControllerToDataStoreTests =
     [<Test>]
     let ``Constructing, with valid parameters, returns expected result`` () =
         let builder = ContainerBuilder()
-        ignore <| builder.RegisterModule(CoreRegistrations())
+        ignore (builder.RegisterModule(CoreRegistrations()))
         use container = builder.Build()
 
         let mediator = container.Resolve<IMediator>()
         let keyGenerator = container.Resolve<IKeyGenerator>()
-        ignore <| new SelfServiceController(mediator, keyGenerator)
+        ignore (new SelfServiceController(mediator, keyGenerator))
 
     [<Test>]
     let ``Calling register post, with existing username in data store, returns expected result`` () =
         let existingUsername = String.random 32
         let expectedPassword = Password.random 32
-        let expectedEmail = EmailAddress.random ()
+        let expectedEmail = EmailAddress.random 32
         let expectedNickname = String.random 64
 
         let connectionString = Settings.ConnectionStrings.FoobleContext
         let builder = ContainerBuilder()
-        ignore <| builder.RegisterModule(CoreRegistrations())
-        ignore <| builder.RegisterModule(PersistenceRegistrations(connectionString))
-        ignore <| builder.RegisterModule(PresentationRegistrations())
+        ignore (builder.RegisterModule(CoreRegistrations()))
+        ignore (builder.RegisterModule(PersistenceRegistrations(connectionString)))
+        ignore (builder.RegisterModule(PresentationRegistrations()))
         use container = builder.Build()
 
         let context = container.Resolve<IFoobleContext>()
@@ -53,7 +53,7 @@ module SelfServiceControllerToDataStoreTests =
         // add matching member to the data store
         let memberData =
             let passwordData = Crypto.hash (Password.random 32) 100
-            memberDataFactory.Invoke(Guid.random (), existingUsername, passwordData, EmailAddress.random (),
+            memberDataFactory.Invoke(Guid.random (), existingUsername, passwordData, EmailAddress.random 32,
                 String.random 64)
         context.AddMember(memberData)
 
@@ -67,14 +67,14 @@ module SelfServiceControllerToDataStoreTests =
                 expectedNickname
         let result = controller.Register viewModel
 
-        test <@ isNotNull result @>
-        test <@ result :? ViewResult @>
+        isNull result =! false
+        result :? ViewResult =! true
 
         let viewResult = result :?> ViewResult
 
-        test <@ String.isEmpty viewResult.ViewName @>
-        test <@ isNotNull viewResult.Model @>
-        test <@ viewResult.Model :? ISelfServiceRegisterViewModel @>
+        String.isEmpty viewResult.ViewName =! true
+        isNull viewResult.Model =! false
+        viewResult.Model :? ISelfServiceRegisterViewModel =! true
 
         let actualViewModel = viewResult.Model :?> ISelfServiceRegisterViewModel
         testSelfServiceRegisterViewModel actualViewModel existingUsername expectedPassword expectedEmail
@@ -87,14 +87,14 @@ module SelfServiceControllerToDataStoreTests =
     let ``Calling register post, with existing email in data store, returns expected result`` () =
         let expectedUsername = String.random 32
         let expectedPassword = Password.random 32
-        let existingEmail = EmailAddress.random ()
+        let existingEmail = EmailAddress.random 32
         let expectedNickname = String.random 64
 
         let connectionString = Settings.ConnectionStrings.FoobleContext
         let builder = ContainerBuilder()
-        ignore <| builder.RegisterModule(CoreRegistrations())
-        ignore <| builder.RegisterModule(PersistenceRegistrations(connectionString))
-        ignore <| builder.RegisterModule(PresentationRegistrations())
+        ignore (builder.RegisterModule(CoreRegistrations()))
+        ignore (builder.RegisterModule(PersistenceRegistrations(connectionString)))
+        ignore (builder.RegisterModule(PresentationRegistrations()))
         use container = builder.Build()
 
         let context = container.Resolve<IFoobleContext>()
@@ -122,14 +122,14 @@ module SelfServiceControllerToDataStoreTests =
                 expectedNickname
         let result = controller.Register viewModel
 
-        test <@ isNotNull result @>
-        test <@ result :? ViewResult @>
+        isNull result =! false
+        result :? ViewResult =! true
 
         let viewResult = result :?> ViewResult
 
-        test <@ String.isEmpty viewResult.ViewName @>
-        test <@ isNotNull viewResult.Model @>
-        test <@ viewResult.Model :? ISelfServiceRegisterViewModel @>
+        String.isEmpty viewResult.ViewName =! true
+        isNull viewResult.Model =! false
+        viewResult.Model :? ISelfServiceRegisterViewModel =! true
 
         let actualViewModel = viewResult.Model :?> ISelfServiceRegisterViewModel
         testSelfServiceRegisterViewModel actualViewModel expectedUsername expectedPassword existingEmail
@@ -144,9 +144,9 @@ module SelfServiceControllerToDataStoreTests =
 
         let connectionString = Settings.ConnectionStrings.FoobleContext
         let builder = ContainerBuilder()
-        ignore <| builder.RegisterModule(CoreRegistrations())
-        ignore <| builder.RegisterModule(PersistenceRegistrations(connectionString))
-        ignore <| builder.RegisterModule(PresentationRegistrations())
+        ignore (builder.RegisterModule(CoreRegistrations()))
+        ignore (builder.RegisterModule(PersistenceRegistrations(connectionString)))
+        ignore (builder.RegisterModule(PresentationRegistrations()))
         use container = builder.Build()
 
         let context = container.Resolve<IFoobleContext>()
@@ -163,23 +163,23 @@ module SelfServiceControllerToDataStoreTests =
 
         let password = Password.random 32
         let viewModel =
-            bindSelfServiceRegisterViewModel (String.random 32) password password (EmailAddress.random ())
+            bindSelfServiceRegisterViewModel (String.random 32) password password (EmailAddress.random 32)
                 (String.random 64)
         let result = controller.Register viewModel
 
-        test <@ isNotNull result @>
-        test <@ result :? RedirectToRouteResult @>
+        isNull result =! false
+        result :? RedirectToRouteResult =! true
 
         let redirectResult = result :?> RedirectToRouteResult
         let routeValues = redirectResult.RouteValues
 
-        test <@ routeValues.ContainsKey("controller") @>
-        test <@ routeValues.["controller"].ToString().ToLowerInvariant() = "member" @>
+        routeValues.ContainsKey("controller") =! true
+        routeValues.["controller"].ToString().ToLowerInvariant() =! "member"
 
-        test <@ routeValues.ContainsKey("action") @>
-        test <@ routeValues.["action"].ToString().ToLowerInvariant() = "detail" @>
+        routeValues.ContainsKey("action") =! true
+        routeValues.["action"].ToString().ToLowerInvariant() =! "detail"
 
         let expectedIdString = String.ofGuid expectedId
 
-        test <@ routeValues.ContainsKey("id") @>
-        test <@ routeValues.["id"].ToString().ToLowerInvariant() = expectedIdString @>
+        routeValues.ContainsKey("id") =! true
+        routeValues.["id"].ToString().ToLowerInvariant() =! expectedIdString

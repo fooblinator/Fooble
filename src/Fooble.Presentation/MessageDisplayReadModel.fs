@@ -55,36 +55,36 @@ module MessageDisplayReadModel =
     let errorSeverity = Error :> IMessageDisplaySeverity
 
     [<DefaultAugmentation(false)>]
-    [<NoComparison>]
     type private MessageDisplayReadModelImplementation =
-        | ReadModel of string * string * int * IMessageDisplaySeverity * string
+        | ReadModel of heading:string * subHeading:string * statusCode:int * severity:IMessageDisplaySeverity *
+              message:string
 
         interface IMessageDisplayReadModel with
 
             member this.Heading
                 with get() =
                     match this with
-                    | ReadModel (x, _, _, _, _) -> x
+                    | ReadModel(heading = x) -> x
 
             member this.SubHeading
                 with get() =
                     match this with
-                    | ReadModel (_, x, _, _, _) -> x
+                    | ReadModel(subHeading = x) -> x
 
             member this.StatusCode
                 with get() =
                     match this with
-                    | ReadModel (_, _, x, _, _) -> x
+                    | ReadModel(statusCode = x) -> x
 
             member this.Severity
                 with get() =
                     match this with
-                    | ReadModel (_, _, _, x, _) -> x
+                    | ReadModel(severity = x) -> x
 
             member this.Message
                 with get() =
                     match this with
-                    | ReadModel (_, _, _, _, x) -> x
+                    | ReadModel(message = x) -> x
 
     /// <summary>
     /// Constructs a message display read model.
@@ -110,4 +110,4 @@ module MessageDisplayReadModel =
         [ (String.isNotNullOrEmpty), "Message is required" ]
         |> validate message "message" |> enforce
 
-        ReadModel (heading, subHeading, statusCode, severity, message) :> IMessageDisplayReadModel
+        ReadModel(heading, subHeading, statusCode, severity, message) :> IMessageDisplayReadModel

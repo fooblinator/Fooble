@@ -18,21 +18,17 @@ open System.Web.Mvc
 module internal UnitTestHelpers =
 
     let private bindModel<'T> formValues =
-        let modelType = typeof<'T>
-
-        let formValues' = NameValueCollection()
-        Map.iter (fun k v -> formValues'.Add(k, v)) formValues
-
-        let valueProvider = NameValueCollectionValueProvider(formValues', null)
-
-        let modelMetadata = ModelMetadataProviders.Current.GetMetadataForType(null, modelType)
+        let formValues =
+            (NameValueCollection(), formValues)
+            ||> fun x y -> Map.iter (fun k v -> x.Add(k, v)) y; x
 
         let bindingContext =
-            ModelBindingContext(ModelName = modelType.Name, ValueProvider = valueProvider,
-                ModelMetadata = modelMetadata)
+            ModelBindingContext(ModelName = typeof<'T>.Name,
+                ValueProvider = NameValueCollectionValueProvider(formValues, null),
+                ModelMetadata = ModelMetadataProviders.Current.GetMetadataForType(null, typeof<'T>))
 
         let httpRequestMock = Mock<HttpRequestBase>()
-        httpRequestMock.SetupFunc(fun x -> x.Form).Returns(formValues').End
+        httpRequestMock.SetupFunc(fun x -> x.Form).Returns(formValues).End
 
         let httpContextMock = Mock<HttpContextBase>()
         httpContextMock.SetupFunc(fun x -> x.Request).Returns(httpRequestMock.Object).End
@@ -40,9 +36,7 @@ module internal UnitTestHelpers =
         let controllerContext = ControllerContext()
         controllerContext.HttpContext <- httpContextMock.Object
 
-        let binder = FoobleModelBinder()
-
-        (binder.BindModel(controllerContext, bindingContext) :?> 'T, bindingContext.ModelState)
+        (FoobleModelBinder().BindModel(controllerContext, bindingContext) :?> 'T, bindingContext.ModelState)
 
     let bindSelfServiceRegisterViewModel username password confirmPassword email nickname =
         Map.empty
@@ -116,10 +110,10 @@ module internal UnitTestHelpers =
 
     let makeTestKeyGenerator key =
         { new IKeyGenerator with
-            member this.GenerateKey() =
-                match key with
-                | Some x -> x
-                | None -> Guid.random () }
+              member this.GenerateKey() =
+                  match key with
+                  | Some x -> x
+                  | None -> Guid.random () }
 
     let makeTestMemberData id username passwordData email nickname =
         assertMemberId id
@@ -133,12 +127,14 @@ module internal UnitTestHelpers =
         let passwordDataRef = ref passwordData
         let emailRef = ref email
         let nicknameRef = ref nickname
+        let registeredRef = ref DateTime.Now
+        let passwordChangedRef = ref DateTime.Now
 
         { new IMemberData with
 
               member this.Id
                   with get () = !idRef
-                  and set (v) = idRef := v
+                  and set (x) = idRef := x
 
               member this.Username
                   with get () = !usernameRef
@@ -146,30 +142,40 @@ module internal UnitTestHelpers =
 
               member this.PasswordData
                   with get () = !passwordDataRef
-                  and set (v) = passwordDataRef := v
+                  and set (x) = passwordDataRef := x
 
               member this.Email
                   with get () = !emailRef
-                  and set (v) = emailRef := v
+                  and set (x) = emailRef := x
 
               member this.Nickname
                   with get () = !nicknameRef
-                  and set (v) = nicknameRef := v }
+                  and set (x) = nicknameRef := x
+
+              member this.Registered
+                  with get() = !registeredRef
+                  and set(x) = registeredRef := x
+
+              member this.PasswordChanged
+                  with get() = !passwordChangedRef
+                  and set(x) = passwordChangedRef := x }
 
     let makeTestMemberDataFactory () =
         MemberDataFactory(makeTestMemberData)
 
-    let makeTestMemberDetailReadModel id username email nickname =
+    let makeTestMemberDetailReadModel id username email nickname registered passwordChanged =
         assertMemberId id
         assertMemberUsername username
         assertMemberEmail email
         assertMemberNickname nickname
 
         { new IMemberDetailReadModel with
-            member this.Id with get() = id
-            member this.Username with get() = username
-            member this.Email with get() = email
-            member this.Nickname with get() = nickname }
+              member this.Id with get() = id
+              member this.Username with get() = username
+              member this.Email with get() = email
+              member this.Nickname with get() = nickname
+              member this.Registered with get() = registered
+              member this.PasswordChanged with get() = passwordChanged }
 
     let makeTestMemberDetailReadModelFactory () =
         MemberDetailReadModelFactory(makeTestMemberDetailReadModel)
@@ -179,8 +185,8 @@ module internal UnitTestHelpers =
         assertMemberNickname nickname
 
         { new IMemberListItemReadModel with
-            member this.Id with get() = id
-            member this.Nickname with get() = nickname }
+              member this.Id with get() = id
+              member this.Nickname with get() = nickname }
 
     let makeTestMemberListItemReadModelFactory () =
         MemberListItemReadModelFactory(makeTestMemberListItemReadModel)
@@ -189,7 +195,7 @@ module internal UnitTestHelpers =
         assert (Seq.isNotNullOrEmpty members)
 
         { new IMemberListReadModel with
-            member this.Members with get() = members }
+              member this.Members with get() = members }
 
     let makeTestMemberListReadModelFactory () =
         MemberListReadModelFactory(makeTestMemberListReadModel)
@@ -197,57 +203,62 @@ module internal UnitTestHelpers =
     let testMessageDisplayReadModel (actual:IMessageDisplayReadModel) expectedHeading expectedSubHeading
         expectedStatusCode expectedSeverity expectedMessage =
 
-        test <@ actual.Heading = expectedHeading @>
-        test <@ actual.SubHeading = expectedSubHeading @>
-        test <@ actual.StatusCode = expectedStatusCode @>
-        test <@ actual.Severity = expectedSeverity @>
-        test <@ actual.Message = expectedMessage @>
+        actual.Heading =! expectedHeading
+        actual.SubHeading =! expectedSubHeading
+        actual.StatusCode =! expectedStatusCode
+        actual.Severity =! expectedSeverity
+        actual.Message =! expectedMessage
 
     let testMemberDetailReadModel (actual:IMemberDetailReadModel) expectedId expectedUsername expectedEmail
-        expectedNickname =
+        expectedNickname (expectedRegistered:DateTime) (expectedPasswordChanged:DateTime) =
 
-        test <@ actual.Id = expectedId @>
-        test <@ actual.Username = expectedUsername @>
-        test <@ actual.Email = expectedEmail @>
-        test <@ actual.Nickname = expectedNickname @>
+        actual.Id =! expectedId
+        actual.Username =! expectedUsername
+        actual.Email =! expectedEmail
+        actual.Nickname =! expectedNickname
+
+        let actualRegistered = actual.Registered
+        let actualPasswordChanged = actual.PasswordChanged
+
+        actualRegistered.Date =! expectedRegistered.Date
+        actualPasswordChanged.Date =! expectedPasswordChanged.Date
 
     let testMemberListReadModel (actual:IMemberListReadModel) expectedMembers =
 
-        let expectedNumberOfMembers = Seq.length expectedMembers
-        test <@ Seq.length actual.Members = expectedNumberOfMembers @>
+        Seq.length actual.Members =! Seq.length expectedMembers
         for actualMember in actual.Members do
             let findResult = Seq.tryFind (fun (existingMember:IMemberData) ->
                 existingMember.Id = actualMember.Id && existingMember.Nickname = actualMember.Nickname) expectedMembers
-            test <@ findResult.IsSome @>
+            findResult.IsSome =! true
 
     let testMemberListReadModel2 (actual:IMemberListReadModel) expectedMembers =
 
-        let expectedNumberOfMembers = Seq.length expectedMembers
-        test <@ Seq.length actual.Members = expectedNumberOfMembers @>
+        Seq.length actual.Members =! Seq.length expectedMembers
         for actualMember in actual.Members do
             let findResult = Seq.tryFind (fun (existingMember:IMemberListItemReadModel) ->
                 existingMember.Id = actualMember.Id && existingMember.Nickname = actualMember.Nickname) expectedMembers
-            test <@ findResult.IsSome @>
+            findResult.IsSome =! true
 
     let testSelfServiceRegisterCommand (actual:ISelfServiceRegisterCommand) expectedId expectedUsername
         expectedPassword expectedEmail expectedNickname =
 
-        test <@ actual.Id = expectedId @>
-        test <@ actual.Username = expectedUsername @>
-        test <@ actual.Password = expectedPassword @>
-        test <@ actual.Email = expectedEmail @>
-        test <@ actual.Nickname = expectedNickname @>
+        actual.Id =! expectedId
+        actual.Username =! expectedUsername
+        actual.Password =! expectedPassword
+        actual.Email =! expectedEmail
+        actual.Nickname =! expectedNickname
 
     let testSelfServiceRegisterViewModel (actual:ISelfServiceRegisterViewModel) expectedUsername
         expectedPassword expectedEmail expectedNickname =
 
-        test <@ actual.Username = expectedUsername @>
-        test <@ actual.Password = expectedPassword @>
-        test <@ actual.Email = expectedEmail @>
-        test <@ actual.Nickname = expectedNickname @>
+        actual.Username =! expectedUsername
+        actual.Password =! expectedPassword
+        actual.Email =! expectedEmail
+        actual.Nickname =! expectedNickname
 
     let testModelState (modelState:ModelStateDictionary) expectedKey expectedErrorMessage =
-        test <@ not (modelState.IsValid) @>
-        test <@ modelState.ContainsKey(expectedKey) @>
-        test <@ modelState.[expectedKey].Errors.Count = 1 @>
-        test <@ modelState.[expectedKey].Errors.[0].ErrorMessage = expectedErrorMessage @>
+
+        modelState.IsValid =! false
+        modelState.ContainsKey(expectedKey) =! true
+        modelState.[expectedKey].Errors.Count =! 1
+        modelState.[expectedKey].Errors.[0].ErrorMessage =! expectedErrorMessage

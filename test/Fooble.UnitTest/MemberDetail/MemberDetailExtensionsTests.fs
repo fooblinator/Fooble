@@ -15,8 +15,8 @@ module MemberDetailExtensionsTests =
         let expectedMessage = "Result was not unsuccessful"
 
         let queryResult =
-            makeTestMemberDetailReadModel (Guid.random ()) (String.random 32) (EmailAddress.random ())
-                (String.random 64)
+            makeTestMemberDetailReadModel (Guid.random ()) (String.random 32) (EmailAddress.random 32)
+                (String.random 64) DateTime.Now DateTime.Now
             |> MemberDetailQuery.makeSuccessResult
 
         raisesWith<InvalidOperationException> <@ MemberDetailExtensions.toMessageDisplayReadModel queryResult @>

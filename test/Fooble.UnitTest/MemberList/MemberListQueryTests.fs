@@ -12,5 +12,5 @@ module MemberListQueryTests =
     let ``Calling make, returns query`` () =
         let query = MemberListQuery.make ()
 
-        test <@ box query :? IMemberListQuery @>
-        test <@ box query :? IRequest<IMemberListQueryResult> @>
+        box query :? IMemberListQuery =! true
+        box query :? IRequest<IMemberListQueryResult> =! true

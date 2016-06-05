@@ -17,7 +17,7 @@ module MemberListQueryHandlerTests =
     let ``Calling make, with valid parameters, returns query handler`` () =
         let handler = MemberListQuery.makeHandler (mock ()) (mock ()) (mock ())
 
-        test <@ box handler :? IRequestHandler<IMemberListQuery, IMemberListQueryResult> @>
+        box handler :? IRequestHandler<IMemberListQuery, IMemberListQueryResult> =! true
 
     [<Test>]
     let ``Calling handle, with no members in data store, returns expected result`` () =
@@ -31,15 +31,15 @@ module MemberListQueryHandlerTests =
 
         contextMock.Verify()
 
-        test <@ queryResult.IsNotFound @>
-        test <@ not <| queryResult.IsSuccess @>
+        queryResult.IsNotFound =! true
+        queryResult.IsSuccess =! false
 
     [<Test>]
     let ``Calling handle, with members in data store, returns expected result`` () =
         let members =
             List.init 5 <| fun _ ->
                 let passwordData = Crypto.hash (Password.random 32) 100
-                makeTestMemberData (Guid.random ()) (String.random 32) passwordData (EmailAddress.random ())
+                makeTestMemberData (Guid.random ()) (String.random 32) passwordData (EmailAddress.random 32)
                     (String.random 64)
         let contextMock = Mock<IFoobleContext>()
         contextMock.SetupFunc(fun x -> x.GetMembers()).Returns(members).Verifiable()
@@ -53,7 +53,7 @@ module MemberListQueryHandlerTests =
 
         contextMock.Verify()
 
-        test <@ queryResult.IsSuccess @>
-        test <@ not <| queryResult.IsNotFound @>
+        queryResult.IsSuccess =! true
+        queryResult.IsNotFound =! false
 
         testMemberListReadModel queryResult.ReadModel members

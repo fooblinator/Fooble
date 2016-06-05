@@ -10,40 +10,39 @@ module internal MemberListReadModel =
 
     [<DefaultAugmentation(false)>]
     type private MemberListItemReadModelImplementation =
-        | ItemReadModel of Guid * string
+        | ItemReadModel of id:Guid * nickname:string
 
         interface IMemberListItemReadModel with
 
             member this.Id
                 with get() =
                     match this with
-                    | ItemReadModel (x, _) -> x
+                    | ItemReadModel(id = x) -> x
 
             member this.Nickname
                 with get() =
                     match this with
-                    | ItemReadModel (_, x) -> x
+                    | ItemReadModel(nickname = x) -> x
 
     let makeItem id nickname =
         assertMemberId id
         assertMemberNickname nickname
-        ItemReadModel (id, nickname) :> IMemberListItemReadModel
+        ItemReadModel(id, nickname) :> IMemberListItemReadModel
 
     [<DefaultAugmentation(false)>]
-    [<NoComparison>]
     type private MemberListReadModelImplementation =
-        | ReadModel of seq<IMemberListItemReadModel>
+        | ReadModel of members:seq<IMemberListItemReadModel>
 
         interface IMemberListReadModel with
 
             member this.Members
                 with get() =
                     match this with
-                    | ReadModel xs -> xs
+                    | ReadModel(members = xs) -> xs
 
     let make members =
         assert (Seq.isNotNullOrEmpty members)
-        ReadModel members :> IMemberListReadModel
+        ReadModel(members) :> IMemberListReadModel
 
 /// Provides presentation-related extension methods for member list.
 [<RequireQualifiedAccess>]
@@ -56,7 +55,7 @@ module MemberListExtensions =
     /// <param name="result">The member list query result to extend.</param>
     /// <returns>Returns a message display read model.</returns>
     /// <remarks>This method should only be called on unsuccessful results. For displaying a "success" result, use
-    /// <see cref="MessageDisplay.MakeReadModel"/> directly.</remarks>
+    /// <see cref="MessageDisplayReadModel.Make"/> directly.</remarks>
     [<Extension>]
     [<CompiledName("ToMessageDisplayReadModel")>]
     let toMessageDisplayReadModel (result:IMemberListQueryResult) =
@@ -66,6 +65,6 @@ module MemberListExtensions =
 
         match result with
         | x when x.IsNotFound ->
-            MessageDisplayReadModel.make "Member" "List" 200 MessageDisplayReadModel.informationalSeverity
-                "No members have yet been added."
+              MessageDisplayReadModel.make "Member" "List" 200 MessageDisplayReadModel.informationalSeverity
+                  "No members have yet been added."
         | _ -> invalidOp "Result was not unsuccessful"

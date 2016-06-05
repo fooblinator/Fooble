@@ -17,7 +17,7 @@ module ValidationExtensionsTests =
         let modelState = ModelStateDictionary()
         ValidationExtensions.addModelErrorIfNotValid validationResult modelState
 
-        test <@ modelState.IsValid @>
+        modelState.IsValid =! true
 
     [<Test>]
     let ``Calling add model error, as invalid result of validation result, returns expected read model`` () =

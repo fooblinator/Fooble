@@ -12,7 +12,7 @@ module KeyGeneratorTests =
     let ``Calling make, returns key generator`` () =
         let keyGenerator = KeyGenerator.make ()
 
-        test <@ box keyGenerator :? IKeyGenerator @>
+        box keyGenerator :? IKeyGenerator =! true
 
     [<Test>]
     let ``Calling generate key, returns newly generated key`` () =
@@ -20,4 +20,4 @@ module KeyGeneratorTests =
 
         let key = keyGenerator.GenerateKey()
 
-        test <@ Guid.isNotEmpty key @>
+        Guid.isEmpty key =! false

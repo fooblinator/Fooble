@@ -17,7 +17,7 @@ module SelfServiceRegisterCommandHandlerTests =
     let ``Calling make, with valid parameters, returns command handler`` () =
         let handler = SelfServiceRegisterCommand.makeHandler (mock ()) (mock ())
 
-        test <@ box handler :? IRequestHandler<ISelfServiceRegisterCommand, ISelfServiceRegisterCommandResult> @>
+        box handler :? IRequestHandler<ISelfServiceRegisterCommand, ISelfServiceRegisterCommandResult> =! true
 
     [<Test>]
     let ``Calling handle, with existing username in data store, and returns expected result`` () =
@@ -28,14 +28,14 @@ module SelfServiceRegisterCommandHandlerTests =
 
         let command =
             SelfServiceRegisterCommand.make (Guid.random ()) (String.random 32) (Password.random 32)
-                (EmailAddress.random ()) (String.random 64)
+                (EmailAddress.random 32) (String.random 64)
         let commandResult = handler.Handle(command)
 
         contextMock.Verify()
 
-        test <@ commandResult.IsUsernameUnavailable @>
-        test <@ not <| commandResult.IsSuccess @>
-        test <@ not <| commandResult.IsEmailUnavailable @>
+        commandResult.IsUsernameUnavailable =! true
+        commandResult.IsSuccess =! false
+        commandResult.IsEmailUnavailable =! false
 
     [<Test>]
     let ``Calling handle, with existing email in data store, and returns expected result`` () =
@@ -46,14 +46,14 @@ module SelfServiceRegisterCommandHandlerTests =
 
         let command =
             SelfServiceRegisterCommand.make (Guid.random ()) (String.random 32) (Password.random 32)
-                (EmailAddress.random ()) (String.random 64)
+                (EmailAddress.random 32) (String.random 64)
         let commandResult = handler.Handle(command)
 
         contextMock.Verify()
 
-        test <@ commandResult.IsEmailUnavailable @>
-        test <@ not <| commandResult.IsSuccess @>
-        test <@ not <| commandResult.IsUsernameUnavailable @>
+        commandResult.IsEmailUnavailable =! true
+        commandResult.IsSuccess =! false
+        commandResult.IsUsernameUnavailable =! false
 
     [<Test>]
     let ``Calling handle, with no existing username or email in data store, returns expected result`` () =
@@ -69,13 +69,13 @@ module SelfServiceRegisterCommandHandlerTests =
 
         let command =
             SelfServiceRegisterCommand.make (Guid.random ()) (String.random 32) (Password.random 32)
-                (EmailAddress.random ()) (String.random 64)
+                (EmailAddress.random 32) (String.random 64)
         let commandResult = handler.Handle(command)
 
         contextMock.Verify()
 
-        test <@ isNotNull !capturedMemberData @>
+        isNull !capturedMemberData =! false
 
-        test <@ commandResult.IsSuccess @>
-        test <@ not <| commandResult.IsUsernameUnavailable @>
-        test <@ not <| commandResult.IsEmailUnavailable @>
+        commandResult.IsSuccess =! true
+        commandResult.IsUsernameUnavailable =! false
+        commandResult.IsEmailUnavailable =! false

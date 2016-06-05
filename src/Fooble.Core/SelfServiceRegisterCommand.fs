@@ -116,17 +116,15 @@ module SelfServiceRegisterCommand =
                 | (_, true) -> emailUnavailableResult
                 | _ ->
 
-                    let iterations = Random().Next(100000, 101000)
+                let iterations = Random().Next(100000, 101000)
+                let passwordData = Crypto.hash message.Password iterations
 
-                    let passwordData = Crypto.hash message.Password iterations
+                this.MemberDataFactory.Invoke(message.Id, message.Username, passwordData, message.Email,
+                    message.Nickname)
+                |> this.Context.AddMember
 
-                    this.MemberDataFactory.Invoke(message.Id, message.Username, passwordData, message.Email,
-                        message.Nickname)
-                    |> this.Context.AddMember
-
-                    this.Context.SaveChanges()
-
-                    successResult
+                this.Context.SaveChanges()
+                successResult
 
     let internal makeHandler context memberDataFactory =
         assert (isNotNull context)

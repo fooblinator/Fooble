@@ -35,7 +35,7 @@ module ValidationExtensions =
     /// <param name="result">The validation result to extend.</param>
     /// <returns>Returns a message display read model.</returns>
     /// <remarks>This method should only be called on "invalid" results. For displaying a "valid" result, use
-    /// <see cref="MessageDisplay.MakeReadModel"/> directly.</remarks>
+    /// <see cref="MessageDisplayReadModel.Make"/> directly.</remarks>
     [<Extension>]
     [<CompiledName("ToMessageDisplayReadModel")>]
     let toMessageDisplayReadModel (result:IValidationResult) =
@@ -45,6 +45,6 @@ module ValidationExtensions =
 
         match result with
         | x when x.IsInvalid ->
-            MessageDisplayReadModel.make "Validation" String.empty 400 MessageDisplayReadModel.errorSeverity
-                (sprintf "Validation was not successful and returned: \"%s\"" x.Message)
+              MessageDisplayReadModel.make "Validation" String.empty 400 MessageDisplayReadModel.errorSeverity
+                  (sprintf "Validation was not successful and returned: \"%s\"" x.Message)
         | _ ->  invalidOp "Result was not invalid"

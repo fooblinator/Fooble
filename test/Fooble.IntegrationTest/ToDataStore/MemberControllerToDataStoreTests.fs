@@ -13,6 +13,7 @@ open Fooble.Web.Controllers
 open MediatR
 open NUnit.Framework
 open Swensen.Unquote
+open System
 open System.Web.Mvc
 
 [<TestFixture>]
@@ -21,25 +22,27 @@ module MemberControllerToDataStoreTests =
     [<Test>]
     let ``Constructing, with valid parameters, returns expected result`` () =
         let builder = ContainerBuilder()
-        ignore <| builder.RegisterModule(CoreRegistrations())
+        ignore (builder.RegisterModule(CoreRegistrations()))
         use container = builder.Build()
 
         let mediator = container.Resolve<IMediator>()
 
-        ignore <| new MemberController(mediator)
+        ignore (new MemberController(mediator))
 
     [<Test>]
     let ``Calling detail, with matches in data store, returns expected result`` () =
         let expectedId = Guid.random ()
         let expectedUsername = String.random 32
-        let expectedEmail = EmailAddress.random ()
+        let expectedEmail = EmailAddress.random 32
         let expectedNickname = String.random 64
+        let expectedRegistered = DateTime.Now
+        let expectedPasswordChanged = DateTime.Now
 
         let connectionString = Settings.ConnectionStrings.FoobleContext
         let builder = ContainerBuilder()
-        ignore <| builder.RegisterModule(CoreRegistrations())
-        ignore <| builder.RegisterModule(PersistenceRegistrations(connectionString))
-        ignore <| builder.RegisterModule(PresentationRegistrations())
+        ignore (builder.RegisterModule(CoreRegistrations()))
+        ignore (builder.RegisterModule(PersistenceRegistrations(connectionString)))
+        ignore (builder.RegisterModule(PresentationRegistrations()))
         use container = builder.Build()
 
         let context = container.Resolve<IFoobleContext>()
@@ -61,17 +64,18 @@ module MemberControllerToDataStoreTests =
         let controller = new MemberController(mediator)
         let result = controller.Detail(expectedId.ToString())
 
-        test <@ isNotNull result @>
-        test <@ result :? ViewResult @>
+        isNull result =! false
+        result :? ViewResult =! true
 
         let viewResult = result :?> ViewResult
 
-        test <@ String.isEmpty viewResult.ViewName @>
-        test <@ isNotNull viewResult.Model @>
-        test <@ viewResult.Model :? IMemberDetailReadModel @>
+        String.isEmpty viewResult.ViewName =! true
+        isNull viewResult.Model =! false
+        viewResult.Model :? IMemberDetailReadModel =! true
 
         let actualReadModel = viewResult.Model :?> IMemberDetailReadModel
         testMemberDetailReadModel actualReadModel expectedId expectedUsername expectedEmail expectedNickname
+            expectedRegistered expectedPasswordChanged
 
     [<Test>]
     let ``Calling detail, with no matches in data store, returns expected result`` () =
@@ -84,9 +88,9 @@ module MemberControllerToDataStoreTests =
 
         let connectionString = Settings.ConnectionStrings.FoobleContext
         let builder = ContainerBuilder()
-        ignore <| builder.RegisterModule(CoreRegistrations())
-        ignore <| builder.RegisterModule(PersistenceRegistrations(connectionString))
-        ignore <| builder.RegisterModule(PresentationRegistrations())
+        ignore (builder.RegisterModule(CoreRegistrations()))
+        ignore (builder.RegisterModule(PersistenceRegistrations(connectionString)))
+        ignore (builder.RegisterModule(PresentationRegistrations()))
         use container = builder.Build()
 
         let context = container.Resolve<IFoobleContext>()
@@ -101,14 +105,14 @@ module MemberControllerToDataStoreTests =
         let controller = new MemberController(mediator)
         let result = controller.Detail(nonMatchingId.ToString())
 
-        test <@ isNotNull result @>
-        test <@ result :? ViewResult @>
+        isNull result =! false
+        result :? ViewResult =! true
 
         let viewResult = result :?> ViewResult
 
-        test <@ viewResult.ViewName = "MessageDisplay" @>
-        test <@ isNotNull viewResult.Model @>
-        test <@ viewResult.Model :? IMessageDisplayReadModel @>
+        viewResult.ViewName =! "MessageDisplay"
+        isNull viewResult.Model =! false
+        viewResult.Model :? IMessageDisplayReadModel =! true
 
         let actualReadModel = viewResult.Model :?> IMessageDisplayReadModel
         testMessageDisplayReadModel actualReadModel expectedHeading expectedSubHeading expectedStatusCode
@@ -118,9 +122,9 @@ module MemberControllerToDataStoreTests =
     let ``Calling list, with matches in data store, returns expected result`` () =
         let connectionString = Settings.ConnectionStrings.FoobleContext
         let builder = ContainerBuilder()
-        ignore <| builder.RegisterModule(CoreRegistrations())
-        ignore <| builder.RegisterModule(PersistenceRegistrations(connectionString))
-        ignore <| builder.RegisterModule(PresentationRegistrations())
+        ignore (builder.RegisterModule(CoreRegistrations()))
+        ignore (builder.RegisterModule(PersistenceRegistrations(connectionString)))
+        ignore (builder.RegisterModule(PresentationRegistrations()))
         use container = builder.Build()
 
         let context = container.Resolve<IFoobleContext>()
@@ -134,7 +138,7 @@ module MemberControllerToDataStoreTests =
         let members =
             List.init 5 (fun _ ->
                 let passwordData = Crypto.hash (Password.random 32) 100
-                memberDataFactory.Invoke(Guid.random (), String.random 32, passwordData, EmailAddress.random (),
+                memberDataFactory.Invoke(Guid.random (), String.random 32, passwordData, EmailAddress.random 32,
                     String.random 64))
         List.iter (fun x -> context.AddMember(x)) members
 
@@ -144,14 +148,14 @@ module MemberControllerToDataStoreTests =
         let controller = new MemberController(mediator)
         let result = controller.List()
 
-        test <@ isNotNull result @>
-        test <@ result :? ViewResult @>
+        isNull result =! false
+        result :? ViewResult =! true
 
         let viewResult = result :?> ViewResult
 
-        test <@ String.isEmpty viewResult.ViewName @>
-        test <@ isNotNull viewResult.Model @>
-        test <@ viewResult.Model :? IMemberListReadModel @>
+        String.isEmpty viewResult.ViewName =! true
+        isNull viewResult.Model =! false
+        viewResult.Model :? IMemberListReadModel =! true
 
         let actualReadModel = viewResult.Model :?> IMemberListReadModel
         testMemberListReadModel actualReadModel members
@@ -166,9 +170,9 @@ module MemberControllerToDataStoreTests =
 
         let connectionString = Settings.ConnectionStrings.FoobleContext
         let builder = ContainerBuilder()
-        ignore <| builder.RegisterModule(CoreRegistrations())
-        ignore <| builder.RegisterModule(PersistenceRegistrations(connectionString))
-        ignore <| builder.RegisterModule(PresentationRegistrations())
+        ignore (builder.RegisterModule(CoreRegistrations()))
+        ignore (builder.RegisterModule(PersistenceRegistrations(connectionString)))
+        ignore (builder.RegisterModule(PresentationRegistrations()))
         use container = builder.Build()
 
         let context = container.Resolve<IFoobleContext>()
@@ -183,14 +187,14 @@ module MemberControllerToDataStoreTests =
         let controller = new MemberController(mediator)
         let result = controller.List()
 
-        test <@ isNotNull result @>
-        test <@ result :? ViewResult @>
+        isNull result =! false
+        result :? ViewResult =! true
 
         let viewResult = result :?> ViewResult
 
-        test <@ viewResult.ViewName = "MessageDisplay" @>
-        test <@ isNotNull viewResult.Model @>
-        test <@ viewResult.Model :? IMessageDisplayReadModel @>
+        viewResult.ViewName =! "MessageDisplay"
+        isNull viewResult.Model =! false
+        viewResult.Model :? IMessageDisplayReadModel =! true
 
         let actualReadModel = viewResult.Model :?> IMessageDisplayReadModel
         testMessageDisplayReadModel actualReadModel expectedHeading expectedSubHeading expectedStatusCode

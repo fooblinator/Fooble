@@ -8,20 +8,20 @@ module ValidationResult =
     [<DefaultAugmentation(false)>]
     type private ValidationResultImplementation =
         | Valid
-        | Invalid of string * string
+        | Invalid of paramName:string * message:string
 
         interface IValidationResult with
 
             member this.ParamName
                 with get() =
                     match this with
-                    | Invalid (x, _) -> x
+                    | Invalid(paramName = x) -> x
                     | _ -> invalidOp "Result was not invalid"
 
             member this.Message
                 with get() =
                     match this with
-                    | Invalid (_, x) -> x
+                    | Invalid(message = x) -> x
                     | _ -> invalidOp "Result was not invalid"
 
             member this.IsValid
@@ -53,4 +53,4 @@ module ValidationResult =
     let makeInvalid paramName message =
         if String.isNullOrEmpty paramName then invalidArg "paramName" "Param name is required"
         if String.isNullOrEmpty message then invalidArg "message" "Message is required"
-        Invalid (paramName, message) :> IValidationResult
+        Invalid(paramName, message) :> IValidationResult

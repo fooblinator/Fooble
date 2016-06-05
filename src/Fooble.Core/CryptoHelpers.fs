@@ -7,54 +7,59 @@ open System.Security.Cryptography
 module internal Crypto =
 
     let private subkeyLength = 32
-    let private saltSize = 16
+    let private saltLength = 16
 
     let private saltOffset = 1
-    let private subkeyOffset = saltOffset + saltSize
+    let private subkeyOffset = saltOffset + saltLength
     let private itersOffset = subkeyOffset + subkeyLength
     let private partsLength = itersOffset + sizeof<int>
 
+    let private blockCopy src srcOffset dstOffset count dst =
+        Buffer.BlockCopy(src, srcOffset, dst, dstOffset, count)
+        dst
+
     let hash password iterations =
-        use crypto = new Rfc2898DeriveBytes(password, saltSize, iterations)
-        let salt = crypto.Salt
-        let bytes = crypto.GetBytes(subkeyLength)
+
+        let salt, bytes =
+            new Rfc2898DeriveBytes(password, saltLength, iterations)
+            |> fun x -> x.Salt, x.GetBytes(subkeyLength)
 
         let iters =
-            if BitConverter.IsLittleEndian
-                then BitConverter.GetBytes(iterations)
-                else BitConverter.GetBytes(iterations) |> Array.rev
+            BitConverter.GetBytes(iterations)
+            |> if BitConverter.IsLittleEndian then id else Array.rev
 
-        let parts = Array.zeroCreate<byte> partsLength
-        parts.[0] <- byte 0 // version of this hashing algorithm
-        Buffer.BlockCopy(salt, 0, parts, saltOffset, saltSize)
-        Buffer.BlockCopy(bytes, 0, parts, subkeyOffset, subkeyLength)
-        Buffer.BlockCopy(iters, 0, parts, itersOffset, sizeof<int>)
-
-        Convert.ToBase64String(parts)
+        Array.zeroCreate<byte> partsLength
+        |> fun xs -> xs.[0] <- 0uy; xs // set version of this hashing algorithm
+        |> blockCopy salt 0 saltOffset saltLength
+        |> blockCopy bytes 0 subkeyOffset subkeyLength
+        |> blockCopy iters 0 itersOffset sizeof<int>
+        |> Convert.ToBase64String
 
     let verify hashedPassword (password:string) =
+
         let parts = Convert.FromBase64String(hashedPassword)
-        if parts.Length <> partsLength || parts.[0] <> byte 0 then
-            false
-        else
-            let salt = Array.zeroCreate<byte> saltSize
-            Buffer.BlockCopy(parts, saltOffset, salt, 0, saltSize)
 
-            let bytes = Array.zeroCreate<byte> subkeyLength
-            Buffer.BlockCopy(parts, subkeyOffset, bytes, 0, subkeyLength)
+        match parts with
+        | x when x.Length <> partsLength -> false
+        | x when x.[0] <> 0uy -> false
+        | _ ->
 
-            let iters = Array.zeroCreate<byte> sizeof<int>
-            Buffer.BlockCopy(parts, itersOffset, iters, 0, sizeof<int>)
+        let salt =
+            Array.zeroCreate<byte> saltLength
+            |> blockCopy parts saltOffset 0 saltLength
 
-            let iters = if BitConverter.IsLittleEndian then iters else iters |> Array.rev
+        let bytes =
+            Array.zeroCreate<byte> subkeyLength
+            |> blockCopy parts subkeyOffset 0 subkeyLength
 
-            let iterations = BitConverter.ToInt32(iters, 0)
+        let iterations =
+            Array.zeroCreate<byte> sizeof<int>
+            |> blockCopy parts itersOffset 0 sizeof<int>
+            |> if BitConverter.IsLittleEndian then id else Array.rev
+            |> fun xs -> BitConverter.ToInt32(xs, 0)
 
-            use crypto = new Rfc2898DeriveBytes(password, salt, iterations)
-            let challengeBytes = crypto.GetBytes(32)
-
-            match Seq.compareWith (fun x y -> if x = y then 0 else 1) bytes challengeBytes with
-            | x when x = 0 -> true
-            | _ -> false
+        new Rfc2898DeriveBytes(password, salt, iterations)
+        |> fun x -> x.GetBytes(32)
+        |> Array.forall2 (=) bytes
 
     let version hashedPassword = Convert.FromBase64String(hashedPassword).[0]

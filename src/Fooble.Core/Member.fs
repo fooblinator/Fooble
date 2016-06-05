@@ -73,9 +73,10 @@ module Member =
         match validatePassword password with
         | x when x.IsInvalid -> x
         | _ ->
-            match confirmPassword = password with
-            | false -> ValidationResult.makeInvalid "confirmPassword" "Passwords do not match"
-            | _ -> ValidationResult.valid
+
+        match confirmPassword = password with
+        | false -> ValidationResult.makeInvalid "confirmPassword" "Passwords do not match"
+        | _ -> ValidationResult.valid
 
     /// <summary>
     /// Validates the supplied member email.

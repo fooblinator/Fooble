@@ -25,17 +25,20 @@ module MemberControllerTests =
 
     [<Test>]
     let ``Constructing, with valid parameters, returns expected result`` () =
-        ignore <| new MemberController(mock ())
+        ignore (new MemberController(mock ()))
 
     [<Test>]
     let ``Calling detail, with matches in data store, returns expected result`` () =
         let matchingId = Guid.random ()
         let expectedUsername = String.random 32
-        let expectedEmail = EmailAddress.random ()
+        let expectedEmail = EmailAddress.random 32
         let expectedNickname = String.random 64
+        let expectedRegistered = DateTime.Now
+        let expectedPasswordChanged = DateTime.Now
 
         let queryResult =
-            makeTestMemberDetailReadModel matchingId expectedUsername expectedEmail expectedNickname
+            makeTestMemberDetailReadModel matchingId expectedUsername expectedEmail expectedNickname DateTime.Now
+                DateTime.Now
             |> MemberDetailQuery.makeSuccessResult
         let mediatorMock = Mock<IMediator>()
         mediatorMock.SetupFunc(fun x -> x.Send(any ())).Returns(queryResult).Verifiable()
@@ -45,17 +48,18 @@ module MemberControllerTests =
 
         mediatorMock.Verify()
 
-        test <@ isNotNull result @>
-        test <@ result :? ViewResult @>
+        isNull result =! false
+        result :? ViewResult =! true
 
         let viewResult = result :?> ViewResult
 
-        test <@ String.isEmpty viewResult.ViewName @>
-        test <@ isNotNull viewResult.Model @>
-        test <@ viewResult.Model :? IMemberDetailReadModel @>
+        String.isEmpty viewResult.ViewName =! true
+        isNull viewResult.Model =! false
+        viewResult.Model :? IMemberDetailReadModel =! true
 
         let actualReadModel = viewResult.Model :?> IMemberDetailReadModel
         testMemberDetailReadModel actualReadModel matchingId expectedUsername expectedEmail expectedNickname
+            expectedRegistered expectedPasswordChanged
 
     [<Test>]
     let ``Calling detail, with no matches in data store, returns expected result`` () =
@@ -75,14 +79,14 @@ module MemberControllerTests =
 
         mediatorMock.Verify()
 
-        test <@ isNotNull result @>
-        test <@ result :? ViewResult @>
+        isNull result =! false
+        result :? ViewResult =! true
 
         let viewResult = result :?> ViewResult
 
-        test <@ viewResult.ViewName = "MessageDisplay" @>
-        test <@ isNotNull viewResult.Model @>
-        test <@ viewResult.Model :? IMessageDisplayReadModel @>
+        viewResult.ViewName =! "MessageDisplay"
+        isNull viewResult.Model =! false
+        viewResult.Model :? IMessageDisplayReadModel =! true
 
         let actualReadModel = viewResult.Model :?> IMessageDisplayReadModel
         testMessageDisplayReadModel actualReadModel expectedHeading expectedSubHeading expectedStatusCode
@@ -104,14 +108,14 @@ module MemberControllerTests =
 
         mediatorMock.Verify()
 
-        test <@ isNotNull result @>
-        test <@ result :? ViewResult @>
+        isNull result =! false
+        result :? ViewResult =! true
 
         let viewResult = result :?> ViewResult
 
-        test <@ String.isEmpty viewResult.ViewName @>
-        test <@ isNotNull viewResult.Model @>
-        test <@ viewResult.Model :? IMemberListReadModel @>
+        String.isEmpty viewResult.ViewName =! true
+        isNull viewResult.Model =! false
+        viewResult.Model :? IMemberListReadModel =! true
 
         let actualReadModel = viewResult.Model :?> IMemberListReadModel
         testMemberListReadModel2 actualReadModel expectedMembers
@@ -133,14 +137,14 @@ module MemberControllerTests =
 
         mediatorMock.Verify()
 
-        test <@ isNotNull result @>
-        test <@ result :? ViewResult @>
+        isNull result =! false
+        result :? ViewResult =! true
 
         let viewResult = result :?> ViewResult
 
-        test <@ viewResult.ViewName = "MessageDisplay" @>
-        test <@ isNotNull viewResult.Model @>
-        test <@ viewResult.Model :? IMessageDisplayReadModel @>
+        viewResult.ViewName =! "MessageDisplay"
+        isNull viewResult.Model =! false
+        viewResult.Model :? IMessageDisplayReadModel =! true
 
         let actualReadModel = viewResult.Model :?> IMessageDisplayReadModel
         testMessageDisplayReadModel actualReadModel expectedHeading expectedSubHeading expectedStatusCode

@@ -13,7 +13,7 @@ module MemberListReadModelTests =
         let members = Seq.init 5 (fun _ -> makeTestMemberListItemReadModel (Guid.random ()) (String.random 64))
         let readModel = makeTestMemberListReadModel members
 
-        test <@ box readModel :? IMemberListReadModel @>
+        box readModel :? IMemberListReadModel =! true
 
     [<Test>]
     let ``Calling members, returns expected members`` () =

@@ -15,13 +15,13 @@ module MemberListQueryResultTests =
         let readModel = makeTestMemberListReadModel members
         let queryResult = MemberListQuery.makeSuccessResult readModel
 
-        test <@ box queryResult :? IMemberListQueryResult @>
+        box queryResult :? IMemberListQueryResult =! true
 
     [<Test>]
     let ``Calling not found, returns query result`` () =
         let queryResult = MemberListQuery.notFoundResult
 
-        test <@ box queryResult :? IMemberListQueryResult @>
+        box queryResult :? IMemberListQueryResult =! true
 
     [<Test>]
     let ``Calling read model, with not found query result, raises expected exception`` () =
@@ -37,7 +37,7 @@ module MemberListQueryResultTests =
 
         let queryResult = MemberListQuery.makeSuccessResult expectedReadModel
 
-        test <@ queryResult.ReadModel = expectedReadModel @>
+        queryResult.ReadModel =! expectedReadModel
 
     [<Test>]
     let ``Calling is success, with success query result, returns true`` () =
@@ -46,13 +46,13 @@ module MemberListQueryResultTests =
 
         let queryResult = MemberListQuery.makeSuccessResult readModel
 
-        test <@ queryResult.IsSuccess @>
+        queryResult.IsSuccess =! true
 
     [<Test>]
     let ``Calling is success, with not found query result, returns false`` () =
         let queryResult = MemberListQuery.notFoundResult
 
-        test <@ not <| queryResult.IsSuccess @>
+        queryResult.IsSuccess =! false
 
     [<Test>]
     let ``Calling is not found, with success query result, returns false`` () =
@@ -61,10 +61,10 @@ module MemberListQueryResultTests =
 
         let queryResult = MemberListQuery.makeSuccessResult readModel
 
-        test <@ not <| queryResult.IsNotFound @>
+        queryResult.IsNotFound =! false
 
     [<Test>]
     let ``Calling is not found, with not found query result, returns true`` () =
         let queryResult = MemberListQuery.notFoundResult
 
-        test <@ queryResult.IsNotFound @>
+        queryResult.IsNotFound =! true

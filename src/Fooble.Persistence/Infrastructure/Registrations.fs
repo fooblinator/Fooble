@@ -3,6 +3,7 @@
 open Autofac
 open Fooble.Common
 open Fooble.Persistence
+open System
 
 /// Provides the proper Autofac container registrations for the Fooble.Persistence assembly.
 [<AllowNullLiteral>]
@@ -23,11 +24,11 @@ type PersistenceRegistrations =
     override this.Load(builder:ContainerBuilder) =
         assert (isNotNull builder)
 
-        ignore <| builder.Register(fun _ ->
-            EntityConnection.GetDataContext(this.ConnectionString).DataContext :?> FoobleContext |> wrapFoobleContext)
+        ignore (builder.Register(fun _ ->
+            EntityConnection.GetDataContext(this.ConnectionString).DataContext :?> FoobleContext |> wrapFoobleContext))
 
-        ignore <| builder.Register(fun _ ->
+        ignore (builder.Register(fun _ ->
             MemberDataFactory(fun id username passwordData email nickname ->
                 MemberData(Id = id, Username = username, PasswordData = passwordData, Email = email,
-                    Nickname = nickname)
-                |> wrapMemberData))
+                    Nickname = nickname, Registered = DateTime.Now, PasswordChanged = DateTime.Now)
+                |> wrapMemberData)))

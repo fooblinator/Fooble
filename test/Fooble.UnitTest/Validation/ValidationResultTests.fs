@@ -13,13 +13,13 @@ module ValidationTests =
     let ``Calling valid, returns validation result`` () =
         let result = ValidationResult.valid
 
-        test <@ box result :? IValidationResult @>
+        box result :? IValidationResult =! true
 
     [<Test>]
     let ``Calling make invalid, with valid parameters, returns validation result`` () =
         let result = ValidationResult.makeInvalid (String.random 64) (String.random 64)
 
-        test <@ box result :? IValidationResult @>
+        box result :? IValidationResult =! true
 
     [<Test>]
     let ``Calling param name, with valid validation result, raises expected exception`` () =
@@ -34,7 +34,7 @@ module ValidationTests =
 
         let result = ValidationResult.makeInvalid expectedParamName (String.random 64)
 
-        test <@ result.ParamName = expectedParamName @>
+        result.ParamName =! expectedParamName
 
     [<Test>]
     let ``Calling message, with valid validation result, raises expected exception`` () =
@@ -49,28 +49,28 @@ module ValidationTests =
 
         let result = ValidationResult.makeInvalid (String.random 64) expectedMessage
 
-        test <@ result.Message = expectedMessage @>
+        result.Message =! expectedMessage
 
     [<Test>]
     let ``Calling is valid, with valid result, returns true`` () =
         let result = ValidationResult.valid
 
-        test <@ result.IsValid @>
+        result.IsValid =! true
 
     [<Test>]
     let ``Calling is valid, with invalid result, returns false`` () =
         let result = ValidationResult.makeInvalid (String.random 64) (String.random 64)
 
-        test <@ not <| result.IsValid @>
+        result.IsValid =! false
 
     [<Test>]
     let ``Calling is invalid, with valid result, returns false`` () =
         let result = ValidationResult.valid
 
-        test <@ not <| result.IsInvalid @>
+        result.IsInvalid =! false
 
     [<Test>]
     let ``Calling is invalid, with invalid result, returns true`` () =
         let result = ValidationResult.makeInvalid (String.random 64) (String.random 64)
 
-        test <@ result.IsInvalid @>
+        result.IsInvalid =! true

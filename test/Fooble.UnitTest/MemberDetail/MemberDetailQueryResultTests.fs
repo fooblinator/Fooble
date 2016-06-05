@@ -12,17 +12,17 @@ module MemberDetailQueryResultTests =
     [<Test>]
     let ``Calling make success, with valid parameters, returns query result`` () =
         let readModel =
-            makeTestMemberDetailReadModel (Guid.random ()) (String.random 32) (EmailAddress.random ())
-                (String.random 64)
+            makeTestMemberDetailReadModel (Guid.random ()) (String.random 32) (EmailAddress.random 32)
+                (String.random 64) DateTime.Now DateTime.Now
         let queryResult = MemberDetailQuery.makeSuccessResult readModel
 
-        test <@ box queryResult :? IMemberDetailQueryResult @>
+        box queryResult :? IMemberDetailQueryResult =! true
 
     [<Test>]
     let ``Calling not found, returns query result`` () =
         let queryResult = MemberDetailQuery.notFoundResult
 
-        test <@ box queryResult :? IMemberDetailQueryResult @>
+        box queryResult :? IMemberDetailQueryResult =! true
 
     [<Test>]
     let ``Calling read model, with not found query result, raises expected exception`` () =
@@ -34,39 +34,39 @@ module MemberDetailQueryResultTests =
     [<Test>]
     let ``Calling read model, with success query result, returns expected read model`` () =
         let expectedReadModel =
-            makeTestMemberDetailReadModel (Guid.random ()) (String.random 32) (EmailAddress.random ())
-                (String.random 64)
+            makeTestMemberDetailReadModel (Guid.random ()) (String.random 32) (EmailAddress.random 32)
+                (String.random 64) DateTime.Now DateTime.Now
 
         let queryResult = MemberDetailQuery.makeSuccessResult expectedReadModel
 
-        test <@ queryResult.ReadModel = expectedReadModel @>
+        queryResult.ReadModel =! expectedReadModel
 
     [<Test>]
     let ``Calling is success, with success query result, returns true`` () =
         let readModel =
-            makeTestMemberDetailReadModel (Guid.random ()) (String.random 32) (EmailAddress.random ())
-                (String.random 64)
+            makeTestMemberDetailReadModel (Guid.random ()) (String.random 32) (EmailAddress.random 32)
+                (String.random 64) DateTime.Now DateTime.Now
         let queryResult = MemberDetailQuery.makeSuccessResult readModel
 
-        test <@ queryResult.IsSuccess @>
+        queryResult.IsSuccess =! true
 
     [<Test>]
     let ``Calling is success, with not found query result, returns false`` () =
         let queryResult = MemberDetailQuery.notFoundResult
 
-        test <@ not <| queryResult.IsSuccess @>
+        queryResult.IsSuccess =! false
 
     [<Test>]
     let ``Calling is not found, with success query result, returns false`` () =
         let readModel =
-            makeTestMemberDetailReadModel (Guid.random ()) (String.random 32) (EmailAddress.random ())
-                (String.random 64)
+            makeTestMemberDetailReadModel (Guid.random ()) (String.random 32) (EmailAddress.random 32)
+                (String.random 64) DateTime.Now DateTime.Now
         let queryResult = MemberDetailQuery.makeSuccessResult readModel
 
-        test <@ not <| queryResult.IsNotFound @>
+        queryResult.IsNotFound =! false
 
     [<Test>]
     let ``Calling is not found, with not found query result, returns true`` () =
         let queryResult = MemberDetailQuery.notFoundResult
 
-        test <@ queryResult.IsNotFound @>
+        queryResult.IsNotFound =! true

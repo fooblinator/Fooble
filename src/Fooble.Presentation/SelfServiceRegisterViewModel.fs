@@ -18,7 +18,7 @@ module SelfServiceRegisterViewModel =
             member this.Username
                 with get() =
                     match this with
-                    | ViewModel (username = x) -> x
+                    | ViewModel(username = x) -> x
 
             member this.Password
                 with get() =
@@ -68,9 +68,9 @@ module SelfServiceRegisterExtensions =
 
         match result with
         | x when x.IsUsernameUnavailable ->
-            modelState.AddModelError("username", "Username is unavailable")
+              modelState.AddModelError("username", "Username is unavailable")
         | x when x.IsEmailUnavailable ->
-            modelState.AddModelError("email", "Email is already registered")
+              modelState.AddModelError("email", "Email is already registered")
         | _ -> ()
 
     /// <summary>
@@ -79,7 +79,7 @@ module SelfServiceRegisterExtensions =
     /// <param name="result">The self-service register command result to extend.</param>
     /// <returns>Returns a message display read model.</returns>
     /// <remarks>This method should only be called on unsuccessful results. For displaying a "success" result, use
-    /// <see cref="MessageDisplay.MakeReadModel"/> directly.</remarks>
+    /// <see cref="MessageDisplayReadModel.Make"/> directly.</remarks>
     [<Extension>]
     [<CompiledName("ToMessageDisplayReadModel")>]
     let toMessageDisplayReadModel (result:ISelfServiceRegisterCommandResult) =
@@ -89,11 +89,11 @@ module SelfServiceRegisterExtensions =
 
         match result with
         | x when x.IsUsernameUnavailable ->
-            MessageDisplayReadModel.make "Self-Service" "Register" 400 MessageDisplayReadModel.warningSeverity
-                "Requested username is unavailable."
+              MessageDisplayReadModel.make "Self-Service" "Register" 400 MessageDisplayReadModel.warningSeverity
+                  "Requested username is unavailable."
         | x when x.IsEmailUnavailable ->
-            MessageDisplayReadModel.make "Self-Service" "Register" 400 MessageDisplayReadModel.warningSeverity
-                "Supplied email is already registered."
+              MessageDisplayReadModel.make "Self-Service" "Register" 400 MessageDisplayReadModel.warningSeverity
+                  "Supplied email is already registered."
         | _ -> invalidOp "Result was not unsuccessful"
 
     /// <summary>

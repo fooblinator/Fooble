@@ -17,7 +17,7 @@ module SelfServiceRegisterExtensionsTests =
         let modelState = ModelStateDictionary()
         SelfServiceRegisterExtensions.addModelErrorIfNotSuccess commandResult modelState
 
-        test <@ modelState.IsValid @>
+        modelState.IsValid =! true
 
     [<Test>]
     let ``Calling add model error, as username unavailable result of self-service register command result, returns expected read model`` () =
@@ -80,7 +80,7 @@ module SelfServiceRegisterExtensionsTests =
         let expectedId = Guid.random ()
         let expectedUsername = String.random 32
         let expectedPassword = Password.random 32
-        let expectedEmail = EmailAddress.random ()
+        let expectedEmail = EmailAddress.random 32
         let expectedNickname = String.random 64
 
         let viewModel =

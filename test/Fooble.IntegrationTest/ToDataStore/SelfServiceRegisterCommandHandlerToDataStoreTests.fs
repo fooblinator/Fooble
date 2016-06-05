@@ -20,8 +20,8 @@ module SelfServiceRegisterCommandHandlerToDataStoreTests =
 
         let connectionString = Settings.ConnectionStrings.FoobleContext
         let builder = ContainerBuilder()
-        ignore <| builder.RegisterModule(CoreRegistrations())
-        ignore <| builder.RegisterModule(PersistenceRegistrations(connectionString))
+        ignore (builder.RegisterModule(CoreRegistrations()))
+        ignore (builder.RegisterModule(PersistenceRegistrations(connectionString)))
         use container = builder.Build()
 
         let context = container.Resolve<IFoobleContext>()
@@ -35,7 +35,7 @@ module SelfServiceRegisterCommandHandlerToDataStoreTests =
         // add matching member to the data store
         let memberData =
             let passwordData = Crypto.hash (Password.random 32) 100
-            memberDataFactory.Invoke(Guid.random (), existingUsername, passwordData, EmailAddress.random (),
+            memberDataFactory.Invoke(Guid.random (), existingUsername, passwordData, EmailAddress.random 32,
                 String.random 64)
         context.AddMember(memberData)
 
@@ -44,21 +44,21 @@ module SelfServiceRegisterCommandHandlerToDataStoreTests =
 
         let command =
             SelfServiceRegisterCommand.make (Guid.random ()) existingUsername (Password.random 32)
-                (EmailAddress.random ()) (String.random 64)
+                (EmailAddress.random 32) (String.random 64)
         let commandResult = handler.Handle(command)
 
-        test <@ commandResult.IsUsernameUnavailable @>
-        test <@ not <| commandResult.IsSuccess @>
-        test <@ not <| commandResult.IsEmailUnavailable @>
+        commandResult.IsUsernameUnavailable =! true
+        commandResult.IsSuccess =! false
+        commandResult.IsEmailUnavailable =! false
 
     [<Test>]
     let ``Calling handle, with existing email in data store, and returns expected result`` () =
-        let existingEmail = EmailAddress.random ()
+        let existingEmail = EmailAddress.random 32
 
         let connectionString = Settings.ConnectionStrings.FoobleContext
         let builder = ContainerBuilder()
-        ignore <| builder.RegisterModule(CoreRegistrations())
-        ignore <| builder.RegisterModule(PersistenceRegistrations(connectionString))
+        ignore (builder.RegisterModule(CoreRegistrations()))
+        ignore (builder.RegisterModule(PersistenceRegistrations(connectionString)))
         use container = builder.Build()
 
         let context = container.Resolve<IFoobleContext>()
@@ -84,16 +84,16 @@ module SelfServiceRegisterCommandHandlerToDataStoreTests =
                 (String.random 64)
         let commandResult = handler.Handle(command)
 
-        test <@ commandResult.IsEmailUnavailable @>
-        test <@ not <| commandResult.IsSuccess @>
-        test <@ not <| commandResult.IsUsernameUnavailable@>
+        commandResult.IsEmailUnavailable =! true
+        commandResult.IsSuccess =! false
+        commandResult.IsUsernameUnavailable =! false
 
     [<Test>]
     let ``Calling handle, with no existing username or email in data store, returns expected result`` () =
         let connectionString = Settings.ConnectionStrings.FoobleContext
         let builder = ContainerBuilder()
-        ignore <| builder.RegisterModule(CoreRegistrations())
-        ignore <| builder.RegisterModule(PersistenceRegistrations(connectionString))
+        ignore (builder.RegisterModule(CoreRegistrations()))
+        ignore (builder.RegisterModule(PersistenceRegistrations(connectionString)))
         use container = builder.Build()
 
         let context = container.Resolve<IFoobleContext>()
@@ -108,9 +108,9 @@ module SelfServiceRegisterCommandHandlerToDataStoreTests =
 
         let command =
             SelfServiceRegisterCommand.make (Guid.random ()) (String.random 32) (Password.random 32)
-                (EmailAddress.random ()) (String.random 64)
+                (EmailAddress.random 32) (String.random 64)
         let commandResult = handler.Handle(command)
 
-        test <@ commandResult.IsSuccess @>
-        test <@ not <| commandResult.IsUsernameUnavailable @>
-        test <@ not <| commandResult.IsEmailUnavailable @>
+        commandResult.IsSuccess =! true
+        commandResult.IsUsernameUnavailable =! false
+        commandResult.IsEmailUnavailable =! false

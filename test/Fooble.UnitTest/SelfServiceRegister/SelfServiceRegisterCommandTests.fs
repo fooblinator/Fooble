@@ -18,7 +18,7 @@ module SelfServiceRegisterCommandTests =
 
         raisesWith<ArgumentException>
             <@ SelfServiceRegisterCommand.make Guid.empty (String.random 32) (Password.random 32)
-                (EmailAddress.random ()) (String.random 64) @>
+                (EmailAddress.random 32) (String.random 64) @>
             (fun x -> <@ x.ParamName = expectedParamName && (fixInvalidArgMessage x.Message) = expectedMessage @>)
 
     [<Test>]
@@ -27,7 +27,7 @@ module SelfServiceRegisterCommandTests =
         let expectedMessage = "Username is required"
 
         raisesWith<ArgumentException>
-            <@ SelfServiceRegisterCommand.make (Guid.random ()) null (Password.random 32) (EmailAddress.random ())
+            <@ SelfServiceRegisterCommand.make (Guid.random ()) null (Password.random 32) (EmailAddress.random 32)
                 (String.random 64) @>
             (fun x -> <@ x.ParamName = expectedParamName && (fixInvalidArgMessage x.Message) = expectedMessage @>)
 
@@ -38,7 +38,7 @@ module SelfServiceRegisterCommandTests =
 
         raisesWith<ArgumentException>
             <@ SelfServiceRegisterCommand.make (Guid.random ()) String.empty (Password.random 32)
-                (EmailAddress.random ()) (String.random 64) @>
+                (EmailAddress.random 32) (String.random 64) @>
             (fun x -> <@ x.ParamName = expectedParamName && (fixInvalidArgMessage x.Message) = expectedMessage @>)
 
     [<Test>]
@@ -48,7 +48,7 @@ module SelfServiceRegisterCommandTests =
 
         raisesWith<ArgumentException>
             <@ SelfServiceRegisterCommand.make (Guid.random ()) (String.random 2) (Password.random 32)
-                (EmailAddress.random ()) (String.random 64) @>
+                (EmailAddress.random 32) (String.random 64) @>
             (fun x -> <@ x.ParamName = expectedParamName && (fixInvalidArgMessage x.Message) = expectedMessage @>)
 
     [<Test>]
@@ -58,7 +58,7 @@ module SelfServiceRegisterCommandTests =
 
         raisesWith<ArgumentException>
             <@ SelfServiceRegisterCommand.make (Guid.random ()) (String.random 33) (Password.random 32)
-                (EmailAddress.random ()) (String.random 64) @>
+                (EmailAddress.random 32) (String.random 64) @>
             (fun x -> <@ x.ParamName = expectedParamName && (fixInvalidArgMessage x.Message) = expectedMessage @>)
 
     [<Test>]
@@ -69,7 +69,7 @@ module SelfServiceRegisterCommandTests =
         let invalidFormatUsername = sprintf "-%s-%s-" (String.random 8) (String.random 8)
         raisesWith<ArgumentException>
             <@ SelfServiceRegisterCommand.make (Guid.random ()) invalidFormatUsername (Password.random 32)
-                (EmailAddress.random ()) (String.random 64) @>
+                (EmailAddress.random 32) (String.random 64) @>
             (fun x -> <@ x.ParamName = expectedParamName && (fixInvalidArgMessage x.Message) = expectedMessage @>)
 
     [<Test>]
@@ -78,7 +78,7 @@ module SelfServiceRegisterCommandTests =
         let expectedMessage = "Password is required"
 
         raisesWith<ArgumentException>
-            <@ SelfServiceRegisterCommand.make (Guid.random ()) (String.random 32) null (EmailAddress.random ())
+            <@ SelfServiceRegisterCommand.make (Guid.random ()) (String.random 32) null (EmailAddress.random 32)
                 (String.random 64) @>
             (fun x -> <@ x.ParamName = expectedParamName && (fixInvalidArgMessage x.Message) = expectedMessage @>)
 
@@ -89,7 +89,7 @@ module SelfServiceRegisterCommandTests =
 
         raisesWith<ArgumentException>
             <@ SelfServiceRegisterCommand.make (Guid.random ()) (String.random 32) String.empty
-                (EmailAddress.random ()) (String.random 64) @>
+                (EmailAddress.random 32) (String.random 64) @>
             (fun x -> <@ x.ParamName = expectedParamName && (fixInvalidArgMessage x.Message) = expectedMessage @>)
 
     [<Test>]
@@ -99,7 +99,7 @@ module SelfServiceRegisterCommandTests =
 
         raisesWith<ArgumentException>
             <@ SelfServiceRegisterCommand.make (Guid.random ()) (String.random 32) (Password.random 7)
-                (EmailAddress.random ()) (String.random 64) @>
+                (EmailAddress.random 32) (String.random 64) @>
             (fun x -> <@ x.ParamName = expectedParamName && (fixInvalidArgMessage x.Message) = expectedMessage @>)
 
     [<Test>]
@@ -109,7 +109,7 @@ module SelfServiceRegisterCommandTests =
 
         raisesWith<ArgumentException>
             <@ SelfServiceRegisterCommand.make (Guid.random ()) (String.random 32) (Password.random 33)
-                (EmailAddress.random ()) (String.random 64) @>
+                (EmailAddress.random 32) (String.random 64) @>
             (fun x -> <@ x.ParamName = expectedParamName && (fixInvalidArgMessage x.Message) = expectedMessage @>)
 
     [<Test>]
@@ -120,7 +120,7 @@ module SelfServiceRegisterCommandTests =
         let noDigitsPassword = makeBadPasswordWithoutDigits 32
         raisesWith<ArgumentException>
             <@ SelfServiceRegisterCommand.make (Guid.random ()) (String.random 32) noDigitsPassword
-                (EmailAddress.random ()) (String.random 64) @>
+                (EmailAddress.random 32) (String.random 64) @>
             (fun x -> <@ x.ParamName = expectedParamName && (fixInvalidArgMessage x.Message) = expectedMessage @>)
 
     [<Test>]
@@ -131,7 +131,7 @@ module SelfServiceRegisterCommandTests =
         let noLowerAlphasPassword = makeBadPasswordWithoutLowerAlphas 32
         raisesWith<ArgumentException>
             <@ SelfServiceRegisterCommand.make (Guid.random ()) (String.random 32) noLowerAlphasPassword
-                (EmailAddress.random ()) (String.random 64) @>
+                (EmailAddress.random 32) (String.random 64) @>
             (fun x -> <@ x.ParamName = expectedParamName && (fixInvalidArgMessage x.Message) = expectedMessage @>)
 
     [<Test>]
@@ -142,7 +142,7 @@ module SelfServiceRegisterCommandTests =
         let noUpperAlphasPassword = makeBadPasswordWithoutUpperAlphas 32
         raisesWith<ArgumentException>
             <@ SelfServiceRegisterCommand.make (Guid.random ()) (String.random 32) noUpperAlphasPassword
-                (EmailAddress.random ()) (String.random 64) @>
+                (EmailAddress.random 32) (String.random 64) @>
             (fun x -> <@ x.ParamName = expectedParamName && (fixInvalidArgMessage x.Message) = expectedMessage @>)
 
     [<Test>]
@@ -153,7 +153,7 @@ module SelfServiceRegisterCommandTests =
         let noSpecialCharsPassword = makeBadPasswordWithoutSpecialChars 32
         raisesWith<ArgumentException>
             <@ SelfServiceRegisterCommand.make (Guid.random ()) (String.random 32) noSpecialCharsPassword
-                (EmailAddress.random ()) (String.random 64) @>
+                (EmailAddress.random 32) (String.random 64) @>
             (fun x -> <@ x.ParamName = expectedParamName && (fixInvalidArgMessage x.Message) = expectedMessage @>)
 
     [<Test>]
@@ -164,7 +164,7 @@ module SelfServiceRegisterCommandTests =
         let invalidCharsPassword = makeBadPasswordWithInvalidChars 32
         raisesWith<ArgumentException>
             <@ SelfServiceRegisterCommand.make (Guid.random ()) (String.random 32) invalidCharsPassword
-                (EmailAddress.random ()) (String.random 64) @>
+                (EmailAddress.random 32) (String.random 64) @>
             (fun x -> <@ x.ParamName = expectedParamName && (fixInvalidArgMessage x.Message) = expectedMessage @>)
 
     [<Test>]
@@ -214,7 +214,7 @@ module SelfServiceRegisterCommandTests =
 
         raisesWith<ArgumentException>
             <@ SelfServiceRegisterCommand.make (Guid.random ()) (String.random 32) (Password.random 32)
-                (EmailAddress.random ()) null @>
+                (EmailAddress.random 32) null @>
             (fun x -> <@ x.ParamName = expectedParamName && (fixInvalidArgMessage x.Message) = expectedMessage @>)
 
     [<Test>]
@@ -224,7 +224,7 @@ module SelfServiceRegisterCommandTests =
 
         raisesWith<ArgumentException>
             <@ SelfServiceRegisterCommand.make (Guid.random ()) (String.random 32) (Password.random 32)
-                (EmailAddress.random ()) String.empty @>
+                (EmailAddress.random 32) String.empty @>
             (fun x -> <@ x.ParamName = expectedParamName && (fixInvalidArgMessage x.Message) = expectedMessage @>)
 
     [<Test>]
@@ -234,27 +234,27 @@ module SelfServiceRegisterCommandTests =
 
         raisesWith<ArgumentException>
             <@ SelfServiceRegisterCommand.make (Guid.random ()) (String.random 32) (Password.random 32)
-                (EmailAddress.random ()) (String.random 65) @>
+                (EmailAddress.random 32) (String.random 65) @>
             (fun x -> <@ x.ParamName = expectedParamName && (fixInvalidArgMessage x.Message) = expectedMessage @>)
 
     [<Test>]
     let ``Calling make, with valid parameters, returns command`` () =
         let command =
             SelfServiceRegisterCommand.make (Guid.random ()) (String.random 32) (Password.random 32)
-                (EmailAddress.random ()) (String.random 64)
+                (EmailAddress.random 32) (String.random 64)
 
-        test <@ box command :? ISelfServiceRegisterCommand @>
-        test <@ box command :? IRequest<ISelfServiceRegisterCommandResult> @>
+        box command :? ISelfServiceRegisterCommand =! true
+        box command :? IRequest<ISelfServiceRegisterCommandResult> =! true
 
     [<Test>]
     let ``Calling id, returns expected id`` () =
         let expectedId = Guid.random ()
 
         let command =
-            SelfServiceRegisterCommand.make expectedId (String.random 32) (Password.random 32) (EmailAddress.random ())
+            SelfServiceRegisterCommand.make expectedId (String.random 32) (Password.random 32) (EmailAddress.random 32)
                 (String.random 64)
 
-        test <@ command.Id = expectedId @>
+        command.Id =! expectedId
 
     [<Test>]
     let ``Calling username, returns expected username`` () =
@@ -262,19 +262,19 @@ module SelfServiceRegisterCommandTests =
 
         let command =
             SelfServiceRegisterCommand.make (Guid.random ()) expectedUsername (Password.random 32)
-                (EmailAddress.random ()) (String.random 64)
+                (EmailAddress.random 32) (String.random 64)
 
-        test <@ command.Username = expectedUsername @>
+        command.Username =! expectedUsername
 
     [<Test>]
     let ``Calling email, returns expected email`` () =
-        let expectedEmail = EmailAddress.random ()
+        let expectedEmail = EmailAddress.random 32
 
         let command =
             SelfServiceRegisterCommand.make (Guid.random ()) (String.random 32) (Password.random 32) expectedEmail
                 (String.random 64)
 
-        test <@ command.Email = expectedEmail @>
+        command.Email =! expectedEmail
 
     [<Test>]
     let ``Calling nickname, returns expected nickname`` () =
@@ -282,6 +282,6 @@ module SelfServiceRegisterCommandTests =
 
         let command =
             SelfServiceRegisterCommand.make (Guid.random ()) (String.random 32) (Password.random 32)
-                (EmailAddress.random ()) expectedNickname
+                (EmailAddress.random 32) expectedNickname
 
-        test <@ command.Nickname = expectedNickname @>
+        command.Nickname =! expectedNickname

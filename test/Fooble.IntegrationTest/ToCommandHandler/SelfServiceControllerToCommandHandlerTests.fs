@@ -21,26 +21,26 @@ module SelfServiceControllerToCommandHandlerTests =
     [<Test>]
     let ``Constructing, with valid parameters, returns expected result`` () =
         let builder = ContainerBuilder()
-        ignore <| builder.RegisterModule(CoreRegistrations())
+        ignore (builder.RegisterModule(CoreRegistrations()))
         use container = builder.Build()
 
         let mediator = container.Resolve<IMediator>()
         let keyGenerator = container.Resolve<IKeyGenerator>()
-        ignore <| new SelfServiceController(mediator, keyGenerator)
+        ignore (new SelfServiceController(mediator, keyGenerator))
 
     [<Test>]
     let ``Calling register post, with existing username in data store, returns expected result`` () =
         let existingUsername = String.random 32
         let expectedPassword = Password.random 32
-        let expectedEmail = EmailAddress.random ()
+        let expectedEmail = EmailAddress.random 32
         let expectedNickname = String.random 64
 
         let contextMock = Mock<IFoobleContext>()
         contextMock.SetupFunc(fun x -> x.ExistsMemberUsername(any ())).Returns(true).Verifiable()
 
         let builder = ContainerBuilder()
-        ignore <| builder.RegisterModule(CoreRegistrations(contextMock.Object, mock ()))
-        ignore <| builder.RegisterModule(PresentationRegistrations())
+        ignore (builder.RegisterModule(CoreRegistrations(contextMock.Object, mock ())))
+        ignore (builder.RegisterModule(PresentationRegistrations()))
         use container = builder.Build()
 
         let mediator = container.Resolve<IMediator>()
@@ -54,14 +54,14 @@ module SelfServiceControllerToCommandHandlerTests =
 
         contextMock.Verify()
 
-        test <@ isNotNull result @>
-        test <@ result :? ViewResult @>
+        isNull result =! false
+        result :? ViewResult =! true
 
         let viewResult = result :?> ViewResult
 
-        test <@ String.isEmpty viewResult.ViewName @>
-        test <@ isNotNull viewResult.Model @>
-        test <@ viewResult.Model :? ISelfServiceRegisterViewModel @>
+        String.isEmpty viewResult.ViewName =! true
+        isNull viewResult.Model =! false
+        viewResult.Model :? ISelfServiceRegisterViewModel =! true
 
         let actualViewModel = viewResult.Model :?> ISelfServiceRegisterViewModel
         testSelfServiceRegisterViewModel actualViewModel existingUsername expectedPassword expectedEmail
@@ -74,15 +74,15 @@ module SelfServiceControllerToCommandHandlerTests =
     let ``Calling register post, with existing email in data store, returns expected result`` () =
         let expectedUsername = String.random 32
         let expectedPassword = Password.random 32
-        let existingEmail = EmailAddress.random ()
+        let existingEmail = EmailAddress.random 32
         let expectedNickname = String.random 64
 
         let contextMock = Mock<IFoobleContext>()
         contextMock.SetupFunc(fun x -> x.ExistsMemberEmail(any ())).Returns(true).Verifiable()
 
         let builder = ContainerBuilder()
-        ignore <| builder.RegisterModule(CoreRegistrations(contextMock.Object, mock ()))
-        ignore <| builder.RegisterModule(PresentationRegistrations())
+        ignore (builder.RegisterModule(CoreRegistrations(contextMock.Object, mock ())))
+        ignore (builder.RegisterModule(PresentationRegistrations()))
         use container = builder.Build()
 
         let mediator = container.Resolve<IMediator>()
@@ -96,14 +96,14 @@ module SelfServiceControllerToCommandHandlerTests =
 
         contextMock.Verify()
 
-        test <@ isNotNull result @>
-        test <@ result :? ViewResult @>
+        isNull result =! false
+        result :? ViewResult =! true
 
         let viewResult = result :?> ViewResult
 
-        test <@ String.isEmpty viewResult.ViewName @>
-        test <@ isNotNull viewResult.Model @>
-        test <@ viewResult.Model :? ISelfServiceRegisterViewModel @>
+        String.isEmpty viewResult.ViewName =! true
+        isNull viewResult.Model =! false
+        viewResult.Model :? ISelfServiceRegisterViewModel =! true
 
         let actualViewModel = viewResult.Model :?> ISelfServiceRegisterViewModel
         testSelfServiceRegisterViewModel actualViewModel expectedUsername expectedPassword existingEmail
@@ -121,8 +121,8 @@ module SelfServiceControllerToCommandHandlerTests =
         contextMock.SetupFunc(fun x -> x.ExistsMemberEmail(any ())).Returns(false).Verifiable()
 
         let builder = ContainerBuilder()
-        ignore <| builder.RegisterModule(CoreRegistrations(contextMock.Object, mock ()))
-        ignore <| builder.RegisterModule(PresentationRegistrations())
+        ignore (builder.RegisterModule(CoreRegistrations(contextMock.Object, mock ())))
+        ignore (builder.RegisterModule(PresentationRegistrations()))
         use container = builder.Build()
 
         let mediator = container.Resolve<IMediator>()
@@ -131,25 +131,25 @@ module SelfServiceControllerToCommandHandlerTests =
 
         let password = Password.random 32
         let viewModel =
-            bindSelfServiceRegisterViewModel (String.random 32) password password (EmailAddress.random ())
+            bindSelfServiceRegisterViewModel (String.random 32) password password (EmailAddress.random 32)
                 (String.random 64)
         let result = controller.Register viewModel
 
         contextMock.Verify()
 
-        test <@ isNotNull result @>
-        test <@ result :? RedirectToRouteResult @>
+        isNull result =! false
+        result :? RedirectToRouteResult =! true
 
         let redirectResult = result :?> RedirectToRouteResult
         let routeValues = redirectResult.RouteValues
 
-        test <@ routeValues.ContainsKey("controller") @>
-        test <@ routeValues.["controller"].ToString().ToLowerInvariant() = "member" @>
+        routeValues.ContainsKey("controller") =! true
+        routeValues.["controller"].ToString().ToLowerInvariant() =! "member"
 
-        test <@ routeValues.ContainsKey("action") @>
-        test <@ routeValues.["action"].ToString().ToLowerInvariant() = "detail" @>
+        routeValues.ContainsKey("action") =! true
+        routeValues.["action"].ToString().ToLowerInvariant() =! "detail"
 
         let expectedIdString = String.ofGuid expectedId
 
-        test <@ routeValues.ContainsKey("id") @>
-        test <@ routeValues.["id"].ToString().ToLowerInvariant() = expectedIdString @>
+        routeValues.ContainsKey("id") =! true
+        routeValues.["id"].ToString().ToLowerInvariant() =! expectedIdString

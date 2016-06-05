@@ -16,7 +16,7 @@
 
     <div class="form-group">
         @Html.LabelFor(model => model.Password)
-        @Html.PasswordFor(model => model.Password, new { @class = "form-control" })
+        @Html.EditorFor(model => model.Password, new { htmlAttributes = new { @class = "form-control" } })
         @Html.ValidationMessageFor(model => model.Password, String.Empty, new { @class = "text-danger" })
     </div>
 

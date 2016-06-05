@@ -9,6 +9,7 @@ open Moq
 open Moq.FSharp.Extensions
 open NUnit.Framework
 open Swensen.Unquote
+open System
 
 [<TestFixture>]
 module MemberDetailQueryHandlerTests =
@@ -17,7 +18,7 @@ module MemberDetailQueryHandlerTests =
     let ``Calling make, with valid parameters, returns query handler`` () =
         let handler = MemberDetailQuery.makeHandler (mock ()) (mock ())
 
-        test <@ box handler :? IRequestHandler<IMemberDetailQuery, IMemberDetailQueryResult> @>
+        box handler :? IRequestHandler<IMemberDetailQuery, IMemberDetailQueryResult> =! true
 
     [<Test>]
     let ``Calling handle, with no matching member in data store, returns expected result`` () =
@@ -31,15 +32,17 @@ module MemberDetailQueryHandlerTests =
 
         contextMock.Verify()
 
-        test <@ queryResult.IsNotFound @>
-        test <@ not <| queryResult.IsSuccess @>
+        queryResult.IsNotFound =! true
+        queryResult.IsSuccess =! false
 
     [<Test>]
     let ``Calling handle, with matching member in data store, returns expected result`` () =
         let expectedId = Guid.random ()
         let expectedUsername = String.random 32
-        let expectedEmail = EmailAddress.random ()
+        let expectedEmail = EmailAddress.random 32
         let expectedNickname = String.random 64
+        let expectedRegistered = DateTime.Now
+        let expectedPasswordChanged = DateTime.Now
 
         let passwordData = Crypto.hash (Password.random 32) 100
         let memberData =
@@ -54,8 +57,9 @@ module MemberDetailQueryHandlerTests =
 
         contextMock.Verify()
 
-        test <@ queryResult.IsSuccess @>
-        test <@ not <| queryResult.IsNotFound @>
+        queryResult.IsSuccess =! true
+        queryResult.IsNotFound =! false
 
         let actualReadModel = queryResult.ReadModel
         testMemberDetailReadModel actualReadModel expectedId expectedUsername expectedEmail expectedNickname
+            expectedRegistered expectedPasswordChanged

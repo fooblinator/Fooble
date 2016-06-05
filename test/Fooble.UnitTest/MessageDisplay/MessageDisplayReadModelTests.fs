@@ -76,7 +76,7 @@ module MessageDisplayReadModelTests =
             MessageDisplayReadModel.make (String.random 64) (String.random 64) 200
                 MessageDisplayReadModel.informationalSeverity (String.random 64)
 
-        test <@ box readModel :? IMessageDisplayReadModel @>
+        box readModel :? IMessageDisplayReadModel =! true
 
     [<Test>]
     let ``Calling heading, returns expected heading`` () =
@@ -86,7 +86,7 @@ module MessageDisplayReadModelTests =
             MessageDisplayReadModel.make expectedHeading (String.random 64) 200
                 MessageDisplayReadModel.informationalSeverity (String.random 64)
 
-        test <@ readModel.Heading = expectedHeading @>
+        readModel.Heading =! expectedHeading
 
     [<Test>]
     let ``Calling sub-heading, returns expected sub-heading`` () =
@@ -96,7 +96,7 @@ module MessageDisplayReadModelTests =
             MessageDisplayReadModel.make (String.random 64) expectedSubHeading 200
                 MessageDisplayReadModel.informationalSeverity (String.random 64)
 
-        test <@ readModel.SubHeading = expectedSubHeading @>
+        readModel.SubHeading =! expectedSubHeading
 
     [<Test>]
     let ``Calling status code, returns expected status code`` () =
@@ -106,7 +106,7 @@ module MessageDisplayReadModelTests =
             MessageDisplayReadModel.make (String.random 64) (String.random 64) expectedStatusCode
                 MessageDisplayReadModel.informationalSeverity (String.random 64)
 
-        test <@ readModel.StatusCode = expectedStatusCode @>
+        readModel.StatusCode =! expectedStatusCode
 
     [<Test>]
     let ``Calling severity, returns expected severity`` () =
@@ -115,7 +115,7 @@ module MessageDisplayReadModelTests =
         let readModel =
             MessageDisplayReadModel.make (String.random 64) (String.random 64) 200 expectedSeverity (String.random 64)
 
-        test <@ readModel.Severity = expectedSeverity @>
+        readModel.Severity =! expectedSeverity
 
     [<Test>]
     let ``Calling message, returns expected message`` () =
@@ -125,4 +125,4 @@ module MessageDisplayReadModelTests =
             MessageDisplayReadModel.make (String.random 64) (String.random 64) 200
                 MessageDisplayReadModel.informationalSeverity expectedMessage
 
-        test <@ readModel.Message = expectedMessage @>
+        readModel.Message =! expectedMessage

@@ -54,7 +54,7 @@ module internal String =
     let isMatch pattern x = Regex.IsMatch(x, pattern)
     let isNotMatch pattern x = not <| isMatch pattern x
 
-    let isEmail x = try ignore <| MailAddress(x); true with :? FormatException -> false
+    let isEmail x = try ignore (MailAddress(x)); true with :? FormatException -> false
     let isNotEmail x = not <| isEmail x
 
     let ofArray (x:char[]) = String(x)
@@ -105,7 +105,16 @@ module internal Password =
 [<RequireQualifiedAccess>]
 module internal EmailAddress =
 
-    let random () = sprintf "%s@%s.%s" (String.random 14) (String.random 14) (String.random 2)
+    let random len =
+        assert (len > 3)
+        match len with
+        | 3 -> sprintf "%s@%s" (String.random 1) (String.random 1)
+        | 4 -> sprintf "%s@%s" (String.random 1) (String.random 2)
+        | 5 -> sprintf "%s@%s.%s" (String.random 1) (String.random 1) (String.random 1)
+        | _ ->
+        let ext = 2 + ((len - 4) % 2)
+        let len = (len - 4) / 2
+        sprintf "%s@%s.%s" (String.random len) (String.random len) (String.random ext)
 
 [<DebuggerStepThrough>]
 [<RequireQualifiedAccess>]

@@ -36,6 +36,14 @@ module internal PersistenceHelpers =
                   with get() = memberData.Nickname
                   and set(x) = memberData.Nickname <- x
 
+              member this.Registered
+                  with get() = memberData.Registered
+                  and set(x) = memberData.Registered <- x
+
+              member this.PasswordChanged
+                  with get() = memberData.PasswordChanged
+                  and set(x) = memberData.PasswordChanged <- x
+
           interface IExposeWrapped<MemberData> with
 
               member this.Inner
@@ -88,6 +96,6 @@ module internal PersistenceHelpers =
                 |> context.MemberData.DeleteObject
 
             member this.SaveChanges() =
-                ignore <| context.SaveChanges()
+                ignore (context.SaveChanges())
 
             member this.Dispose() = context.Dispose() }

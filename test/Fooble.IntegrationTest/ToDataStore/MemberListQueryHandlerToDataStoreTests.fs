@@ -19,9 +19,9 @@ module MemberListQueryHandlerToDataStoreTests =
     let ``Calling handle, with no members in data store, returns expected result`` () =
         let connectionString = Settings.ConnectionStrings.FoobleContext
         let builder = ContainerBuilder()
-        ignore <| builder.RegisterModule(CoreRegistrations())
-        ignore <| builder.RegisterModule(PersistenceRegistrations(connectionString))
-        ignore <| builder.RegisterModule(PresentationRegistrations())
+        ignore (builder.RegisterModule(CoreRegistrations()))
+        ignore (builder.RegisterModule(PersistenceRegistrations(connectionString)))
+        ignore (builder.RegisterModule(PresentationRegistrations()))
         use container = builder.Build()
 
         let context = container.Resolve<IFoobleContext>()
@@ -36,16 +36,16 @@ module MemberListQueryHandlerToDataStoreTests =
         let query = MemberListQuery.make ()
         let queryResult = handler.Handle(query)
 
-        test <@ queryResult.IsNotFound @>
-        test <@ not <| queryResult.IsSuccess @>
+        queryResult.IsNotFound =! true
+        queryResult.IsSuccess =! false
 
     [<Test>]
     let ``Calling handle, with members in data store, returns expected result`` () =
         let connectionString = Settings.ConnectionStrings.FoobleContext
         let builder = ContainerBuilder()
-        ignore <| builder.RegisterModule(CoreRegistrations())
-        ignore <| builder.RegisterModule(PersistenceRegistrations(connectionString))
-        ignore <| builder.RegisterModule(PresentationRegistrations())
+        ignore (builder.RegisterModule(CoreRegistrations()))
+        ignore (builder.RegisterModule(PersistenceRegistrations(connectionString)))
+        ignore (builder.RegisterModule(PresentationRegistrations()))
         use container = builder.Build()
 
         let context = container.Resolve<IFoobleContext>()
@@ -59,7 +59,7 @@ module MemberListQueryHandlerToDataStoreTests =
         let members =
             List.init 5 (fun _ ->
                 let passwordData = Crypto.hash (Password.random 32) 100
-                memberDataFactory.Invoke(Guid.random (), String.random 32, passwordData, EmailAddress.random (),
+                memberDataFactory.Invoke(Guid.random (), String.random 32, passwordData, EmailAddress.random 32,
                     String.random 64))
         List.iter (fun x -> context.AddMember(x)) members
 
@@ -69,7 +69,7 @@ module MemberListQueryHandlerToDataStoreTests =
         let query = MemberListQuery.make ()
         let queryResult = handler.Handle(query)
 
-        test <@ queryResult.IsSuccess @>
-        test <@ not <| queryResult.IsNotFound @>
+        queryResult.IsSuccess =! true
+        queryResult.IsNotFound =! false
 
         testMemberListReadModel queryResult.ReadModel members

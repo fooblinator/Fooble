@@ -36,7 +36,7 @@ module SelfServiceControllerTests =
     [<Test>]
     let ``Constructing, with valid parameters, returns expected result`` () =
         let keyGenerator = makeTestKeyGenerator None
-        ignore <| new SelfServiceController(mock (), keyGenerator)
+        ignore (new SelfServiceController(mock (), keyGenerator))
 
     [<Test>]
     let ``Calling register, returns expected result`` () =
@@ -49,14 +49,14 @@ module SelfServiceControllerTests =
         let controller = new SelfServiceController(mock (), keyGenerator)
         let result = controller.Register()
 
-        test <@ isNotNull result @>
-        test <@ result :? ViewResult @>
+        isNull result =! false
+        result :? ViewResult =! true
 
         let viewResult = result :?> ViewResult
 
-        test <@ String.isEmpty viewResult.ViewName @>
-        test <@ isNotNull viewResult.Model @>
-        test <@ viewResult.Model :? ISelfServiceRegisterViewModel @>
+        String.isEmpty viewResult.ViewName =! true
+        isNull viewResult.Model =! false
+        viewResult.Model :? ISelfServiceRegisterViewModel =! true
 
         let actualViewModel = viewResult.Model :?> ISelfServiceRegisterViewModel
         testSelfServiceRegisterViewModel actualViewModel emptyUsername emptyPassword emptyEmail emptyNickname
@@ -65,7 +65,7 @@ module SelfServiceControllerTests =
     let ``Calling register post, with null username, returns expected result`` () =
         let nullUsername:string = null
         let expectedPassword = Password.random 32
-        let expectedEmail = EmailAddress.random ()
+        let expectedEmail = EmailAddress.random 32
         let expectedNickname = String.random 64
 
         let keyGenerator = makeTestKeyGenerator None
@@ -77,14 +77,14 @@ module SelfServiceControllerTests =
                 expectedNickname
         let result = controller.Register viewModel
 
-        test <@ isNotNull result @>
-        test <@ result :? ViewResult @>
+        isNull result =! false
+        result :? ViewResult =! true
 
         let viewResult = result :?> ViewResult
 
-        test <@ String.isEmpty viewResult.ViewName @>
-        test <@ isNotNull viewResult.Model @>
-        test <@ viewResult.Model :? ISelfServiceRegisterViewModel @>
+        String.isEmpty viewResult.ViewName =! true
+        isNull viewResult.Model =! false
+        viewResult.Model :? ISelfServiceRegisterViewModel =! true
 
         let actualViewModel = viewResult.Model :?> ISelfServiceRegisterViewModel
         testSelfServiceRegisterViewModel actualViewModel nullUsername expectedPassword expectedEmail expectedNickname
@@ -96,7 +96,7 @@ module SelfServiceControllerTests =
     let ``Calling register post, with empty username, returns expected result`` () =
         let emptyUsername = String.empty
         let expectedPassword = Password.random 32
-        let expectedEmail = EmailAddress.random ()
+        let expectedEmail = EmailAddress.random 32
         let expectedNickname = String.random 64
 
         let keyGenerator = makeTestKeyGenerator None
@@ -108,14 +108,14 @@ module SelfServiceControllerTests =
                 expectedNickname
         let result = controller.Register viewModel
 
-        test <@ isNotNull result @>
-        test <@ result :? ViewResult @>
+        isNull result =! false
+        result :? ViewResult =! true
 
         let viewResult = result :?> ViewResult
 
-        test <@ String.isEmpty viewResult.ViewName @>
-        test <@ isNotNull viewResult.Model @>
-        test <@ viewResult.Model :? ISelfServiceRegisterViewModel @>
+        String.isEmpty viewResult.ViewName =! true
+        isNull viewResult.Model =! false
+        viewResult.Model :? ISelfServiceRegisterViewModel =! true
 
         let actualViewModel = viewResult.Model :?> ISelfServiceRegisterViewModel
         testSelfServiceRegisterViewModel actualViewModel emptyUsername expectedPassword expectedEmail expectedNickname
@@ -127,7 +127,7 @@ module SelfServiceControllerTests =
     let ``Calling register post, with username shorter than 3 characters, returns expected result`` () =
         let shortUsername = String.random 2
         let expectedPassword = Password.random 32
-        let expectedEmail = EmailAddress.random ()
+        let expectedEmail = EmailAddress.random 32
         let expectedNickname = String.random 64
 
         let keyGenerator = makeTestKeyGenerator None
@@ -139,14 +139,14 @@ module SelfServiceControllerTests =
                 expectedNickname
         let result = controller.Register viewModel
 
-        test <@ isNotNull result @>
-        test <@ result :? ViewResult @>
+        isNull result =! false
+        result :? ViewResult =! true
 
         let viewResult = result :?> ViewResult
 
-        test <@ String.isEmpty viewResult.ViewName @>
-        test <@ isNotNull viewResult.Model @>
-        test <@ viewResult.Model :? ISelfServiceRegisterViewModel @>
+        String.isEmpty viewResult.ViewName =! true
+        isNull viewResult.Model =! false
+        viewResult.Model :? ISelfServiceRegisterViewModel =! true
 
         let actualViewModel = viewResult.Model :?> ISelfServiceRegisterViewModel
         testSelfServiceRegisterViewModel actualViewModel shortUsername expectedPassword expectedEmail expectedNickname
@@ -158,7 +158,7 @@ module SelfServiceControllerTests =
     let ``Calling register post, with username longer than 32 characters, returns expected result`` () =
         let longUsername = String.random 33
         let expectedPassword = Password.random 32
-        let expectedEmail = EmailAddress.random ()
+        let expectedEmail = EmailAddress.random 32
         let expectedNickname = String.random 64
 
         let keyGenerator = makeTestKeyGenerator None
@@ -170,14 +170,14 @@ module SelfServiceControllerTests =
                 expectedNickname
         let result = controller.Register viewModel
 
-        test <@ isNotNull result @>
-        test <@ result :? ViewResult @>
+        isNull result =! false
+        result :? ViewResult =! true
 
         let viewResult = result :?> ViewResult
 
-        test <@ String.isEmpty viewResult.ViewName @>
-        test <@ isNotNull viewResult.Model @>
-        test <@ viewResult.Model :? ISelfServiceRegisterViewModel @>
+        String.isEmpty viewResult.ViewName =! true
+        isNull viewResult.Model =! false
+        viewResult.Model :? ISelfServiceRegisterViewModel =! true
 
         let actualViewModel = viewResult.Model :?> ISelfServiceRegisterViewModel
         testSelfServiceRegisterViewModel actualViewModel longUsername expectedPassword expectedEmail expectedNickname
@@ -189,7 +189,7 @@ module SelfServiceControllerTests =
     let ``Calling register post, with username in invalid format, returns expected result`` () =
         let invalidFormatUsername = sprintf "-%s-%s-" (String.random 8) (String.random 8)
         let expectedPassword = Password.random 32
-        let expectedEmail = EmailAddress.random ()
+        let expectedEmail = EmailAddress.random 32
         let expectedNickname = String.random 64
 
         let keyGenerator = makeTestKeyGenerator None
@@ -202,14 +202,14 @@ module SelfServiceControllerTests =
                 expectedNickname
         let result = controller.Register viewModel
 
-        test <@ isNotNull result @>
-        test <@ result :? ViewResult @>
+        isNull result =! false
+        result :? ViewResult =! true
 
         let viewResult = result :?> ViewResult
 
-        test <@ String.isEmpty viewResult.ViewName @>
-        test <@ isNotNull viewResult.Model @>
-        test <@ viewResult.Model :? ISelfServiceRegisterViewModel @>
+        String.isEmpty viewResult.ViewName =! true
+        isNull viewResult.Model =! false
+        viewResult.Model :? ISelfServiceRegisterViewModel =! true
 
         let actualViewModel = viewResult.Model :?> ISelfServiceRegisterViewModel
         testSelfServiceRegisterViewModel actualViewModel invalidFormatUsername expectedPassword expectedEmail
@@ -222,7 +222,7 @@ module SelfServiceControllerTests =
     let ``Calling register post, with null password, returns expected result`` () =
         let expectedUsername = String.random 32
         let nullPassword:string = null
-        let expectedEmail = EmailAddress.random ()
+        let expectedEmail = EmailAddress.random 32
         let expectedNickname = String.random 64
 
         let keyGenerator = makeTestKeyGenerator None
@@ -233,14 +233,14 @@ module SelfServiceControllerTests =
             bindSelfServiceRegisterViewModel2 expectedUsername nullPassword nullPassword expectedEmail expectedNickname
         let result = controller.Register viewModel
 
-        test <@ isNotNull result @>
-        test <@ result :? ViewResult @>
+        isNull result =! false
+        result :? ViewResult =! true
 
         let viewResult = result :?> ViewResult
 
-        test <@ String.isEmpty viewResult.ViewName @>
-        test <@ isNotNull viewResult.Model @>
-        test <@ viewResult.Model :? ISelfServiceRegisterViewModel @>
+        String.isEmpty viewResult.ViewName =! true
+        isNull viewResult.Model =! false
+        viewResult.Model :? ISelfServiceRegisterViewModel =! true
 
         let actualViewModel = viewResult.Model :?> ISelfServiceRegisterViewModel
         testSelfServiceRegisterViewModel actualViewModel expectedUsername String.empty expectedEmail expectedNickname
@@ -252,7 +252,7 @@ module SelfServiceControllerTests =
     let ``Calling register post, with empty password, returns expected result`` () =
         let expectedUsername = String.random 32
         let emptyPassword = String.empty
-        let expectedEmail = EmailAddress.random ()
+        let expectedEmail = EmailAddress.random 32
         let expectedNickname = String.random 64
 
         let keyGenerator = makeTestKeyGenerator None
@@ -264,14 +264,14 @@ module SelfServiceControllerTests =
                 expectedNickname
         let result = controller.Register viewModel
 
-        test <@ isNotNull result @>
-        test <@ result :? ViewResult @>
+        isNull result =! false
+        result :? ViewResult =! true
 
         let viewResult = result :?> ViewResult
 
-        test <@ String.isEmpty viewResult.ViewName @>
-        test <@ isNotNull viewResult.Model @>
-        test <@ viewResult.Model :? ISelfServiceRegisterViewModel @>
+        String.isEmpty viewResult.ViewName =! true
+        isNull viewResult.Model =! false
+        viewResult.Model :? ISelfServiceRegisterViewModel =! true
 
         let actualViewModel = viewResult.Model :?> ISelfServiceRegisterViewModel
         testSelfServiceRegisterViewModel actualViewModel expectedUsername String.empty expectedEmail expectedNickname
@@ -283,7 +283,7 @@ module SelfServiceControllerTests =
     let ``Calling register post, with password shorter than 8 characters, returns expected result`` () =
         let expectedUsername = String.random 32
         let shortPassword = Password.random 7
-        let expectedEmail = EmailAddress.random ()
+        let expectedEmail = EmailAddress.random 32
         let expectedNickname = String.random 64
 
         let keyGenerator = makeTestKeyGenerator None
@@ -295,14 +295,14 @@ module SelfServiceControllerTests =
                 expectedNickname
         let result = controller.Register viewModel
 
-        test <@ isNotNull result @>
-        test <@ result :? ViewResult @>
+        isNull result =! false
+        result :? ViewResult =! true
 
         let viewResult = result :?> ViewResult
 
-        test <@ String.isEmpty viewResult.ViewName @>
-        test <@ isNotNull viewResult.Model @>
-        test <@ viewResult.Model :? ISelfServiceRegisterViewModel @>
+        String.isEmpty viewResult.ViewName =! true
+        isNull viewResult.Model =! false
+        viewResult.Model :? ISelfServiceRegisterViewModel =! true
 
         let actualViewModel = viewResult.Model :?> ISelfServiceRegisterViewModel
         testSelfServiceRegisterViewModel actualViewModel expectedUsername String.empty expectedEmail expectedNickname
@@ -314,7 +314,7 @@ module SelfServiceControllerTests =
     let ``Calling register post, with password longer than 32 characters, returns expected result`` () =
         let expectedUsername = String.random 32
         let longPassword = Password.random 33
-        let expectedEmail = EmailAddress.random ()
+        let expectedEmail = EmailAddress.random 32
         let expectedNickname = String.random 64
 
         let keyGenerator = makeTestKeyGenerator None
@@ -325,14 +325,14 @@ module SelfServiceControllerTests =
             bindSelfServiceRegisterViewModel2 expectedUsername longPassword longPassword expectedEmail expectedNickname
         let result = controller.Register viewModel
 
-        test <@ isNotNull result @>
-        test <@ result :? ViewResult @>
+        isNull result =! false
+        result :? ViewResult =! true
 
         let viewResult = result :?> ViewResult
 
-        test <@ String.isEmpty viewResult.ViewName @>
-        test <@ isNotNull viewResult.Model @>
-        test <@ viewResult.Model :? ISelfServiceRegisterViewModel @>
+        String.isEmpty viewResult.ViewName =! true
+        isNull viewResult.Model =! false
+        viewResult.Model :? ISelfServiceRegisterViewModel =! true
 
         let actualViewModel = viewResult.Model :?> ISelfServiceRegisterViewModel
         testSelfServiceRegisterViewModel actualViewModel expectedUsername String.empty expectedEmail expectedNickname
@@ -344,7 +344,7 @@ module SelfServiceControllerTests =
     let ``Calling register post, with password without digits, returns expected result`` () =
         let expectedUsername = String.random 32
         let noDigitsPassword = makeBadPasswordWithoutDigits 32
-        let expectedEmail = EmailAddress.random ()
+        let expectedEmail = EmailAddress.random 32
         let expectedNickname = String.random 64
 
         let keyGenerator = makeTestKeyGenerator None
@@ -356,14 +356,14 @@ module SelfServiceControllerTests =
                 expectedNickname
         let result = controller.Register viewModel
 
-        test <@ isNotNull result @>
-        test <@ result :? ViewResult @>
+        isNull result =! false
+        result :? ViewResult =! true
 
         let viewResult = result :?> ViewResult
 
-        test <@ String.isEmpty viewResult.ViewName @>
-        test <@ isNotNull viewResult.Model @>
-        test <@ viewResult.Model :? ISelfServiceRegisterViewModel @>
+        String.isEmpty viewResult.ViewName =! true
+        isNull viewResult.Model =! false
+        viewResult.Model :? ISelfServiceRegisterViewModel =! true
 
         let actualViewModel = viewResult.Model :?> ISelfServiceRegisterViewModel
         testSelfServiceRegisterViewModel actualViewModel expectedUsername String.empty expectedEmail expectedNickname
@@ -375,7 +375,7 @@ module SelfServiceControllerTests =
     let ``Calling register post, with password without lower alphas, returns expected result`` () =
         let expectedUsername = String.random 32
         let noLowerAlphasPassword = makeBadPasswordWithoutLowerAlphas 32
-        let expectedEmail = EmailAddress.random ()
+        let expectedEmail = EmailAddress.random 32
         let expectedNickname = String.random 64
 
         let keyGenerator = makeTestKeyGenerator None
@@ -387,14 +387,14 @@ module SelfServiceControllerTests =
                 expectedEmail expectedNickname
         let result = controller.Register viewModel
 
-        test <@ isNotNull result @>
-        test <@ result :? ViewResult @>
+        isNull result =! false
+        result :? ViewResult =! true
 
         let viewResult = result :?> ViewResult
 
-        test <@ String.isEmpty viewResult.ViewName @>
-        test <@ isNotNull viewResult.Model @>
-        test <@ viewResult.Model :? ISelfServiceRegisterViewModel @>
+        String.isEmpty viewResult.ViewName =! true
+        isNull viewResult.Model =! false
+        viewResult.Model :? ISelfServiceRegisterViewModel =! true
 
         let actualViewModel = viewResult.Model :?> ISelfServiceRegisterViewModel
         testSelfServiceRegisterViewModel actualViewModel expectedUsername String.empty expectedEmail expectedNickname
@@ -406,7 +406,7 @@ module SelfServiceControllerTests =
     let ``Calling register post, with password without upper alphas, returns expected result`` () =
         let expectedUsername = String.random 32
         let noUpperAlphasPassword = makeBadPasswordWithoutUpperAlphas 32
-        let expectedEmail = EmailAddress.random ()
+        let expectedEmail = EmailAddress.random 32
         let expectedNickname = String.random 64
 
         let keyGenerator = makeTestKeyGenerator None
@@ -418,14 +418,14 @@ module SelfServiceControllerTests =
                 expectedEmail expectedNickname
         let result = controller.Register viewModel
 
-        test <@ isNotNull result @>
-        test <@ result :? ViewResult @>
+        isNull result =! false
+        result :? ViewResult =! true
 
         let viewResult = result :?> ViewResult
 
-        test <@ String.isEmpty viewResult.ViewName @>
-        test <@ isNotNull viewResult.Model @>
-        test <@ viewResult.Model :? ISelfServiceRegisterViewModel @>
+        String.isEmpty viewResult.ViewName =! true
+        isNull viewResult.Model =! false
+        viewResult.Model :? ISelfServiceRegisterViewModel =! true
 
         let actualViewModel = viewResult.Model :?> ISelfServiceRegisterViewModel
         testSelfServiceRegisterViewModel actualViewModel expectedUsername String.empty expectedEmail expectedNickname
@@ -437,7 +437,7 @@ module SelfServiceControllerTests =
     let ``Calling register post, with password without special chars, returns expected result`` () =
         let expectedUsername = String.random 32
         let noSpecialCharsPassword = makeBadPasswordWithoutSpecialChars 32
-        let expectedEmail = EmailAddress.random ()
+        let expectedEmail = EmailAddress.random 32
         let expectedNickname = String.random 64
 
         let keyGenerator = makeTestKeyGenerator None
@@ -449,14 +449,14 @@ module SelfServiceControllerTests =
                 expectedEmail expectedNickname
         let result = controller.Register viewModel
 
-        test <@ isNotNull result @>
-        test <@ result :? ViewResult @>
+        isNull result =! false
+        result :? ViewResult =! true
 
         let viewResult = result :?> ViewResult
 
-        test <@ String.isEmpty viewResult.ViewName @>
-        test <@ isNotNull viewResult.Model @>
-        test <@ viewResult.Model :? ISelfServiceRegisterViewModel @>
+        String.isEmpty viewResult.ViewName =! true
+        isNull viewResult.Model =! false
+        viewResult.Model :? ISelfServiceRegisterViewModel =! true
 
         let actualViewModel = viewResult.Model :?> ISelfServiceRegisterViewModel
         testSelfServiceRegisterViewModel actualViewModel expectedUsername String.empty expectedEmail expectedNickname
@@ -468,7 +468,7 @@ module SelfServiceControllerTests =
     let ``Calling register post, with password without invalid chars, returns expected result`` () =
         let expectedUsername = String.random 32
         let invalidCharsPassword = makeBadPasswordWithInvalidChars 32
-        let expectedEmail = EmailAddress.random ()
+        let expectedEmail = EmailAddress.random 32
         let expectedNickname = String.random 64
 
         let keyGenerator = makeTestKeyGenerator None
@@ -480,14 +480,14 @@ module SelfServiceControllerTests =
                 expectedNickname
         let result = controller.Register viewModel
 
-        test <@ isNotNull result @>
-        test <@ result :? ViewResult @>
+        isNull result =! false
+        result :? ViewResult =! true
 
         let viewResult = result :?> ViewResult
 
-        test <@ String.isEmpty viewResult.ViewName @>
-        test <@ isNotNull viewResult.Model @>
-        test <@ viewResult.Model :? ISelfServiceRegisterViewModel @>
+        String.isEmpty viewResult.ViewName =! true
+        isNull viewResult.Model =! false
+        viewResult.Model :? ISelfServiceRegisterViewModel =! true
 
         let actualViewModel = viewResult.Model :?> ISelfServiceRegisterViewModel
         testSelfServiceRegisterViewModel actualViewModel expectedUsername String.empty expectedEmail expectedNickname
@@ -499,7 +499,7 @@ module SelfServiceControllerTests =
     let ``Calling register post, with non-matching passwords, returns expected result`` () =
         let expectedUsername = String.random 32
         let nonMatchingConfirmPassword = Password.random 32
-        let expectedEmail = EmailAddress.random ()
+        let expectedEmail = EmailAddress.random 32
         let expectedNickname = String.random 64
 
         let keyGenerator = makeTestKeyGenerator None
@@ -511,14 +511,14 @@ module SelfServiceControllerTests =
                 expectedEmail expectedNickname
         let result = controller.Register viewModel
 
-        test <@ isNotNull result @>
-        test <@ result :? ViewResult @>
+        isNull result =! false
+        result :? ViewResult =! true
 
         let viewResult = result :?> ViewResult
 
-        test <@ String.isEmpty viewResult.ViewName @>
-        test <@ isNotNull viewResult.Model @>
-        test <@ viewResult.Model :? ISelfServiceRegisterViewModel @>
+        String.isEmpty viewResult.ViewName =! true
+        isNull viewResult.Model =! false
+        viewResult.Model :? ISelfServiceRegisterViewModel =! true
 
         let actualViewModel = viewResult.Model :?> ISelfServiceRegisterViewModel
         testSelfServiceRegisterViewModel actualViewModel expectedUsername String.empty expectedEmail expectedNickname
@@ -542,14 +542,14 @@ module SelfServiceControllerTests =
                 expectedNickname
         let result = controller.Register viewModel
 
-        test <@ isNotNull result @>
-        test <@ result :? ViewResult @>
+        isNull result =! false
+        result :? ViewResult =! true
 
         let viewResult = result :?> ViewResult
 
-        test <@ String.isEmpty viewResult.ViewName @>
-        test <@ isNotNull viewResult.Model @>
-        test <@ viewResult.Model :? ISelfServiceRegisterViewModel @>
+        String.isEmpty viewResult.ViewName =! true
+        isNull viewResult.Model =! false
+        viewResult.Model :? ISelfServiceRegisterViewModel =! true
 
         let actualViewModel = viewResult.Model :?> ISelfServiceRegisterViewModel
         testSelfServiceRegisterViewModel actualViewModel expectedUsername expectedPassword nullEmail expectedNickname
@@ -573,14 +573,14 @@ module SelfServiceControllerTests =
                 expectedNickname
         let result = controller.Register viewModel
 
-        test <@ isNotNull result @>
-        test <@ result :? ViewResult @>
+        isNull result =! false
+        result :? ViewResult =! true
 
         let viewResult = result :?> ViewResult
 
-        test <@ String.isEmpty viewResult.ViewName @>
-        test <@ isNotNull viewResult.Model @>
-        test <@ viewResult.Model :? ISelfServiceRegisterViewModel @>
+        String.isEmpty viewResult.ViewName =! true
+        isNull viewResult.Model =! false
+        viewResult.Model :? ISelfServiceRegisterViewModel =! true
 
         let actualViewModel = viewResult.Model :?> ISelfServiceRegisterViewModel
         testSelfServiceRegisterViewModel actualViewModel expectedUsername expectedPassword emptyEmail expectedNickname
@@ -604,14 +604,14 @@ module SelfServiceControllerTests =
                 expectedNickname
         let result = controller.Register viewModel
 
-        test <@ isNotNull result @>
-        test <@ result :? ViewResult @>
+        isNull result =! false
+        result :? ViewResult =! true
 
         let viewResult = result :?> ViewResult
 
-        test <@ String.isEmpty viewResult.ViewName @>
-        test <@ isNotNull viewResult.Model @>
-        test <@ viewResult.Model :? ISelfServiceRegisterViewModel @>
+        String.isEmpty viewResult.ViewName =! true
+        isNull viewResult.Model =! false
+        viewResult.Model :? ISelfServiceRegisterViewModel =! true
 
         let actualViewModel = viewResult.Model :?> ISelfServiceRegisterViewModel
         testSelfServiceRegisterViewModel actualViewModel expectedUsername expectedPassword longEmail expectedNickname
@@ -635,14 +635,14 @@ module SelfServiceControllerTests =
                 expectedNickname
         let result = controller.Register viewModel
 
-        test <@ isNotNull result @>
-        test <@ result :? ViewResult @>
+        isNull result =! false
+        result :? ViewResult =! true
 
         let viewResult = result :?> ViewResult
 
-        test <@ String.isEmpty viewResult.ViewName @>
-        test <@ isNotNull viewResult.Model @>
-        test <@ viewResult.Model :? ISelfServiceRegisterViewModel @>
+        String.isEmpty viewResult.ViewName =! true
+        isNull viewResult.Model =! false
+        viewResult.Model :? ISelfServiceRegisterViewModel =! true
 
         let actualViewModel = viewResult.Model :?> ISelfServiceRegisterViewModel
         testSelfServiceRegisterViewModel actualViewModel expectedUsername expectedPassword invalidFormatEmail
@@ -655,7 +655,7 @@ module SelfServiceControllerTests =
     let ``Calling register post, with null nickname, returns expected result`` () =
         let expectedUsername = String.random 32
         let expectedPassword = Password.random 32
-        let expectedEmail = EmailAddress.random ()
+        let expectedEmail = EmailAddress.random 32
         let nullNickname:string = null
 
         let keyGenerator = makeTestKeyGenerator None
@@ -667,14 +667,14 @@ module SelfServiceControllerTests =
                 nullNickname
         let result = controller.Register viewModel
 
-        test <@ isNotNull result @>
-        test <@ result :? ViewResult @>
+        isNull result =! false
+        result :? ViewResult =! true
 
         let viewResult = result :?> ViewResult
 
-        test <@ String.isEmpty viewResult.ViewName @>
-        test <@ isNotNull viewResult.Model @>
-        test <@ viewResult.Model :? ISelfServiceRegisterViewModel @>
+        String.isEmpty viewResult.ViewName =! true
+        isNull viewResult.Model =! false
+        viewResult.Model :? ISelfServiceRegisterViewModel =! true
 
         let actualViewModel = viewResult.Model :?> ISelfServiceRegisterViewModel
         testSelfServiceRegisterViewModel actualViewModel expectedUsername expectedPassword expectedEmail nullNickname
@@ -686,7 +686,7 @@ module SelfServiceControllerTests =
     let ``Calling register post, with empty nickname, returns expected result`` () =
         let expectedUsername = String.random 32
         let expectedPassword = Password.random 32
-        let expectedEmail = EmailAddress.random ()
+        let expectedEmail = EmailAddress.random 32
         let emptyNickname = String.empty
 
         let keyGenerator = makeTestKeyGenerator None
@@ -698,14 +698,14 @@ module SelfServiceControllerTests =
                 emptyNickname
         let result = controller.Register viewModel
 
-        test <@ isNotNull result @>
-        test <@ result :? ViewResult @>
+        isNull result =! false
+        result :? ViewResult =! true
 
         let viewResult = result :?> ViewResult
 
-        test <@ String.isEmpty viewResult.ViewName @>
-        test <@ isNotNull viewResult.Model @>
-        test <@ viewResult.Model :? ISelfServiceRegisterViewModel @>
+        String.isEmpty viewResult.ViewName =! true
+        isNull viewResult.Model =! false
+        viewResult.Model :? ISelfServiceRegisterViewModel =! true
 
         let actualViewModel = viewResult.Model :?> ISelfServiceRegisterViewModel
         testSelfServiceRegisterViewModel actualViewModel expectedUsername expectedPassword expectedEmail emptyNickname
@@ -717,7 +717,7 @@ module SelfServiceControllerTests =
     let ``Calling register post, with nickname longer than 64 characters, returns expected result`` () =
         let expectedUsername = String.random 32
         let expectedPassword = Password.random 32
-        let expectedEmail = EmailAddress.random ()
+        let expectedEmail = EmailAddress.random 32
         let longNickname = String.random 65
 
         let keyGenerator = makeTestKeyGenerator None
@@ -729,14 +729,14 @@ module SelfServiceControllerTests =
                 longNickname
         let result = controller.Register viewModel
 
-        test <@ isNotNull result @>
-        test <@ result :? ViewResult @>
+        isNull result =! false
+        result :? ViewResult =! true
 
         let viewResult = result :?> ViewResult
 
-        test <@ String.isEmpty viewResult.ViewName @>
-        test <@ isNotNull viewResult.Model @>
-        test <@ viewResult.Model :? ISelfServiceRegisterViewModel @>
+        String.isEmpty viewResult.ViewName =! true
+        isNull viewResult.Model =! false
+        viewResult.Model :? ISelfServiceRegisterViewModel =! true
 
         let actualViewModel = viewResult.Model :?> ISelfServiceRegisterViewModel
         testSelfServiceRegisterViewModel actualViewModel expectedUsername expectedPassword expectedEmail longNickname
@@ -748,7 +748,7 @@ module SelfServiceControllerTests =
     let ``Calling register post, with existing username in data store, returns expected result`` () =
         let existingUsername = String.random 32
         let expectedPassword = Password.random 32
-        let expectedEmail = EmailAddress.random ()
+        let expectedEmail = EmailAddress.random 32
         let expectedNickname = String.random 64
 
         let commandResult = SelfServiceRegisterCommand.usernameUnavailableResult
@@ -765,14 +765,14 @@ module SelfServiceControllerTests =
 
         mediatorMock.Verify()
 
-        test <@ isNotNull result @>
-        test <@ result :? ViewResult @>
+        isNull result =! false
+        result :? ViewResult =! true
 
         let viewResult = result :?> ViewResult
 
-        test <@ String.isEmpty viewResult.ViewName @>
-        test <@ isNotNull viewResult.Model @>
-        test <@ viewResult.Model :? ISelfServiceRegisterViewModel @>
+        String.isEmpty viewResult.ViewName =! true
+        isNull viewResult.Model =! false
+        viewResult.Model :? ISelfServiceRegisterViewModel =! true
 
         let actualViewModel = viewResult.Model :?> ISelfServiceRegisterViewModel
         testSelfServiceRegisterViewModel actualViewModel existingUsername expectedPassword expectedEmail
@@ -785,7 +785,7 @@ module SelfServiceControllerTests =
     let ``Calling register post, with existing email in data store, returns expected result`` () =
         let expectedUsername = String.random 32
         let expectedPassword = Password.random 32
-        let existingEmail = EmailAddress.random ()
+        let existingEmail = EmailAddress.random 32
         let expectedNickname = String.random 64
 
         let commandResult = SelfServiceRegisterCommand.emailUnavailableResult
@@ -802,14 +802,14 @@ module SelfServiceControllerTests =
 
         mediatorMock.Verify()
 
-        test <@ isNotNull result @>
-        test <@ result :? ViewResult @>
+        isNull result =! false
+        result :? ViewResult =! true
 
         let viewResult = result :?> ViewResult
 
-        test <@ String.isEmpty viewResult.ViewName @>
-        test <@ isNotNull viewResult.Model @>
-        test <@ viewResult.Model :? ISelfServiceRegisterViewModel @>
+        String.isEmpty viewResult.ViewName =! true
+        isNull viewResult.Model =! false
+        viewResult.Model :? ISelfServiceRegisterViewModel =! true
 
         let actualViewModel = viewResult.Model :?> ISelfServiceRegisterViewModel
         testSelfServiceRegisterViewModel actualViewModel expectedUsername expectedPassword existingEmail
@@ -831,25 +831,25 @@ module SelfServiceControllerTests =
 
         let password = Password.random 32
         let viewModel =
-            bindSelfServiceRegisterViewModel2 (String.random 32) password password (EmailAddress.random ())
+            bindSelfServiceRegisterViewModel2 (String.random 32) password password (EmailAddress.random 32)
                 (Password.random 32)
         let result = controller.Register viewModel
 
         mediatorMock.Verify()
 
-        test <@ isNotNull result @>
-        test <@ result :? RedirectToRouteResult @>
+        isNull result =! false
+        result :? RedirectToRouteResult =! true
 
         let redirectResult = result :?> RedirectToRouteResult
         let routeValues = redirectResult.RouteValues
 
-        test <@ routeValues.ContainsKey("controller") @>
-        test <@ routeValues.["controller"].ToString().ToLowerInvariant() = "member" @>
+        routeValues.ContainsKey("controller") =! true
+        routeValues.["controller"].ToString().ToLowerInvariant() =! "member"
 
-        test <@ routeValues.ContainsKey("action") @>
-        test <@ routeValues.["action"].ToString().ToLowerInvariant() = "detail" @>
+        routeValues.ContainsKey("action") =! true
+        routeValues.["action"].ToString().ToLowerInvariant() =! "detail"
 
         let expectedIdString = String.ofGuid expectedId
 
-        test <@ routeValues.ContainsKey("id") @>
-        test <@ routeValues.["id"].ToString().ToLowerInvariant() = expectedIdString @>
+        routeValues.ContainsKey("id") =! true
+        routeValues.["id"].ToString().ToLowerInvariant() =! expectedIdString
