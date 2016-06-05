@@ -11,7 +11,7 @@ module SelfServiceRegisterViewModel =
 
     [<DefaultAugmentation(false)>]
     type private SelfServiceRegisterViewModelImplementation =
-        | ViewModel of username:string * password:string * email:string * nickname:string
+        | ViewModel of username:string * password:string * confirmPassword:string * email:string * nickname:string
 
         interface ISelfServiceRegisterViewModel with
 
@@ -24,6 +24,11 @@ module SelfServiceRegisterViewModel =
                 with get() =
                     match this with
                     | ViewModel(password = x) -> x
+
+            member this.ConfirmPassword
+                with get() =
+                    match this with
+                    | ViewModel(confirmPassword = x) -> x
 
             member this.Email
                 with get() =
@@ -41,10 +46,11 @@ module SelfServiceRegisterViewModel =
     /// <returns>Returns an empty self-service register view model.</returns>
     [<CompiledName("Empty")>]
     let empty =
-        ViewModel(String.empty, String.empty, String.empty, String.empty) :> ISelfServiceRegisterViewModel
+        ViewModel(String.empty, String.empty, String.empty, String.empty, String.empty) :>
+            ISelfServiceRegisterViewModel
 
-    let internal make username password email nickname =
-        ViewModel(username, password, email, nickname) :> ISelfServiceRegisterViewModel
+    let internal make username password confirmPassword email nickname =
+        ViewModel(username, password, confirmPassword, email, nickname) :> ISelfServiceRegisterViewModel
 
 /// Provides presentation-related extension methods for self-service register.
 [<RequireQualifiedAccess>]

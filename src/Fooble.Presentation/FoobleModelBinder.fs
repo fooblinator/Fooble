@@ -15,7 +15,7 @@ type FoobleModelBinder() =
 
               let username = form.Get("username")
               let mutable password = form.Get("password")
-              let confirmPassword = form.Get("confirmPassword")
+              let mutable confirmPassword = form.Get("confirmPassword")
               let email = form.Get("email")
               let nickname = form.Get("nickname")
 
@@ -29,6 +29,7 @@ type FoobleModelBinder() =
               | y when y.IsInvalid ->
                     modelState.AddModelError(y.ParamName, y.Message)
                     password <- String.empty
+                    confirmPassword <- String.empty
               | _ -> ()
 
               match Member.validateEmail email with
@@ -39,6 +40,6 @@ type FoobleModelBinder() =
               | y when y.IsInvalid -> modelState.AddModelError(y.ParamName, y.Message)
               | _ -> ()
 
-              box (SelfServiceRegisterViewModel.make username password email nickname)
+              box (SelfServiceRegisterViewModel.make username password confirmPassword email nickname)
 
         | _ -> base.BindModel(controllerContext, bindingContext)

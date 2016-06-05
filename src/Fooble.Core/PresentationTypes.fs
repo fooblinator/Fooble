@@ -95,6 +95,11 @@ type ISelfServiceRegisterViewModel =
     [<DataType(DataType.Password)>]
     abstract Password:string with get
 
+    /// The confirm password of the member.
+    [<DataType(DataType.Password)>]
+    [<DisplayName("Confirm Password")>]
+    abstract ConfirmPassword:string with get
+
     /// The email of the member.
     [<DataType(DataType.EmailAddress)>]
     abstract Email:string with get
