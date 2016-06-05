@@ -60,7 +60,7 @@ module MemberListExtensions =
     [<CompiledName("ToMessageDisplayReadModel")>]
     let toMessageDisplayReadModel (result:IMemberListQueryResult) =
 
-        [ (isNotNull << box), "Result parameter was null" ]
+        [ (box >> isNotNull), "Result parameter was null" ]
         |> validate result "result" |> enforce
 
         match result with

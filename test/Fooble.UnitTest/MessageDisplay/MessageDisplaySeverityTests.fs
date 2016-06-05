@@ -8,24 +8,6 @@ open Swensen.Unquote
 module MessageDisplaySeverityTests =
 
     [<Test>]
-    let ``Calling informational, returns severity`` () =
-        let severity = MessageDisplayReadModel.informationalSeverity
-
-        box severity :? IMessageDisplaySeverity =! true
-
-    [<Test>]
-    let ``Calling warning, returns severity`` () =
-        let severity = MessageDisplayReadModel.warningSeverity
-
-        box severity :? IMessageDisplaySeverity =! true
-
-    [<Test>]
-    let ``Calling error, returns severity`` () =
-        let severity = MessageDisplayReadModel.errorSeverity
-
-        box severity :? IMessageDisplaySeverity =! true
-
-    [<Test>]
     let ``Calling is informational, with informational severity, returns true`` () =
         let severity = MessageDisplayReadModel.informationalSeverity
 

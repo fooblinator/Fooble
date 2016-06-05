@@ -127,7 +127,5 @@ module SelfServiceRegisterCommand =
                 successResult
 
     let internal makeHandler context memberDataFactory =
-        assert (isNotNull context)
-        assert (isNotNull memberDataFactory)
         CommandHandler(context, memberDataFactory) :>
             IRequestHandler<ISelfServiceRegisterCommand, ISelfServiceRegisterCommandResult>

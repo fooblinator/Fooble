@@ -243,7 +243,6 @@ module SelfServiceRegisterCommandTests =
             SelfServiceRegisterCommand.make (Guid.random ()) (String.random 32) (Password.random 32)
                 (EmailAddress.random 32) (String.random 64)
 
-        box command :? ISelfServiceRegisterCommand =! true
         box command :? IRequest<ISelfServiceRegisterCommandResult> =! true
 
     [<Test>]

@@ -10,20 +10,6 @@ open System
 module MemberListQueryResultTests =
 
     [<Test>]
-    let ``Calling make success, with valid parameters, returns query result`` () =
-        let members = Seq.init 5 (fun _ -> makeTestMemberListItemReadModel (Guid.random ()) (String.random 64))
-        let readModel = makeTestMemberListReadModel members
-        let queryResult = MemberListQuery.makeSuccessResult readModel
-
-        box queryResult :? IMemberListQueryResult =! true
-
-    [<Test>]
-    let ``Calling not found, returns query result`` () =
-        let queryResult = MemberListQuery.notFoundResult
-
-        box queryResult :? IMemberListQueryResult =! true
-
-    [<Test>]
     let ``Calling read model, with not found query result, raises expected exception`` () =
         let expectedMessage = "Result was not successful"
 

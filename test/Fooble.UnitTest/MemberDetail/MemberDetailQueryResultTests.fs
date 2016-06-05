@@ -10,21 +10,6 @@ open System
 module MemberDetailQueryResultTests =
 
     [<Test>]
-    let ``Calling make success, with valid parameters, returns query result`` () =
-        let readModel =
-            makeTestMemberDetailReadModel (Guid.random ()) (String.random 32) (EmailAddress.random 32)
-                (String.random 64) DateTime.Now DateTime.Now
-        let queryResult = MemberDetailQuery.makeSuccessResult readModel
-
-        box queryResult :? IMemberDetailQueryResult =! true
-
-    [<Test>]
-    let ``Calling not found, returns query result`` () =
-        let queryResult = MemberDetailQuery.notFoundResult
-
-        box queryResult :? IMemberDetailQueryResult =! true
-
-    [<Test>]
     let ``Calling read model, with not found query result, raises expected exception`` () =
         let expectedMessage = "Result was not successful"
 

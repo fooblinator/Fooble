@@ -24,7 +24,6 @@ module MemberDetailQueryTests =
     let ``Calling make, with valid parameters, returns query`` () =
         let query = MemberDetailQuery.make (Guid.random ())
 
-        box query :? IMemberDetailQuery =! true
         box query :? IRequest<IMemberDetailQueryResult> =! true
 
     [<Test>]

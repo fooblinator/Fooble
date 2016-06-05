@@ -10,14 +10,6 @@ open System
 module MemberDetailReadModelTests =
 
     [<Test>]
-    let ``Calling make, with valid parameters, returns read model`` () =
-        let readModel =
-            makeTestMemberDetailReadModel (Guid.random ()) (String.random 32) (EmailAddress.random 32)
-                (String.random 64) DateTime.Now DateTime.Now
-
-        box readModel :? IMemberDetailReadModel =! true
-
-    [<Test>]
     let ``Calling id, returns expected id`` () =
         let expectedId = Guid.random ()
 

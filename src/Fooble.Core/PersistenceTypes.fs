@@ -28,7 +28,6 @@ type IMemberData =
 
 
 /// Represents the data context for the Fooble application.
-[<AllowNullLiteral>]
 type IFoobleContext =
     inherit IDisposable
 

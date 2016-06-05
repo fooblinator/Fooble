@@ -19,7 +19,7 @@ module ValidationExtensions =
     [<CompiledName("AddModelErrorIfNotValid")>]
     let addModelErrorIfNotValid (result:IValidationResult) (modelState:ModelStateDictionary) =
 
-        [ (isNotNull << box), "Result is required" ]
+        [ (box >> isNotNull), "Result is required" ]
         |> validate result "result" |> enforce
 
         [ (isNotNull), "Model state is required" ]
@@ -40,7 +40,7 @@ module ValidationExtensions =
     [<CompiledName("ToMessageDisplayReadModel")>]
     let toMessageDisplayReadModel (result:IValidationResult) =
 
-        [ (isNotNull << box), "Result parameter was null" ]
+        [ (box >> isNotNull), "Result parameter was null" ]
         |> validate result "result" |> enforce
 
         match result with

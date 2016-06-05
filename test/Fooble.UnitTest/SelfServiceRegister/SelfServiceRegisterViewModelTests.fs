@@ -9,21 +9,6 @@ open Swensen.Unquote
 module SelfServiceRegisterViewModelTests =
 
     [<Test>]
-    let ``Calling make initial, returns view model`` () =
-        let viewModel = SelfServiceRegisterViewModel.empty
-
-        box viewModel :? ISelfServiceRegisterViewModel =! true
-
-    [<Test>]
-    let ``Calling make, with valid parameters, returns view model`` () =
-        let password = Password.random 32
-        let viewModel =
-            bindSelfServiceRegisterViewModel2 (String.random 32) password password (EmailAddress.random 32)
-                (String.random 64)
-
-        box viewModel :? ISelfServiceRegisterViewModel =! true
-
-    [<Test>]
     let ``Calling username, with initial view model, returns expected username`` () =
         let expectedUsername = String.empty
 

@@ -9,12 +9,6 @@ open Swensen.Unquote
 module MemberListItemReadModelTests =
 
     [<Test>]
-    let ``Calling make, with valid parameters, returns read model`` () =
-        let readModel = makeTestMemberListItemReadModel (Guid.random ()) (String.random 64)
-
-        box readModel :? IMemberListItemReadModel =! true
-
-    [<Test>]
     let ``Calling id, returns expected id`` () =
         let expectedId = Guid.random ()
 

@@ -14,12 +14,6 @@ open Swensen.Unquote
 module SelfServiceRegisterCommandHandlerTests =
 
     [<Test>]
-    let ``Calling make, with valid parameters, returns command handler`` () =
-        let handler = SelfServiceRegisterCommand.makeHandler (mock ()) (mock ())
-
-        box handler :? IRequestHandler<ISelfServiceRegisterCommand, ISelfServiceRegisterCommandResult> =! true
-
-    [<Test>]
     let ``Calling handle, with existing username in data store, and returns expected result`` () =
         let contextMock = Mock<IFoobleContext>()
         contextMock.SetupFunc(fun x -> x.ExistsMemberUsername(any ())).Returns(true).Verifiable()

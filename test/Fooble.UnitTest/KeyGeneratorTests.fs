@@ -9,12 +9,6 @@ open Swensen.Unquote
 module KeyGeneratorTests =
 
     [<Test>]
-    let ``Calling make, returns key generator`` () =
-        let keyGenerator = KeyGenerator.make ()
-
-        box keyGenerator :? IKeyGenerator =! true
-
-    [<Test>]
     let ``Calling generate key, returns newly generated key`` () =
         let keyGenerator = KeyGenerator.make ()
 

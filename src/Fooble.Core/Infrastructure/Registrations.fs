@@ -26,9 +26,9 @@ type CoreRegistrations =
     /// <param name="context">The data context to use.</param>
     /// <param name="memberDataFactory">The member data factory to use.</param>
     new(context, memberDataFactory) =
-        [ (isNotNull), "Context is required" ]
+        [ (box >> isNotNull), "Context is required" ]
         |> validate context "context" |> enforce
-        [ (isNotNull), "Member data factory is required" ]
+        [ (box >> isNotNull), "Member data factory is required" ]
         |> validate memberDataFactory "memberDataFactory" |> enforce
         { Context = Some context; MemberDataFactory = Some memberDataFactory }
 

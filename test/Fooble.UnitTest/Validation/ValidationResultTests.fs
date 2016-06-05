@@ -10,18 +10,6 @@ open System
 module ValidationTests =
 
     [<Test>]
-    let ``Calling valid, returns validation result`` () =
-        let result = ValidationResult.valid
-
-        box result :? IValidationResult =! true
-
-    [<Test>]
-    let ``Calling make invalid, with valid parameters, returns validation result`` () =
-        let result = ValidationResult.makeInvalid (String.random 64) (String.random 64)
-
-        box result :? IValidationResult =! true
-
-    [<Test>]
     let ``Calling param name, with valid validation result, raises expected exception`` () =
         let expectedMessage = "Result was not invalid"
 

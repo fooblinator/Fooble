@@ -66,10 +66,10 @@ module SelfServiceRegisterExtensions =
     [<CompiledName("AddModelErrorIfNotSuccess")>]
     let addModelErrorIfNotSuccess (result:ISelfServiceRegisterCommandResult) (modelState:ModelStateDictionary) =
 
-        [ (isNotNull << box), "Result is required" ]
+        [ (box >> isNotNull), "Result is required" ]
         |> validate result "result" |> enforce
 
-        [ (isNotNull), "Model is required" ]
+        [ (isNotNull), "Model state is required" ]
         |> validate modelState "modelState" |> enforce
 
         match result with
@@ -90,7 +90,7 @@ module SelfServiceRegisterExtensions =
     [<CompiledName("ToMessageDisplayReadModel")>]
     let toMessageDisplayReadModel (result:ISelfServiceRegisterCommandResult) =
 
-        [ (isNotNull << box), "Result is required" ]
+        [ (box >> isNotNull), "Result is required" ]
         |> validate result "result" |> enforce
 
         match result with
@@ -111,7 +111,7 @@ module SelfServiceRegisterExtensions =
     [<CompiledName("ToCommand")>]
     let toCommand (viewModel:ISelfServiceRegisterViewModel) id =
 
-        [ (isNotNull << box), "View model is required" ]
+        [ (box >> isNotNull), "View model is required" ]
         |> validate viewModel "result" |> enforce
 
         SelfServiceRegisterCommand.make id viewModel.Username viewModel.Password viewModel.Email viewModel.Nickname

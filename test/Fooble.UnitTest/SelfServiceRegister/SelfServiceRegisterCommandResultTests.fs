@@ -8,24 +8,6 @@ open Swensen.Unquote
 module SelfServiceRegisterCommandResultTests =
 
     [<Test>]
-    let ``Calling success, returns command result`` () =
-        let commandResult = SelfServiceRegisterCommand.successResult
-
-        box commandResult :? ISelfServiceRegisterCommandResult =! true
-
-    [<Test>]
-    let ``Calling username unavailable, returns command result`` () =
-        let commandResult = SelfServiceRegisterCommand.usernameUnavailableResult
-
-        box commandResult :? ISelfServiceRegisterCommandResult =! true
-
-    [<Test>]
-    let ``Calling email unavailable, returns command result`` () =
-        let commandResult = SelfServiceRegisterCommand.emailUnavailableResult
-
-        box commandResult :? ISelfServiceRegisterCommandResult =! true
-
-    [<Test>]
     let ``Calling is success, with success command result, returns true`` () =
         let commandResult = SelfServiceRegisterCommand.successResult
 

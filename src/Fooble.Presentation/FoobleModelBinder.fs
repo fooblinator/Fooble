@@ -8,6 +8,9 @@ type FoobleModelBinder() =
     inherit DefaultModelBinder()
 
     override this.BindModel(controllerContext, bindingContext) =
+        assert (isNotNull controllerContext)
+        assert (isNotNull bindingContext)
+
         match bindingContext.ModelType with
 
         | x when x = typeof<ISelfServiceRegisterViewModel> ->

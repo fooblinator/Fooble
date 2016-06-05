@@ -14,12 +14,6 @@ open Swensen.Unquote
 module MemberListQueryHandlerTests =
 
     [<Test>]
-    let ``Calling make, with valid parameters, returns query handler`` () =
-        let handler = MemberListQuery.makeHandler (mock ()) (mock ()) (mock ())
-
-        box handler :? IRequestHandler<IMemberListQuery, IMemberListQueryResult> =! true
-
-    [<Test>]
     let ``Calling handle, with no members in data store, returns expected result`` () =
         let contextMock = Mock<IFoobleContext>()
         contextMock.SetupFunc(fun x -> x.GetMembers()).Returns([]).Verifiable()

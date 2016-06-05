@@ -90,8 +90,5 @@ module MemberListQuery =
                 |> makeSuccessResult
 
     let internal makeHandler context itemReadModelFactory readModelFactory =
-        assert (isNotNull context)
-        assert (isNotNull itemReadModelFactory)
-        assert (isNotNull readModelFactory)
         QueryHandler(context, itemReadModelFactory, readModelFactory) :>
             IRequestHandler<IMemberListQuery, IMemberListQueryResult>

@@ -71,14 +71,6 @@ module MessageDisplayReadModelTests =
                 (fun x -> <@ x.ParamName = expectedParamName && (fixInvalidArgMessage x.Message) = expectedMessage @>)
 
     [<Test>]
-    let ``Calling make, with valid parameters, returns read model`` () =
-        let readModel =
-            MessageDisplayReadModel.make (String.random 64) (String.random 64) 200
-                MessageDisplayReadModel.informationalSeverity (String.random 64)
-
-        box readModel :? IMessageDisplayReadModel =! true
-
-    [<Test>]
     let ``Calling heading, returns expected heading`` () =
         let expectedHeading = String.random 64
 

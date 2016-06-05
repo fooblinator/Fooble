@@ -104,8 +104,11 @@ module MessageDisplayReadModel =
         [ (isNotNull), "Sub-heading is required" ]
         |> validate subHeading "subHeading" |> enforce
 
-        [ (fun x -> x >= 0), "Status code parameter is less than zero" ]
+        [ ((<) 0), "Status code parameter is less than zero" ]
         |> validate statusCode "statusCode" |> enforce
+
+        [ (box >> isNotNull), "Severity is required" ]
+        |> validate severity "severity" |> enforce
 
         [ (String.isNotNullOrEmpty), "Message is required" ]
         |> validate message "message" |> enforce

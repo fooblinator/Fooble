@@ -91,6 +91,4 @@ module MemberDetailQuery =
                 | None -> notFoundResult
 
     let internal makeHandler context readModelFactory =
-        assert (isNotNull context)
-        assert (isNotNull readModelFactory)
         QueryHandler(context, readModelFactory) :> IRequestHandler<IMemberDetailQuery, IMemberDetailQueryResult>

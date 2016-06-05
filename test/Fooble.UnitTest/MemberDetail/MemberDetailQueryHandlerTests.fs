@@ -15,12 +15,6 @@ open System
 module MemberDetailQueryHandlerTests =
 
     [<Test>]
-    let ``Calling make, with valid parameters, returns query handler`` () =
-        let handler = MemberDetailQuery.makeHandler (mock ()) (mock ())
-
-        box handler :? IRequestHandler<IMemberDetailQuery, IMemberDetailQueryResult> =! true
-
-    [<Test>]
     let ``Calling handle, with no matching member in data store, returns expected result`` () =
         let contextMock = Mock<IFoobleContext>()
         contextMock.SetupFunc(fun x -> x.GetMember(any ())).Returns(None).Verifiable()
