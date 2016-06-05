@@ -58,7 +58,7 @@ type CoreRegistrations =
         if this.MemberDataFactory.IsSome then
             ignore (builder.RegisterInstance(this.MemberDataFactory.Value).ExternallyOwned())
 
-        ignore (builder.Register(fun _ -> KeyGenerator.make ()))
+        ignore (builder.Register(fun _ -> KeyGenerator(fun () -> Guid.random ())))
 
         ignore (builder.Register(fun x ->
             MemberDetailQuery.makeHandler (x.Resolve<IFoobleContext>())

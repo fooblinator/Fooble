@@ -25,7 +25,7 @@ module SelfServiceControllerToDataStoreTests =
         use container = builder.Build()
 
         let mediator = container.Resolve<IMediator>()
-        let keyGenerator = container.Resolve<IKeyGenerator>()
+        let keyGenerator = container.Resolve<KeyGenerator>()
         ignore (new SelfServiceController(mediator, keyGenerator))
 
     [<Test>]
@@ -45,7 +45,7 @@ module SelfServiceControllerToDataStoreTests =
         let context = container.Resolve<IFoobleContext>()
         let memberDataFactory = container.Resolve<MemberDataFactory>()
         let mediator = container.Resolve<IMediator>()
-        let keyGenerator = container.Resolve<IKeyGenerator>()
+        let keyGenerator = container.Resolve<KeyGenerator>()
 
         // remove all existing members from the data store
         List.iter (fun x -> context.DeleteMember(x)) (context.GetMembers())
@@ -100,7 +100,7 @@ module SelfServiceControllerToDataStoreTests =
         let context = container.Resolve<IFoobleContext>()
         let memberDataFactory = container.Resolve<MemberDataFactory>()
         let mediator = container.Resolve<IMediator>()
-        let keyGenerator = container.Resolve<IKeyGenerator>()
+        let keyGenerator = container.Resolve<KeyGenerator>()
 
         // remove all existing members from the data store
         List.iter (fun x -> context.DeleteMember(x)) (context.GetMembers())

@@ -73,7 +73,6 @@
     <Compile Include="MemberDetailQuery.fs" />
     <Compile Include="MemberListQuery.fs" />
     <Compile Include="SelfServiceRegisterCommand.fs" />
-    <Compile Include="KeyGenerator.fs" />
     <Compile Include="Infrastructure\Registrations.fs" />
     <Content Include="App.config" />
     <Content Include="packages.config" />

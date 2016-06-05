@@ -109,11 +109,9 @@ module internal UnitTestHelpers =
         Password.random (len - 2) |> sprintf "%c%s" Char.MinValue
 
     let makeTestKeyGenerator key =
-        { new IKeyGenerator with
-              member this.GenerateKey() =
-                  match key with
-                  | Some x -> x
-                  | None -> Guid.random () }
+        match key with
+        | Some x -> KeyGenerator(fun () -> x)
+        | None -> KeyGenerator(fun () -> Guid.random ())
 
     let makeTestMemberData id username passwordData email nickname =
         assertMemberId id

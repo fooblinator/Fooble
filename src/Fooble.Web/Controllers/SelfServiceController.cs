@@ -10,9 +10,9 @@ namespace Fooble.Web.Controllers
     public class SelfServiceController : Controller
     {
         readonly IMediator _mediator;
-        readonly IKeyGenerator _keyGenerator;
+        readonly KeyGenerator _keyGenerator;
 
-        public SelfServiceController(IMediator mediator, IKeyGenerator keyGenerator)
+        public SelfServiceController(IMediator mediator, KeyGenerator keyGenerator)
         {
             if (mediator == null)
                 throw new ArgumentNullException(nameof(mediator), "Mediator is required");
@@ -37,7 +37,7 @@ namespace Fooble.Web.Controllers
 
             if (!ModelState.IsValid) return View(viewModel);
 
-            var id = _keyGenerator.GenerateKey();
+            var id = _keyGenerator.Invoke();
             var command = viewModel.ToCommand(id);
             var result = _mediator.Send(command);
 

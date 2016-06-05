@@ -25,7 +25,7 @@ module SelfServiceControllerToCommandHandlerTests =
         use container = builder.Build()
 
         let mediator = container.Resolve<IMediator>()
-        let keyGenerator = container.Resolve<IKeyGenerator>()
+        let keyGenerator = container.Resolve<KeyGenerator>()
         ignore (new SelfServiceController(mediator, keyGenerator))
 
     [<Test>]
@@ -44,7 +44,7 @@ module SelfServiceControllerToCommandHandlerTests =
         use container = builder.Build()
 
         let mediator = container.Resolve<IMediator>()
-        let keyGenerator = container.Resolve<IKeyGenerator>()
+        let keyGenerator = container.Resolve<KeyGenerator>()
         let controller = new SelfServiceController(mediator, keyGenerator)
 
         let viewModel =
@@ -86,7 +86,7 @@ module SelfServiceControllerToCommandHandlerTests =
         use container = builder.Build()
 
         let mediator = container.Resolve<IMediator>()
-        let keyGenerator = container.Resolve<IKeyGenerator>()
+        let keyGenerator = container.Resolve<KeyGenerator>()
         let controller = new SelfServiceController(mediator, keyGenerator)
 
         let viewModel =

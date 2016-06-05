@@ -103,11 +103,6 @@ type ISelfServiceRegisterCommand =
     abstract Nickname:string with get
 
 
-/// Used to generate unique keys.
-type IKeyGenerator =
-
-    /// <summary>
-    /// Generates a unique key.
-    /// </summary>
-    /// <returns>Returns a newly generated unique key.</returns>
-    abstract GenerateKey : unit -> Guid
+/// Represents the function to invoke to generate a unique key.
+type KeyGenerator =
+    delegate of unit -> Guid
