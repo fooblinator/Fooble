@@ -5,20 +5,22 @@ open NUnit.Framework
 open Swensen.Unquote
 
 [<TestFixture>]
-module FoobleModelBinderTests =
+module BindSelfServiceRegisterViewModel =
 
     [<Test>]
     let ``Binding to a self-service register view model, with null username, adds expected model state error`` () =
         let nullUsername:string = null
         let expectedPassword = Password.random 32
+        let expectedConfirmPassword = expectedPassword
         let expectedEmail = EmailAddress.random 32
         let expectedNickname = String.random 64
 
         let (actualViewModel, modelState) =
-            bindSelfServiceRegisterViewModel nullUsername expectedPassword expectedPassword expectedEmail
+            bindSelfServiceRegisterViewModel nullUsername expectedPassword expectedConfirmPassword expectedEmail
                 expectedNickname
 
-        testSelfServiceRegisterViewModel actualViewModel nullUsername expectedPassword expectedEmail expectedNickname
+        testSelfServiceRegisterViewModel actualViewModel nullUsername expectedPassword expectedConfirmPassword
+            expectedEmail expectedNickname
 
         testModelState modelState "username" "Username is required"
 
@@ -26,14 +28,16 @@ module FoobleModelBinderTests =
     let ``Binding to a self-service register view model, with empty username, adds expected model state error`` () =
         let emptyUsername = String.empty
         let expectedPassword = Password.random 32
+        let expectedConfirmPassword = expectedPassword
         let expectedEmail = EmailAddress.random 32
         let expectedNickname = String.random 64
 
         let (actualViewModel, modelState) =
-            bindSelfServiceRegisterViewModel emptyUsername expectedPassword expectedPassword expectedEmail
+            bindSelfServiceRegisterViewModel emptyUsername expectedPassword expectedConfirmPassword expectedEmail
                 expectedNickname
 
-        testSelfServiceRegisterViewModel actualViewModel emptyUsername expectedPassword expectedEmail expectedNickname
+        testSelfServiceRegisterViewModel actualViewModel emptyUsername expectedPassword expectedConfirmPassword
+            expectedEmail expectedNickname
 
         testModelState modelState "username" "Username is required"
 
@@ -41,14 +45,16 @@ module FoobleModelBinderTests =
     let ``Binding to a self-service register view model, with username shorter than 3 characters, adds expected model state error`` () =
         let shortUsername = String.random 2
         let expectedPassword = Password.random 32
+        let expectedConfirmPassword = expectedPassword
         let expectedEmail = EmailAddress.random 32
         let expectedNickname = String.random 64
 
         let (actualViewModel, modelState) =
-            bindSelfServiceRegisterViewModel shortUsername expectedPassword expectedPassword expectedEmail
+            bindSelfServiceRegisterViewModel shortUsername expectedPassword expectedConfirmPassword expectedEmail
                 expectedNickname
 
-        testSelfServiceRegisterViewModel actualViewModel shortUsername expectedPassword expectedEmail expectedNickname
+        testSelfServiceRegisterViewModel actualViewModel shortUsername expectedPassword expectedConfirmPassword
+            expectedEmail expectedNickname
 
         testModelState modelState "username" "Username is shorter than 3 characters"
 
@@ -56,14 +62,16 @@ module FoobleModelBinderTests =
     let ``Binding to a self-service register view model, with username longer than 32 characters, adds expected model state error`` () =
         let longUsername = String.random 33
         let expectedPassword = Password.random 32
+        let expectedConfirmPassword = expectedPassword
         let expectedEmail = EmailAddress.random 32
         let expectedNickname = String.random 64
 
         let (actualViewModel, modelState) =
-            bindSelfServiceRegisterViewModel longUsername expectedPassword expectedPassword expectedEmail
+            bindSelfServiceRegisterViewModel longUsername expectedPassword expectedConfirmPassword expectedEmail
                 expectedNickname
 
-        testSelfServiceRegisterViewModel actualViewModel longUsername expectedPassword expectedEmail expectedNickname
+        testSelfServiceRegisterViewModel actualViewModel longUsername expectedPassword expectedConfirmPassword
+            expectedEmail expectedNickname
 
         testModelState modelState "username" "Username is longer than 32 characters"
 
@@ -71,15 +79,16 @@ module FoobleModelBinderTests =
     let ``Binding to a self-service register view model, with username in invalid format, adds expected model state error`` () =
         let invalidFormatUsername = sprintf "-%s-%s-" (String.random 8) (String.random 8)
         let expectedPassword = Password.random 32
+        let expectedConfirmPassword = expectedPassword
         let expectedEmail = EmailAddress.random 32
         let expectedNickname = String.random 64
 
         let (actualViewModel, modelState) =
-            bindSelfServiceRegisterViewModel invalidFormatUsername expectedPassword expectedPassword expectedEmail
-                expectedNickname
+            bindSelfServiceRegisterViewModel invalidFormatUsername expectedPassword expectedConfirmPassword
+                expectedEmail expectedNickname
 
-        testSelfServiceRegisterViewModel actualViewModel invalidFormatUsername expectedPassword expectedEmail
-            expectedNickname
+        testSelfServiceRegisterViewModel actualViewModel invalidFormatUsername expectedPassword expectedConfirmPassword
+            expectedEmail expectedNickname
 
         testModelState modelState "username" "Username is not in the correct format (lowercase alphanumeric)"
 
@@ -87,13 +96,16 @@ module FoobleModelBinderTests =
     let ``Binding to a self-service register view model, with null password, adds expected model state error`` () =
         let expectedUsername = String.random 32
         let nullPassword:string = null
+        let expectedConfirmPassword = nullPassword
         let expectedEmail = EmailAddress.random 32
         let expectedNickname = String.random 64
 
         let (actualViewModel, modelState) =
-            bindSelfServiceRegisterViewModel expectedUsername nullPassword nullPassword expectedEmail expectedNickname
+            bindSelfServiceRegisterViewModel expectedUsername nullPassword expectedConfirmPassword expectedEmail
+                expectedNickname
 
-        testSelfServiceRegisterViewModel actualViewModel expectedUsername String.empty expectedEmail expectedNickname
+        testSelfServiceRegisterViewModel actualViewModel expectedUsername nullPassword expectedConfirmPassword
+            expectedEmail expectedNickname
 
         testModelState modelState "password" "Password is required"
 
@@ -101,14 +113,16 @@ module FoobleModelBinderTests =
     let ``Binding to a self-service register view model, with empty password, adds expected model state error`` () =
         let expectedUsername = String.random 32
         let emptyPassword = String.empty
+        let expectedConfirmPassword = emptyPassword
         let expectedEmail = EmailAddress.random 32
         let expectedNickname = String.random 64
 
         let (actualViewModel, modelState) =
-            bindSelfServiceRegisterViewModel expectedUsername emptyPassword emptyPassword expectedEmail
+            bindSelfServiceRegisterViewModel expectedUsername emptyPassword expectedConfirmPassword expectedEmail
                 expectedNickname
 
-        testSelfServiceRegisterViewModel actualViewModel expectedUsername String.empty expectedEmail expectedNickname
+        testSelfServiceRegisterViewModel actualViewModel expectedUsername emptyPassword expectedConfirmPassword
+            expectedEmail expectedNickname
 
         testModelState modelState "password" "Password is required"
 
@@ -116,14 +130,16 @@ module FoobleModelBinderTests =
     let ``Binding to a self-service register view model, with password shorter than 8 characters, adds expected model state error`` () =
         let expectedUsername = String.random 32
         let shortPassword = Password.random 7
+        let expectedConfirmPassword = shortPassword
         let expectedEmail = EmailAddress.random 32
         let expectedNickname = String.random 64
 
         let (actualViewModel, modelState) =
-            bindSelfServiceRegisterViewModel expectedUsername shortPassword shortPassword expectedEmail
+            bindSelfServiceRegisterViewModel expectedUsername shortPassword expectedConfirmPassword expectedEmail
                 expectedNickname
 
-        testSelfServiceRegisterViewModel actualViewModel expectedUsername String.empty expectedEmail expectedNickname
+        testSelfServiceRegisterViewModel actualViewModel expectedUsername shortPassword expectedConfirmPassword
+            expectedEmail expectedNickname
 
         testModelState modelState "password" "Password is shorter than 8 characters"
 
@@ -131,13 +147,16 @@ module FoobleModelBinderTests =
     let ``Binding to a self-service register view model, with password longer than 32 characters, adds expected model state error`` () =
         let expectedUsername = String.random 32
         let longPassword = Password.random 33
+        let expectedConfirmPassword = longPassword
         let expectedEmail = EmailAddress.random 32
         let expectedNickname = String.random 64
 
         let (actualViewModel, modelState) =
-            bindSelfServiceRegisterViewModel expectedUsername longPassword longPassword expectedEmail expectedNickname
+            bindSelfServiceRegisterViewModel expectedUsername longPassword expectedConfirmPassword expectedEmail
+                expectedNickname
 
-        testSelfServiceRegisterViewModel actualViewModel expectedUsername String.empty expectedEmail expectedNickname
+        testSelfServiceRegisterViewModel actualViewModel expectedUsername longPassword expectedConfirmPassword
+            expectedEmail expectedNickname
 
         testModelState modelState "password" "Password is longer than 32 characters"
 
@@ -145,14 +164,16 @@ module FoobleModelBinderTests =
     let ``Binding to a self-service register view model, with password without digits, adds expected model state error`` () =
         let expectedUsername = String.random 32
         let noDigitsPassword = makeBadPasswordWithoutDigits 32
+        let expectedConfirmPassword = noDigitsPassword
         let expectedEmail = EmailAddress.random 32
         let expectedNickname = String.random 64
 
         let (actualViewModel, modelState) =
-            bindSelfServiceRegisterViewModel expectedUsername noDigitsPassword noDigitsPassword expectedEmail
+            bindSelfServiceRegisterViewModel expectedUsername noDigitsPassword expectedConfirmPassword expectedEmail
                 expectedNickname
 
-        testSelfServiceRegisterViewModel actualViewModel expectedUsername String.empty expectedEmail expectedNickname
+        testSelfServiceRegisterViewModel actualViewModel expectedUsername noDigitsPassword expectedConfirmPassword
+            expectedEmail expectedNickname
 
         testModelState modelState "password" "Password does not contain any numbers"
 
@@ -160,14 +181,16 @@ module FoobleModelBinderTests =
     let ``Binding to a self-service register view model, with password without lower alphas, adds expected model state error`` () =
         let expectedUsername = String.random 32
         let noLowerAlphasPassword = makeBadPasswordWithoutLowerAlphas 32
+        let expectedConfirmPassword = noLowerAlphasPassword
         let expectedEmail = EmailAddress.random 32
         let expectedNickname = String.random 64
 
         let (actualViewModel, modelState) =
-            bindSelfServiceRegisterViewModel expectedUsername noLowerAlphasPassword noLowerAlphasPassword expectedEmail
-                expectedNickname
+            bindSelfServiceRegisterViewModel expectedUsername noLowerAlphasPassword expectedConfirmPassword
+                expectedEmail expectedNickname
 
-        testSelfServiceRegisterViewModel actualViewModel expectedUsername String.empty expectedEmail expectedNickname
+        testSelfServiceRegisterViewModel actualViewModel expectedUsername noLowerAlphasPassword expectedConfirmPassword
+            expectedEmail expectedNickname
 
         testModelState modelState "password" "Password does not contain any lower-case letters"
 
@@ -175,14 +198,16 @@ module FoobleModelBinderTests =
     let ``Binding to a self-service register view model, with password without upper alphas, adds expected model state error`` () =
         let expectedUsername = String.random 32
         let noUpperAlphasPassword = makeBadPasswordWithoutUpperAlphas 32
+        let expectedConfirmPassword = noUpperAlphasPassword
         let expectedEmail = EmailAddress.random 32
         let expectedNickname = String.random 64
 
         let (actualViewModel, modelState) =
-            bindSelfServiceRegisterViewModel expectedUsername noUpperAlphasPassword noUpperAlphasPassword expectedEmail
-                expectedNickname
+            bindSelfServiceRegisterViewModel expectedUsername noUpperAlphasPassword expectedConfirmPassword
+                expectedEmail expectedNickname
 
-        testSelfServiceRegisterViewModel actualViewModel expectedUsername String.empty expectedEmail expectedNickname
+        testSelfServiceRegisterViewModel actualViewModel expectedUsername noUpperAlphasPassword expectedConfirmPassword
+            expectedEmail expectedNickname
 
         testModelState modelState "password" "Password does not contain any upper-case letters"
 
@@ -190,14 +215,16 @@ module FoobleModelBinderTests =
     let ``Binding to a self-service register view model, with password without special chars, adds expected model state error`` () =
         let expectedUsername = String.random 32
         let noSpecialCharsPassword = makeBadPasswordWithoutSpecialChars 32
+        let expectedConfirmPassword = noSpecialCharsPassword
         let expectedEmail = EmailAddress.random 32
         let expectedNickname = String.random 64
 
         let (actualViewModel, modelState) =
-            bindSelfServiceRegisterViewModel expectedUsername noSpecialCharsPassword noSpecialCharsPassword
+            bindSelfServiceRegisterViewModel expectedUsername noSpecialCharsPassword expectedConfirmPassword
                 expectedEmail expectedNickname
 
-        testSelfServiceRegisterViewModel actualViewModel expectedUsername String.empty expectedEmail expectedNickname
+        testSelfServiceRegisterViewModel actualViewModel expectedUsername noSpecialCharsPassword
+            expectedConfirmPassword expectedEmail expectedNickname
 
         testModelState modelState "password" "Password does not contain any special characters"
 
@@ -205,29 +232,33 @@ module FoobleModelBinderTests =
     let ``Binding to a self-service register view model, with password without invalid chars, adds expected model state error`` () =
         let expectedUsername = String.random 32
         let invalidCharsPassword = makeBadPasswordWithInvalidChars 32
+        let expectedConfirmPassword = invalidCharsPassword
         let expectedEmail = EmailAddress.random 32
         let expectedNickname = String.random 64
 
         let (actualViewModel, modelState) =
-            bindSelfServiceRegisterViewModel expectedUsername invalidCharsPassword invalidCharsPassword expectedEmail
-                expectedNickname
+            bindSelfServiceRegisterViewModel expectedUsername invalidCharsPassword expectedConfirmPassword
+                expectedEmail expectedNickname
 
-        testSelfServiceRegisterViewModel actualViewModel expectedUsername String.empty expectedEmail expectedNickname
+        testSelfServiceRegisterViewModel actualViewModel expectedUsername invalidCharsPassword expectedConfirmPassword
+            expectedEmail expectedNickname
 
         testModelState modelState "password" "Password contains invalid characters"
 
     [<Test>]
     let ``Binding to a self-service register view model, with non-matching passwords, adds expected model state error`` () =
         let expectedUsername = String.random 32
+        let expectedPassword = Password.random 32
         let nonMatchingConfirmPassword = Password.random 32
         let expectedEmail = EmailAddress.random 32
         let expectedNickname = String.random 64
 
         let (actualViewModel, modelState) =
-            bindSelfServiceRegisterViewModel expectedUsername (Password.random 32) nonMatchingConfirmPassword
-                expectedEmail expectedNickname
+            bindSelfServiceRegisterViewModel expectedUsername expectedPassword nonMatchingConfirmPassword expectedEmail
+                expectedNickname
 
-        testSelfServiceRegisterViewModel actualViewModel expectedUsername String.empty expectedEmail expectedNickname
+        testSelfServiceRegisterViewModel actualViewModel expectedUsername expectedPassword nonMatchingConfirmPassword
+            expectedEmail expectedNickname
 
         testModelState modelState "confirmPassword" "Passwords do not match"
 
@@ -235,14 +266,16 @@ module FoobleModelBinderTests =
     let ``Binding to a self-service register view model, with null email, adds expected model state error`` () =
         let expectedUsername = String.random 32
         let expectedPassword = Password.random 32
+        let expectedConfirmPassword = expectedPassword
         let nullEmail:string = null
         let expectedNickname = String.random 64
 
         let (actualViewModel, modelState) =
-            bindSelfServiceRegisterViewModel expectedUsername expectedPassword expectedPassword nullEmail
+            bindSelfServiceRegisterViewModel expectedUsername expectedPassword expectedConfirmPassword nullEmail
                 expectedNickname
 
-        testSelfServiceRegisterViewModel actualViewModel expectedUsername expectedPassword nullEmail expectedNickname
+        testSelfServiceRegisterViewModel actualViewModel expectedUsername expectedPassword expectedConfirmPassword
+            nullEmail expectedNickname
 
         testModelState modelState "email" "Email is required"
 
@@ -250,14 +283,16 @@ module FoobleModelBinderTests =
     let ``Binding to a self-service register view model, with empty email, adds expected model state error`` () =
         let expectedUsername = String.random 32
         let expectedPassword = Password.random 32
+        let expectedConfirmPassword = expectedPassword
         let emptyEmail = String.empty
         let expectedNickname = String.random 64
 
         let (actualViewModel, modelState) =
-            bindSelfServiceRegisterViewModel expectedUsername expectedPassword expectedPassword emptyEmail
+            bindSelfServiceRegisterViewModel expectedUsername expectedPassword expectedConfirmPassword emptyEmail
                 expectedNickname
 
-        testSelfServiceRegisterViewModel actualViewModel expectedUsername expectedPassword emptyEmail expectedNickname
+        testSelfServiceRegisterViewModel actualViewModel expectedUsername expectedPassword expectedConfirmPassword
+            emptyEmail expectedNickname
 
         testModelState modelState "email" "Email is required"
 
@@ -265,14 +300,16 @@ module FoobleModelBinderTests =
     let ``Binding to a self-service register view model, with email longer than 254 characters, adds expected model state error`` () =
         let expectedUsername = String.random 32
         let expectedPassword = Password.random 32
+        let expectedConfirmPassword = expectedPassword
         let longEmail = String.random 255
         let expectedNickname = String.random 64
 
         let (actualViewModel, modelState) =
-            bindSelfServiceRegisterViewModel expectedUsername expectedPassword expectedPassword longEmail
+            bindSelfServiceRegisterViewModel expectedUsername expectedPassword expectedConfirmPassword longEmail
                 expectedNickname
 
-        testSelfServiceRegisterViewModel actualViewModel expectedUsername expectedPassword longEmail expectedNickname
+        testSelfServiceRegisterViewModel actualViewModel expectedUsername expectedPassword expectedConfirmPassword
+            longEmail expectedNickname
 
         testModelState modelState "email" "Email is longer than 254 characters"
 
@@ -280,15 +317,16 @@ module FoobleModelBinderTests =
     let ``Binding to a self-service register view model, with email in invalid format, adds expected model state error`` () =
         let expectedUsername = String.random 32
         let expectedPassword = Password.random 32
+        let expectedConfirmPassword = expectedPassword
         let invalidFormatEmail = String.random 64
         let expectedNickname = String.random 64
 
         let (actualViewModel, modelState) =
-            bindSelfServiceRegisterViewModel expectedUsername expectedPassword expectedPassword invalidFormatEmail
+            bindSelfServiceRegisterViewModel expectedUsername expectedPassword expectedConfirmPassword invalidFormatEmail
                 expectedNickname
 
-        testSelfServiceRegisterViewModel actualViewModel expectedUsername expectedPassword invalidFormatEmail
-            expectedNickname
+        testSelfServiceRegisterViewModel actualViewModel expectedUsername expectedPassword expectedConfirmPassword
+            invalidFormatEmail expectedNickname
 
         testModelState modelState "email" "Email is not in the correct format"
 
@@ -296,14 +334,16 @@ module FoobleModelBinderTests =
     let ``Binding to a self-service register view model, with null nickname, adds expected model state error`` () =
         let expectedUsername = String.random 32
         let expectedPassword = Password.random 32
+        let expectedConfirmPassword = expectedPassword
         let expectedEmail = EmailAddress.random 32
         let nullNickname:string = null
 
         let (actualViewModel, modelState) =
-            bindSelfServiceRegisterViewModel expectedUsername expectedPassword expectedPassword expectedEmail
+            bindSelfServiceRegisterViewModel expectedUsername expectedPassword expectedConfirmPassword expectedEmail
                 nullNickname
 
-        testSelfServiceRegisterViewModel actualViewModel expectedUsername expectedPassword expectedEmail nullNickname
+        testSelfServiceRegisterViewModel actualViewModel expectedUsername expectedPassword expectedConfirmPassword
+            expectedEmail nullNickname
 
         testModelState modelState "nickname" "Nickname is required"
 
@@ -311,14 +351,16 @@ module FoobleModelBinderTests =
     let ``Binding to a self-service register view model, with empty nickname, adds expected model state error`` () =
         let expectedUsername = String.random 32
         let expectedPassword = Password.random 32
+        let expectedConfirmPassword = expectedPassword
         let expectedEmail = EmailAddress.random 32
         let emptyNickname = String.empty
 
         let (actualViewModel, modelState) =
-            bindSelfServiceRegisterViewModel expectedUsername expectedPassword expectedPassword expectedEmail
+            bindSelfServiceRegisterViewModel expectedUsername expectedPassword expectedConfirmPassword expectedEmail
                 emptyNickname
 
-        testSelfServiceRegisterViewModel actualViewModel expectedUsername expectedPassword expectedEmail emptyNickname
+        testSelfServiceRegisterViewModel actualViewModel expectedUsername expectedPassword expectedConfirmPassword
+            expectedEmail emptyNickname
 
         testModelState modelState "nickname" "Nickname is required"
 
@@ -326,14 +368,16 @@ module FoobleModelBinderTests =
     let ``Binding to a self-service register view model, with nickname longer than 64 characters, adds expected model state error`` () =
         let expectedUsername = String.random 32
         let expectedPassword = Password.random 32
+        let expectedConfirmPassword = expectedPassword
         let expectedEmail = EmailAddress.random 32
         let longNickname = String.random 65
 
         let (actualViewModel, modelState) =
-            bindSelfServiceRegisterViewModel expectedUsername expectedPassword expectedPassword expectedEmail
+            bindSelfServiceRegisterViewModel expectedUsername expectedPassword expectedConfirmPassword expectedEmail
                 longNickname
 
-        testSelfServiceRegisterViewModel actualViewModel expectedUsername expectedPassword expectedEmail longNickname
+        testSelfServiceRegisterViewModel actualViewModel expectedUsername expectedPassword expectedConfirmPassword
+            expectedEmail longNickname
 
         testModelState modelState "nickname" "Nickname is longer than 64 characters"
 
@@ -341,14 +385,15 @@ module FoobleModelBinderTests =
     let ``Binding to a self-service register view model, with valid parameters, adds no model state errors`` () =
         let expectedUsername = String.random 32
         let expectedPassword = Password.random 32
+        let expectedConfirmPassword = expectedPassword
         let expectedEmail = EmailAddress.random 32
         let expectedNickname = String.random 64
 
         let (actualViewModel, modelState) =
-            bindSelfServiceRegisterViewModel expectedUsername expectedPassword expectedPassword expectedEmail
+            bindSelfServiceRegisterViewModel expectedUsername expectedPassword expectedConfirmPassword expectedEmail
                 expectedNickname
 
-        testSelfServiceRegisterViewModel actualViewModel expectedUsername expectedPassword expectedEmail
-            expectedNickname
+        testSelfServiceRegisterViewModel actualViewModel expectedUsername expectedPassword expectedConfirmPassword
+            expectedEmail expectedNickname
 
         modelState.IsValid =! true

@@ -30,5 +30,5 @@ type PersistenceRegistrations =
         ignore (builder.Register(fun _ ->
             MemberDataFactory(fun id username passwordData email nickname ->
                 MemberData(Id = id, Username = username, PasswordData = passwordData, Email = email,
-                    Nickname = nickname, Registered = DateTime.Now, PasswordChanged = DateTime.Now)
+                    Nickname = nickname, Registered = DateTime.UtcNow, PasswordChanged = DateTime.UtcNow)
                 |> wrapMemberData)))

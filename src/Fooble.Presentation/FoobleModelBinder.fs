@@ -13,6 +13,25 @@ type FoobleModelBinder() =
 
         match bindingContext.ModelType with
 
+        | x when x = typeof<ISelfServiceChangePasswordViewModel> ->
+              let form = controllerContext.HttpContext.Request.Form
+
+              let mutable currentPassword = form.Get("currentPassword")
+              let mutable newPassword = form.Get("newPassword")
+              let mutable confirmPassword = form.Get("confirmPassword")
+
+              let modelState = bindingContext.ModelState
+
+              match Member.validatePassword currentPassword with
+              | y when y.IsInvalid -> modelState.AddModelError(y.ParamName, y.Message)
+              | _ -> ()
+
+              match Member.validatePasswords newPassword confirmPassword with
+              | y when y.IsInvalid -> modelState.AddModelError(y.ParamName, y.Message)
+              | _ -> ()
+              
+              box (SelfServiceChangePasswordViewModel.make currentPassword newPassword confirmPassword)
+
         | x when x = typeof<ISelfServiceRegisterViewModel> ->
               let form = controllerContext.HttpContext.Request.Form
 
@@ -29,10 +48,7 @@ type FoobleModelBinder() =
               | _ -> ()
 
               match Member.validatePasswords password confirmPassword with
-              | y when y.IsInvalid ->
-                    modelState.AddModelError(y.ParamName, y.Message)
-                    password <- String.empty
-                    confirmPassword <- String.empty
+              | y when y.IsInvalid -> modelState.AddModelError(y.ParamName, y.Message)
               | _ -> ()
 
               match Member.validateEmail email with

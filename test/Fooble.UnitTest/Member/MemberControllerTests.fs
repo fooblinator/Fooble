@@ -33,12 +33,12 @@ module MemberControllerTests =
         let expectedUsername = String.random 32
         let expectedEmail = EmailAddress.random 32
         let expectedNickname = String.random 64
-        let expectedRegistered = DateTime.Now
-        let expectedPasswordChanged = DateTime.Now
+        let expectedRegistered = DateTime.UtcNow
+        let expectedPasswordChanged = DateTime.UtcNow
 
         let queryResult =
-            makeTestMemberDetailReadModel matchingId expectedUsername expectedEmail expectedNickname DateTime.Now
-                DateTime.Now
+            makeTestMemberDetailReadModel matchingId expectedUsername expectedEmail expectedNickname DateTime.UtcNow
+                DateTime.UtcNow
             |> MemberDetailQuery.makeSuccessResult
         let mediatorMock = Mock<IMediator>()
         mediatorMock.SetupFunc(fun x -> x.Send(any ())).Returns(queryResult).Verifiable()

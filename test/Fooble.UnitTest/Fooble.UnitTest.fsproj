@@ -62,6 +62,8 @@
       <Link>MemberHelpers.fs</Link>
     </Compile>
     <Compile Include="UnitTestHelpers.fs" />
+    <Compile Include="FoobleModelBinder\BindSelfServiceChangePasswordViewModel.fs" />
+    <Compile Include="FoobleModelBinder\BindSelfServiceRegisterViewModel.fs" />
     <Compile Include="Member\MemberControllerTests.fs" />
     <Compile Include="Member\MemberTests.fs" />
     <Compile Include="MemberDetail\MemberDetailExtensionsTests.fs" />
@@ -85,9 +87,13 @@
     <Compile Include="SelfServiceRegister\SelfServiceRegisterViewModelTests.fs" />
     <Compile Include="Validation\ValidationExtensionsTests.fs" />
     <Compile Include="Validation\ValidationResultTests.fs" />
-    <Compile Include="FoobleModelBinderTests.fs" />
     <Content Include="App.config" />
     <Content Include="packages.config" />
+    <Compile Include="SelfServiceChangePassword\SelfServiceChangePasswordCommandHandlerTests.fs" />
+    <Compile Include="SelfServiceChangePassword\SelfServiceChangePasswordCommandResultTests.fs" />
+    <Compile Include="SelfServiceChangePassword\SelfServiceChangePasswordCommandTests.fs" />
+    <Compile Include="SelfServiceChangePassword\SelfServiceChangePasswordExtensionsTests.fs" />
+    <Compile Include="SelfServiceChangePassword\SelfServiceChangePasswordViewModelTests.fs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\Fooble.Persistence\Fooble.Persistence.fsproj">

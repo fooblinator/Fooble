@@ -115,3 +115,18 @@ module SelfServiceRegisterExtensions =
         |> validate viewModel "result" |> enforce
 
         SelfServiceRegisterCommand.make id viewModel.Username viewModel.Password viewModel.Email viewModel.Nickname
+
+    /// <summary>
+    /// Constructs a self-service register view model without passwords from an existing self-service register view
+    /// model.
+    /// </summary>
+    /// <param name="viewModel">The self-service register view model to extend.</param>
+    [<Extension>]
+    [<CompiledName("Clean")>]
+    let clean (viewModel:ISelfServiceRegisterViewModel) =
+
+        [ (box >> isNotNull), "View model is required" ]
+        |> validate viewModel "result" |> enforce
+
+        SelfServiceRegisterViewModel.make viewModel.Username String.empty String.empty viewModel.Email
+            viewModel.Nickname

@@ -35,6 +35,7 @@ type IFoobleContext =
     /// Retrieves the member data matching the specified id from the data store.
     /// </summary>
     /// <param name="id">The id of the member to retrieve.</param>
+    /// <remarks>Returns none if no matching member id was found.</remarks>
     abstract GetMember : id:Guid -> IMemberData option
 
     /// Retrieves all of the member data from the data store.

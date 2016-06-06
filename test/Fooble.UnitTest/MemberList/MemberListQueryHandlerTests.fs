@@ -33,7 +33,7 @@ module MemberListQueryHandlerTests =
         let members =
             List.init 5 <| fun _ ->
                 let passwordData = Crypto.hash (Password.random 32) 100
-                makeTestMemberData (Guid.random ()) (String.random 32) passwordData (EmailAddress.random 32)
+                makeTestMemberData2 (Guid.random ()) (String.random 32) passwordData (EmailAddress.random 32)
                     (String.random 64)
         let contextMock = Mock<IFoobleContext>()
         contextMock.SetupFunc(fun x -> x.GetMembers()).Returns(members).Verifiable()

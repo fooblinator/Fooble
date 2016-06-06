@@ -85,7 +85,26 @@ type IMemberListReadModel =
     abstract Members:seq<IMemberListItemReadModel>
 
 
-/// Contains a potential member's detailed information to be submitted for self-service registration.
+/// Contains a member's password change information to be submitted.
+type ISelfServiceChangePasswordViewModel =
+
+    /// The current password of the member.
+    [<DataType(DataType.Password)>]
+    [<DisplayName("Current Password")>]
+    abstract CurrentPassword:string with get
+
+    /// The new password of the member.
+    [<DataType(DataType.Password)>]
+    [<DisplayName("New Password")>]
+    abstract NewPassword:string with get
+
+    /// The confirm password of the member.
+    [<DataType(DataType.Password)>]
+    [<DisplayName("Confirm Password")>]
+    abstract ConfirmPassword:string with get
+
+
+/// Contains a potential member's detailed information to be submitted.
 type ISelfServiceRegisterViewModel =
 
     /// The username of the member.

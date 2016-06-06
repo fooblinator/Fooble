@@ -15,7 +15,7 @@ module MemberDetailReadModelTests =
 
         let readModel =
             makeTestMemberDetailReadModel expectedId (String.random 32) (EmailAddress.random 32) (String.random 64)
-                DateTime.Now DateTime.Now
+                DateTime.UtcNow DateTime.UtcNow
 
         readModel.Id =! expectedId
 
@@ -25,7 +25,7 @@ module MemberDetailReadModelTests =
 
         let readModel =
             makeTestMemberDetailReadModel (Guid.random ()) expectedUsername (EmailAddress.random 32) (String.random 64)
-                DateTime.Now DateTime.Now
+                DateTime.UtcNow DateTime.UtcNow
 
         readModel.Username =! expectedUsername
 
@@ -35,7 +35,7 @@ module MemberDetailReadModelTests =
 
         let readModel =
             makeTestMemberDetailReadModel (Guid.random ()) (String.random 32) expectedEmail (String.random 64)
-                DateTime.Now DateTime.Now
+                DateTime.UtcNow DateTime.UtcNow
 
         readModel.Email =! expectedEmail
 
@@ -45,26 +45,26 @@ module MemberDetailReadModelTests =
 
         let readModel =
             makeTestMemberDetailReadModel (Guid.random ()) (String.random 32) (EmailAddress.random 32) expectedNickname
-                DateTime.Now DateTime.Now
+                DateTime.UtcNow DateTime.UtcNow
 
         readModel.Nickname =! expectedNickname
 
     [<Test>]
     let ``Calling registered, returns expected registered`` () =
-        let expectedRegistered = DateTime.Now
+        let expectedRegistered = DateTime.UtcNow
 
         let readModel =
             makeTestMemberDetailReadModel (Guid.random ()) (String.random 32) (EmailAddress.random 32) (String.random 64)
-                expectedRegistered DateTime.Now
+                expectedRegistered DateTime.UtcNow
 
         readModel.Registered =! expectedRegistered
 
     [<Test>]
     let ``Calling password changed, returns expected password changed`` () =
-        let expectedPasswordChanged = DateTime.Now
+        let expectedPasswordChanged = DateTime.UtcNow
 
         let readModel =
             makeTestMemberDetailReadModel (Guid.random ()) (String.random 32) (EmailAddress.random 32) (String.random 64)
-                DateTime.Now expectedPasswordChanged
+                DateTime.UtcNow expectedPasswordChanged
 
         readModel.PasswordChanged =! expectedPasswordChanged

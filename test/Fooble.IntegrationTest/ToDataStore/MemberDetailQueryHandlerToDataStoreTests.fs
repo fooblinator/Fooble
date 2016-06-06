@@ -46,8 +46,8 @@ module MemberDetailQueryHandlerToDataStoreTests =
         let expectedUsername = String.random 32
         let expectedEmail = EmailAddress.random 32
         let expectedNickname = String.random 64
-        let expectedRegistered = DateTime.Now
-        let expectedPasswordChanged = DateTime.Now
+        let expectedRegistered = DateTime.UtcNow
+        let expectedPasswordChanged = DateTime.UtcNow
 
         let connectionString = Settings.ConnectionStrings.FoobleContext
         let builder = ContainerBuilder()

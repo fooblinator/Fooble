@@ -66,15 +66,6 @@ module SelfServiceRegisterExtensionsTests =
         testMessageDisplayReadModel actualReadModel expectedHeading expectedSubHeading expectedStatusCode
             expectedSeverity expectedMessage
 
-//    [<Test>]
-//    let ``Calling to command, as null self-service register view model, raises expected exception`` () =
-//        let expectedParamName = "viewModel"
-//        let expectedMessage = "View model is required"
-//
-//        raisesWith<ArgumentException>
-//            <@ SelfServiceRegisterExtensions.toCommand null (Guid.random ()) @>
-//            (fun x -> <@ x.ParamName = expectedParamName && (fixInvalidArgMessage x.Message) = expectedMessage @>)
-
     [<Test>]
     let ``Calling to command, as self-service register view model, returns expected command`` () =
         let expectedId = Guid.random ()
@@ -90,4 +81,21 @@ module SelfServiceRegisterExtensionsTests =
         let actualCommand = SelfServiceRegisterExtensions.toCommand viewModel expectedId
 
         testSelfServiceRegisterCommand actualCommand expectedId expectedUsername expectedPassword expectedEmail
+            expectedNickname
+
+    [<Test>]
+    let ``Calling clean, as self-service register view model, returns expected view model`` () =
+        let expectedUsername = String.random 32
+        let expectedPassword = Password.random 32
+        let expectedConfirmPassword = expectedPassword
+        let expectedEmail = EmailAddress.random 32
+        let expectedNickname = String.random 64
+
+        let viewModel =
+            bindSelfServiceRegisterViewModel2 expectedUsername expectedPassword expectedConfirmPassword expectedEmail
+                expectedNickname
+
+        let actualViewModel = SelfServiceRegisterExtensions.clean viewModel
+
+        testSelfServiceRegisterViewModel actualViewModel expectedUsername String.empty String.empty expectedEmail
             expectedNickname

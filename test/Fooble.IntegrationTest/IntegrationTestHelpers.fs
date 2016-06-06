@@ -10,13 +10,11 @@ open Moq.FSharp.Extensions
 open Swensen.Unquote
 open System
 open System.Collections.Specialized
-open System.Diagnostics
 open System.Web
 open System.Web.Mvc
 
 type internal Settings = AppSettings<"App.config">
 
-[<DebuggerStepThrough>]
 [<AutoOpen>]
 module internal IntegrationTestHelpers =
 
@@ -41,6 +39,13 @@ module internal IntegrationTestHelpers =
 
         FoobleModelBinder().BindModel(controllerContext, bindingContext) :?> 'T
 
+    let bindSelfServiceChangePasswordViewModel currentPassword newPassword confirmPassword =
+        Map.empty
+            .Add("CurrentPassword", currentPassword)
+            .Add("NewPassword", newPassword)
+            .Add("ConfirmPassword", confirmPassword)
+        |> bindModel<ISelfServiceChangePasswordViewModel>
+
     let bindSelfServiceRegisterViewModel username password confirmPassword email nickname =
         Map.empty
             .Add("Username", username)
@@ -55,7 +60,7 @@ module internal IntegrationTestHelpers =
         | Some x -> KeyGenerator(fun () -> x)
         | None -> KeyGenerator(fun () -> Guid.random ())
 
-    let makeTestMemberData id username passwordData email nickname =
+    let makeTestMemberData id username passwordData email nickname registered passwordChanged =
         assertMemberId id
         assertMemberUsername username
         assertMemberPasswordData passwordData
@@ -67,8 +72,8 @@ module internal IntegrationTestHelpers =
         let passwordDataRef = ref passwordData
         let emailRef = ref email
         let nicknameRef = ref nickname
-        let registeredRef = ref DateTime.Now
-        let passwordChangedRef = ref DateTime.Now
+        let registeredRef = ref registered
+        let passwordChangedRef = ref passwordChanged
 
         { new IMemberData with
 
@@ -99,6 +104,9 @@ module internal IntegrationTestHelpers =
               member this.PasswordChanged
                   with get() = !passwordChangedRef
                   and set(x) = passwordChangedRef := x }
+
+    let makeTestMemberData2 id username passwordData email nickname =
+        makeTestMemberData id username passwordData email nickname DateTime.UtcNow DateTime.UtcNow
 
     let testMessageDisplayReadModel (actual:IMessageDisplayReadModel) expectedHeading expectedSubHeading
         expectedStatusCode expectedSeverity expectedMessage =
@@ -131,11 +139,19 @@ module internal IntegrationTestHelpers =
                 existingMember.Id = actualMember.Id && existingMember.Nickname = actualMember.Nickname) expectedMembers
             findResult.IsSome =! true
 
-    let testSelfServiceRegisterViewModel (actual:ISelfServiceRegisterViewModel) expectedUsername
-        expectedPassword expectedEmail expectedNickname =
+    let testSelfServiceChangePasswordViewModel (actual:ISelfServiceChangePasswordViewModel) expectedCurrentPassword
+        expectedNewPassword expectedConfirmPassword =
+
+        actual.CurrentPassword =! expectedCurrentPassword
+        actual.NewPassword =! expectedNewPassword
+        actual.ConfirmPassword =! expectedConfirmPassword
+
+    let testSelfServiceRegisterViewModel (actual:ISelfServiceRegisterViewModel) expectedUsername expectedPassword
+        expectedConfirmPassword expectedEmail expectedNickname =
 
         actual.Username =! expectedUsername
         actual.Password =! expectedPassword
+        actual.ConfirmPassword =! expectedConfirmPassword
         actual.Email =! expectedEmail
         actual.Nickname =! expectedNickname
 

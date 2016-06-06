@@ -9,11 +9,9 @@ open Moq.FSharp.Extensions
 open Swensen.Unquote
 open System
 open System.Collections.Specialized
-open System.Diagnostics
 open System.Web
 open System.Web.Mvc
 
-[<DebuggerStepThrough>]
 [<AutoOpen>]
 module internal UnitTestHelpers =
 
@@ -37,6 +35,16 @@ module internal UnitTestHelpers =
         controllerContext.HttpContext <- httpContextMock.Object
 
         (FoobleModelBinder().BindModel(controllerContext, bindingContext) :?> 'T, bindingContext.ModelState)
+
+    let bindSelfServiceChangePasswordViewModel currentPassword newPassword confirmPassword =
+        Map.empty
+            .Add("CurrentPassword", currentPassword)
+            .Add("NewPassword", newPassword)
+            .Add("ConfirmPassword", confirmPassword)
+        |> bindModel<ISelfServiceChangePasswordViewModel>
+
+    let bindSelfServiceChangePasswordViewModel2 currentPassword newPassword confirmPassword =
+        fst (bindSelfServiceChangePasswordViewModel currentPassword newPassword confirmPassword)
 
     let bindSelfServiceRegisterViewModel username password confirmPassword email nickname =
         Map.empty
@@ -113,7 +121,7 @@ module internal UnitTestHelpers =
         | Some x -> KeyGenerator(fun () -> x)
         | None -> KeyGenerator(fun () -> Guid.random ())
 
-    let makeTestMemberData id username passwordData email nickname =
+    let makeTestMemberData id username passwordData email nickname registered passwordChanged =
         assertMemberId id
         assertMemberUsername username
         assertMemberPasswordData passwordData
@@ -125,8 +133,8 @@ module internal UnitTestHelpers =
         let passwordDataRef = ref passwordData
         let emailRef = ref email
         let nicknameRef = ref nickname
-        let registeredRef = ref DateTime.Now
-        let passwordChangedRef = ref DateTime.Now
+        let registeredRef = ref registered
+        let passwordChangedRef = ref passwordChanged
 
         { new IMemberData with
 
@@ -158,8 +166,11 @@ module internal UnitTestHelpers =
                   with get() = !passwordChangedRef
                   and set(x) = passwordChangedRef := x }
 
+    let makeTestMemberData2 id username passwordData email nickname =
+        makeTestMemberData id username passwordData email nickname DateTime.UtcNow DateTime.UtcNow
+
     let makeTestMemberDataFactory () =
-        MemberDataFactory(makeTestMemberData)
+        MemberDataFactory(makeTestMemberData2)
 
     let makeTestMemberDetailReadModel id username email nickname registered passwordChanged =
         assertMemberId id
@@ -237,6 +248,20 @@ module internal UnitTestHelpers =
                 existingMember.Id = actualMember.Id && existingMember.Nickname = actualMember.Nickname) expectedMembers
             findResult.IsSome =! true
 
+    let testSelfServiceChangePasswordCommand (actual:ISelfServiceChangePasswordCommand) expectedId
+        expectedCurrentPassword expectedNewPassword =
+
+        actual.Id =! expectedId
+        actual.CurrentPassword =! expectedCurrentPassword
+        actual.NewPassword =! expectedNewPassword
+
+    let testSelfServiceChangePasswordViewModel (actual:ISelfServiceChangePasswordViewModel) expectedCurrentPassword
+        expectedNewPassword expectedConfirmPassword =
+
+        actual.CurrentPassword =! expectedCurrentPassword
+        actual.NewPassword =! expectedNewPassword
+        actual.ConfirmPassword =! expectedConfirmPassword
+
     let testSelfServiceRegisterCommand (actual:ISelfServiceRegisterCommand) expectedId expectedUsername
         expectedPassword expectedEmail expectedNickname =
 
@@ -246,11 +271,12 @@ module internal UnitTestHelpers =
         actual.Email =! expectedEmail
         actual.Nickname =! expectedNickname
 
-    let testSelfServiceRegisterViewModel (actual:ISelfServiceRegisterViewModel) expectedUsername
-        expectedPassword expectedEmail expectedNickname =
+    let testSelfServiceRegisterViewModel (actual:ISelfServiceRegisterViewModel) expectedUsername expectedPassword
+        expectedConfirmPassword expectedEmail expectedNickname =
 
         actual.Username =! expectedUsername
         actual.Password =! expectedPassword
+        actual.ConfirmPassword =! expectedConfirmPassword
         actual.Email =! expectedEmail
         actual.Nickname =! expectedNickname
 

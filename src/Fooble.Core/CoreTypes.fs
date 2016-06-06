@@ -69,7 +69,36 @@ type IMemberListQuery =
 
 
 /// <summary>
-/// Represents the status of a self-service registration command.
+/// Represents the status of a self-service change password command.
+/// </summary>
+/// <remarks>The result is only one of "success", "not found" or "invalid".</remarks>
+type ISelfServiceChangePasswordCommandResult =
+    /// Whether the result is "success" (or not).
+    abstract IsSuccess:bool with get
+
+    /// Whether the result is "not found" (or not).
+    abstract IsNotFound:bool with get
+
+    /// Whether the result is "invalid" (or not).
+    abstract IsInvalid:bool with get
+
+
+/// Represents the self-service change password command.
+type ISelfServiceChangePasswordCommand =
+    inherit IRequest<ISelfServiceChangePasswordCommandResult>
+
+    /// The id that represents the member.
+    abstract Id:Guid with get
+
+    /// The current password of the member.
+    abstract CurrentPassword:string with get
+
+    /// The new password of the member.
+    abstract NewPassword:string with get
+
+
+/// <summary>
+/// Represents the status of a self-service register command.
 /// </summary>
 /// <remarks>The result is only one of "success", "username unavailable" or "email unavailable".</remarks>
 type ISelfServiceRegisterCommandResult =
@@ -83,7 +112,7 @@ type ISelfServiceRegisterCommandResult =
     abstract IsEmailUnavailable:bool with get
 
 
-/// Represents the self-service registration command, and contains the potential member's detailed information.
+/// Represents the self-service register command.
 type ISelfServiceRegisterCommand =
     inherit IRequest<ISelfServiceRegisterCommandResult>
 

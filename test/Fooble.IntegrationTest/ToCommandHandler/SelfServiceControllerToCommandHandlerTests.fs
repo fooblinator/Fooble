@@ -32,6 +32,7 @@ module SelfServiceControllerToCommandHandlerTests =
     let ``Calling register post, with existing username in data store, returns expected result`` () =
         let existingUsername = String.random 32
         let expectedPassword = Password.random 32
+        let expectedConfirmPassword = expectedPassword
         let expectedEmail = EmailAddress.random 32
         let expectedNickname = String.random 64
 
@@ -48,7 +49,7 @@ module SelfServiceControllerToCommandHandlerTests =
         let controller = new SelfServiceController(mediator, keyGenerator)
 
         let viewModel =
-            bindSelfServiceRegisterViewModel existingUsername expectedPassword expectedPassword expectedEmail
+            bindSelfServiceRegisterViewModel existingUsername expectedPassword expectedConfirmPassword expectedEmail
                 expectedNickname
         let result = controller.Register viewModel
 
@@ -64,7 +65,7 @@ module SelfServiceControllerToCommandHandlerTests =
         viewResult.Model :? ISelfServiceRegisterViewModel =! true
 
         let actualViewModel = viewResult.Model :?> ISelfServiceRegisterViewModel
-        testSelfServiceRegisterViewModel actualViewModel existingUsername expectedPassword expectedEmail
+        testSelfServiceRegisterViewModel actualViewModel existingUsername String.empty String.empty expectedEmail
             expectedNickname
 
         let actualModelState = viewResult.ViewData.ModelState
@@ -74,6 +75,7 @@ module SelfServiceControllerToCommandHandlerTests =
     let ``Calling register post, with existing email in data store, returns expected result`` () =
         let expectedUsername = String.random 32
         let expectedPassword = Password.random 32
+        let expectedConfirmPassword = expectedPassword
         let existingEmail = EmailAddress.random 32
         let expectedNickname = String.random 64
 
@@ -90,7 +92,7 @@ module SelfServiceControllerToCommandHandlerTests =
         let controller = new SelfServiceController(mediator, keyGenerator)
 
         let viewModel =
-            bindSelfServiceRegisterViewModel expectedUsername expectedPassword expectedPassword existingEmail
+            bindSelfServiceRegisterViewModel expectedUsername expectedPassword expectedConfirmPassword existingEmail
                 expectedNickname
         let result = controller.Register viewModel
 
@@ -106,7 +108,7 @@ module SelfServiceControllerToCommandHandlerTests =
         viewResult.Model :? ISelfServiceRegisterViewModel =! true
 
         let actualViewModel = viewResult.Model :?> ISelfServiceRegisterViewModel
-        testSelfServiceRegisterViewModel actualViewModel expectedUsername expectedPassword existingEmail
+        testSelfServiceRegisterViewModel actualViewModel expectedUsername String.empty String.empty existingEmail
             expectedNickname
 
         let actualModelState = viewResult.ViewData.ModelState

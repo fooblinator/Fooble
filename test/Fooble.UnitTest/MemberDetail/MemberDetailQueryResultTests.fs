@@ -20,7 +20,7 @@ module MemberDetailQueryResultTests =
     let ``Calling read model, with success query result, returns expected read model`` () =
         let expectedReadModel =
             makeTestMemberDetailReadModel (Guid.random ()) (String.random 32) (EmailAddress.random 32)
-                (String.random 64) DateTime.Now DateTime.Now
+                (String.random 64) DateTime.UtcNow DateTime.UtcNow
 
         let queryResult = MemberDetailQuery.makeSuccessResult expectedReadModel
 
@@ -30,7 +30,7 @@ module MemberDetailQueryResultTests =
     let ``Calling is success, with success query result, returns true`` () =
         let readModel =
             makeTestMemberDetailReadModel (Guid.random ()) (String.random 32) (EmailAddress.random 32)
-                (String.random 64) DateTime.Now DateTime.Now
+                (String.random 64) DateTime.UtcNow DateTime.UtcNow
         let queryResult = MemberDetailQuery.makeSuccessResult readModel
 
         queryResult.IsSuccess =! true
@@ -45,7 +45,7 @@ module MemberDetailQueryResultTests =
     let ``Calling is not found, with success query result, returns false`` () =
         let readModel =
             makeTestMemberDetailReadModel (Guid.random ()) (String.random 32) (EmailAddress.random 32)
-                (String.random 64) DateTime.Now DateTime.Now
+                (String.random 64) DateTime.UtcNow DateTime.UtcNow
         let queryResult = MemberDetailQuery.makeSuccessResult readModel
 
         queryResult.IsNotFound =! false

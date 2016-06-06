@@ -72,6 +72,7 @@
     </Compile>
     <Compile Include="MemberDetailQuery.fs" />
     <Compile Include="MemberListQuery.fs" />
+    <Compile Include="SelfServiceChangePasswordCommand.fs" />
     <Compile Include="SelfServiceRegisterCommand.fs" />
     <Compile Include="Infrastructure\Registrations.fs" />
     <Content Include="App.config" />

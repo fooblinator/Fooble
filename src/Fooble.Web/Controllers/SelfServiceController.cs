@@ -35,7 +35,7 @@ namespace Fooble.Web.Controllers
         {
             Debug.Assert(viewModel != null, "View model is required");
 
-            if (!ModelState.IsValid) return View(viewModel);
+            if (!ModelState.IsValid) return View(viewModel.Clean());
 
             var id = _keyGenerator.Invoke();
             var command = viewModel.ToCommand(id);
@@ -45,7 +45,7 @@ namespace Fooble.Web.Controllers
 
             result.AddModelErrorIfNotSuccess(ModelState);
 
-            if (!ModelState.IsValid) return View(viewModel);
+            if (!ModelState.IsValid) return View(viewModel.Clean());
 
             return RedirectToAction("Detail", "Member", new { id = id.ToString() });
         }

@@ -65,6 +65,7 @@
     <Compile Include="ToDataStore\MemberDetailQueryHandlerToDataStoreTests.fs" />
     <Compile Include="ToDataStore\MemberListQueryHandlerToDataStoreTests.fs" />
     <Compile Include="ToDataStore\SelfServiceControllerToDataStoreTests.fs" />
+    <Compile Include="ToDataStore\SelfServiceChangePasswordCommandHandlerToDataStoreTests.fs" />
     <Compile Include="ToDataStore\SelfServiceRegisterCommandHandlerToDataStoreTests.fs" />
     <Compile Include="ToQueryHandler\MemberControllerToQueryHandlerTests.fs" />
     <Compile Include="ToCommandHandler\SelfServiceControllerToCommandHandlerTests.fs" />

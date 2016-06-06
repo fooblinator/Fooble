@@ -16,7 +16,7 @@ module MemberDetailExtensionsTests =
 
         let queryResult =
             makeTestMemberDetailReadModel (Guid.random ()) (String.random 32) (EmailAddress.random 32)
-                (String.random 64) DateTime.Now DateTime.Now
+                (String.random 64) DateTime.UtcNow DateTime.UtcNow
             |> MemberDetailQuery.makeSuccessResult
 
         raisesWith<InvalidOperationException> <@ MemberDetailExtensions.toMessageDisplayReadModel queryResult @>

@@ -35,11 +35,11 @@ module MemberControllerToQueryHandlerTests =
         let expectedUsername = String.random 32
         let expectedEmail = EmailAddress.random 32
         let expectedNickname = String.random 64
-        let expectedRegistered = DateTime.Now
-        let expectedPasswordChanged = DateTime.Now
+        let expectedRegistered = DateTime.UtcNow
+        let expectedPasswordChanged = DateTime.UtcNow
 
         let passwordData = Crypto.hash (Password.random 32) 100
-        let memberData = makeTestMemberData expectedId expectedUsername passwordData expectedEmail expectedNickname
+        let memberData = makeTestMemberData2 expectedId expectedUsername passwordData expectedEmail expectedNickname
         let contextMock = Mock<IFoobleContext>()
         contextMock.SetupFunc(fun x -> x.GetMember(any ())).Returns(Some memberData).Verifiable()
 
@@ -108,7 +108,7 @@ module MemberControllerToQueryHandlerTests =
         let members =
             List.init 5 (fun _ ->
                 let passwordData = Crypto.hash (Password.random 32) 100
-                makeTestMemberData (Guid.random ()) (String.random 32) passwordData (EmailAddress.random 32)
+                makeTestMemberData2 (Guid.random ()) (String.random 32) passwordData (EmailAddress.random 32)
                     (String.random 64))
         let contextMock = Mock<IFoobleContext>()
         contextMock.SetupFunc(fun x -> x.GetMembers()).Returns(members).Verifiable()
