@@ -9,15 +9,11 @@ namespace Fooble.Web
         {
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
 
-            routes.MapRoute("MemberList", "members", new { controller = "member", action = "list" });
+            routes.MapRoute("MemberRegister", "member/register", new { controller = "member", action = "register" });
             routes.MapRoute("MemberDetail", "member/{id}", new { controller = "member", action = "detail" });
+            routes.MapRoute("MemberList", "members", new { controller = "member", action = "list" });
 
             routes.IgnoreRoute("member/{*pathInfo}");
-
-            routes.MapRoute("SelfServiceRegister", "self/register", new { controller = "selfservice", action = "register" });
-
-            routes.IgnoreRoute("self/{*pathInfo}");
-            routes.IgnoreRoute("selfservice/{*pathInfo}");
 
             routes.MapRoute(
                 name: "Default",

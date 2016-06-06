@@ -10,7 +10,7 @@ open MediatR
 module MemberListQuery =
 
     [<DefaultAugmentation(false)>]
-    type private MemberListQueryImplementation =
+    type private MemberListQueryImpl =
         | Query
 
         interface IMemberListQuery
@@ -24,7 +24,7 @@ module MemberListQuery =
 
     [<DefaultAugmentation(false)>]
     [<NoComparison>]
-    type private MemberListQueryResultImplementation =
+    type private MemberListQueryResultImpl =
         | Success of readModel:IMemberListReadModel
         | NotFound
 
@@ -53,7 +53,7 @@ module MemberListQuery =
 
     [<DefaultAugmentation(false)>]
     [<NoComparison>]
-    type private MemberListQueryHandlerImplementation =
+    type private MemberListQueryHandlerImpl =
         | QueryHandler of context:IFoobleContext * itemReadModelFactory:MemberListItemReadModelFactory *
               readModelFactory:MemberListReadModelFactory
 

@@ -39,21 +39,21 @@ module internal IntegrationTestHelpers =
 
         FoobleModelBinder().BindModel(controllerContext, bindingContext) :?> 'T
 
-    let bindSelfServiceChangePasswordViewModel currentPassword newPassword confirmPassword =
+    let bindMemberChangePasswordViewModel currentPassword newPassword confirmPassword =
         Map.empty
             .Add("CurrentPassword", currentPassword)
             .Add("NewPassword", newPassword)
             .Add("ConfirmPassword", confirmPassword)
-        |> bindModel<ISelfServiceChangePasswordViewModel>
+        |> bindModel<IMemberChangePasswordViewModel>
 
-    let bindSelfServiceRegisterViewModel username password confirmPassword email nickname =
+    let bindMemberRegisterViewModel username password confirmPassword email nickname =
         Map.empty
             .Add("Username", username)
             .Add("Password", password)
             .Add("ConfirmPassword", confirmPassword)
             .Add("Email", email)
             .Add("Nickname", nickname)
-        |> bindModel<ISelfServiceRegisterViewModel>
+        |> bindModel<IMemberRegisterViewModel>
 
     let makeTestKeyGenerator key =
         match key with
@@ -139,14 +139,14 @@ module internal IntegrationTestHelpers =
                 existingMember.Id = actualMember.Id && existingMember.Nickname = actualMember.Nickname) expectedMembers
             findResult.IsSome =! true
 
-    let testSelfServiceChangePasswordViewModel (actual:ISelfServiceChangePasswordViewModel) expectedCurrentPassword
+    let testMemberChangePasswordViewModel (actual:IMemberChangePasswordViewModel) expectedCurrentPassword
         expectedNewPassword expectedConfirmPassword =
 
         actual.CurrentPassword =! expectedCurrentPassword
         actual.NewPassword =! expectedNewPassword
         actual.ConfirmPassword =! expectedConfirmPassword
 
-    let testSelfServiceRegisterViewModel (actual:ISelfServiceRegisterViewModel) expectedUsername expectedPassword
+    let testMemberRegisterViewModel (actual:IMemberRegisterViewModel) expectedUsername expectedPassword
         expectedConfirmPassword expectedEmail expectedNickname =
 
         actual.Username =! expectedUsername

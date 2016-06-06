@@ -6,7 +6,7 @@ open Fooble.Common
 module ValidationResult =
 
     [<DefaultAugmentation(false)>]
-    type private ValidationResultImplementation =
+    type private ValidationResultImpl =
         | Valid
         | Invalid of paramName:string * message:string
 

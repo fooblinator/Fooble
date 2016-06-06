@@ -4,19 +4,19 @@ open Autofac
 open Fooble.Common
 open Fooble.Core
 open Fooble.Core.Infrastructure
-open Fooble.IntegrationTest
+open Fooble.Persistence
 open Fooble.Presentation
 open Fooble.Presentation.Infrastructure
-open Fooble.Persistence
-open Fooble.Persistence.Infrastructure
 open Fooble.Web.Controllers
 open MediatR
+open Moq
+open Moq.FSharp.Extensions
 open NUnit.Framework
 open Swensen.Unquote
 open System.Web.Mvc
 
 [<TestFixture>]
-module SelfServiceControllerToDataStoreTests =
+module MemberControllerToCommandHandlerTests =
 
     [<Test>]
     let ``Constructing, with valid parameters, returns expected result`` () =
@@ -26,7 +26,7 @@ module SelfServiceControllerToDataStoreTests =
 
         let mediator = container.Resolve<IMediator>()
         let keyGenerator = container.Resolve<KeyGenerator>()
-        ignore (new SelfServiceController(mediator, keyGenerator))
+        ignore (new MemberController(mediator, keyGenerator))
 
     [<Test>]
     let ``Calling register post, with existing username in data store, returns expected result`` () =
@@ -36,37 +36,24 @@ module SelfServiceControllerToDataStoreTests =
         let expectedEmail = EmailAddress.random 32
         let expectedNickname = String.random 64
 
-        let connectionString = Settings.ConnectionStrings.FoobleContext
+        let contextMock = Mock<IFoobleContext>()
+        contextMock.SetupFunc(fun x -> x.ExistsMemberUsername(any ())).Returns(true).Verifiable()
+
         let builder = ContainerBuilder()
-        ignore (builder.RegisterModule(CoreRegistrations()))
-        ignore (builder.RegisterModule(PersistenceRegistrations(connectionString)))
+        ignore (builder.RegisterModule(CoreRegistrations(contextMock.Object, mock ())))
         ignore (builder.RegisterModule(PresentationRegistrations()))
         use container = builder.Build()
 
-        let context = container.Resolve<IFoobleContext>()
-        let memberDataFactory = container.Resolve<MemberDataFactory>()
         let mediator = container.Resolve<IMediator>()
         let keyGenerator = container.Resolve<KeyGenerator>()
-
-        // remove all existing members from the data store
-        List.iter (fun x -> context.DeleteMember(x)) (context.GetMembers())
-
-        // add matching member to the data store
-        let memberData =
-            let passwordData = Crypto.hash (Password.random 32) 100
-            memberDataFactory.Invoke(Guid.random (), existingUsername, passwordData, EmailAddress.random 32,
-                String.random 64)
-        context.AddMember(memberData)
-
-        // persist changes to the data store
-        context.SaveChanges()
-
-        let controller = new SelfServiceController(mediator, keyGenerator)
+        use controller = new MemberController(mediator, keyGenerator)
 
         let viewModel =
-            bindSelfServiceRegisterViewModel existingUsername expectedPassword expectedConfirmPassword expectedEmail
+            bindMemberRegisterViewModel existingUsername expectedPassword expectedConfirmPassword expectedEmail
                 expectedNickname
         let result = controller.Register viewModel
+
+        contextMock.Verify()
 
         isNull result =! false
         result :? ViewResult =! true
@@ -75,10 +62,10 @@ module SelfServiceControllerToDataStoreTests =
 
         String.isEmpty viewResult.ViewName =! true
         isNull viewResult.Model =! false
-        viewResult.Model :? ISelfServiceRegisterViewModel =! true
+        viewResult.Model :? IMemberRegisterViewModel =! true
 
-        let actualViewModel = viewResult.Model :?> ISelfServiceRegisterViewModel
-        testSelfServiceRegisterViewModel actualViewModel existingUsername String.empty String.empty expectedEmail
+        let actualViewModel = viewResult.Model :?> IMemberRegisterViewModel
+        testMemberRegisterViewModel actualViewModel existingUsername String.empty String.empty expectedEmail
             expectedNickname
 
         let actualModelState = viewResult.ViewData.ModelState
@@ -92,37 +79,24 @@ module SelfServiceControllerToDataStoreTests =
         let existingEmail = EmailAddress.random 32
         let expectedNickname = String.random 64
 
-        let connectionString = Settings.ConnectionStrings.FoobleContext
+        let contextMock = Mock<IFoobleContext>()
+        contextMock.SetupFunc(fun x -> x.ExistsMemberEmail(any ())).Returns(true).Verifiable()
+
         let builder = ContainerBuilder()
-        ignore (builder.RegisterModule(CoreRegistrations()))
-        ignore (builder.RegisterModule(PersistenceRegistrations(connectionString)))
+        ignore (builder.RegisterModule(CoreRegistrations(contextMock.Object, mock ())))
         ignore (builder.RegisterModule(PresentationRegistrations()))
         use container = builder.Build()
 
-        let context = container.Resolve<IFoobleContext>()
-        let memberDataFactory = container.Resolve<MemberDataFactory>()
         let mediator = container.Resolve<IMediator>()
         let keyGenerator = container.Resolve<KeyGenerator>()
-
-        // remove all existing members from the data store
-        List.iter (fun x -> context.DeleteMember(x)) (context.GetMembers())
-
-        // add matching member to the data store
-        let memberData =
-            let passwordData = Crypto.hash (Password.random 32) 100
-            memberDataFactory.Invoke(Guid.random (), String.random 32, passwordData, existingEmail,
-                String.random 64)
-        context.AddMember(memberData)
-
-        // persist changes to the data store
-        context.SaveChanges()
-
-        let controller = new SelfServiceController(mediator, keyGenerator)
+        use controller = new MemberController(mediator, keyGenerator)
 
         let viewModel =
-            bindSelfServiceRegisterViewModel expectedUsername expectedPassword expectedConfirmPassword existingEmail
+            bindMemberRegisterViewModel expectedUsername expectedPassword expectedConfirmPassword existingEmail
                 expectedNickname
         let result = controller.Register viewModel
+
+        contextMock.Verify()
 
         isNull result =! false
         result :? ViewResult =! true
@@ -131,10 +105,10 @@ module SelfServiceControllerToDataStoreTests =
 
         String.isEmpty viewResult.ViewName =! true
         isNull viewResult.Model =! false
-        viewResult.Model :? ISelfServiceRegisterViewModel =! true
+        viewResult.Model :? IMemberRegisterViewModel =! true
 
-        let actualViewModel = viewResult.Model :?> ISelfServiceRegisterViewModel
-        testSelfServiceRegisterViewModel actualViewModel expectedUsername String.empty String.empty existingEmail
+        let actualViewModel = viewResult.Model :?> IMemberRegisterViewModel
+        testMemberRegisterViewModel actualViewModel expectedUsername String.empty String.empty existingEmail
             expectedNickname
 
         let actualModelState = viewResult.ViewData.ModelState
@@ -144,30 +118,26 @@ module SelfServiceControllerToDataStoreTests =
     let ``Calling register post, with no existing username or email in data store, returns expected result`` () =
         let expectedId = Guid.random ()
 
-        let connectionString = Settings.ConnectionStrings.FoobleContext
+        let contextMock = Mock<IFoobleContext>()
+        contextMock.SetupFunc(fun x -> x.ExistsMemberUsername(any ())).Returns(false).Verifiable()
+        contextMock.SetupFunc(fun x -> x.ExistsMemberEmail(any ())).Returns(false).Verifiable()
+
         let builder = ContainerBuilder()
-        ignore (builder.RegisterModule(CoreRegistrations()))
-        ignore (builder.RegisterModule(PersistenceRegistrations(connectionString)))
+        ignore (builder.RegisterModule(CoreRegistrations(contextMock.Object, mock ())))
         ignore (builder.RegisterModule(PresentationRegistrations()))
         use container = builder.Build()
 
-        let context = container.Resolve<IFoobleContext>()
         let mediator = container.Resolve<IMediator>()
         let keyGenerator = makeTestKeyGenerator (Some expectedId)
-
-        // remove all existing members from the data store
-        List.iter (fun x -> context.DeleteMember(x)) (context.GetMembers())
-
-        // persist changes to the data store
-        context.SaveChanges()
-
-        let controller = new SelfServiceController(mediator, keyGenerator)
+        use controller = new MemberController(mediator, keyGenerator)
 
         let password = Password.random 32
         let viewModel =
-            bindSelfServiceRegisterViewModel (String.random 32) password password (EmailAddress.random 32)
+            bindMemberRegisterViewModel (String.random 32) password password (EmailAddress.random 32)
                 (String.random 64)
         let result = controller.Register viewModel
+
+        contextMock.Verify()
 
         isNull result =! false
         result :? RedirectToRouteResult =! true

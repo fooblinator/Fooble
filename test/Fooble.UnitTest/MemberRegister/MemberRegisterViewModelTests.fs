@@ -6,13 +6,13 @@ open NUnit.Framework
 open Swensen.Unquote
 
 [<TestFixture>]
-module SelfServiceRegisterViewModelTests =
+module MemberRegisterViewModelTests =
 
     [<Test>]
     let ``Calling username, with initial view model, returns expected username`` () =
         let expectedUsername = String.empty
 
-        let viewModel = SelfServiceRegisterViewModel.empty
+        let viewModel = MemberRegisterViewModel.empty
 
         viewModel.Username =! expectedUsername
 
@@ -22,7 +22,7 @@ module SelfServiceRegisterViewModelTests =
 
         let password = Password.random 32
         let viewModel =
-            bindSelfServiceRegisterViewModel2 expectedUsername password password (EmailAddress.random 32)
+            bindMemberRegisterViewModel2 expectedUsername password password (EmailAddress.random 32)
                 (String.random 64)
 
         viewModel.Username =! expectedUsername
@@ -31,7 +31,7 @@ module SelfServiceRegisterViewModelTests =
     let ``Calling password, with initial view model, returns expected passwords`` () =
         let expectedPassword = String.empty
 
-        let viewModel = SelfServiceRegisterViewModel.empty
+        let viewModel = MemberRegisterViewModel.empty
 
         viewModel.Password =! expectedPassword
 
@@ -40,7 +40,7 @@ module SelfServiceRegisterViewModelTests =
         let expectedPassword = Password.random 32
 
         let viewModel =
-            bindSelfServiceRegisterViewModel2 (String.random 32) expectedPassword expectedPassword
+            bindMemberRegisterViewModel2 (String.random 32) expectedPassword expectedPassword
                 (EmailAddress.random 32) (String.random 64)
 
         viewModel.Password =! expectedPassword
@@ -49,7 +49,7 @@ module SelfServiceRegisterViewModelTests =
     let ``Calling email, with initial view model, returns expected email`` () =
         let expectedEmail = String.empty
 
-        let viewModel = SelfServiceRegisterViewModel.empty
+        let viewModel = MemberRegisterViewModel.empty
 
         viewModel.Email =! expectedEmail
 
@@ -59,7 +59,7 @@ module SelfServiceRegisterViewModelTests =
 
         let password = Password.random 32
         let viewModel =
-            bindSelfServiceRegisterViewModel2 (String.random 32) password password expectedEmail (String.random 64)
+            bindMemberRegisterViewModel2 (String.random 32) password password expectedEmail (String.random 64)
 
         viewModel.Email =! expectedEmail
 
@@ -67,7 +67,7 @@ module SelfServiceRegisterViewModelTests =
     let ``Calling nickname, with initial view model, returns expected nickname`` () =
         let expectedNickname = String.empty
 
-        let viewModel = SelfServiceRegisterViewModel.empty
+        let viewModel = MemberRegisterViewModel.empty
 
         viewModel.Nickname =! expectedNickname
 
@@ -77,7 +77,7 @@ module SelfServiceRegisterViewModelTests =
 
         let password = Password.random 32
         let viewModel =
-            bindSelfServiceRegisterViewModel2 (String.random 32) password password (EmailAddress.random 32)
+            bindMemberRegisterViewModel2 (String.random 32) password password (EmailAddress.random 32)
                 expectedNickname
 
         viewModel.Nickname =! expectedNickname

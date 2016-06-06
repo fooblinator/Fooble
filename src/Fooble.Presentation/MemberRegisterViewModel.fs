@@ -5,15 +5,15 @@ open Fooble.Core
 open System.Runtime.CompilerServices
 open System.Web.Mvc
 
-/// Provides presentation-related helpers for self-service register.
+/// Provides presentation-related helpers for member register.
 [<RequireQualifiedAccess>]
-module SelfServiceRegisterViewModel =
+module MemberRegisterViewModel =
 
     [<DefaultAugmentation(false)>]
-    type private SelfServiceRegisterViewModelImplementation =
+    type private MemberRegisterViewModelImpl =
         | ViewModel of username:string * password:string * confirmPassword:string * email:string * nickname:string
 
-        interface ISelfServiceRegisterViewModel with
+        interface IMemberRegisterViewModel with
 
             member this.Username
                 with get() =
@@ -41,30 +41,29 @@ module SelfServiceRegisterViewModel =
                     | ViewModel(nickname = x) -> x
 
     /// <summary>
-    /// Represents an empty self-service register view model.
+    /// Represents an empty member register view model.
     /// </summary>
-    /// <returns>Returns an empty self-service register view model.</returns>
+    /// <returns>Returns an empty member register view model.</returns>
     [<CompiledName("Empty")>]
     let empty =
-        ViewModel(String.empty, String.empty, String.empty, String.empty, String.empty) :>
-            ISelfServiceRegisterViewModel
+        ViewModel(String.empty, String.empty, String.empty, String.empty, String.empty) :> IMemberRegisterViewModel
 
     let internal make username password confirmPassword email nickname =
-        ViewModel(username, password, confirmPassword, email, nickname) :> ISelfServiceRegisterViewModel
+        ViewModel(username, password, confirmPassword, email, nickname) :> IMemberRegisterViewModel
 
-/// Provides presentation-related extension methods for self-service register.
+/// Provides presentation-related extension methods for member register.
 [<RequireQualifiedAccess>]
 [<Extension>]
-module SelfServiceRegisterExtensions =
+module MemberRegisterExtensions =
 
     /// <summary>
-    /// Adds a model error to the model state if the self-service register command result is not successful.
+    /// Adds a model error to the model state if the member register command result is not successful.
     /// </summary>
-    /// <param name="result">The self-service register command result to extend.</param>
+    /// <param name="result">The member register command result to extend.</param>
     /// <param name="modelState">The model state dictionary to add model errors to.</param>
     [<Extension>]
     [<CompiledName("AddModelErrorIfNotSuccess")>]
-    let addModelErrorIfNotSuccess (result:ISelfServiceRegisterCommandResult) (modelState:ModelStateDictionary) =
+    let addModelErrorIfNotSuccess (result:IMemberRegisterCommandResult) (modelState:ModelStateDictionary) =
 
         [ (box >> isNotNull), "Result is required" ]
         |> validate result "result" |> enforce
@@ -73,60 +72,57 @@ module SelfServiceRegisterExtensions =
         |> validate modelState "modelState" |> enforce
 
         match result with
-        | x when x.IsUsernameUnavailable ->
-              modelState.AddModelError("username", "Username is unavailable")
-        | x when x.IsEmailUnavailable ->
-              modelState.AddModelError("email", "Email is already registered")
+        | x when x.IsUsernameUnavailable -> modelState.AddModelError("username", "Username is unavailable")
+        | x when x.IsEmailUnavailable -> modelState.AddModelError("email", "Email is already registered")
         | _ -> ()
 
     /// <summary>
-    /// Constructs a message display read model from a self-service register command result.
+    /// Constructs a message display read model from a member register command result.
     /// </summary>
-    /// <param name="result">The self-service register command result to extend.</param>
+    /// <param name="result">The member register command result to extend.</param>
     /// <returns>Returns a message display read model.</returns>
     /// <remarks>This method should only be called on unsuccessful results. For displaying a "success" result, use
     /// <see cref="MessageDisplayReadModel.Make"/> directly.</remarks>
     [<Extension>]
     [<CompiledName("ToMessageDisplayReadModel")>]
-    let toMessageDisplayReadModel (result:ISelfServiceRegisterCommandResult) =
+    let toMessageDisplayReadModel (result:IMemberRegisterCommandResult) =
 
         [ (box >> isNotNull), "Result is required" ]
         |> validate result "result" |> enforce
 
         match result with
         | x when x.IsUsernameUnavailable ->
-              MessageDisplayReadModel.make "Self-Service" "Register" 400 MessageDisplayReadModel.warningSeverity
+              MessageDisplayReadModel.make "Member" "Register" 400 MessageDisplayReadModel.warningSeverity
                   "Requested username is unavailable."
         | x when x.IsEmailUnavailable ->
-              MessageDisplayReadModel.make "Self-Service" "Register" 400 MessageDisplayReadModel.warningSeverity
+              MessageDisplayReadModel.make "Member" "Register" 400 MessageDisplayReadModel.warningSeverity
                   "Supplied email is already registered."
         | _ -> invalidOp "Result was not unsuccessful"
 
     /// <summary>
-    /// Constructs a self-service register command from a self-service register view model.
+    /// Constructs a member register command from a member register view model.
     /// </summary>
-    /// <param name="viewModel">The self-service register view model to extend.</param>
+    /// <param name="viewModel">The member register view model to extend.</param>
     /// <param name="id">The member id to add to the command.</param>
     [<Extension>]
     [<CompiledName("ToCommand")>]
-    let toCommand (viewModel:ISelfServiceRegisterViewModel) id =
+    let toCommand (viewModel:IMemberRegisterViewModel) id =
 
         [ (box >> isNotNull), "View model is required" ]
         |> validate viewModel "result" |> enforce
 
-        SelfServiceRegisterCommand.make id viewModel.Username viewModel.Password viewModel.Email viewModel.Nickname
+        MemberRegisterCommand.make id viewModel.Username viewModel.Password viewModel.Email viewModel.Nickname
 
     /// <summary>
-    /// Constructs a self-service register view model without passwords from an existing self-service register view
+    /// Constructs a member register view model without passwords from an existing member register view
     /// model.
     /// </summary>
-    /// <param name="viewModel">The self-service register view model to extend.</param>
+    /// <param name="viewModel">The member register view model to extend.</param>
     [<Extension>]
     [<CompiledName("Clean")>]
-    let clean (viewModel:ISelfServiceRegisterViewModel) =
+    let clean (viewModel:IMemberRegisterViewModel) =
 
         [ (box >> isNotNull), "View model is required" ]
         |> validate viewModel "result" |> enforce
 
-        SelfServiceRegisterViewModel.make viewModel.Username String.empty String.empty viewModel.Email
-            viewModel.Nickname
+        MemberRegisterViewModel.make viewModel.Username String.empty String.empty viewModel.Email viewModel.Nickname

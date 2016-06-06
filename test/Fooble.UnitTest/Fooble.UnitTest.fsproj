@@ -62,10 +62,16 @@
       <Link>MemberHelpers.fs</Link>
     </Compile>
     <Compile Include="UnitTestHelpers.fs" />
-    <Compile Include="FoobleModelBinder\BindSelfServiceChangePasswordViewModel.fs" />
-    <Compile Include="FoobleModelBinder\BindSelfServiceRegisterViewModel.fs" />
+    <Compile Include="FoobleModelBinder\BindMemberChangePasswordViewModel.fs" />
+    <Compile Include="FoobleModelBinder\BindMemberRegisterViewModel.fs" />
     <Compile Include="Member\MemberControllerTests.fs" />
+    <Compile Include="Member\MemberControllerRegisterActionTests.fs" />
     <Compile Include="Member\MemberTests.fs" />
+    <Compile Include="MemberChangePassword\MemberChangePasswordCommandHandlerTests.fs" />
+    <Compile Include="MemberChangePassword\MemberChangePasswordCommandResultTests.fs" />
+    <Compile Include="MemberChangePassword\MemberChangePasswordCommandTests.fs" />
+    <Compile Include="MemberChangePassword\MemberChangePasswordExtensionsTests.fs" />
+    <Compile Include="MemberChangePassword\MemberChangePasswordViewModelTests.fs" />
     <Compile Include="MemberDetail\MemberDetailExtensionsTests.fs" />
     <Compile Include="MemberDetail\MemberDetailQueryHandlerTests.fs" />
     <Compile Include="MemberDetail\MemberDetailQueryResultTests.fs" />
@@ -77,23 +83,17 @@
     <Compile Include="MemberList\MemberListQueryResultTests.fs" />
     <Compile Include="MemberList\MemberListQueryTests.fs" />
     <Compile Include="MemberList\MemberListReadModelTests.fs" />
+    <Compile Include="MemberRegister\MemberRegisterCommandHandlerTests.fs" />
+    <Compile Include="MemberRegister\MemberRegisterCommandResultTests.fs" />
+    <Compile Include="MemberRegister\MemberRegisterCommandTests.fs" />
+    <Compile Include="MemberRegister\MemberRegisterExtensionsTests.fs" />
+    <Compile Include="MemberRegister\MemberRegisterViewModelTests.fs" />
     <Compile Include="MessageDisplay\MessageDisplayReadModelTests.fs" />
     <Compile Include="MessageDisplay\MessageDisplaySeverityTests.fs" />
-    <Compile Include="SelfService\SelfServiceControllerTests.fs" />
-    <Compile Include="SelfServiceRegister\SelfServiceRegisterCommandHandlerTests.fs" />
-    <Compile Include="SelfServiceRegister\SelfServiceRegisterCommandResultTests.fs" />
-    <Compile Include="SelfServiceRegister\SelfServiceRegisterCommandTests.fs" />
-    <Compile Include="SelfServiceRegister\SelfServiceRegisterExtensionsTests.fs" />
-    <Compile Include="SelfServiceRegister\SelfServiceRegisterViewModelTests.fs" />
     <Compile Include="Validation\ValidationExtensionsTests.fs" />
     <Compile Include="Validation\ValidationResultTests.fs" />
     <Content Include="App.config" />
     <Content Include="packages.config" />
-    <Compile Include="SelfServiceChangePassword\SelfServiceChangePasswordCommandHandlerTests.fs" />
-    <Compile Include="SelfServiceChangePassword\SelfServiceChangePasswordCommandResultTests.fs" />
-    <Compile Include="SelfServiceChangePassword\SelfServiceChangePasswordCommandTests.fs" />
-    <Compile Include="SelfServiceChangePassword\SelfServiceChangePasswordExtensionsTests.fs" />
-    <Compile Include="SelfServiceChangePassword\SelfServiceChangePasswordViewModelTests.fs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\Fooble.Persistence\Fooble.Persistence.fsproj">

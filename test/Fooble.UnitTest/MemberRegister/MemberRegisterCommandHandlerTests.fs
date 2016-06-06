@@ -10,17 +10,17 @@ open NUnit.Framework
 open Swensen.Unquote
 
 [<TestFixture>]
-module SelfServiceRegisterCommandHandlerTests =
+module MemberRegisterCommandHandlerTests =
 
     [<Test>]
     let ``Calling handle, with existing username in data store, and returns expected result`` () =
         let contextMock = Mock<IFoobleContext>()
         contextMock.SetupFunc(fun x -> x.ExistsMemberUsername(any ())).Returns(true).Verifiable()
 
-        let handler = SelfServiceRegisterCommand.makeHandler contextMock.Object (mock ())
+        let handler = MemberRegisterCommand.makeHandler contextMock.Object (mock ())
 
         let command =
-            SelfServiceRegisterCommand.make (Guid.random ()) (String.random 32) (Password.random 32)
+            MemberRegisterCommand.make (Guid.random ()) (String.random 32) (Password.random 32)
                 (EmailAddress.random 32) (String.random 64)
         let commandResult = handler.Handle(command)
 
@@ -35,10 +35,10 @@ module SelfServiceRegisterCommandHandlerTests =
         let contextMock = Mock<IFoobleContext>()
         contextMock.SetupFunc(fun x -> x.ExistsMemberEmail(any ())).Returns(true).Verifiable()
 
-        let handler = SelfServiceRegisterCommand.makeHandler contextMock.Object (mock ())
+        let handler = MemberRegisterCommand.makeHandler contextMock.Object (mock ())
 
         let command =
-            SelfServiceRegisterCommand.make (Guid.random ()) (String.random 32) (Password.random 32)
+            MemberRegisterCommand.make (Guid.random ()) (String.random 32) (Password.random 32)
                 (EmailAddress.random 32) (String.random 64)
         let commandResult = handler.Handle(command)
 
@@ -58,10 +58,10 @@ module SelfServiceRegisterCommandHandlerTests =
         contextMock.SetupAction(fun x -> x.AddMember(any ()))
             .Callback<IMemberData>(fun x -> capturedMemberData := box x).Verifiable()
 
-        let handler = SelfServiceRegisterCommand.makeHandler contextMock.Object (makeTestMemberDataFactory ())
+        let handler = MemberRegisterCommand.makeHandler contextMock.Object (makeTestMemberDataFactory ())
 
         let command =
-            SelfServiceRegisterCommand.make (Guid.random ()) (String.random 32) (Password.random 32)
+            MemberRegisterCommand.make (Guid.random ()) (String.random 32) (Password.random 32)
                 (EmailAddress.random 32) (String.random 64)
         let commandResult = handler.Handle(command)
 

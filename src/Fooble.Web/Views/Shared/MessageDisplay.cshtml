@@ -2,7 +2,11 @@
 
 @{
     Response.StatusCode = Model.StatusCode;
-    ViewBag.Title = $"{Model.Heading} - {Model.SubHeading}";
+    ViewBag.Title = $"{Model.Heading}";
+    if (!String.IsNullOrWhiteSpace(Model.SubHeading))
+    {
+        ViewBag.Title &= "- {Model.SubHeading}";
+    }
 }
 
 <h1>@Model.Heading <small>@Model.SubHeading</small></h1>

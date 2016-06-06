@@ -10,13 +10,18 @@ namespace Fooble.Web.Controllers
     public class MemberController : Controller
     {
         readonly IMediator _mediator;
+        readonly KeyGenerator _keyGenerator;
 
-        public MemberController(IMediator mediator)
+        public MemberController(IMediator mediator, KeyGenerator keyGenerator)
         {
             if (mediator == null)
                 throw new ArgumentNullException(nameof(mediator), "Mediator is required");
 
+            if (keyGenerator == null)
+                throw new ArgumentNullException(nameof(keyGenerator), "Key generator is required");
+
             _mediator = mediator;
+            _keyGenerator = keyGenerator;
         }
 
         [HttpGet]
@@ -51,6 +56,32 @@ namespace Fooble.Web.Controllers
                 return View("MessageDisplay", result.ToMessageDisplayReadModel());
 
             return View(result.ReadModel);
+        }
+
+        [HttpGet]
+        public ActionResult Register()
+        {
+            return View(MemberRegisterViewModel.Empty);
+        }
+
+        [HttpPost]
+        public ActionResult Register([ModelBinder(typeof(FoobleModelBinder))] IMemberRegisterViewModel viewModel)
+        {
+            Debug.Assert(viewModel != null, "View model is required");
+
+            if (!ModelState.IsValid) return View(viewModel.Clean());
+
+            var id = _keyGenerator.Invoke();
+            var command = viewModel.ToCommand(id);
+            var result = _mediator.Send(command);
+
+            Debug.Assert(result != null, "Result was null");
+
+            result.AddModelErrorIfNotSuccess(ModelState);
+
+            if (!ModelState.IsValid) return View(viewModel.Clean());
+
+            return RedirectToAction("Detail", "Member", new { id = id.ToString() });
         }
     }
 }

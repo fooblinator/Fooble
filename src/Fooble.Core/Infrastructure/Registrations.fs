@@ -61,13 +61,11 @@ type CoreRegistrations =
         ignore (builder.Register(fun _ -> KeyGenerator(fun () -> Guid.random ())))
 
         ignore (builder.Register(fun x ->
-            MemberDetailQuery.makeHandler (x.Resolve<IFoobleContext>())
-                (x.Resolve<MemberDetailReadModelFactory>())))
+            MemberDetailQuery.makeHandler (x.Resolve<IFoobleContext>()) (x.Resolve<MemberDetailReadModelFactory>())))
 
         ignore (builder.Register(fun x ->
             MemberListQuery.makeHandler (x.Resolve<IFoobleContext>()) (x.Resolve<MemberListItemReadModelFactory>())
                 (x.Resolve<MemberListReadModelFactory>())))
 
         ignore (builder.Register(fun x ->
-            SelfServiceRegisterCommand.makeHandler (x.Resolve<IFoobleContext>())
-                (x.Resolve<MemberDataFactory>())))
+            MemberRegisterCommand.makeHandler (x.Resolve<IFoobleContext>()) (x.Resolve<MemberDataFactory>())))

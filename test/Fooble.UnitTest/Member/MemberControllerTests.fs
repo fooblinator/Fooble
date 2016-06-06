@@ -20,12 +20,24 @@ module MemberControllerTests =
         let expectedParamName = "mediator"
         let expectedMessage = "Mediator is required"
 
-        raisesWith<ArgumentException> <@ new MemberController(null) @>
+        let keyGenerator = makeTestKeyGenerator None
+        raisesWith<ArgumentException> <@ new MemberController(null, keyGenerator) @>
+            (fun x -> <@ x.ParamName = expectedParamName && (fixInvalidArgMessage x.Message) = expectedMessage @>)
+
+    [<Test>]
+    let ``Constructing, with null key generator, raises expected exception`` () =
+        let expectedParamName = "keyGenerator"
+        let expectedMessage = "Key generator is required"
+
+        raisesWith<ArgumentException> <@ new MemberController(mock (), null) @>
             (fun x -> <@ x.ParamName = expectedParamName && (fixInvalidArgMessage x.Message) = expectedMessage @>)
 
     [<Test>]
     let ``Constructing, with valid parameters, returns expected result`` () =
-        ignore (new MemberController(mock ()))
+        let keyGenerator = makeTestKeyGenerator None
+        ignore (new MemberController(mock (), keyGenerator))
+
+    // TODO: add tests to verify that member detail action id param is validated/guarded
 
     [<Test>]
     let ``Calling detail, with matches in data store, returns expected result`` () =
@@ -43,7 +55,8 @@ module MemberControllerTests =
         let mediatorMock = Mock<IMediator>()
         mediatorMock.SetupFunc(fun x -> x.Send(any ())).Returns(queryResult).Verifiable()
 
-        let controller = new MemberController(mediatorMock.Object)
+        let keyGenerator = makeTestKeyGenerator None
+        let controller = new MemberController(mediatorMock.Object, keyGenerator)
         let result = controller.Detail(String.ofGuid matchingId)
 
         mediatorMock.Verify()
@@ -74,7 +87,8 @@ module MemberControllerTests =
         let mediatorMock = Mock<IMediator>()
         mediatorMock.SetupFunc(fun x -> x.Send(any ())).Returns(queryResult).Verifiable()
 
-        let controller = new MemberController(mediatorMock.Object)
+        let keyGenerator = makeTestKeyGenerator None
+        let controller = new MemberController(mediatorMock.Object, keyGenerator)
         let result = controller.Detail(nonMatchingId.ToString())
 
         mediatorMock.Verify()
@@ -103,7 +117,8 @@ module MemberControllerTests =
         let mediatorMock = Mock<IMediator>()
         mediatorMock.SetupFunc(fun x -> x.Send(any ())).Returns(queryResult).Verifiable()
 
-        let controller = new MemberController(mediatorMock.Object)
+        let keyGenerator = makeTestKeyGenerator None
+        let controller = new MemberController(mediatorMock.Object, keyGenerator)
         let result = controller.List()
 
         mediatorMock.Verify()
@@ -132,7 +147,8 @@ module MemberControllerTests =
         let mediatorMock = Mock<IMediator>()
         mediatorMock.SetupFunc(fun m -> m.Send(any ())).Returns(queryResult).Verifiable()
 
-        let controller = new MemberController(mediatorMock.Object)
+        let keyGenerator = makeTestKeyGenerator None
+        let controller = new MemberController(mediatorMock.Object, keyGenerator)
         let result = controller.List()
 
         mediatorMock.Verify()

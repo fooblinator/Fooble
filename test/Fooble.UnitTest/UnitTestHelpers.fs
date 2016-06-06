@@ -36,27 +36,27 @@ module internal UnitTestHelpers =
 
         (FoobleModelBinder().BindModel(controllerContext, bindingContext) :?> 'T, bindingContext.ModelState)
 
-    let bindSelfServiceChangePasswordViewModel currentPassword newPassword confirmPassword =
+    let bindMemberChangePasswordViewModel currentPassword newPassword confirmPassword =
         Map.empty
             .Add("CurrentPassword", currentPassword)
             .Add("NewPassword", newPassword)
             .Add("ConfirmPassword", confirmPassword)
-        |> bindModel<ISelfServiceChangePasswordViewModel>
+        |> bindModel<IMemberChangePasswordViewModel>
 
-    let bindSelfServiceChangePasswordViewModel2 currentPassword newPassword confirmPassword =
-        fst (bindSelfServiceChangePasswordViewModel currentPassword newPassword confirmPassword)
+    let bindMemberChangePasswordViewModel2 currentPassword newPassword confirmPassword =
+        fst (bindMemberChangePasswordViewModel currentPassword newPassword confirmPassword)
 
-    let bindSelfServiceRegisterViewModel username password confirmPassword email nickname =
+    let bindMemberRegisterViewModel username password confirmPassword email nickname =
         Map.empty
             .Add("Username", username)
             .Add("Password", password)
             .Add("ConfirmPassword", confirmPassword)
             .Add("Email", email)
             .Add("Nickname", nickname)
-        |> bindModel<ISelfServiceRegisterViewModel>
+        |> bindModel<IMemberRegisterViewModel>
 
-    let bindSelfServiceRegisterViewModel2 username password confirmPassword email nickname =
-        fst (bindSelfServiceRegisterViewModel username password confirmPassword email nickname)
+    let bindMemberRegisterViewModel2 username password confirmPassword email nickname =
+        fst (bindMemberRegisterViewModel username password confirmPassword email nickname)
 
     let fixInvalidArgMessage (message:string) =
         let i = message.IndexOf("Parameter name: ")
@@ -248,21 +248,21 @@ module internal UnitTestHelpers =
                 existingMember.Id = actualMember.Id && existingMember.Nickname = actualMember.Nickname) expectedMembers
             findResult.IsSome =! true
 
-    let testSelfServiceChangePasswordCommand (actual:ISelfServiceChangePasswordCommand) expectedId
+    let testMemberChangePasswordCommand (actual:IMemberChangePasswordCommand) expectedId
         expectedCurrentPassword expectedNewPassword =
 
         actual.Id =! expectedId
         actual.CurrentPassword =! expectedCurrentPassword
         actual.NewPassword =! expectedNewPassword
 
-    let testSelfServiceChangePasswordViewModel (actual:ISelfServiceChangePasswordViewModel) expectedCurrentPassword
+    let testMemberChangePasswordViewModel (actual:IMemberChangePasswordViewModel) expectedCurrentPassword
         expectedNewPassword expectedConfirmPassword =
 
         actual.CurrentPassword =! expectedCurrentPassword
         actual.NewPassword =! expectedNewPassword
         actual.ConfirmPassword =! expectedConfirmPassword
 
-    let testSelfServiceRegisterCommand (actual:ISelfServiceRegisterCommand) expectedId expectedUsername
+    let testMemberRegisterCommand (actual:IMemberRegisterCommand) expectedId expectedUsername
         expectedPassword expectedEmail expectedNickname =
 
         actual.Id =! expectedId
@@ -271,7 +271,7 @@ module internal UnitTestHelpers =
         actual.Email =! expectedEmail
         actual.Nickname =! expectedNickname
 
-    let testSelfServiceRegisterViewModel (actual:ISelfServiceRegisterViewModel) expectedUsername expectedPassword
+    let testMemberRegisterViewModel (actual:IMemberRegisterViewModel) expectedUsername expectedPassword
         expectedConfirmPassword expectedEmail expectedNickname =
 
         actual.Username =! expectedUsername

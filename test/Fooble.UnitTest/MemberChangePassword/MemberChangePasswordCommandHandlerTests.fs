@@ -11,16 +11,16 @@ open Swensen.Unquote
 open System
 
 [<TestFixture>]
-module SelfServiceChangePasswordCommandHandlerTests =
+module MemberChangePasswordCommandHandlerTests =
 
     [<Test>]
     let ``Calling handle, with id not found in data store, and returns expected result`` () =
         let contextMock = Mock<IFoobleContext>()
         contextMock.SetupFunc(fun x -> x.GetMember(any ())).Returns(None).Verifiable()
 
-        let handler = SelfServiceChangePasswordCommand.makeHandler contextMock.Object
+        let handler = MemberChangePasswordCommand.makeHandler contextMock.Object
 
-        let command = SelfServiceChangePasswordCommand.make (Guid.random ()) (Password.random 32) (Password.random 32)
+        let command = MemberChangePasswordCommand.make (Guid.random ()) (Password.random 32) (Password.random 32)
         let commandResult = handler.Handle(command)
 
         contextMock.Verify()
@@ -38,9 +38,9 @@ module SelfServiceChangePasswordCommandHandlerTests =
         let contextMock = Mock<IFoobleContext>()
         contextMock.SetupFunc(fun x -> x.GetMember(any ())).Returns(Some memberData).Verifiable()
 
-        let handler = SelfServiceChangePasswordCommand.makeHandler contextMock.Object
+        let handler = MemberChangePasswordCommand.makeHandler contextMock.Object
 
-        let command = SelfServiceChangePasswordCommand.make (Guid.random ()) (Password.random 32) (Password.random 32)
+        let command = MemberChangePasswordCommand.make (Guid.random ()) (Password.random 32) (Password.random 32)
         let commandResult = handler.Handle(command)
 
         contextMock.Verify()
@@ -62,9 +62,9 @@ module SelfServiceChangePasswordCommandHandlerTests =
         let contextMock = Mock<IFoobleContext>()
         contextMock.SetupFunc(fun x -> x.GetMember(any ())).Returns(Some memberData).Verifiable()
 
-        let handler = SelfServiceChangePasswordCommand.makeHandler contextMock.Object
+        let handler = MemberChangePasswordCommand.makeHandler contextMock.Object
 
-        let command = SelfServiceChangePasswordCommand.make expectedId expectedCurrentPassword (Password.random 32)
+        let command = MemberChangePasswordCommand.make expectedId expectedCurrentPassword (Password.random 32)
         let commandResult = handler.Handle(command)
 
         contextMock.Verify()

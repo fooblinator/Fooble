@@ -13,7 +13,7 @@ type FoobleModelBinder() =
 
         match bindingContext.ModelType with
 
-        | x when x = typeof<ISelfServiceChangePasswordViewModel> ->
+        | x when x = typeof<IMemberChangePasswordViewModel> ->
               let form = controllerContext.HttpContext.Request.Form
 
               let mutable currentPassword = form.Get("currentPassword")
@@ -30,9 +30,9 @@ type FoobleModelBinder() =
               | y when y.IsInvalid -> modelState.AddModelError(y.ParamName, y.Message)
               | _ -> ()
               
-              box (SelfServiceChangePasswordViewModel.make currentPassword newPassword confirmPassword)
+              box (MemberChangePasswordViewModel.make currentPassword newPassword confirmPassword)
 
-        | x when x = typeof<ISelfServiceRegisterViewModel> ->
+        | x when x = typeof<IMemberRegisterViewModel> ->
               let form = controllerContext.HttpContext.Request.Form
 
               let username = form.Get("username")
@@ -59,6 +59,6 @@ type FoobleModelBinder() =
               | y when y.IsInvalid -> modelState.AddModelError(y.ParamName, y.Message)
               | _ -> ()
 
-              box (SelfServiceRegisterViewModel.make username password confirmPassword email nickname)
+              box (MemberRegisterViewModel.make username password confirmPassword email nickname)
 
         | _ -> base.BindModel(controllerContext, bindingContext)

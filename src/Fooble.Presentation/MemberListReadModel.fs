@@ -9,7 +9,7 @@ open System.Runtime.CompilerServices
 module internal MemberListReadModel =
 
     [<DefaultAugmentation(false)>]
-    type private MemberListItemReadModelImplementation =
+    type private MemberListItemReadModelImpl =
         | ItemReadModel of id:Guid * nickname:string
 
         interface IMemberListItemReadModel with
@@ -30,7 +30,7 @@ module internal MemberListReadModel =
         ItemReadModel(id, nickname) :> IMemberListItemReadModel
 
     [<DefaultAugmentation(false)>]
-    type private MemberListReadModelImplementation =
+    type private MemberListReadModelImpl =
         | ReadModel of members:seq<IMemberListItemReadModel>
 
         interface IMemberListReadModel with

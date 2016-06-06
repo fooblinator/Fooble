@@ -6,13 +6,13 @@ open NUnit.Framework
 open Swensen.Unquote
 
 [<TestFixture>]
-module SelfServiceChangePasswordViewModelTests =
+module MemberChangePasswordViewModelTests =
 
     [<Test>]
     let ``Calling current password, with initial view model, returns expected current password`` () =
         let expectedCurrentPassword = String.empty
 
-        let viewModel = SelfServiceChangePasswordViewModel.empty
+        let viewModel = MemberChangePasswordViewModel.empty
 
         viewModel.CurrentPassword =! expectedCurrentPassword
 
@@ -23,7 +23,7 @@ module SelfServiceChangePasswordViewModelTests =
         let newPassword = Password.random 32
         let confirmPassword = newPassword
         let viewModel =
-            bindSelfServiceChangePasswordViewModel2 expectedCurrentPassword newPassword confirmPassword
+            bindMemberChangePasswordViewModel2 expectedCurrentPassword newPassword confirmPassword
 
         viewModel.CurrentPassword =! expectedCurrentPassword
 
@@ -31,7 +31,7 @@ module SelfServiceChangePasswordViewModelTests =
     let ``Calling new password, with initial view model, returns expected new password`` () =
         let expectedNewPassword = String.empty
 
-        let viewModel = SelfServiceChangePasswordViewModel.empty
+        let viewModel = MemberChangePasswordViewModel.empty
 
         viewModel.NewPassword =! expectedNewPassword
 
@@ -41,7 +41,7 @@ module SelfServiceChangePasswordViewModelTests =
 
         let confirmPassword = expectedNewPassword
         let viewModel =
-            bindSelfServiceChangePasswordViewModel2 (Password.random 32) expectedNewPassword confirmPassword
+            bindMemberChangePasswordViewModel2 (Password.random 32) expectedNewPassword confirmPassword
 
         viewModel.NewPassword =! expectedNewPassword
 
@@ -49,7 +49,7 @@ module SelfServiceChangePasswordViewModelTests =
     let ``Calling confirm password, with initial view model, returns expected confirm password`` () =
         let expectedConfirmPassword = String.empty
 
-        let viewModel = SelfServiceChangePasswordViewModel.empty
+        let viewModel = MemberChangePasswordViewModel.empty
 
         viewModel.ConfirmPassword =! expectedConfirmPassword
 
@@ -59,6 +59,6 @@ module SelfServiceChangePasswordViewModelTests =
 
         let newPassword = expectedConfirmPassword
         let viewModel =
-            bindSelfServiceChangePasswordViewModel2 (Password.random 32) newPassword expectedConfirmPassword
+            bindMemberChangePasswordViewModel2 (Password.random 32) newPassword expectedConfirmPassword
 
         viewModel.ConfirmPassword =! expectedConfirmPassword

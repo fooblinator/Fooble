@@ -70,10 +70,10 @@
     <Compile Include="..\Common\MemberHelpers.fs">
       <Link>MemberHelpers.fs</Link>
     </Compile>
+    <Compile Include="MemberChangePasswordCommand.fs" />
     <Compile Include="MemberDetailQuery.fs" />
     <Compile Include="MemberListQuery.fs" />
-    <Compile Include="SelfServiceChangePasswordCommand.fs" />
-    <Compile Include="SelfServiceRegisterCommand.fs" />
+    <Compile Include="MemberRegisterCommand.fs" />
     <Compile Include="Infrastructure\Registrations.fs" />
     <Content Include="App.config" />
     <Content Include="packages.config" />

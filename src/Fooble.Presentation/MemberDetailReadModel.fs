@@ -9,7 +9,7 @@ open System.Runtime.CompilerServices
 module internal MemberDetailReadModel =
 
     [<DefaultAugmentation(false)>]
-    type private MemberDetailReadModelImplementation =
+    type private MemberDetailReadModelImpl =
         | ReadModel of id:Guid * username:string * email:string * nickname:string * registered:DateTime *
               passwordChanged:DateTime
 

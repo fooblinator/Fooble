@@ -9,7 +9,7 @@ open Swensen.Unquote
 open System
 
 [<TestFixture>]
-module SelfServiceRegisterCommandTests =
+module MemberRegisterCommandTests =
 
     [<Test>]
     let ``Calling make, with empty id, raises expected exception`` () =
@@ -17,7 +17,7 @@ module SelfServiceRegisterCommandTests =
         let expectedMessage = "Id is required"
 
         raisesWith<ArgumentException>
-            <@ SelfServiceRegisterCommand.make Guid.empty (String.random 32) (Password.random 32)
+            <@ MemberRegisterCommand.make Guid.empty (String.random 32) (Password.random 32)
                 (EmailAddress.random 32) (String.random 64) @>
             (fun x -> <@ x.ParamName = expectedParamName && (fixInvalidArgMessage x.Message) = expectedMessage @>)
 
@@ -27,7 +27,7 @@ module SelfServiceRegisterCommandTests =
         let expectedMessage = "Username is required"
 
         raisesWith<ArgumentException>
-            <@ SelfServiceRegisterCommand.make (Guid.random ()) null (Password.random 32) (EmailAddress.random 32)
+            <@ MemberRegisterCommand.make (Guid.random ()) null (Password.random 32) (EmailAddress.random 32)
                 (String.random 64) @>
             (fun x -> <@ x.ParamName = expectedParamName && (fixInvalidArgMessage x.Message) = expectedMessage @>)
 
@@ -37,7 +37,7 @@ module SelfServiceRegisterCommandTests =
         let expectedMessage = "Username is required"
 
         raisesWith<ArgumentException>
-            <@ SelfServiceRegisterCommand.make (Guid.random ()) String.empty (Password.random 32)
+            <@ MemberRegisterCommand.make (Guid.random ()) String.empty (Password.random 32)
                 (EmailAddress.random 32) (String.random 64) @>
             (fun x -> <@ x.ParamName = expectedParamName && (fixInvalidArgMessage x.Message) = expectedMessage @>)
 
@@ -47,7 +47,7 @@ module SelfServiceRegisterCommandTests =
         let expectedMessage = "Username is shorter than 3 characters"
 
         raisesWith<ArgumentException>
-            <@ SelfServiceRegisterCommand.make (Guid.random ()) (String.random 2) (Password.random 32)
+            <@ MemberRegisterCommand.make (Guid.random ()) (String.random 2) (Password.random 32)
                 (EmailAddress.random 32) (String.random 64) @>
             (fun x -> <@ x.ParamName = expectedParamName && (fixInvalidArgMessage x.Message) = expectedMessage @>)
 
@@ -57,7 +57,7 @@ module SelfServiceRegisterCommandTests =
         let expectedMessage = "Username is longer than 32 characters"
 
         raisesWith<ArgumentException>
-            <@ SelfServiceRegisterCommand.make (Guid.random ()) (String.random 33) (Password.random 32)
+            <@ MemberRegisterCommand.make (Guid.random ()) (String.random 33) (Password.random 32)
                 (EmailAddress.random 32) (String.random 64) @>
             (fun x -> <@ x.ParamName = expectedParamName && (fixInvalidArgMessage x.Message) = expectedMessage @>)
 
@@ -68,7 +68,7 @@ module SelfServiceRegisterCommandTests =
 
         let invalidFormatUsername = sprintf "-%s-%s-" (String.random 8) (String.random 8)
         raisesWith<ArgumentException>
-            <@ SelfServiceRegisterCommand.make (Guid.random ()) invalidFormatUsername (Password.random 32)
+            <@ MemberRegisterCommand.make (Guid.random ()) invalidFormatUsername (Password.random 32)
                 (EmailAddress.random 32) (String.random 64) @>
             (fun x -> <@ x.ParamName = expectedParamName && (fixInvalidArgMessage x.Message) = expectedMessage @>)
 
@@ -78,7 +78,7 @@ module SelfServiceRegisterCommandTests =
         let expectedMessage = "Password is required"
 
         raisesWith<ArgumentException>
-            <@ SelfServiceRegisterCommand.make (Guid.random ()) (String.random 32) null (EmailAddress.random 32)
+            <@ MemberRegisterCommand.make (Guid.random ()) (String.random 32) null (EmailAddress.random 32)
                 (String.random 64) @>
             (fun x -> <@ x.ParamName = expectedParamName && (fixInvalidArgMessage x.Message) = expectedMessage @>)
 
@@ -88,7 +88,7 @@ module SelfServiceRegisterCommandTests =
         let expectedMessage = "Password is required"
 
         raisesWith<ArgumentException>
-            <@ SelfServiceRegisterCommand.make (Guid.random ()) (String.random 32) String.empty
+            <@ MemberRegisterCommand.make (Guid.random ()) (String.random 32) String.empty
                 (EmailAddress.random 32) (String.random 64) @>
             (fun x -> <@ x.ParamName = expectedParamName && (fixInvalidArgMessage x.Message) = expectedMessage @>)
 
@@ -98,7 +98,7 @@ module SelfServiceRegisterCommandTests =
         let expectedMessage = "Password is shorter than 8 characters"
 
         raisesWith<ArgumentException>
-            <@ SelfServiceRegisterCommand.make (Guid.random ()) (String.random 32) (Password.random 7)
+            <@ MemberRegisterCommand.make (Guid.random ()) (String.random 32) (Password.random 7)
                 (EmailAddress.random 32) (String.random 64) @>
             (fun x -> <@ x.ParamName = expectedParamName && (fixInvalidArgMessage x.Message) = expectedMessage @>)
 
@@ -108,7 +108,7 @@ module SelfServiceRegisterCommandTests =
         let expectedMessage = "Password is longer than 32 characters"
 
         raisesWith<ArgumentException>
-            <@ SelfServiceRegisterCommand.make (Guid.random ()) (String.random 32) (Password.random 33)
+            <@ MemberRegisterCommand.make (Guid.random ()) (String.random 32) (Password.random 33)
                 (EmailAddress.random 32) (String.random 64) @>
             (fun x -> <@ x.ParamName = expectedParamName && (fixInvalidArgMessage x.Message) = expectedMessage @>)
 
@@ -119,7 +119,7 @@ module SelfServiceRegisterCommandTests =
 
         let noDigitsPassword = makeBadPasswordWithoutDigits 32
         raisesWith<ArgumentException>
-            <@ SelfServiceRegisterCommand.make (Guid.random ()) (String.random 32) noDigitsPassword
+            <@ MemberRegisterCommand.make (Guid.random ()) (String.random 32) noDigitsPassword
                 (EmailAddress.random 32) (String.random 64) @>
             (fun x -> <@ x.ParamName = expectedParamName && (fixInvalidArgMessage x.Message) = expectedMessage @>)
 
@@ -130,7 +130,7 @@ module SelfServiceRegisterCommandTests =
 
         let noLowerAlphasPassword = makeBadPasswordWithoutLowerAlphas 32
         raisesWith<ArgumentException>
-            <@ SelfServiceRegisterCommand.make (Guid.random ()) (String.random 32) noLowerAlphasPassword
+            <@ MemberRegisterCommand.make (Guid.random ()) (String.random 32) noLowerAlphasPassword
                 (EmailAddress.random 32) (String.random 64) @>
             (fun x -> <@ x.ParamName = expectedParamName && (fixInvalidArgMessage x.Message) = expectedMessage @>)
 
@@ -141,7 +141,7 @@ module SelfServiceRegisterCommandTests =
 
         let noUpperAlphasPassword = makeBadPasswordWithoutUpperAlphas 32
         raisesWith<ArgumentException>
-            <@ SelfServiceRegisterCommand.make (Guid.random ()) (String.random 32) noUpperAlphasPassword
+            <@ MemberRegisterCommand.make (Guid.random ()) (String.random 32) noUpperAlphasPassword
                 (EmailAddress.random 32) (String.random 64) @>
             (fun x -> <@ x.ParamName = expectedParamName && (fixInvalidArgMessage x.Message) = expectedMessage @>)
 
@@ -152,7 +152,7 @@ module SelfServiceRegisterCommandTests =
 
         let noSpecialCharsPassword = makeBadPasswordWithoutSpecialChars 32
         raisesWith<ArgumentException>
-            <@ SelfServiceRegisterCommand.make (Guid.random ()) (String.random 32) noSpecialCharsPassword
+            <@ MemberRegisterCommand.make (Guid.random ()) (String.random 32) noSpecialCharsPassword
                 (EmailAddress.random 32) (String.random 64) @>
             (fun x -> <@ x.ParamName = expectedParamName && (fixInvalidArgMessage x.Message) = expectedMessage @>)
 
@@ -163,7 +163,7 @@ module SelfServiceRegisterCommandTests =
 
         let invalidCharsPassword = makeBadPasswordWithInvalidChars 32
         raisesWith<ArgumentException>
-            <@ SelfServiceRegisterCommand.make (Guid.random ()) (String.random 32) invalidCharsPassword
+            <@ MemberRegisterCommand.make (Guid.random ()) (String.random 32) invalidCharsPassword
                 (EmailAddress.random 32) (String.random 64) @>
             (fun x -> <@ x.ParamName = expectedParamName && (fixInvalidArgMessage x.Message) = expectedMessage @>)
 
@@ -173,7 +173,7 @@ module SelfServiceRegisterCommandTests =
         let expectedMessage = "Email is required"
 
         raisesWith<ArgumentException>
-            <@ SelfServiceRegisterCommand.make (Guid.random ()) (String.random 32) (Password.random 32) null
+            <@ MemberRegisterCommand.make (Guid.random ()) (String.random 32) (Password.random 32) null
                 (String.random 64) @>
             (fun x -> <@ x.ParamName = expectedParamName && (fixInvalidArgMessage x.Message) = expectedMessage @>)
 
@@ -183,7 +183,7 @@ module SelfServiceRegisterCommandTests =
         let expectedMessage = "Email is required"
 
         raisesWith<ArgumentException>
-            <@ SelfServiceRegisterCommand.make (Guid.random ()) (String.random 32) (Password.random 32) String.empty
+            <@ MemberRegisterCommand.make (Guid.random ()) (String.random 32) (Password.random 32) String.empty
                 (String.random 64) @>
             (fun x -> <@ x.ParamName = expectedParamName && (fixInvalidArgMessage x.Message) = expectedMessage @>)
 
@@ -193,7 +193,7 @@ module SelfServiceRegisterCommandTests =
         let expectedMessage = "Email is longer than 254 characters"
 
         raisesWith<ArgumentException>
-            <@ SelfServiceRegisterCommand.make (Guid.random ()) (String.random 32) (Password.random 32)
+            <@ MemberRegisterCommand.make (Guid.random ()) (String.random 32) (Password.random 32)
                 (String.random 255) (String.random 64) @>
             (fun x -> <@ x.ParamName = expectedParamName && (fixInvalidArgMessage x.Message) = expectedMessage @>)
 
@@ -203,7 +203,7 @@ module SelfServiceRegisterCommandTests =
         let expectedMessage = "Email is not in the correct format"
 
         raisesWith<ArgumentException>
-            <@ SelfServiceRegisterCommand.make (Guid.random ()) (String.random 32) (Password.random 32)
+            <@ MemberRegisterCommand.make (Guid.random ()) (String.random 32) (Password.random 32)
                 (String.random 64) (String.random 64) @>
             (fun x -> <@ x.ParamName = expectedParamName && (fixInvalidArgMessage x.Message) = expectedMessage @>)
 
@@ -213,7 +213,7 @@ module SelfServiceRegisterCommandTests =
         let expectedMessage = "Nickname is required"
 
         raisesWith<ArgumentException>
-            <@ SelfServiceRegisterCommand.make (Guid.random ()) (String.random 32) (Password.random 32)
+            <@ MemberRegisterCommand.make (Guid.random ()) (String.random 32) (Password.random 32)
                 (EmailAddress.random 32) null @>
             (fun x -> <@ x.ParamName = expectedParamName && (fixInvalidArgMessage x.Message) = expectedMessage @>)
 
@@ -223,7 +223,7 @@ module SelfServiceRegisterCommandTests =
         let expectedMessage = "Nickname is required"
 
         raisesWith<ArgumentException>
-            <@ SelfServiceRegisterCommand.make (Guid.random ()) (String.random 32) (Password.random 32)
+            <@ MemberRegisterCommand.make (Guid.random ()) (String.random 32) (Password.random 32)
                 (EmailAddress.random 32) String.empty @>
             (fun x -> <@ x.ParamName = expectedParamName && (fixInvalidArgMessage x.Message) = expectedMessage @>)
 
@@ -233,24 +233,24 @@ module SelfServiceRegisterCommandTests =
         let expectedMessage = "Nickname is longer than 64 characters"
 
         raisesWith<ArgumentException>
-            <@ SelfServiceRegisterCommand.make (Guid.random ()) (String.random 32) (Password.random 32)
+            <@ MemberRegisterCommand.make (Guid.random ()) (String.random 32) (Password.random 32)
                 (EmailAddress.random 32) (String.random 65) @>
             (fun x -> <@ x.ParamName = expectedParamName && (fixInvalidArgMessage x.Message) = expectedMessage @>)
 
     [<Test>]
     let ``Calling make, with valid parameters, returns command`` () =
         let command =
-            SelfServiceRegisterCommand.make (Guid.random ()) (String.random 32) (Password.random 32)
+            MemberRegisterCommand.make (Guid.random ()) (String.random 32) (Password.random 32)
                 (EmailAddress.random 32) (String.random 64)
 
-        box command :? IRequest<ISelfServiceRegisterCommandResult> =! true
+        box command :? IRequest<IMemberRegisterCommandResult> =! true
 
     [<Test>]
     let ``Calling id, returns expected id`` () =
         let expectedId = Guid.random ()
 
         let command =
-            SelfServiceRegisterCommand.make expectedId (String.random 32) (Password.random 32) (EmailAddress.random 32)
+            MemberRegisterCommand.make expectedId (String.random 32) (Password.random 32) (EmailAddress.random 32)
                 (String.random 64)
 
         command.Id =! expectedId
@@ -260,7 +260,7 @@ module SelfServiceRegisterCommandTests =
         let expectedUsername = String.random 32
 
         let command =
-            SelfServiceRegisterCommand.make (Guid.random ()) expectedUsername (Password.random 32)
+            MemberRegisterCommand.make (Guid.random ()) expectedUsername (Password.random 32)
                 (EmailAddress.random 32) (String.random 64)
 
         command.Username =! expectedUsername
@@ -270,7 +270,7 @@ module SelfServiceRegisterCommandTests =
         let expectedEmail = EmailAddress.random 32
 
         let command =
-            SelfServiceRegisterCommand.make (Guid.random ()) (String.random 32) (Password.random 32) expectedEmail
+            MemberRegisterCommand.make (Guid.random ()) (String.random 32) (Password.random 32) expectedEmail
                 (String.random 64)
 
         command.Email =! expectedEmail
@@ -280,7 +280,7 @@ module SelfServiceRegisterCommandTests =
         let expectedNickname = String.random 64
 
         let command =
-            SelfServiceRegisterCommand.make (Guid.random ()) (String.random 32) (Password.random 32)
+            MemberRegisterCommand.make (Guid.random ()) (String.random 32) (Password.random 32)
                 (EmailAddress.random 32) expectedNickname
 
         command.Nickname =! expectedNickname

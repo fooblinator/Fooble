@@ -86,7 +86,7 @@ type IMemberListReadModel =
 
 
 /// Contains a member's password change information to be submitted.
-type ISelfServiceChangePasswordViewModel =
+type IMemberChangePasswordViewModel =
 
     /// The current password of the member.
     [<DataType(DataType.Password)>]
@@ -105,7 +105,7 @@ type ISelfServiceChangePasswordViewModel =
 
 
 /// Contains a potential member's detailed information to be submitted.
-type ISelfServiceRegisterViewModel =
+type IMemberRegisterViewModel =
 
     /// The username of the member.
     abstract Username:string with get

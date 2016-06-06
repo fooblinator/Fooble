@@ -64,10 +64,10 @@
       <Link>MemberHelpers.fs</Link>
     </Compile>
     <Compile Include="MessageDisplayReadModel.fs" />
+    <Compile Include="MemberChangePasswordViewModel.fs" />
     <Compile Include="MemberDetailReadModel.fs" />
     <Compile Include="MemberListReadModel.fs" />
-    <Compile Include="SelfServiceChangePasswordViewModel.fs" />
-    <Compile Include="SelfServiceRegisterViewModel.fs" />
+    <Compile Include="MemberRegisterViewModel.fs" />
     <Compile Include="ValidationExtensions.fs" />
     <Compile Include="FoobleModelBinder.fs" />
     <Compile Include="Infrastructure\Registrations.fs" />

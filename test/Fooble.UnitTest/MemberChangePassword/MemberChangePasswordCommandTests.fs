@@ -9,7 +9,7 @@ open Swensen.Unquote
 open System
 
 [<TestFixture>]
-module SelfServiceChangePasswordCommandTests =
+module MemberChangePasswordCommandTests =
 
     [<Test>]
     let ``Calling make, with empty id, raises expected exception`` () =
@@ -17,7 +17,7 @@ module SelfServiceChangePasswordCommandTests =
         let expectedMessage = "Id is required"
 
         raisesWith<ArgumentException>
-            <@ SelfServiceChangePasswordCommand.make Guid.empty (Password.random 32) (Password.random 32) @>
+            <@ MemberChangePasswordCommand.make Guid.empty (Password.random 32) (Password.random 32) @>
             (fun x -> <@ x.ParamName = expectedParamName && (fixInvalidArgMessage x.Message) = expectedMessage @>)
 
     [<Test>]
@@ -26,7 +26,7 @@ module SelfServiceChangePasswordCommandTests =
         let expectedMessage = "Current password is required"
 
         raisesWith<ArgumentException>
-            <@ SelfServiceChangePasswordCommand.make (Guid.random ()) null (Password.random 32) @>
+            <@ MemberChangePasswordCommand.make (Guid.random ()) null (Password.random 32) @>
             (fun x -> <@ x.ParamName = expectedParamName && (fixInvalidArgMessage x.Message) = expectedMessage @>)
 
     [<Test>]
@@ -35,7 +35,7 @@ module SelfServiceChangePasswordCommandTests =
         let expectedMessage = "Current password is required"
 
         raisesWith<ArgumentException>
-            <@ SelfServiceChangePasswordCommand.make (Guid.random ()) String.empty (Password.random 32) @>
+            <@ MemberChangePasswordCommand.make (Guid.random ()) String.empty (Password.random 32) @>
             (fun x -> <@ x.ParamName = expectedParamName && (fixInvalidArgMessage x.Message) = expectedMessage @>)
 
     [<Test>]
@@ -44,7 +44,7 @@ module SelfServiceChangePasswordCommandTests =
         let expectedMessage = "Current password is shorter than 8 characters"
 
         raisesWith<ArgumentException>
-            <@ SelfServiceChangePasswordCommand.make (Guid.random ()) (Password.random 7) (Password.random 32) @>
+            <@ MemberChangePasswordCommand.make (Guid.random ()) (Password.random 7) (Password.random 32) @>
             (fun x -> <@ x.ParamName = expectedParamName && (fixInvalidArgMessage x.Message) = expectedMessage @>)
 
     [<Test>]
@@ -53,7 +53,7 @@ module SelfServiceChangePasswordCommandTests =
         let expectedMessage = "Current password is longer than 32 characters"
 
         raisesWith<ArgumentException>
-            <@ SelfServiceChangePasswordCommand.make (Guid.random ()) (Password.random 33) (Password.random 32) @>
+            <@ MemberChangePasswordCommand.make (Guid.random ()) (Password.random 33) (Password.random 32) @>
             (fun x -> <@ x.ParamName = expectedParamName && (fixInvalidArgMessage x.Message) = expectedMessage @>)
 
     [<Test>]
@@ -63,7 +63,7 @@ module SelfServiceChangePasswordCommandTests =
 
         let noDigitsCurrentPassword = makeBadPasswordWithoutDigits 32
         raisesWith<ArgumentException>
-            <@ SelfServiceChangePasswordCommand.make (Guid.random ()) noDigitsCurrentPassword (Password.random 32) @>
+            <@ MemberChangePasswordCommand.make (Guid.random ()) noDigitsCurrentPassword (Password.random 32) @>
             (fun x -> <@ x.ParamName = expectedParamName && (fixInvalidArgMessage x.Message) = expectedMessage @>)
 
     [<Test>]
@@ -73,7 +73,7 @@ module SelfServiceChangePasswordCommandTests =
 
         let noLowerAlphasCurrentPassword = makeBadPasswordWithoutLowerAlphas 32
         raisesWith<ArgumentException>
-            <@ SelfServiceChangePasswordCommand.make (Guid.random ()) noLowerAlphasCurrentPassword
+            <@ MemberChangePasswordCommand.make (Guid.random ()) noLowerAlphasCurrentPassword
                 (Password.random 32) @>
             (fun x -> <@ x.ParamName = expectedParamName && (fixInvalidArgMessage x.Message) = expectedMessage @>)
 
@@ -84,7 +84,7 @@ module SelfServiceChangePasswordCommandTests =
 
         let noUpperAlphasCurrentPassword = makeBadPasswordWithoutUpperAlphas 32
         raisesWith<ArgumentException>
-            <@ SelfServiceChangePasswordCommand.make (Guid.random ()) noUpperAlphasCurrentPassword
+            <@ MemberChangePasswordCommand.make (Guid.random ()) noUpperAlphasCurrentPassword
                 (Password.random 32) @>
             (fun x -> <@ x.ParamName = expectedParamName && (fixInvalidArgMessage x.Message) = expectedMessage @>)
 
@@ -95,7 +95,7 @@ module SelfServiceChangePasswordCommandTests =
 
         let noSpecialCharsCurrentPassword = makeBadPasswordWithoutSpecialChars 32
         raisesWith<ArgumentException>
-            <@ SelfServiceChangePasswordCommand.make (Guid.random ()) noSpecialCharsCurrentPassword
+            <@ MemberChangePasswordCommand.make (Guid.random ()) noSpecialCharsCurrentPassword
                 (Password.random 32) @>
             (fun x -> <@ x.ParamName = expectedParamName && (fixInvalidArgMessage x.Message) = expectedMessage @>)
 
@@ -106,7 +106,7 @@ module SelfServiceChangePasswordCommandTests =
 
         let invalidCharsCurrentPassword = makeBadPasswordWithInvalidChars 32
         raisesWith<ArgumentException>
-            <@ SelfServiceChangePasswordCommand.make (Guid.random ()) invalidCharsCurrentPassword
+            <@ MemberChangePasswordCommand.make (Guid.random ()) invalidCharsCurrentPassword
                 (Password.random 32) @>
             (fun x -> <@ x.ParamName = expectedParamName && (fixInvalidArgMessage x.Message) = expectedMessage @>)
 
@@ -116,7 +116,7 @@ module SelfServiceChangePasswordCommandTests =
         let expectedMessage = "New password is required"
 
         raisesWith<ArgumentException>
-            <@ SelfServiceChangePasswordCommand.make (Guid.random ()) (Password.random 32) null @>
+            <@ MemberChangePasswordCommand.make (Guid.random ()) (Password.random 32) null @>
             (fun x -> <@ x.ParamName = expectedParamName && (fixInvalidArgMessage x.Message) = expectedMessage @>)
 
     [<Test>]
@@ -125,7 +125,7 @@ module SelfServiceChangePasswordCommandTests =
         let expectedMessage = "New password is required"
 
         raisesWith<ArgumentException>
-            <@ SelfServiceChangePasswordCommand.make (Guid.random ()) (Password.random 32) String.empty @>
+            <@ MemberChangePasswordCommand.make (Guid.random ()) (Password.random 32) String.empty @>
             (fun x -> <@ x.ParamName = expectedParamName && (fixInvalidArgMessage x.Message) = expectedMessage @>)
 
     [<Test>]
@@ -134,7 +134,7 @@ module SelfServiceChangePasswordCommandTests =
         let expectedMessage = "New password is shorter than 8 characters"
 
         raisesWith<ArgumentException>
-            <@ SelfServiceChangePasswordCommand.make (Guid.random ()) (Password.random 32) (Password.random 7) @>
+            <@ MemberChangePasswordCommand.make (Guid.random ()) (Password.random 32) (Password.random 7) @>
             (fun x -> <@ x.ParamName = expectedParamName && (fixInvalidArgMessage x.Message) = expectedMessage @>)
 
     [<Test>]
@@ -143,7 +143,7 @@ module SelfServiceChangePasswordCommandTests =
         let expectedMessage = "New password is longer than 32 characters"
 
         raisesWith<ArgumentException>
-            <@ SelfServiceChangePasswordCommand.make (Guid.random ()) (Password.random 32) (Password.random 33) @>
+            <@ MemberChangePasswordCommand.make (Guid.random ()) (Password.random 32) (Password.random 33) @>
             (fun x -> <@ x.ParamName = expectedParamName && (fixInvalidArgMessage x.Message) = expectedMessage @>)
 
     [<Test>]
@@ -153,7 +153,7 @@ module SelfServiceChangePasswordCommandTests =
 
         let noDigitsNewPassword = makeBadPasswordWithoutDigits 32
         raisesWith<ArgumentException>
-            <@ SelfServiceChangePasswordCommand.make (Guid.random ()) (Password.random 32) noDigitsNewPassword @>
+            <@ MemberChangePasswordCommand.make (Guid.random ()) (Password.random 32) noDigitsNewPassword @>
             (fun x -> <@ x.ParamName = expectedParamName && (fixInvalidArgMessage x.Message) = expectedMessage @>)
 
     [<Test>]
@@ -163,7 +163,7 @@ module SelfServiceChangePasswordCommandTests =
 
         let noLowerAlphasNewPassword = makeBadPasswordWithoutLowerAlphas 32
         raisesWith<ArgumentException>
-            <@ SelfServiceChangePasswordCommand.make (Guid.random ()) (Password.random 32) noLowerAlphasNewPassword @>
+            <@ MemberChangePasswordCommand.make (Guid.random ()) (Password.random 32) noLowerAlphasNewPassword @>
             (fun x -> <@ x.ParamName = expectedParamName && (fixInvalidArgMessage x.Message) = expectedMessage @>)
 
     [<Test>]
@@ -173,7 +173,7 @@ module SelfServiceChangePasswordCommandTests =
 
         let noUpperAlphasNewPassword = makeBadPasswordWithoutUpperAlphas 32
         raisesWith<ArgumentException>
-            <@ SelfServiceChangePasswordCommand.make (Guid.random ()) (Password.random 32) noUpperAlphasNewPassword @>
+            <@ MemberChangePasswordCommand.make (Guid.random ()) (Password.random 32) noUpperAlphasNewPassword @>
             (fun x -> <@ x.ParamName = expectedParamName && (fixInvalidArgMessage x.Message) = expectedMessage @>)
 
     [<Test>]
@@ -183,7 +183,7 @@ module SelfServiceChangePasswordCommandTests =
 
         let noSpecialCharsNewPassword = makeBadPasswordWithoutSpecialChars 32
         raisesWith<ArgumentException>
-            <@ SelfServiceChangePasswordCommand.make (Guid.random ()) (Password.random 32) noSpecialCharsNewPassword @>
+            <@ MemberChangePasswordCommand.make (Guid.random ()) (Password.random 32) noSpecialCharsNewPassword @>
             (fun x -> <@ x.ParamName = expectedParamName && (fixInvalidArgMessage x.Message) = expectedMessage @>)
 
     [<Test>]
@@ -193,20 +193,20 @@ module SelfServiceChangePasswordCommandTests =
 
         let invalidCharsNewPassword = makeBadPasswordWithInvalidChars 32
         raisesWith<ArgumentException>
-            <@ SelfServiceChangePasswordCommand.make (Guid.random ()) (Password.random 32) invalidCharsNewPassword @>
+            <@ MemberChangePasswordCommand.make (Guid.random ()) (Password.random 32) invalidCharsNewPassword @>
             (fun x -> <@ x.ParamName = expectedParamName && (fixInvalidArgMessage x.Message) = expectedMessage @>)
 
     [<Test>]
     let ``Calling make, with valid parameters, returns command`` () =
-        let command = SelfServiceChangePasswordCommand.make (Guid.random ()) (Password.random 32) (Password.random 32)
+        let command = MemberChangePasswordCommand.make (Guid.random ()) (Password.random 32) (Password.random 32)
 
-        box command :? IRequest<ISelfServiceChangePasswordCommandResult> =! true
+        box command :? IRequest<IMemberChangePasswordCommandResult> =! true
 
     [<Test>]
     let ``Calling id, returns expected id`` () =
         let expectedId = Guid.random ()
 
-        let command = SelfServiceChangePasswordCommand.make expectedId (Password.random 32) (Password.random 32)
+        let command = MemberChangePasswordCommand.make expectedId (Password.random 32) (Password.random 32)
 
         command.Id =! expectedId
 
@@ -215,7 +215,7 @@ module SelfServiceChangePasswordCommandTests =
         let expectedCurrentPassword = Password.random 32
 
         let command =
-            SelfServiceChangePasswordCommand.make (Guid.random ()) expectedCurrentPassword (Password.random 32)
+            MemberChangePasswordCommand.make (Guid.random ()) expectedCurrentPassword (Password.random 32)
 
         command.CurrentPassword =! expectedCurrentPassword
 
@@ -223,6 +223,6 @@ module SelfServiceChangePasswordCommandTests =
     let ``Calling new password, returns expected new password`` () =
         let expectedNewPassword = Password.random 32
 
-        let command = SelfServiceChangePasswordCommand.make (Guid.random ()) (Password.random 32) expectedNewPassword
+        let command = MemberChangePasswordCommand.make (Guid.random ()) (Password.random 32) expectedNewPassword
 
         command.NewPassword =! expectedNewPassword

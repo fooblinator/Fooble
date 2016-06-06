@@ -5,15 +5,15 @@ open Fooble.Persistence
 open MediatR
 open System
 
-/// Provides command-related helpers for self-service change password.
+/// Provides command-related helpers for member change password.
 [<RequireQualifiedAccess>]
-module SelfServiceChangePasswordCommand =
+module MemberChangePasswordCommand =
 
     [<DefaultAugmentation(false)>]
-    type private SelfServiceChangePasswordCommandImplementation =
+    type private MemberChangePasswordCommandImpl =
         | Command of id:Guid * currentPassword:string * newPassword:string
 
-        interface ISelfServiceChangePasswordCommand with
+        interface IMemberChangePasswordCommand with
 
             member this.Id
                 with get() =
@@ -49,26 +49,26 @@ module SelfServiceChangePasswordCommand =
         ValidationResult.makeInvalid paramName message
 
     /// <summary>
-    /// Constructs a self-service change password command.
+    /// Constructs a member change password command.
     /// </summary>
     /// <param name="id">The id that represents the member.</param>
     /// <param name="currentPassword">The current password of the member.</param>
     /// <param name="newPassword">The new password of the member.</param>
-    /// <returns>Returns a self-service change password command.</returns>
+    /// <returns>Returns a member change password command.</returns>
     [<CompiledName("Make")>]
     let make id currentPassword newPassword =
         enforce (Member.validateId id)
         enforce (validateCurrentPassword currentPassword)
         enforce (validateNewPassword newPassword)
-        Command(id, currentPassword, newPassword) :> ISelfServiceChangePasswordCommand
+        Command(id, currentPassword, newPassword) :> IMemberChangePasswordCommand
 
     [<DefaultAugmentation(false)>]
-    type private SelfServiceChangePasswordCommandResultImplementation =
+    type private MemberChangePasswordCommandResultImpl =
         | Success
         | NotFound
         | Invalid
 
-        interface ISelfServiceChangePasswordCommandResult with
+        interface IMemberChangePasswordCommandResult with
 
             member this.IsSuccess
                 with get() =
@@ -88,13 +88,13 @@ module SelfServiceChangePasswordCommand =
                     | Invalid -> true
                     | _ -> false
 
-    let internal successResult = Success :> ISelfServiceChangePasswordCommandResult
-    let internal notFoundResult = NotFound :> ISelfServiceChangePasswordCommandResult
-    let internal invalidResult = Invalid :> ISelfServiceChangePasswordCommandResult
+    let internal successResult = Success :> IMemberChangePasswordCommandResult
+    let internal notFoundResult = NotFound :> IMemberChangePasswordCommandResult
+    let internal invalidResult = Invalid :> IMemberChangePasswordCommandResult
 
     [<DefaultAugmentation(false)>]
     [<NoComparison>]
-    type private SelfServiceChangePasswordCommandHandlerImplementation =
+    type private MemberChangePasswordCommandHandlerImpl =
         | CommandHandler of context:IFoobleContext
 
         member private this.Context
@@ -102,7 +102,7 @@ module SelfServiceChangePasswordCommand =
                 match this with
                 | CommandHandler(context = x) -> x
 
-        interface IRequestHandler<ISelfServiceChangePasswordCommand, ISelfServiceChangePasswordCommandResult> with
+        interface IRequestHandler<IMemberChangePasswordCommand, IMemberChangePasswordCommandResult> with
 
             member this.Handle(message) =
                 assert (isNotNull <| box message)
@@ -123,5 +123,4 @@ module SelfServiceChangePasswordCommand =
                 successResult
 
     let internal makeHandler context =
-        CommandHandler(context) :>
-            IRequestHandler<ISelfServiceChangePasswordCommand, ISelfServiceChangePasswordCommandResult>
+        CommandHandler(context) :> IRequestHandler<IMemberChangePasswordCommand, IMemberChangePasswordCommandResult>

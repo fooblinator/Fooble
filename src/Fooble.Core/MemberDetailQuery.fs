@@ -11,7 +11,7 @@ open System
 module MemberDetailQuery =
 
     [<DefaultAugmentation(false)>]
-    type private MemberDetailQueryImplementation =
+    type private MemberDetailQueryImpl =
         | Query of id:Guid
 
         interface IMemberDetailQuery with
@@ -33,7 +33,7 @@ module MemberDetailQuery =
 
     [<DefaultAugmentation(false)>]
     [<NoComparison>]
-    type private MemberDetailQueryResultImplementation =
+    type private MemberDetailQueryResultImpl =
         | Success of readModel:IMemberDetailReadModel
         | NotFound
 
@@ -62,7 +62,7 @@ module MemberDetailQuery =
 
     [<DefaultAugmentation(false)>]
     [<NoComparison>]
-    type private MemberDetailQueryHandlerImplementation =
+    type private MemberDetailQueryHandlerImpl =
         | QueryHandler of context:IFoobleContext * readModelFactory:MemberDetailReadModelFactory
 
         member private this.Context

@@ -5,15 +5,15 @@ open Fooble.Persistence
 open MediatR
 open System
 
-/// Provides command-related helpers for self-service register.
+/// Provides command-related helpers for member register.
 [<RequireQualifiedAccess>]
-module SelfServiceRegisterCommand =
+module MemberRegisterCommand =
 
     [<DefaultAugmentation(false)>]
-    type private SelfServiceRegisterCommandImplementation =
+    type private MemberRegisterCommandImpl =
         | Command of id:Guid * username:string * password:string * email:string * nickname:string
 
-        interface ISelfServiceRegisterCommand with
+        interface IMemberRegisterCommand with
 
             member this.Id
                 with get() =
@@ -41,14 +41,14 @@ module SelfServiceRegisterCommand =
                     | Command(nickname = x) -> x
 
     /// <summary>
-    /// Constructs a self-service register command.
+    /// Constructs a member register command.
     /// </summary>
     /// <param name="id">The id that will potentially represent the member.</param>
     /// <param name="username">The username of the potential member.</param>
     /// <param name="password">The password of the potential member.</param>
     /// <param name="email">The email of the potential member.</param>
     /// <param name="nickname">The nickname of the potential member.</param>
-    /// <returns>Returns a self-service register command.</returns>
+    /// <returns>Returns a member register command.</returns>
     [<CompiledName("Make")>]
     let make id username password email nickname =
         enforce (Member.validateId id)
@@ -56,15 +56,15 @@ module SelfServiceRegisterCommand =
         enforce (Member.validatePassword password)
         enforce (Member.validateEmail email)
         enforce (Member.validateNickname nickname)
-        Command(id, username, password, email, nickname) :> ISelfServiceRegisterCommand
+        Command(id, username, password, email, nickname) :> IMemberRegisterCommand
 
     [<DefaultAugmentation(false)>]
-    type private SelfServiceRegisterCommandResultImplementation =
+    type private MemberRegisterCommandResultImpl =
         | Success
         | UsernameUnavailable
         | EmailUnavailable
 
-        interface ISelfServiceRegisterCommandResult with
+        interface IMemberRegisterCommandResult with
 
             member this.IsSuccess
                 with get() =
@@ -84,13 +84,13 @@ module SelfServiceRegisterCommand =
                     | EmailUnavailable -> true
                     | _ -> false
 
-    let internal successResult = Success :> ISelfServiceRegisterCommandResult
-    let internal usernameUnavailableResult = UsernameUnavailable :> ISelfServiceRegisterCommandResult
-    let internal emailUnavailableResult = EmailUnavailable :> ISelfServiceRegisterCommandResult
+    let internal successResult = Success :> IMemberRegisterCommandResult
+    let internal usernameUnavailableResult = UsernameUnavailable :> IMemberRegisterCommandResult
+    let internal emailUnavailableResult = EmailUnavailable :> IMemberRegisterCommandResult
 
     [<DefaultAugmentation(false)>]
     [<NoComparison>]
-    type private SelfServiceRegisterCommandHandlerImplementation =
+    type private MemberRegisterCommandHandlerImpl =
         | CommandHandler of context:IFoobleContext * memberDataFactory:MemberDataFactory
 
         member private this.Context
@@ -103,7 +103,7 @@ module SelfServiceRegisterCommand =
                 match this with
                 | CommandHandler(memberDataFactory = x) -> x
 
-        interface IRequestHandler<ISelfServiceRegisterCommand, ISelfServiceRegisterCommandResult> with
+        interface IRequestHandler<IMemberRegisterCommand, IMemberRegisterCommandResult> with
 
             member this.Handle(message) =
                 assert (isNotNull <| box message)
@@ -128,4 +128,4 @@ module SelfServiceRegisterCommand =
 
     let internal makeHandler context memberDataFactory =
         CommandHandler(context, memberDataFactory) :>
-            IRequestHandler<ISelfServiceRegisterCommand, ISelfServiceRegisterCommandResult>
+            IRequestHandler<IMemberRegisterCommand, IMemberRegisterCommandResult>

@@ -1,14 +1,13 @@
 ﻿namespace Fooble.Presentation
 
 open Fooble.Common
-open Fooble.Core
 
 /// Provides presentation-related helpers for message display.
 [<RequireQualifiedAccess>]
 module MessageDisplayReadModel =
 
     [<DefaultAugmentation(false)>]
-    type private MessageDisplaySeverityImplementation =
+    type private MessageDisplaySeverityImpl =
         | Informational
         | Warning
         | Error
@@ -55,7 +54,7 @@ module MessageDisplayReadModel =
     let errorSeverity = Error :> IMessageDisplaySeverity
 
     [<DefaultAugmentation(false)>]
-    type private MessageDisplayReadModelImplementation =
+    type private MessageDisplayReadModelImpl =
         | ReadModel of heading:string * subHeading:string * statusCode:int * severity:IMessageDisplaySeverity *
               message:string
 

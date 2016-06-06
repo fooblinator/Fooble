@@ -28,9 +28,9 @@ module RegistrationsTests =
         let memberListQueryHandler = container.Resolve<IRequestHandler<IMemberListQuery, IMemberListQueryResult>>()
         isNull memberListQueryHandler =! false
 
-        let selfServiceRegisterCommandHandler =
-            container.Resolve<IRequestHandler<ISelfServiceRegisterCommand, ISelfServiceRegisterCommandResult>>()
-        isNull selfServiceRegisterCommandHandler =! false
+        let memberRegisterCommandHandler =
+            container.Resolve<IRequestHandler<IMemberRegisterCommand, IMemberRegisterCommandResult>>()
+        isNull memberRegisterCommandHandler =! false
 
     [<Test>]
     let ``Registering autofac container, properly registers expected single instance factory`` () =
@@ -57,9 +57,9 @@ module RegistrationsTests =
 
         let result =
             singleInstanceFactory
-                .Invoke(typeof<IRequestHandler<ISelfServiceRegisterCommand, ISelfServiceRegisterCommandResult>>)
+                .Invoke(typeof<IRequestHandler<IMemberRegisterCommand, IMemberRegisterCommandResult>>)
         isNull result =! false
-        result :? IRequestHandler<ISelfServiceRegisterCommand, ISelfServiceRegisterCommandResult> =! true
+        result :? IRequestHandler<IMemberRegisterCommand, IMemberRegisterCommandResult> =! true
 
     [<Test>]
     let ``Registering autofac container, properly registers expected multi instance factory`` () =
@@ -90,8 +90,8 @@ module RegistrationsTests =
 
         let result =
             multiInstanceFactory
-                .Invoke(typeof<IRequestHandler<ISelfServiceRegisterCommand, ISelfServiceRegisterCommandResult>>)
+                .Invoke(typeof<IRequestHandler<IMemberRegisterCommand, IMemberRegisterCommandResult>>)
         isNull result =! false
         Seq.length result =! 1
         let actualResult = (Seq.head result)
-        actualResult :? IRequestHandler<ISelfServiceRegisterCommand, ISelfServiceRegisterCommandResult> =! true
+        actualResult :? IRequestHandler<IMemberRegisterCommand, IMemberRegisterCommandResult> =! true

@@ -4,7 +4,6 @@ open Autofac
 open Fooble.Common
 open Fooble.Core
 open Fooble.Core.Infrastructure
-open Fooble.IntegrationTest
 open Fooble.Persistence
 open Fooble.Presentation
 open Fooble.Presentation.Infrastructure
@@ -27,7 +26,8 @@ module MemberControllerToQueryHandlerTests =
         use container = builder.Build()
 
         let mediator = container.Resolve<IMediator>()
-        ignore (new MemberController(mediator))
+        let keyGenerator = container.Resolve<KeyGenerator>()
+        ignore (new MemberController(mediator, keyGenerator))
 
     [<Test>]
     let ``Calling detail, with match in data store, returns expected result`` () =
@@ -49,7 +49,8 @@ module MemberControllerToQueryHandlerTests =
         use container = builder.Build()
 
         let mediator = container.Resolve<IMediator>()
-        let controller = new MemberController(mediator)
+        let keyGenerator = container.Resolve<KeyGenerator>()
+        use controller = new MemberController(mediator, keyGenerator)
         let result = controller.Detail(expectedId.ToString())
 
         contextMock.Verify()
@@ -85,7 +86,8 @@ module MemberControllerToQueryHandlerTests =
         use container = builder.Build()
 
         let mediator = container.Resolve<IMediator>()
-        let controller = new MemberController(mediator)
+        let keyGenerator = container.Resolve<KeyGenerator>()
+        use controller = new MemberController(mediator, keyGenerator)
         let result = controller.Detail(nonMatchingId.ToString())
 
         contextMock.Verify()
@@ -119,7 +121,8 @@ module MemberControllerToQueryHandlerTests =
         use container = builder.Build()
 
         let mediator = container.Resolve<IMediator>()
-        let controller = new MemberController(mediator)
+        let keyGenerator = container.Resolve<KeyGenerator>()
+        use controller = new MemberController(mediator, keyGenerator)
         let result = controller.List()
 
         contextMock.Verify()
@@ -153,7 +156,8 @@ module MemberControllerToQueryHandlerTests =
         use container = builder.Build()
 
         let mediator = container.Resolve<IMediator>()
-        let controller = new MemberController(mediator)
+        let keyGenerator = container.Resolve<KeyGenerator>()
+        use controller = new MemberController(mediator, keyGenerator)
         let result = controller.List()
 
         contextMock.Verify()
