@@ -48,7 +48,7 @@ module MemberChangePasswordCommand =
     type private MemberChangePasswordCommandResultImpl =
         | Success
         | NotFound
-        | Invalid
+        | IncorrectPassword
 
         interface IMemberChangePasswordCommandResult with
 
@@ -64,15 +64,15 @@ module MemberChangePasswordCommand =
                     | NotFound -> true
                     | _ -> false
 
-            member this.IsInvalid
+            member this.IsIncorrectPassword
                 with get() =
                     match this with
-                    | Invalid -> true
+                    | IncorrectPassword -> true
                     | _ -> false
 
     let internal successResult = Success :> IMemberChangePasswordCommandResult
     let internal notFoundResult = NotFound :> IMemberChangePasswordCommandResult
-    let internal invalidResult = Invalid :> IMemberChangePasswordCommandResult
+    let internal incorrectPasswordResult = IncorrectPassword :> IMemberChangePasswordCommandResult
 
     [<DefaultAugmentation(false)>]
     [<NoComparison>]
@@ -96,7 +96,7 @@ module MemberChangePasswordCommand =
                 | Some(x) ->
 
                 match Crypto.verify x.PasswordData message.CurrentPassword with
-                | false -> invalidResult
+                | false -> incorrectPasswordResult
                 | _ ->
 
                 let iterations = Random().Next(100000, 101000)

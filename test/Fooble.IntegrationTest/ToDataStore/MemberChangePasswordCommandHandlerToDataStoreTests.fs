@@ -36,7 +36,7 @@ module MemberChangePasswordCommandHandlerToDataStoreTests =
 
         commandResult.IsNotFound =! true
         commandResult.IsSuccess =! false
-        commandResult.IsInvalid =! false
+        commandResult.IsIncorrectPassword =! false
 
     [<Test>]
     let ``Calling handle, with invalid password, and returns expected result`` () =
@@ -68,7 +68,7 @@ module MemberChangePasswordCommandHandlerToDataStoreTests =
         let command = MemberChangePasswordCommand.make expectedId (Password.random 32) (Password.random 32)
         let commandResult = handler.Handle(command)
 
-        commandResult.IsInvalid =! true
+        commandResult.IsIncorrectPassword =! true
         commandResult.IsSuccess =! false
         commandResult.IsNotFound =! false
 
@@ -108,7 +108,7 @@ module MemberChangePasswordCommandHandlerToDataStoreTests =
 
         commandResult.IsSuccess =! true
         commandResult.IsNotFound =! false
-        commandResult.IsInvalid =! false
+        commandResult.IsIncorrectPassword =! false
 
         memberData.PasswordData <>! currentPasswordData
 

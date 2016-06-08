@@ -68,7 +68,7 @@ module MemberChangePasswordExtensions =
         ensureWith (validateRequired result "result" "Result")
         ensureWith (validateRequired modelState "modelState" "Model state")
         match result with
-        | x when x.IsInvalid -> modelState.AddModelError("currentPassword", "Current password is incorrect")
+        | x when x.IsIncorrectPassword -> modelState.AddModelError("currentPassword", "Current password is incorrect")
         | _ -> ()
 
     /// <summary>
@@ -86,7 +86,7 @@ module MemberChangePasswordExtensions =
         | x when x.IsNotFound ->
               MessageDisplayReadModel.make "Member" "Change Password" 404 MessageDisplayReadModel.warningSeverity
                   "No matching member could be found."
-        | x when x.IsInvalid ->
+        | x when x.IsIncorrectPassword ->
               MessageDisplayReadModel.make "Member" "Change Password" 400 MessageDisplayReadModel.warningSeverity
                   "Supplied password is invalid."
         | _ -> invalidOp "Result was not unsuccessful"

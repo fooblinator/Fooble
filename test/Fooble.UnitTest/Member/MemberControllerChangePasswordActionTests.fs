@@ -431,7 +431,7 @@ module MemberControllerChangePasswordActionTests =
         let expectedNewPassword = Password.random 32
         let expectedConfirmPassword = expectedNewPassword
 
-        let commandResult = MemberChangePasswordCommand.invalidResult
+        let commandResult = MemberChangePasswordCommand.incorrectPasswordResult
         let mediatorMock = Mock<IMediator>()
         mediatorMock.SetupFunc(fun x -> x.Send(any ())).Returns(commandResult).Verifiable()
 

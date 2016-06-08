@@ -21,7 +21,7 @@ module MemberChangePasswordCommandResultTests =
 
     [<Test>]
     let ``Calling is success, with invalid command result, returns false`` () =
-        let commandResult = MemberChangePasswordCommand.invalidResult
+        let commandResult = MemberChangePasswordCommand.incorrectPasswordResult
 
         commandResult.IsSuccess =! false
 
@@ -39,7 +39,7 @@ module MemberChangePasswordCommandResultTests =
 
     [<Test>]
     let ``Calling is not found, with invalid command result, returns false`` () =
-        let commandResult = MemberChangePasswordCommand.invalidResult
+        let commandResult = MemberChangePasswordCommand.incorrectPasswordResult
 
         commandResult.IsNotFound =! false
 
@@ -47,16 +47,16 @@ module MemberChangePasswordCommandResultTests =
     let ``Calling is invalid, with success command result, returns false`` () =
         let commandResult = MemberChangePasswordCommand.successResult
 
-        commandResult.IsInvalid =! false
+        commandResult.IsIncorrectPassword =! false
 
     [<Test>]
     let ``Calling is invalid, with not found command result, returns false`` () =
         let commandResult = MemberChangePasswordCommand.notFoundResult
 
-        commandResult.IsInvalid =! false
+        commandResult.IsIncorrectPassword =! false
 
     [<Test>]
     let ``Calling is invalid, with invalid command result, returns true`` () =
-        let commandResult = MemberChangePasswordCommand.invalidResult
+        let commandResult = MemberChangePasswordCommand.incorrectPasswordResult
 
-        commandResult.IsInvalid =! true
+        commandResult.IsIncorrectPassword =! true

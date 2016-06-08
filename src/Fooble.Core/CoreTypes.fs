@@ -73,7 +73,7 @@ type IMemberListQuery =
 /// <summary>
 /// Represents the status of a member change password command.
 /// </summary>
-/// <remarks>The result is only one of "success", "not found" or "invalid".</remarks>
+/// <remarks>The result is only one of "success", "not found" or "incorrect password".</remarks>
 type IMemberChangePasswordCommandResult =
     /// Whether the result is "success" (or not).
     abstract IsSuccess:bool with get
@@ -81,8 +81,8 @@ type IMemberChangePasswordCommandResult =
     /// Whether the result is "not found" (or not).
     abstract IsNotFound:bool with get
 
-    /// Whether the result is "invalid" (or not).
-    abstract IsInvalid:bool with get
+    /// Whether the result is "incorrect password" (or not).
+    abstract IsIncorrectPassword:bool with get
 
 
 /// Represents the member change password command.

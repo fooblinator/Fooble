@@ -27,7 +27,7 @@ module MemberChangePasswordCommandHandlerTests =
 
         commandResult.IsNotFound =! true
         commandResult.IsSuccess =! false
-        commandResult.IsInvalid =! false
+        commandResult.IsIncorrectPassword =! false
 
     [<Test>]
     let ``Calling handle, with invalid password, and returns expected result`` () =
@@ -45,7 +45,7 @@ module MemberChangePasswordCommandHandlerTests =
 
         contextMock.Verify()
 
-        commandResult.IsInvalid =! true
+        commandResult.IsIncorrectPassword =! true
         commandResult.IsSuccess =! false
         commandResult.IsNotFound =! false
 
@@ -71,7 +71,7 @@ module MemberChangePasswordCommandHandlerTests =
 
         commandResult.IsSuccess =! true
         commandResult.IsNotFound =! false
-        commandResult.IsInvalid =! false
+        commandResult.IsIncorrectPassword =! false
 
         memberData.PasswordData <>! expectedPasswordData
 
