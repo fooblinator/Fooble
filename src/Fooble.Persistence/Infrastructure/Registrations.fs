@@ -17,12 +17,13 @@ type PersistenceRegistrations =
     /// </summary>
     /// <param name="connectionString">The connection string to use.</param>
     new(connectionString) =
-        [ (String.isNotNullOrEmpty), "Connection string is required" ]
-        |> validate connectionString "connectionString" |> enforce
+        ensureOn connectionString "connectionString" [ (String.isNotNullOrEmpty), "Connection string is required" ]
         { ConnectionString = connectionString }
 
     override this.Load(builder:ContainerBuilder) =
-        assert (isNotNull builder)
+#if DEBUG
+        assertWith (validateRequired builder "builder" "Builder")
+#endif
 
         ignore (builder.Register(fun _ ->
             EntityConnection.GetDataContext(this.ConnectionString).DataContext :?> FoobleContext |> wrapFoobleContext))

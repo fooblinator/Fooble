@@ -30,6 +30,79 @@ module MemberControllerToQueryHandlerTests =
         ignore (new MemberController(mediator, keyGenerator))
 
     [<Test>]
+    let ``Calling change password, with matching member id in data store, returns expected result`` () =
+        let matchingId = Guid.random ()
+        let emptyCurrentPassword = String.empty
+        let emptyNewPassword = String.empty
+        let emptyConfirmPassword = String.empty
+
+        let contextMock = Mock<IFoobleContext>()
+        contextMock.SetupFunc(fun x -> x.ExistsMemberId(any ())).Returns(true).Verifiable()
+
+        let builder = ContainerBuilder()
+        ignore (builder.RegisterModule(CoreRegistrations(contextMock.Object, mock ())))
+        ignore (builder.RegisterModule(PresentationRegistrations()))
+        use container = builder.Build()
+
+        let mediator = container.Resolve<IMediator>()
+        let keyGenerator = container.Resolve<KeyGenerator>()
+        use controller = new MemberController(mediator, keyGenerator)
+
+        let result = controller.ChangePassword(matchingId)
+
+        contextMock.Verify()
+
+        isNull result =! false
+        result :? ViewResult =! true
+
+        let viewResult = result :?> ViewResult
+
+        String.isEmpty viewResult.ViewName =! true
+        isNull viewResult.Model =! false
+        viewResult.Model :? IMemberChangePasswordViewModel =! true
+
+        let actualViewModel = viewResult.Model :?> IMemberChangePasswordViewModel
+        testMemberChangePasswordViewModel actualViewModel emptyCurrentPassword emptyNewPassword emptyConfirmPassword
+
+    [<Test>]
+    let ``Calling change password, with no matching member id in data store, returns expected result`` () =
+        let nonMatchingId = Guid.random ()
+        let expectedHeading = "Member"
+        let expectedSubHeading = String.empty
+        let expectedStatusCode = 404
+        let expectedSeverity = MessageDisplayReadModel.warningSeverity
+        let expectedMessage = "No matching member could be found."
+
+        let contextMock = Mock<IFoobleContext>()
+        contextMock.SetupFunc(fun x -> x.ExistsMemberId(any ())).Returns(false).Verifiable()
+
+        let builder = ContainerBuilder()
+        ignore (builder.RegisterModule(CoreRegistrations(contextMock.Object, mock ())))
+        ignore (builder.RegisterModule(PresentationRegistrations()))
+        use container = builder.Build()
+
+        let mediator = container.Resolve<IMediator>()
+        let keyGenerator = container.Resolve<KeyGenerator>()
+        use controller = new MemberController(mediator, keyGenerator)
+
+        let result = controller.ChangePassword(nonMatchingId)
+
+        contextMock.Verify()
+
+        isNull result =! false
+        result :? ViewResult =! true
+
+        let viewResult = result :?> ViewResult
+
+        viewResult.ViewName =! "MessageDisplay"
+        isNull viewResult.Model =! false
+        viewResult.Model :? IMessageDisplayReadModel =! true
+
+        let actualReadModel = viewResult.Model :?> IMessageDisplayReadModel
+        testMessageDisplayReadModel actualReadModel expectedHeading expectedSubHeading expectedStatusCode
+            expectedSeverity expectedMessage
+
+    [<Test>]
     let ``Calling detail, with match in data store, returns expected result`` () =
         let expectedId = Guid.random ()
         let expectedUsername = String.random 32
@@ -41,7 +114,7 @@ module MemberControllerToQueryHandlerTests =
         let passwordData = Crypto.hash (Password.random 32) 100
         let memberData = makeTestMemberData2 expectedId expectedUsername passwordData expectedEmail expectedNickname
         let contextMock = Mock<IFoobleContext>()
-        contextMock.SetupFunc(fun x -> x.GetMember(any ())).Returns(Some memberData).Verifiable()
+        contextMock.SetupFunc(fun x -> x.GetMember(any ())).Returns(Some(memberData)).Verifiable()
 
         let builder = ContainerBuilder()
         ignore (builder.RegisterModule(CoreRegistrations(contextMock.Object, mock ())))
@@ -51,7 +124,7 @@ module MemberControllerToQueryHandlerTests =
         let mediator = container.Resolve<IMediator>()
         let keyGenerator = container.Resolve<KeyGenerator>()
         use controller = new MemberController(mediator, keyGenerator)
-        let result = controller.Detail(expectedId.ToString())
+        let result = controller.Detail(expectedId)
 
         contextMock.Verify()
 
@@ -88,7 +161,7 @@ module MemberControllerToQueryHandlerTests =
         let mediator = container.Resolve<IMediator>()
         let keyGenerator = container.Resolve<KeyGenerator>()
         use controller = new MemberController(mediator, keyGenerator)
-        let result = controller.Detail(nonMatchingId.ToString())
+        let result = controller.Detail(nonMatchingId)
 
         contextMock.Verify()
 

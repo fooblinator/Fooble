@@ -80,13 +80,16 @@ type IMemberListItemReadModel =
 
 /// Contains a list of members' information, for the purpose of presentation.
 type IMemberListReadModel =
-    
+
     /// The list of members' information.
     abstract Members:seq<IMemberListItemReadModel>
 
 
 /// Contains a member's password change information to be submitted.
 type IMemberChangePasswordViewModel =
+
+    /// The id that represents the member.
+    abstract Id:Guid with get
 
     /// The current password of the member.
     [<DataType(DataType.Password)>]

@@ -26,14 +26,14 @@ type CoreRegistrations =
     /// <param name="context">The data context to use.</param>
     /// <param name="memberDataFactory">The member data factory to use.</param>
     new(context, memberDataFactory) =
-        [ (box >> isNotNull), "Context is required" ]
-        |> validate context "context" |> enforce
-        [ (box >> isNotNull), "Member data factory is required" ]
-        |> validate memberDataFactory "memberDataFactory" |> enforce
-        { Context = Some context; MemberDataFactory = Some memberDataFactory }
+        ensureWith (validateRequired context "context" "Context")
+        ensureWith (validateRequired memberDataFactory "memberDataFactory" "Member data factory")
+        { Context = Some(context); MemberDataFactory = Some(memberDataFactory) }
 
     override this.Load(builder:ContainerBuilder) =
-        assert (isNotNull builder)
+#if DEBUG
+        assertWith (validateRequired builder "builder" "Builder")
+#endif
 
         (* MediatR *)
 
@@ -60,8 +60,12 @@ type CoreRegistrations =
 
         ignore (builder.Register(fun _ -> KeyGenerator(fun () -> Guid.random ())))
 
+        ignore (builder.Register(fun x -> MemberChangePasswordCommand.makeHandler (x.Resolve<IFoobleContext>())))
+
         ignore (builder.Register(fun x ->
             MemberDetailQuery.makeHandler (x.Resolve<IFoobleContext>()) (x.Resolve<MemberDetailReadModelFactory>())))
+
+        ignore (builder.Register(fun x -> MemberExistsQuery.makeHandler (x.Resolve<IFoobleContext>())))
 
         ignore (builder.Register(fun x ->
             MemberListQuery.makeHandler (x.Resolve<IFoobleContext>()) (x.Resolve<MemberListItemReadModelFactory>())

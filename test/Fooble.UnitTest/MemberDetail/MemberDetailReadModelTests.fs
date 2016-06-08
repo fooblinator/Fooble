@@ -1,7 +1,6 @@
 ﻿namespace Fooble.UnitTest
 
 open Fooble.Common
-open Fooble.Presentation
 open NUnit.Framework
 open Swensen.Unquote
 open System
@@ -54,8 +53,8 @@ module MemberDetailReadModelTests =
         let expectedRegistered = DateTime.UtcNow
 
         let readModel =
-            makeTestMemberDetailReadModel (Guid.random ()) (String.random 32) (EmailAddress.random 32) (String.random 64)
-                expectedRegistered DateTime.UtcNow
+            makeTestMemberDetailReadModel (Guid.random ()) (String.random 32) (EmailAddress.random 32)
+                (String.random 64) expectedRegistered DateTime.UtcNow
 
         readModel.Registered =! expectedRegistered
 
@@ -64,7 +63,7 @@ module MemberDetailReadModelTests =
         let expectedPasswordChanged = DateTime.UtcNow
 
         let readModel =
-            makeTestMemberDetailReadModel (Guid.random ()) (String.random 32) (EmailAddress.random 32) (String.random 64)
-                DateTime.UtcNow expectedPasswordChanged
+            makeTestMemberDetailReadModel (Guid.random ()) (String.random 32) (EmailAddress.random 32)
+                (String.random 64) DateTime.UtcNow expectedPasswordChanged
 
         readModel.PasswordChanged =! expectedPasswordChanged

@@ -13,6 +13,9 @@
         @Html.DisplayFor(model => model.Username)
     </dd>
 
+    <dt>Password</dt>
+    <dd>@Html.ActionLink("Change", "ChangePassword", new { id = Model.Id })</dd>
+
     <dt>
         @Html.DisplayNameFor(model => model.Email)
     </dt>
@@ -46,7 +49,5 @@
     </dd>
 
 </dl>
-
-<br />
 
 <p>@Html.ActionLink("Back to List", "List")</p>

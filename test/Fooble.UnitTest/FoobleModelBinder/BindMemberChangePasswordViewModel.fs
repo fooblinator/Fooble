@@ -8,286 +8,177 @@ open Swensen.Unquote
 module BindMemberChangePasswordViewModel =
 
     [<Test>]
-    let ``Binding to a member change password view model, with null current password, adds expected model state error`` () =
-        let nullCurrentPassword:string = null
-        let expectedNewPassword = Password.random 32
-        let expectedConfirmPassword = expectedNewPassword
-
-        let (actualViewModel, modelState) =
-            bindMemberChangePasswordViewModel nullCurrentPassword expectedNewPassword expectedConfirmPassword
-
-        testMemberChangePasswordViewModel actualViewModel nullCurrentPassword expectedNewPassword
-            expectedConfirmPassword
-
-        testModelState modelState "password" "Password is required"
-
-    [<Test>]
-    let ``Binding to a member change password view model, with empty current password, adds expected model state error`` () =
-        let emptyCurrentPassword = String.empty
-        let expectedNewPassword = Password.random 32
-        let expectedConfirmPassword = expectedNewPassword
-
-        let (actualViewModel, modelState) =
-            bindMemberChangePasswordViewModel emptyCurrentPassword expectedNewPassword expectedConfirmPassword
-
-        testMemberChangePasswordViewModel actualViewModel emptyCurrentPassword expectedNewPassword
-            expectedConfirmPassword
-
-        testModelState modelState "password" "Password is required"
-
-    [<Test>]
-    let ``Binding to a member change password view model, with current password shorter than 8 characters, adds expected model state error`` () =
-        let shortCurrentPassword = Password.random 7
-        let expectedNewPassword = Password.random 32
-        let expectedConfirmPassword = expectedNewPassword
-
-        let (actualViewModel, modelState) =
-            bindMemberChangePasswordViewModel shortCurrentPassword expectedNewPassword expectedConfirmPassword
-
-        testMemberChangePasswordViewModel actualViewModel shortCurrentPassword expectedNewPassword
-            expectedConfirmPassword
-
-        testModelState modelState "password" "Password is shorter than 8 characters"
-
-    [<Test>]
-    let ``Binding to a member change password view model, with current password longer than 32 characters, adds expected model state error`` () =
-        let longCurrentPassword = Password.random 33
-        let expectedNewPassword = Password.random 32
-        let expectedConfirmPassword = expectedNewPassword
-
-        let (actualViewModel, modelState) =
-            bindMemberChangePasswordViewModel longCurrentPassword expectedNewPassword expectedConfirmPassword
-
-        testMemberChangePasswordViewModel actualViewModel longCurrentPassword expectedNewPassword
-            expectedConfirmPassword
-
-        testModelState modelState "password" "Password is longer than 32 characters"
-
-    [<Test>]
-    let ``Binding to a member change password view model, with current password without digits, adds expected model state error`` () =
-        let noDigitsCurrentPassword = makeBadPasswordWithoutDigits 32
-        let expectedNewPassword = Password.random 32
-        let expectedConfirmPassword = expectedNewPassword
-
-        let (actualViewModel, modelState) =
-            bindMemberChangePasswordViewModel noDigitsCurrentPassword expectedNewPassword expectedConfirmPassword
-
-        testMemberChangePasswordViewModel actualViewModel noDigitsCurrentPassword expectedNewPassword
-            expectedConfirmPassword
-
-        testModelState modelState "password" "Password does not contain any numbers"
-
-    [<Test>]
-    let ``Binding to a member change password view model, with current password without lower alphas, adds expected model state error`` () =
-        let noLowerAlphasCurrentPassword = makeBadPasswordWithoutLowerAlphas 32
-        let expectedNewPassword = Password.random 32
-        let expectedConfirmPassword = expectedNewPassword
-
-        let (actualViewModel, modelState) =
-            bindMemberChangePasswordViewModel noLowerAlphasCurrentPassword expectedNewPassword expectedConfirmPassword
-
-        testMemberChangePasswordViewModel actualViewModel noLowerAlphasCurrentPassword expectedNewPassword
-            expectedConfirmPassword
-
-        testModelState modelState "password" "Password does not contain any lower-case letters"
-
-    [<Test>]
-    let ``Binding to a member change password view model, with current password without upper alphas, adds expected model state error`` () =
-        let noUpperAlphasCurrentPassword = makeBadPasswordWithoutUpperAlphas 32
-        let expectedNewPassword = Password.random 32
-        let expectedConfirmPassword = expectedNewPassword
-
-        let (actualViewModel, modelState) =
-            bindMemberChangePasswordViewModel noUpperAlphasCurrentPassword expectedNewPassword expectedConfirmPassword
-
-        testMemberChangePasswordViewModel actualViewModel noUpperAlphasCurrentPassword expectedNewPassword
-            expectedConfirmPassword
-
-        testModelState modelState "password" "Password does not contain any upper-case letters"
-
-    [<Test>]
-    let ``Binding to a member change password view model, with current password without special chars, adds expected model state error`` () =
-        let noSpecialCharsCurrentPassword = makeBadPasswordWithoutSpecialChars 32
-        let expectedNewPassword = Password.random 32
-        let expectedConfirmPassword = expectedNewPassword
-
-        let (actualViewModel, modelState) =
-            bindMemberChangePasswordViewModel noSpecialCharsCurrentPassword expectedNewPassword expectedConfirmPassword
-
-        testMemberChangePasswordViewModel actualViewModel noSpecialCharsCurrentPassword expectedNewPassword
-            expectedConfirmPassword
-
-        testModelState modelState "password" "Password does not contain any special characters"
-
-    [<Test>]
-    let ``Binding to a member change password view model, with current password without invalid chars, adds expected model state error`` () =
-        let invalidCharsCurrentPassword = makeBadPasswordWithInvalidChars 32
-        let expectedNewPassword = Password.random 32
-        let expectedConfirmPassword = expectedNewPassword
-
-        let (actualViewModel, modelState) =
-            bindMemberChangePasswordViewModel invalidCharsCurrentPassword expectedNewPassword expectedConfirmPassword
-
-        testMemberChangePasswordViewModel actualViewModel invalidCharsCurrentPassword expectedNewPassword
-            expectedConfirmPassword
-
-        testModelState modelState "password" "Password contains invalid characters"
-
-    [<Test>]
     let ``Binding to a member change password view model, with null new password, adds expected model state error`` () =
+        let expectedId = Guid.random ()
         let expectedCurrentPassword = Password.random 32
         let nullNewPassword:string = null
         let expectedConfirmPassword = nullNewPassword
 
         let (actualViewModel, modelState) =
-            bindMemberChangePasswordViewModel expectedCurrentPassword nullNewPassword expectedConfirmPassword
+            bindMemberChangePasswordViewModel expectedId expectedCurrentPassword nullNewPassword
+                expectedConfirmPassword
 
-        testMemberChangePasswordViewModel actualViewModel expectedCurrentPassword nullNewPassword
+        testMemberChangePasswordViewModel actualViewModel expectedId expectedCurrentPassword nullNewPassword
             expectedConfirmPassword
 
-        testModelState modelState "password" "Password is required"
+        testModelState modelState "newPassword" "New password is required"
 
     [<Test>]
     let ``Binding to a member change password view model, with empty new password, adds expected model state error`` () =
+        let expectedId = Guid.random ()
         let expectedCurrentPassword = Password.random 32
         let emptyNewPassword = String.empty
         let expectedConfirmPassword = emptyNewPassword
 
         let (actualViewModel, modelState) =
-            bindMemberChangePasswordViewModel expectedCurrentPassword emptyNewPassword expectedConfirmPassword
+            bindMemberChangePasswordViewModel expectedId expectedCurrentPassword emptyNewPassword
+                expectedConfirmPassword
 
-        testMemberChangePasswordViewModel actualViewModel expectedCurrentPassword emptyNewPassword
+        testMemberChangePasswordViewModel actualViewModel expectedId expectedCurrentPassword emptyNewPassword
             expectedConfirmPassword
 
-        testModelState modelState "password" "Password is required"
+        testModelState modelState "newPassword" "New password is required"
 
     [<Test>]
     let ``Binding to a member change password view model, with new password shorter than 8 characters, adds expected model state error`` () =
+        let expectedId = Guid.random ()
         let expectedCurrentPassword = Password.random 32
         let shortNewPassword = Password.random 7
         let expectedConfirmPassword = shortNewPassword
 
         let (actualViewModel, modelState) =
-            bindMemberChangePasswordViewModel expectedCurrentPassword shortNewPassword expectedConfirmPassword
+            bindMemberChangePasswordViewModel expectedId expectedCurrentPassword shortNewPassword
+                expectedConfirmPassword
 
-        testMemberChangePasswordViewModel actualViewModel expectedCurrentPassword shortNewPassword
+        testMemberChangePasswordViewModel actualViewModel expectedId expectedCurrentPassword shortNewPassword
             expectedConfirmPassword
 
-        testModelState modelState "password" "Password is shorter than 8 characters"
+        testModelState modelState "newPassword" "New password is shorter than 8 characters"
 
     [<Test>]
     let ``Binding to a member change password view model, with new password longer than 32 characters, adds expected model state error`` () =
+        let expectedId = Guid.random ()
         let expectedCurrentPassword = Password.random 32
         let longNewPassword = Password.random 33
         let expectedConfirmPassword = longNewPassword
 
         let (actualViewModel, modelState) =
-            bindMemberChangePasswordViewModel expectedCurrentPassword longNewPassword expectedConfirmPassword
+            bindMemberChangePasswordViewModel expectedId expectedCurrentPassword longNewPassword
+                expectedConfirmPassword
 
-        testMemberChangePasswordViewModel actualViewModel expectedCurrentPassword longNewPassword
+        testMemberChangePasswordViewModel actualViewModel expectedId expectedCurrentPassword longNewPassword
             expectedConfirmPassword
 
-        testModelState modelState "password" "Password is longer than 32 characters"
+        testModelState modelState "newPassword" "New password is longer than 32 characters"
 
     [<Test>]
     let ``Binding to a member change password view model, with new password without digits, adds expected model state error`` () =
+        let expectedId = Guid.random ()
         let expectedCurrentPassword = Password.random 32
         let noDigitsNewPassword = makeBadPasswordWithoutDigits 32
         let expectedConfirmPassword = noDigitsNewPassword
 
         let (actualViewModel, modelState) =
-            bindMemberChangePasswordViewModel expectedCurrentPassword noDigitsNewPassword expectedConfirmPassword
+            bindMemberChangePasswordViewModel expectedId expectedCurrentPassword noDigitsNewPassword
+                expectedConfirmPassword
 
-        testMemberChangePasswordViewModel actualViewModel expectedCurrentPassword noDigitsNewPassword
+        testMemberChangePasswordViewModel actualViewModel expectedId expectedCurrentPassword noDigitsNewPassword
             expectedConfirmPassword
 
-        testModelState modelState "password" "Password does not contain any numbers"
+        testModelState modelState "newPassword" "New password does not contain any numbers"
 
     [<Test>]
     let ``Binding to a member change password view model, with new password without lower alphas, adds expected model state error`` () =
+        let expectedId = Guid.random ()
         let expectedCurrentPassword = Password.random 32
         let noLowerAlphasNewPassword = makeBadPasswordWithoutLowerAlphas 32
         let expectedConfirmPassword = noLowerAlphasNewPassword
 
         let (actualViewModel, modelState) =
-            bindMemberChangePasswordViewModel expectedCurrentPassword noLowerAlphasNewPassword
+            bindMemberChangePasswordViewModel expectedId expectedCurrentPassword noLowerAlphasNewPassword
                 expectedConfirmPassword
 
-        testMemberChangePasswordViewModel actualViewModel expectedCurrentPassword noLowerAlphasNewPassword
-            expectedConfirmPassword
+        testMemberChangePasswordViewModel actualViewModel expectedId expectedCurrentPassword
+            noLowerAlphasNewPassword expectedConfirmPassword
 
-        testModelState modelState "password" "Password does not contain any lower-case letters"
+        testModelState modelState "newPassword" "New password does not contain any lower-case letters"
 
     [<Test>]
     let ``Binding to a member change password view model, with new password without upper alphas, adds expected model state error`` () =
+        let expectedId = Guid.random ()
         let expectedCurrentPassword = Password.random 32
         let noUpperAlphasNewPassword = makeBadPasswordWithoutUpperAlphas 32
         let expectedConfirmPassword = noUpperAlphasNewPassword
 
         let (actualViewModel, modelState) =
-            bindMemberChangePasswordViewModel expectedCurrentPassword noUpperAlphasNewPassword
+            bindMemberChangePasswordViewModel expectedId expectedCurrentPassword noUpperAlphasNewPassword
                 expectedConfirmPassword
 
-        testMemberChangePasswordViewModel actualViewModel expectedCurrentPassword noUpperAlphasNewPassword
-            expectedConfirmPassword
+        testMemberChangePasswordViewModel actualViewModel expectedId expectedCurrentPassword
+            noUpperAlphasNewPassword expectedConfirmPassword
 
-        testModelState modelState "password" "Password does not contain any upper-case letters"
+        testModelState modelState "newPassword" "New password does not contain any upper-case letters"
 
     [<Test>]
     let ``Binding to a member change password view model, with new password without special chars, adds expected model state error`` () =
+        let expectedId = Guid.random ()
         let expectedCurrentPassword = Password.random 32
         let noSpecialCharsNewPassword = makeBadPasswordWithoutSpecialChars 32
         let expectedConfirmPassword = noSpecialCharsNewPassword
 
         let (actualViewModel, modelState) =
-            bindMemberChangePasswordViewModel expectedCurrentPassword noSpecialCharsNewPassword
+            bindMemberChangePasswordViewModel expectedId expectedCurrentPassword noSpecialCharsNewPassword
                 expectedConfirmPassword
 
-        testMemberChangePasswordViewModel actualViewModel expectedCurrentPassword noSpecialCharsNewPassword
-            expectedConfirmPassword
+        testMemberChangePasswordViewModel actualViewModel expectedId expectedCurrentPassword
+            noSpecialCharsNewPassword expectedConfirmPassword
 
-        testModelState modelState "password" "Password does not contain any special characters"
+        testModelState modelState "newPassword" "New password does not contain any special characters"
 
     [<Test>]
     let ``Binding to a member change password view model, with new password without invalid chars, adds expected model state error`` () =
+        let expectedId = Guid.random ()
         let expectedCurrentPassword = Password.random 32
         let invalidCharsNewPassword = makeBadPasswordWithInvalidChars 32
         let expectedConfirmPassword = invalidCharsNewPassword
 
         let (actualViewModel, modelState) =
-            bindMemberChangePasswordViewModel expectedCurrentPassword invalidCharsNewPassword
+            bindMemberChangePasswordViewModel expectedId expectedCurrentPassword invalidCharsNewPassword
                 expectedConfirmPassword
 
-        testMemberChangePasswordViewModel actualViewModel expectedCurrentPassword invalidCharsNewPassword
-            expectedConfirmPassword
+        testMemberChangePasswordViewModel actualViewModel expectedId expectedCurrentPassword
+            invalidCharsNewPassword expectedConfirmPassword
 
-        testModelState modelState "password" "Password contains invalid characters"
+        testModelState modelState "newPassword" "New password contains invalid characters"
 
     [<Test>]
     let ``Binding to a member change password view model, with non-matching passwords, adds expected model state error`` () =
+        let expectedId = Guid.random ()
         let expectedCurrentPassword = Password.random 32
         let expectedNewPassword = Password.random 32
         let nonMatchingConfirmPassword = Password.random 32
 
         let (actualViewModel, modelState) =
-            bindMemberChangePasswordViewModel expectedCurrentPassword expectedNewPassword
+            bindMemberChangePasswordViewModel expectedId expectedCurrentPassword expectedNewPassword
                 nonMatchingConfirmPassword
 
-        testMemberChangePasswordViewModel actualViewModel expectedCurrentPassword expectedNewPassword
+        testMemberChangePasswordViewModel actualViewModel expectedId expectedCurrentPassword expectedNewPassword
             nonMatchingConfirmPassword
 
         testModelState modelState "confirmPassword" "Passwords do not match"
 
     [<Test>]
     let ``Binding to a member change password view model, with valid parameters, adds no model state errors`` () =
+        let expectedId = Guid.random ()
         let expectedCurrentPassword = Password.random 32
         let expectedNewPassword = Password.random 32
         let expectedConfirmPassword = expectedNewPassword
 
         let (actualViewModel, modelState) =
-            bindMemberChangePasswordViewModel expectedCurrentPassword expectedNewPassword expectedConfirmPassword
+            bindMemberChangePasswordViewModel expectedId expectedCurrentPassword expectedNewPassword
+                expectedConfirmPassword
 
-        testMemberChangePasswordViewModel actualViewModel expectedCurrentPassword expectedNewPassword
+        testMemberChangePasswordViewModel actualViewModel expectedId expectedCurrentPassword expectedNewPassword
             expectedConfirmPassword
 
         modelState.IsValid =! true

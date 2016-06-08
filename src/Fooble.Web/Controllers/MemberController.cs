@@ -25,15 +25,46 @@ namespace Fooble.Web.Controllers
         }
 
         [HttpGet]
-        public ActionResult Detail(string id)
+        public ActionResult ChangePassword(Guid id)
         {
-            var validationResult = Member.ValidateId(id);
+            var query = MemberExistsQuery.Make(id);
+            var result = _mediator.Send(query);
 
-            if (validationResult.IsInvalid)
-                return View("MessageDisplay", validationResult.ToMessageDisplayReadModel());
+            Debug.Assert(result != null, "Result parameter was null");
 
-            var actualId = Guid.Parse(id);
-            var query = MemberDetailQuery.Make(actualId);
+            if (result.IsNotFound)
+                return View("MessageDisplay", result.ToMessageDisplayReadModel());
+
+            return View(MemberChangePasswordViewModel.Make(id));
+        }
+
+        [HttpPost]
+        public ActionResult ChangePassword(Guid id,
+            [ModelBinder(typeof(FoobleModelBinder))] IMemberChangePasswordViewModel viewModel)
+        {
+            Debug.Assert(viewModel != null, "View model is required");
+
+            if (!ModelState.IsValid) return View(viewModel.Clean());
+
+            var command = viewModel.ToCommand();
+            var result = _mediator.Send(command);
+
+            Debug.Assert(result != null, "Result was null");
+
+            if (result.IsNotFound)
+                return View("MessageDisplay", result.ToMessageDisplayReadModel());
+
+            result.AddModelErrors(ModelState);
+
+            if (!ModelState.IsValid) return View(viewModel.Clean());
+
+            return RedirectToAction("Detail", "Member", new { id = id });
+        }
+
+        [HttpGet]
+        public ActionResult Detail(Guid id)
+        {
+            var query = MemberDetailQuery.Make(id);
             var result = _mediator.Send(query);
 
             Debug.Assert(result != null, "Result parameter was null");
@@ -77,11 +108,11 @@ namespace Fooble.Web.Controllers
 
             Debug.Assert(result != null, "Result was null");
 
-            result.AddModelErrorIfNotSuccess(ModelState);
+            result.AddModelErrors(ModelState);
 
             if (!ModelState.IsValid) return View(viewModel.Clean());
 
-            return RedirectToAction("Detail", "Member", new { id = id.ToString() });
+            return RedirectToAction("Detail", "Member", new { id = id });
         }
     }
 }

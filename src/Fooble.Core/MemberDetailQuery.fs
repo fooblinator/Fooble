@@ -6,7 +6,7 @@ open Fooble.Presentation
 open MediatR
 open System
 
-/// Provides query-related helpers for member detail.
+/// Provides helpers for member detail query.
 [<RequireQualifiedAccess>]
 module MemberDetailQuery =
 
@@ -28,7 +28,7 @@ module MemberDetailQuery =
     /// <returns>Returns a member detail query.</returns>
     [<CompiledName("Make")>]
     let make id =
-        enforce (Member.validateId id)
+        ensureWith (validateMemberId id)
         Query(id) :> IMemberDetailQuery
 
     [<DefaultAugmentation(false)>]
@@ -78,17 +78,23 @@ module MemberDetailQuery =
         interface IRequestHandler<IMemberDetailQuery, IMemberDetailQueryResult> with
 
             member this.Handle(message) =
-                assert (isNotNull (box message))
+#if DEBUG
+                assertWith (validateRequired message "message" "Message")
+#endif
 
                 let readModel =
                     this.Context.GetMember(message.Id)
                     |> Option.map (fun x ->
-                           this.ReadModelFactory.Invoke(x.Id, x.Username, x.Email, x.Nickname, x.Registered,
+                           this.ReadModelFactory.Invoke(message.Id, x.Username, x.Email, x.Nickname, x.Registered,
                                x.PasswordChanged))
 
                 match readModel with
-                | Some x -> makeSuccessResult x
+                | Some(x) -> makeSuccessResult x
                 | None -> notFoundResult
 
     let internal makeHandler context readModelFactory =
+#if DEBUG
+        assertWith (validateRequired context "context" "Context")
+        assertWith (validateRequired readModelFactory "readModelFactory" "Read model factory")
+#endif
         QueryHandler(context, readModelFactory) :> IRequestHandler<IMemberDetailQuery, IMemberDetailQueryResult>

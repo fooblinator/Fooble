@@ -1,5 +1,6 @@
 ﻿namespace Fooble.Core
 
+open Fooble.Common
 open System
 open System.Security.Cryptography
 
@@ -19,6 +20,10 @@ module internal Crypto =
         dst
 
     let hash password iterations =
+#if DEBUG
+        assertWith (validateRequired password "password" "Password")
+        assertOn iterations "iterations" [ ((<=) 1), "Iterations is less than one" ]
+#endif
 
         let salt, bytes =
             new Rfc2898DeriveBytes(password, saltLength, iterations)
@@ -36,6 +41,10 @@ module internal Crypto =
         |> Convert.ToBase64String
 
     let verify hashedPassword (password:string) =
+#if DEBUG
+        assertWith (validateRequired hashedPassword "hashedPassword" "Hashed password")
+        assertWith (validateRequired password "password" "Password")
+#endif
 
         let parts = Convert.FromBase64String(hashedPassword)
 
@@ -62,4 +71,8 @@ module internal Crypto =
         |> fun x -> x.GetBytes(32)
         |> Array.forall2 (=) bytes
 
-    let version hashedPassword = Convert.FromBase64String(hashedPassword).[0]
+    let version hashedPassword =
+#if DEBUG
+        assertWith (validateRequired hashedPassword "hashedPassword" "Hashed password")
+#endif
+        Convert.FromBase64String(hashedPassword).[0]

@@ -20,10 +20,13 @@ module internal Guid =
     let isEmpty x = x = empty
     let isNotEmpty x = not <| isEmpty x
 
-    let parse x = Guid.Parse(x)
+    let parse x =
+        assert (isNotNull x)
+        Guid.Parse(x)
+
     let tryParse x =
         match Guid.TryParse(x) with
-        | (true, x) -> Some x
+        | (true, x) -> Some(x)
         | _ -> None
 
     let random () = Guid.NewGuid()
@@ -51,10 +54,20 @@ module internal String =
     let isShorter min x = String.length x < min
     let isNotShorter min x = not <| isShorter min x
 
-    let isMatch pattern x = Regex.IsMatch(x, pattern)
+    let isMatch pattern x =
+        assert (isNotNull pattern)
+        assert (isNotNull x)
+        Regex.IsMatch(x, pattern)
+
     let isNotMatch pattern x = not <| isMatch pattern x
 
-    let isEmail x = try ignore (MailAddress(x)); true with :? FormatException -> false
+    let isEmail x =
+        assert (isNotNull x)
+        try
+            ignore (MailAddress(x))
+            true
+        with :? FormatException -> false
+
     let isNotEmail x = not <| isEmail x
 
     let ofArray (x:char[]) = String(x)

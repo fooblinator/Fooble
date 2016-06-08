@@ -15,7 +15,7 @@ module MemberRegisterExtensionsTests =
     let ``Calling add model error, as success result of member register command result, returns expected read model`` () =
         let commandResult = MemberRegisterCommand.successResult
         let modelState = ModelStateDictionary()
-        MemberRegisterExtensions.addModelErrorIfNotSuccess commandResult modelState
+        MemberRegisterExtensions.addModelErrors commandResult modelState
 
         modelState.IsValid =! true
 
@@ -26,7 +26,7 @@ module MemberRegisterExtensionsTests =
 
         let commandResult = MemberRegisterCommand.usernameUnavailableResult
         let modelState = ModelStateDictionary()
-        MemberRegisterExtensions.addModelErrorIfNotSuccess commandResult modelState
+        MemberRegisterExtensions.addModelErrors commandResult modelState
 
         testModelState modelState expectedKey expectedException
 
@@ -37,7 +37,7 @@ module MemberRegisterExtensionsTests =
 
         let commandResult = MemberRegisterCommand.emailUnavailableResult
         let modelState = ModelStateDictionary()
-        MemberRegisterExtensions.addModelErrorIfNotSuccess commandResult modelState
+        MemberRegisterExtensions.addModelErrors commandResult modelState
 
         testModelState modelState expectedKey expectedException
 

@@ -12,13 +12,18 @@ open System
 open System.Collections.Specialized
 open System.Web
 open System.Web.Mvc
+open System.Web.Routing
 
 type internal Settings = AppSettings<"App.config">
 
 [<AutoOpen>]
 module internal IntegrationTestHelpers =
 
-    let private bindModel<'T> formValues =
+    let private bindModel<'T> routeValues formValues =
+        let routeData =
+            (RouteData(), routeValues)
+            ||> fun x y -> Map.iter (fun k v -> x.Values.Add(k, v)) y; x
+
         let formValues =
             (NameValueCollection(), formValues)
             ||> fun x y -> Map.iter (fun k v -> x.Add(k, v)) y; x
@@ -36,74 +41,86 @@ module internal IntegrationTestHelpers =
 
         let controllerContext = ControllerContext()
         controllerContext.HttpContext <- httpContextMock.Object
+        controllerContext.RouteData <- routeData
 
         FoobleModelBinder().BindModel(controllerContext, bindingContext) :?> 'T
 
-    let bindMemberChangePasswordViewModel currentPassword newPassword confirmPassword =
-        Map.empty
-            .Add("CurrentPassword", currentPassword)
-            .Add("NewPassword", newPassword)
-            .Add("ConfirmPassword", confirmPassword)
-        |> bindModel<IMemberChangePasswordViewModel>
+    let bindMemberChangePasswordViewModel id currentPassword newPassword confirmPassword =
+        let routeValues =
+            Map.empty
+                .Add("Id", String.ofGuid id)
+
+        let formValues =
+            Map.empty
+                .Add("CurrentPassword", currentPassword)
+                .Add("NewPassword", newPassword)
+                .Add("ConfirmPassword", confirmPassword)
+
+        bindModel<IMemberChangePasswordViewModel> routeValues formValues
 
     let bindMemberRegisterViewModel username password confirmPassword email nickname =
-        Map.empty
-            .Add("Username", username)
-            .Add("Password", password)
-            .Add("ConfirmPassword", confirmPassword)
-            .Add("Email", email)
-            .Add("Nickname", nickname)
-        |> bindModel<IMemberRegisterViewModel>
+        let routeValues = Map.empty
+
+        let formValues =
+            Map.empty
+                .Add("Username", username)
+                .Add("Password", password)
+                .Add("ConfirmPassword", confirmPassword)
+                .Add("Email", email)
+                .Add("Nickname", nickname)
+
+        bindModel<IMemberRegisterViewModel> routeValues formValues
 
     let makeTestKeyGenerator key =
         match key with
-        | Some x -> KeyGenerator(fun () -> x)
+        | Some(x) -> KeyGenerator(fun () -> x)
         | None -> KeyGenerator(fun () -> Guid.random ())
 
     let makeTestMemberData id username passwordData email nickname registered passwordChanged =
-        assertMemberId id
-        assertMemberUsername username
-        assertMemberPasswordData passwordData
-        assertMemberEmail email
-        assertMemberNickname nickname
+#if DEBUG
+        assertWith (validateMemberId id)
+        assertWith (validateMemberUsername username)
+        assertWith (validateMemberEmail email)
+        assertWith (validateMemberNickname nickname)
+#endif
 
-        let idRef = ref id
-        let usernameRef = ref username
-        let passwordDataRef = ref passwordData
-        let emailRef = ref email
-        let nicknameRef = ref nickname
-        let registeredRef = ref registered
-        let passwordChangedRef = ref passwordChanged
+        let mutable id = id
+        let mutable username = username
+        let mutable passwordData = passwordData
+        let mutable email = email
+        let mutable nickname = nickname
+        let mutable registered = registered
+        let mutable passwordChanged = passwordChanged
 
         { new IMemberData with
 
-              member this.Id
-                  with get () = !idRef
-                  and set (x) = idRef := x
+              member __.Id
+                  with get () = id
+                  and set (x) = id <- x
 
-              member this.Username
-                  with get () = !usernameRef
-                  and set (v) = usernameRef := v
+              member __.Username
+                  with get () = username
+                  and set (x) = username <- x
 
-              member this.PasswordData
-                  with get () = !passwordDataRef
-                  and set (x) = passwordDataRef := x
+              member __.PasswordData
+                  with get () = passwordData
+                  and set (x) = passwordData <- x
 
-              member this.Email
-                  with get () = !emailRef
-                  and set (x) = emailRef := x
+              member __.Email
+                  with get () = email
+                  and set (x) = email <- x
 
-              member this.Nickname
-                  with get () = !nicknameRef
-                  and set (x) = nicknameRef := x
+              member __.Nickname
+                  with get () = nickname
+                  and set (x) = nickname <- x
 
-              member this.Registered
-                  with get() = !registeredRef
-                  and set(x) = registeredRef := x
+              member __.Registered
+                  with get() = registered
+                  and set (x) = registered <- x
 
-              member this.PasswordChanged
-                  with get() = !passwordChangedRef
-                  and set(x) = passwordChangedRef := x }
+              member __.PasswordChanged
+                  with get() = passwordChanged
+                  and set (x) = passwordChanged <- x }
 
     let makeTestMemberData2 id username passwordData email nickname =
         makeTestMemberData id username passwordData email nickname DateTime.UtcNow DateTime.UtcNow

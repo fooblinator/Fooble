@@ -7,11 +7,32 @@ namespace Fooble.Web
     {
         public static void RegisterRoutes(RouteCollection routes)
         {
+            const string nonEmptyGuidPattern =
+                @"(?i:(?(^0{8}-(?:0{4}-){3}0{12}$)^$|^[\da-f]{8}-(?:[\da-f]{4}-){3}[\da-f]{12})$)";
+
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
 
-            routes.MapRoute("MemberRegister", "member/register", new { controller = "member", action = "register" });
-            routes.MapRoute("MemberDetail", "member/{id}", new { controller = "member", action = "detail" });
-            routes.MapRoute("MemberList", "members", new { controller = "member", action = "list" });
+            routes.MapRoute(
+                name: "MemberRegister",
+                url: "member/register",
+                defaults: new { controller = "member", action = "register" });
+
+            routes.MapRoute(
+                name: "MemberChangePassword",
+                url: "member/{id}/changepassword",
+                defaults: new { controller = "member", action = "changepassword" },
+                constraints: new { id = nonEmptyGuidPattern });
+
+            routes.MapRoute(
+                name: "MemberDetail",
+                url: "member/{id}",
+                defaults: new { controller = "member", action = "detail" },
+                constraints: new { id = nonEmptyGuidPattern });
+
+            routes.MapRoute(
+                name: "MemberList",
+                url: "members",
+                defaults: new { controller = "member", action = "list" });
 
             routes.IgnoreRoute("member/{*pathInfo}");
 

@@ -8,7 +8,7 @@ open Swensen.Unquote
 open System
 
 [<TestFixture>]
-module MemberDetailQueryTests =
+module MemberExistsQueryTests =
 
     [<Test>]
     let ``Calling make, with empty id, raises expected exception`` () =
@@ -16,19 +16,19 @@ module MemberDetailQueryTests =
         let expectedMessage = "Id is required"
 
         raisesWith<ArgumentException>
-            <@ MemberDetailQuery.make Guid.empty @>
+            <@ MemberExistsQuery.make Guid.empty @>
             (fun x -> <@ x.ParamName = expectedParamName && (fixInvalidArgMessage x.Message) = expectedMessage @>)
 
     [<Test>]
     let ``Calling make, with valid parameters, returns query`` () =
-        let query = MemberDetailQuery.make (Guid.random ())
+        let query = MemberExistsQuery.make (Guid.random ())
 
-        box query :? IRequest<IMemberDetailQueryResult> =! true
+        box query :? IRequest<IMemberExistsQueryResult> =! true
 
     [<Test>]
     let ``Calling id, returns expected id`` () =
         let expectedId = Guid.random ()
 
-        let query = MemberDetailQuery.make expectedId
+        let query = MemberExistsQuery.make expectedId
 
         query.Id =! expectedId

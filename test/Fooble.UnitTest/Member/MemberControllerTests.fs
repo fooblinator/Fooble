@@ -37,8 +37,6 @@ module MemberControllerTests =
         let keyGenerator = makeTestKeyGenerator None
         ignore (new MemberController(mock (), keyGenerator))
 
-    // TODO: add tests to verify that member detail action id param is validated/guarded
-
     [<Test>]
     let ``Calling detail, with matches in data store, returns expected result`` () =
         let matchingId = Guid.random ()
@@ -57,7 +55,7 @@ module MemberControllerTests =
 
         let keyGenerator = makeTestKeyGenerator None
         let controller = new MemberController(mediatorMock.Object, keyGenerator)
-        let result = controller.Detail(String.ofGuid matchingId)
+        let result = controller.Detail(matchingId)
 
         mediatorMock.Verify()
 
@@ -89,7 +87,7 @@ module MemberControllerTests =
 
         let keyGenerator = makeTestKeyGenerator None
         let controller = new MemberController(mediatorMock.Object, keyGenerator)
-        let result = controller.Detail(nonMatchingId.ToString())
+        let result = controller.Detail(nonMatchingId)
 
         mediatorMock.Verify()
 

@@ -62,15 +62,10 @@ module MemberRegisterExtensions =
     /// <param name="result">The member register command result to extend.</param>
     /// <param name="modelState">The model state dictionary to add model errors to.</param>
     [<Extension>]
-    [<CompiledName("AddModelErrorIfNotSuccess")>]
-    let addModelErrorIfNotSuccess (result:IMemberRegisterCommandResult) (modelState:ModelStateDictionary) =
-
-        [ (box >> isNotNull), "Result is required" ]
-        |> validate result "result" |> enforce
-
-        [ (isNotNull), "Model state is required" ]
-        |> validate modelState "modelState" |> enforce
-
+    [<CompiledName("AddModelErrors")>]
+    let addModelErrors (result:IMemberRegisterCommandResult) (modelState:ModelStateDictionary) =
+        ensureWith (validateRequired result "result" "Result")
+        ensureWith (validateRequired modelState "modelState" "Model state")
         match result with
         | x when x.IsUsernameUnavailable -> modelState.AddModelError("username", "Username is unavailable")
         | x when x.IsEmailUnavailable -> modelState.AddModelError("email", "Email is already registered")
@@ -86,10 +81,7 @@ module MemberRegisterExtensions =
     [<Extension>]
     [<CompiledName("ToMessageDisplayReadModel")>]
     let toMessageDisplayReadModel (result:IMemberRegisterCommandResult) =
-
-        [ (box >> isNotNull), "Result is required" ]
-        |> validate result "result" |> enforce
-
+        ensureWith (validateRequired result "result" "Result")
         match result with
         | x when x.IsUsernameUnavailable ->
               MessageDisplayReadModel.make "Member" "Register" 400 MessageDisplayReadModel.warningSeverity
@@ -107,10 +99,7 @@ module MemberRegisterExtensions =
     [<Extension>]
     [<CompiledName("ToCommand")>]
     let toCommand (viewModel:IMemberRegisterViewModel) id =
-
-        [ (box >> isNotNull), "View model is required" ]
-        |> validate viewModel "result" |> enforce
-
+        ensureWith (validateRequired viewModel "viewModel" "View model")
         MemberRegisterCommand.make id viewModel.Username viewModel.Password viewModel.Email viewModel.Nickname
 
     /// <summary>
@@ -121,8 +110,5 @@ module MemberRegisterExtensions =
     [<Extension>]
     [<CompiledName("Clean")>]
     let clean (viewModel:IMemberRegisterViewModel) =
-
-        [ (box >> isNotNull), "View model is required" ]
-        |> validate viewModel "result" |> enforce
-
+        ensureWith (validateRequired viewModel "viewModel" "View model")
         MemberRegisterViewModel.make viewModel.Username String.empty String.empty viewModel.Email viewModel.Nickname

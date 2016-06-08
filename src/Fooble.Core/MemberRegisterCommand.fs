@@ -5,7 +5,7 @@ open Fooble.Persistence
 open MediatR
 open System
 
-/// Provides command-related helpers for member register.
+/// Provides helpers for member register command.
 [<RequireQualifiedAccess>]
 module MemberRegisterCommand =
 
@@ -51,11 +51,11 @@ module MemberRegisterCommand =
     /// <returns>Returns a member register command.</returns>
     [<CompiledName("Make")>]
     let make id username password email nickname =
-        enforce (Member.validateId id)
-        enforce (Member.validateUsername username)
-        enforce (Member.validatePassword password)
-        enforce (Member.validateEmail email)
-        enforce (Member.validateNickname nickname)
+        ensureWith (validateMemberId id)
+        ensureWith (validateMemberUsername username)
+        ensureWith (validateMemberPasswords password None)
+        ensureWith (validateMemberEmail email)
+        ensureWith (validateMemberNickname nickname)
         Command(id, username, password, email, nickname) :> IMemberRegisterCommand
 
     [<DefaultAugmentation(false)>]
@@ -106,7 +106,9 @@ module MemberRegisterCommand =
         interface IRequestHandler<IMemberRegisterCommand, IMemberRegisterCommandResult> with
 
             member this.Handle(message) =
-                assert (isNotNull <| box message)
+#if DEBUG
+                assertWith (validateRequired message "message" "Message")
+#endif
 
                 let usernameFound = this.Context.ExistsMemberUsername(message.Username)
                 let emailFound = this.Context.ExistsMemberEmail(message.Email)
@@ -127,5 +129,9 @@ module MemberRegisterCommand =
                 successResult
 
     let internal makeHandler context memberDataFactory =
+#if DEBUG
+        assertWith (validateRequired context "context" "Context")
+        assertWith (validateRequired memberDataFactory "memberDataFactory" "Member data factory")
+#endif
         CommandHandler(context, memberDataFactory) :>
             IRequestHandler<IMemberRegisterCommand, IMemberRegisterCommandResult>

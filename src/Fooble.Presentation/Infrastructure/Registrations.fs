@@ -9,8 +9,10 @@ open Fooble.Presentation
 type PresentationRegistrations() =
     inherit Module()
 
-    override this.Load(builder:ContainerBuilder) =
-        assert (isNotNull builder)
+    override __.Load(builder:ContainerBuilder) =
+#if DEBUG
+        assertWith (validateRequired builder "builder" "Builder")
+#endif
 
         ignore (builder.Register(fun _ -> MemberDetailReadModelFactory(MemberDetailReadModel.make)))
         ignore (builder.Register(fun _ -> MemberListItemReadModelFactory(MemberListReadModel.makeItem)))

@@ -42,13 +42,19 @@ type IFoobleContext =
     abstract GetMembers : unit -> IMemberData list
 
     /// <summary>
-    /// Determines whether or not the specified username already exists in the data store.
+    /// Determines whether or not the specified member id exists in the data store.
+    /// </summary>
+    /// <param name="username">The username to search for.</param>
+    abstract ExistsMemberId : id:Guid -> bool
+
+    /// <summary>
+    /// Determines whether or not the specified member username exists in the data store.
     /// </summary>
     /// <param name="username">The username to search for.</param>
     abstract ExistsMemberUsername : username:string -> bool
 
     /// <summary>
-    /// Determines whether or not the specified email already exists in the data store.
+    /// Determines whether or not the specified member email exists in the data store.
     /// </summary>
     /// <param name="username">The email to search for.</param>
     abstract ExistsMemberEmail : email:string -> bool

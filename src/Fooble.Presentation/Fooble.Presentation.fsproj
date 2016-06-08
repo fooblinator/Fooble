@@ -66,9 +66,9 @@
     <Compile Include="MessageDisplayReadModel.fs" />
     <Compile Include="MemberChangePasswordViewModel.fs" />
     <Compile Include="MemberDetailReadModel.fs" />
+    <Compile Include="MemberExistsExtensions.fs" />
     <Compile Include="MemberListReadModel.fs" />
     <Compile Include="MemberRegisterViewModel.fs" />
-    <Compile Include="ValidationExtensions.fs" />
     <Compile Include="FoobleModelBinder.fs" />
     <Compile Include="Infrastructure\Registrations.fs" />
     <Content Include="App.config" />

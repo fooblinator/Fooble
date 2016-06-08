@@ -96,20 +96,9 @@ module MessageDisplayReadModel =
     /// <returns>Returns a message display read model.</returns>
     [<CompiledName("Make")>]
     let make heading subHeading statusCode severity message =
-
-        [ (String.isNotNullOrEmpty), "Heading is required" ]
-        |> validate heading "heading" |> enforce
-
-        [ (isNotNull), "Sub-heading is required" ]
-        |> validate subHeading "subHeading" |> enforce
-
-        [ ((<) 0), "Status code parameter is less than zero" ]
-        |> validate statusCode "statusCode" |> enforce
-
-        [ (box >> isNotNull), "Severity is required" ]
-        |> validate severity "severity" |> enforce
-
-        [ (String.isNotNullOrEmpty), "Message is required" ]
-        |> validate message "message" |> enforce
-
+        ensureOn heading "heading" [ (String.isNotNullOrEmpty), "Heading is required" ]
+        ensureWith (validateRequired subHeading "subHeading" "Sub-heading")
+        ensureOn statusCode "statusCode" [ ((<=) 0), "Status code parameter is less than zero" ]
+        ensureWith (validateRequired severity "severity" "Severity")
+        ensureOn message "message" [ (String.isNotNullOrEmpty), "Message is required" ]
         ReadModel(heading, subHeading, statusCode, severity, message) :> IMessageDisplayReadModel

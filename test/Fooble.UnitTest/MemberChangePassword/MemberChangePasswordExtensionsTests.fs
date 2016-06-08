@@ -15,18 +15,18 @@ module MemberChangePasswordExtensionsTests =
     let ``Calling add model error, as success result of member change password command result, returns expected read model`` () =
         let commandResult = MemberChangePasswordCommand.successResult
         let modelState = ModelStateDictionary()
-        MemberChangePasswordExtensions.addModelErrorIfNotSuccess commandResult modelState
+        MemberChangePasswordExtensions.addModelErrors commandResult modelState
 
         modelState.IsValid =! true
 
     [<Test>]
     let ``Calling add model error, as invalid result of member change password command result, returns expected read model`` () =
         let expectedKey = "currentPassword"
-        let expectedException = "Password is invalid"
+        let expectedException = "Current password is incorrect"
 
         let commandResult = MemberChangePasswordCommand.invalidResult
         let modelState = ModelStateDictionary()
-        MemberChangePasswordExtensions.addModelErrorIfNotSuccess commandResult modelState
+        MemberChangePasswordExtensions.addModelErrors commandResult modelState
 
         testModelState modelState expectedKey expectedException
 
@@ -78,21 +78,24 @@ module MemberChangePasswordExtensionsTests =
         let expectedConfirmPassword = expectedNewPassword
 
         let viewModel =
-            bindMemberChangePasswordViewModel2 expectedCurrentPassword expectedNewPassword expectedConfirmPassword
+            bindMemberChangePasswordViewModel2 expectedId expectedCurrentPassword expectedNewPassword
+                expectedConfirmPassword
 
-        let actualCommand = MemberChangePasswordExtensions.toCommand viewModel expectedId
+        let actualCommand = MemberChangePasswordExtensions.toCommand viewModel
 
         testMemberChangePasswordCommand actualCommand expectedId expectedCurrentPassword expectedNewPassword
 
     [<Test>]
     let ``Calling clean, as member change password view model, returns expected view model`` () =
+        let expectedId = Guid.random ()
         let expectedCurrentPassword = Password.random 32
         let expectedNewPassword = Password.random 32
         let expectedConfirmPassword = expectedNewPassword
 
         let viewModel =
-            bindMemberChangePasswordViewModel2 expectedCurrentPassword expectedNewPassword expectedConfirmPassword
+            bindMemberChangePasswordViewModel2 expectedId expectedCurrentPassword expectedNewPassword
+                expectedConfirmPassword
 
         let actualViewModel = MemberChangePasswordExtensions.clean viewModel
 
-        testMemberChangePasswordViewModel actualViewModel String.empty String.empty String.empty
+        testMemberChangePasswordViewModel actualViewModel expectedId String.empty String.empty String.empty

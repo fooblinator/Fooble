@@ -5,7 +5,7 @@
     ViewBag.Title = $"{Model.Heading}";
     if (!String.IsNullOrWhiteSpace(Model.SubHeading))
     {
-        ViewBag.Title &= "- {Model.SubHeading}";
+        ViewBag.Title += "- {Model.SubHeading}";
     }
 }
 

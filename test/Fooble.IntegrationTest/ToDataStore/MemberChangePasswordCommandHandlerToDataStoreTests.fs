@@ -41,7 +41,7 @@ module MemberChangePasswordCommandHandlerToDataStoreTests =
     [<Test>]
     let ``Calling handle, with invalid password, and returns expected result`` () =
         let expectedId = Guid.random ()
-         
+
         let connectionString = Settings.ConnectionStrings.FoobleContext
         let builder = ContainerBuilder()
         ignore (builder.RegisterModule(CoreRegistrations()))
@@ -78,7 +78,7 @@ module MemberChangePasswordCommandHandlerToDataStoreTests =
         let currentPassword = Password.random 32
         let currentPasswordData = Crypto.hash currentPassword 100
         let currentPasswordChanged = DateTime.UtcNow
-        
+
         let connectionString = Settings.ConnectionStrings.FoobleContext
         let builder = ContainerBuilder()
         ignore (builder.RegisterModule(CoreRegistrations()))

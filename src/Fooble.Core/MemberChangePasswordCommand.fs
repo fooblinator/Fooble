@@ -5,7 +5,7 @@ open Fooble.Persistence
 open MediatR
 open System
 
-/// Provides command-related helpers for member change password.
+/// Provides helpers for member change password command.
 [<RequireQualifiedAccess>]
 module MemberChangePasswordCommand =
 
@@ -30,24 +30,6 @@ module MemberChangePasswordCommand =
                     match this with
                     | Command(newPassword = x) -> x
 
-    let internal validateCurrentPassword currentPassword =
-        match Member.validatePassword currentPassword with
-        | x when x.IsValid -> x
-        | x ->
-
-        let paramName = x.ParamName.Replace("password", "currentPassword")
-        let message = x.Message.Replace("Password ", "Current password ")
-        ValidationResult.makeInvalid paramName message
-
-    let internal validateNewPassword newPassword =
-        match Member.validatePassword newPassword with
-        | x when x.IsValid -> x
-        | x ->
-
-        let paramName = x.ParamName.Replace("password", "newPassword")
-        let message = x.Message.Replace("Password ", "New password ")
-        ValidationResult.makeInvalid paramName message
-
     /// <summary>
     /// Constructs a member change password command.
     /// </summary>
@@ -57,9 +39,9 @@ module MemberChangePasswordCommand =
     /// <returns>Returns a member change password command.</returns>
     [<CompiledName("Make")>]
     let make id currentPassword newPassword =
-        enforce (Member.validateId id)
-        enforce (validateCurrentPassword currentPassword)
-        enforce (validateNewPassword newPassword)
+        ensureWith (validateMemberId id)
+        ensureWith (validateMemberPasswordsWith currentPassword None "currentPassword" "Current password")
+        ensureWith (validateMemberPasswordsWith newPassword None "newPassword" "New password")
         Command(id, currentPassword, newPassword) :> IMemberChangePasswordCommand
 
     [<DefaultAugmentation(false)>]
@@ -105,11 +87,13 @@ module MemberChangePasswordCommand =
         interface IRequestHandler<IMemberChangePasswordCommand, IMemberChangePasswordCommandResult> with
 
             member this.Handle(message) =
-                assert (isNotNull <| box message)
+#if DEBUG
+                assertWith (validateRequired message "message" "Message")
+#endif
 
                 match this.Context.GetMember(message.Id) with
                 | None -> notFoundResult
-                | Some x ->
+                | Some(x) ->
 
                 match Crypto.verify x.PasswordData message.CurrentPassword with
                 | false -> invalidResult
@@ -123,4 +107,7 @@ module MemberChangePasswordCommand =
                 successResult
 
     let internal makeHandler context =
+#if DEBUG
+        assertWith (validateRequired context "context" "Context")
+#endif
         CommandHandler(context) :> IRequestHandler<IMemberChangePasswordCommand, IMemberChangePasswordCommandResult>

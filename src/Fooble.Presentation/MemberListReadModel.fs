@@ -25,8 +25,10 @@ module internal MemberListReadModel =
                     | ItemReadModel(nickname = x) -> x
 
     let makeItem id nickname =
-        assertMemberId id
-        assertMemberNickname nickname
+#if DEBUG
+        assertWith (validateMemberId id)
+        assertWith (validateMemberNickname nickname)
+#endif
         ItemReadModel(id, nickname) :> IMemberListItemReadModel
 
     [<DefaultAugmentation(false)>]
@@ -41,7 +43,9 @@ module internal MemberListReadModel =
                     | ReadModel(members = xs) -> xs
 
     let make members =
-        assert (Seq.isNotNullOrEmpty members)
+#if DEBUG
+        assertOn members "members" [ (Seq.isNotNullOrEmpty), "Members is required" ]
+#endif
         ReadModel(members) :> IMemberListReadModel
 
 /// Provides presentation-related extension methods for member list.
@@ -59,10 +63,7 @@ module MemberListExtensions =
     [<Extension>]
     [<CompiledName("ToMessageDisplayReadModel")>]
     let toMessageDisplayReadModel (result:IMemberListQueryResult) =
-
-        [ (box >> isNotNull), "Result parameter was null" ]
-        |> validate result "result" |> enforce
-
+        ensureWith (validateRequired result "result" "Result")
         match result with
         | x when x.IsNotFound ->
               MessageDisplayReadModel.make "Member" "List" 200 MessageDisplayReadModel.informationalSeverity

@@ -25,6 +25,10 @@ module RegistrationsTests =
             container.Resolve<IRequestHandler<IMemberDetailQuery, IMemberDetailQueryResult>>()
         isNull memberDetailQueryHandler =! false
 
+        let memberExistsQueryHandler =
+            container.Resolve<IRequestHandler<IMemberExistsQuery, IMemberExistsQueryResult>>()
+        isNull memberExistsQueryHandler =! false
+
         let memberListQueryHandler = container.Resolve<IRequestHandler<IMemberListQuery, IMemberListQueryResult>>()
         isNull memberListQueryHandler =! false
 
@@ -50,6 +54,11 @@ module RegistrationsTests =
             singleInstanceFactory.Invoke(typeof<IRequestHandler<IMemberDetailQuery, IMemberDetailQueryResult>>)
         isNull result =! false
         result :? IRequestHandler<IMemberDetailQuery, IMemberDetailQueryResult> =! true
+
+        let result =
+            singleInstanceFactory.Invoke(typeof<IRequestHandler<IMemberExistsQuery, IMemberExistsQueryResult>>)
+        isNull result =! false
+        result :? IRequestHandler<IMemberExistsQuery, IMemberExistsQueryResult> =! true
 
         let result = singleInstanceFactory.Invoke(typeof<IRequestHandler<IMemberListQuery, IMemberListQueryResult>>)
         isNull result =! false
@@ -81,6 +90,13 @@ module RegistrationsTests =
         Seq.length result =! 1
         let actualResult = (Seq.head result)
         actualResult :? IRequestHandler<IMemberDetailQuery, IMemberDetailQueryResult> =! true
+
+        let result =
+            multiInstanceFactory.Invoke(typeof<IRequestHandler<IMemberExistsQuery, IMemberExistsQueryResult>>)
+        isNull result =! false
+        Seq.length result =! 1
+        let actualResult = (Seq.head result)
+        actualResult :? IRequestHandler<IMemberExistsQuery, IMemberExistsQueryResult> =! true
 
         let result = multiInstanceFactory.Invoke(typeof<IRequestHandler<IMemberListQuery, IMemberListQueryResult>>)
         isNull result =! false

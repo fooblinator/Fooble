@@ -1,46 +1,58 @@
 ﻿namespace Fooble.Common
 
-open Fooble.Persistence
-
 [<AutoOpen>]
 module internal MemberHelpers =
 
-    let assertMemberId id =
-        assert (Guid.isNotEmpty id)
+    let validateMemberEmail email =
+        [ (String.isNotNullOrEmpty), "Email is required"
+          (String.isNotLonger 254), "Email is longer than 254 characters"
+          (String.isEmail), "Email is not in the correct format" ]
+        |> validateOn email "email"
 
-    let assertMemberUsername username =
-        assert (String.isNotNullOrEmpty username)
-        assert (String.isNotShorter 3 username)
-        assert (String.isNotLonger 32 username)
-        assert (String.isMatch "^[a-z0-9]+$" username)
+    let validateMemberId id =
+        [ (Guid.isNotEmpty), "Id is required" ]
+        |> validateOn id "id"
 
-    let assertMemberEmail email =
-        assert (String.isNotNullOrEmpty email)
-        assert (String.isNotLonger 254 email)
-        assert (String.isEmail email)
+    let validateMemberIdString id =
+        [ (String.isNotNullOrEmpty), "Id is required"
+          (String.isGuid), "Id is not in the correct format (GUID)" ]
+        |> validateOn id "id"
 
-    let assertMemberPassword password =
-        assert (String.isNotNullOrEmpty password)
-        assert (String.isNotShorter 8 password)
-        assert (String.isNotLonger 32 password)
-        assert (Password.hasDigits password)
-        assert (Password.hasLowerAlphas password)
-        assert (Password.hasUpperAlphas password)
-        assert (Password.hasSpecialChars password)
-        assert (Password.isMatch password)
+    let validateMemberNickname nickname =
+        [ (String.isNotNullOrEmpty), "Nickname is required"
+          (String.isNotLonger 64), "Nickname is longer than 64 characters" ]
+        |> validateOn nickname "nickname"
 
-    let assertMemberPasswordData passwordData =
-        assert (String.isNotNullOrEmpty passwordData)
-        assert (String.isNotShorter 64 passwordData)
-        assert (String.isNotLonger 128 passwordData)
+    let validateMemberPasswordData passwordData =
+        [ (String.isNotNullOrEmpty), "Password data is required"
+          (String.isNotShorter 64), "Password data is shorter than 64 characters"
+          (String.isNotLonger 128), "Password data is longer than 128 characters" ]
+        |> validateOn passwordData "passwordData"
+    
+    let validateMemberPasswordsWith password confirmPassword paramName messagePrefix =
+        let initial =
+            [ (String.isNotNullOrEmpty), sprintf "%s is required" messagePrefix
+              (String.isNotShorter 8), sprintf "%s is shorter than 8 characters" messagePrefix
+              (String.isNotLonger 32), sprintf "%s is longer than 32 characters" messagePrefix
+              (Password.hasDigits), sprintf "%s does not contain any numbers" messagePrefix
+              (Password.hasLowerAlphas), sprintf "%s does not contain any lower-case letters" messagePrefix
+              (Password.hasUpperAlphas), sprintf "%s does not contain any upper-case letters" messagePrefix
+              (Password.hasSpecialChars), sprintf "%s does not contain any special characters" messagePrefix
+              (Password.isMatch), sprintf "%s contains invalid characters" messagePrefix ]
+            |> validateOn password paramName
+        match initial with
+        | Some(x) -> Some(x)
+        | _ ->
+        match confirmPassword with
+        | Some(x) -> validateOn x "confirmPassword" [ ((=) password), "Passwords do not match" ]
+        | None -> None
 
-    let assertMemberNickname nickname =
-        assert (String.isNotNullOrEmpty nickname)
-        assert (String.isNotLonger 64 nickname)
+    let validateMemberPasswords password confirmPassword =
+        validateMemberPasswordsWith password confirmPassword "password" "Password"
 
-    let assertMemberData (memberData:IMemberData) =
-        assertMemberId memberData.Id
-        assertMemberUsername memberData.Username
-        assertMemberPasswordData memberData.PasswordData
-        assertMemberEmail memberData.Email
-        assertMemberNickname memberData.Nickname
+    let validateMemberUsername username =
+        [ (String.isNotNullOrEmpty), "Username is required"
+          (String.isNotShorter 3), "Username is shorter than 3 characters"
+          (String.isNotLonger 32), "Username is longer than 32 characters"
+          (String.isMatch "^[a-z0-9]+$"), "Username is not in the correct format (lowercase alphanumeric)" ]
+        |> validateOn username "username"

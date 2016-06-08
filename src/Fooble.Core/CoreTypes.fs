@@ -5,25 +5,6 @@ open MediatR
 open System
 
 /// <summary>
-/// Represents the status of parameter validation, and potential results, if invalid.
-/// </summary>
-/// <remarks>The result is only one of "valid" or "invalid".</remarks>
-type IValidationResult =
-
-    /// The name of the invalid parameter.
-    abstract ParamName:string with get
-
-    /// The message describing why the parameter is invalid.
-    abstract Message:string with get
-
-    /// Whether the result is "valid" (or not).
-    abstract IsValid:bool with get
-
-    /// Whether the result is "invalid" (or not).
-    abstract IsInvalid:bool with get
-
-
-/// <summary>
 /// Represents the status of a member detail query, and potential results, if successful.
 /// </summary>
 /// <remarks>The result is only one of "success" or "not found".</remarks>
@@ -42,6 +23,27 @@ type IMemberDetailQueryResult =
 /// Contains a request for a single member's detailed information, for the purpose of presentation.
 type IMemberDetailQuery =
     inherit IRequest<IMemberDetailQueryResult>
+
+    /// The member id to search for.
+    abstract Id:Guid with get
+
+
+/// <summary>
+/// Represents the status of a member exists query.
+/// </summary>
+/// <remarks>The result is only one of "success" or "not found".</remarks>
+type IMemberExistsQueryResult =
+
+    /// Whether the result is "success" (or not).
+    abstract IsSuccess:bool with get
+
+    /// Whether the result is "not found" (or not).
+    abstract IsNotFound:bool with get
+
+
+/// Contains a request to verify the existence of a specified member id.
+type IMemberExistsQuery =
+    inherit IRequest<IMemberExistsQueryResult>
 
     /// The member id to search for.
     abstract Id:Guid with get

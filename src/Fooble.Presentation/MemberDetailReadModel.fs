@@ -46,10 +46,12 @@ module internal MemberDetailReadModel =
                     | ReadModel(passwordChanged = x) -> x
 
     let make id username email nickname registered passwordChanged =
-        assertMemberId id
-        assertMemberUsername username
-        assertMemberEmail email
-        assertMemberNickname nickname
+#if DEBUG
+        assertWith (validateMemberId id)
+        assertWith (validateMemberUsername username)
+        assertWith (validateMemberEmail email)
+        assertWith (validateMemberNickname nickname)
+#endif
         ReadModel(id, username, email, nickname, registered, passwordChanged) :> IMemberDetailReadModel
 
 /// Provides presentation-related extension methods for member detail.
@@ -67,10 +69,7 @@ module MemberDetailExtensions =
     [<Extension>]
     [<CompiledName("ToMessageDisplayReadModel")>]
     let toMessageDisplayReadModel (result:IMemberDetailQueryResult) =
-
-        [ (box >> isNotNull), "Result parameter was null" ]
-        |> validate result "result" |> enforce
-
+        ensureWith (validateRequired result "result" "Result")
         match result with
         | x when x.IsNotFound ->
               MessageDisplayReadModel.make "Member" "Detail" 404 MessageDisplayReadModel.warningSeverity

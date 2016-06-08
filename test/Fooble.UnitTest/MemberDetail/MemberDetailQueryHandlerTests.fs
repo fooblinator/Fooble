@@ -3,8 +3,6 @@
 open Fooble.Common
 open Fooble.Core
 open Fooble.Persistence
-open Fooble.UnitTest
-open MediatR
 open Moq
 open Moq.FSharp.Extensions
 open NUnit.Framework
@@ -42,7 +40,7 @@ module MemberDetailQueryHandlerTests =
         let memberData =
             makeTestMemberData2 expectedId expectedUsername passwordData expectedEmail expectedNickname
         let contextMock = Mock<IFoobleContext>()
-        contextMock.SetupFunc(fun x -> x.GetMember(any ())).Returns(Some memberData).Verifiable()
+        contextMock.SetupFunc(fun x -> x.GetMember(any ())).Returns(Some(memberData)).Verifiable()
 
         let handler = MemberDetailQuery.makeHandler contextMock.Object (makeTestMemberDetailReadModelFactory ())
 

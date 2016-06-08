@@ -5,7 +5,7 @@ open Fooble.Persistence
 open Fooble.Presentation
 open MediatR
 
-/// Provides query-related helpers for member list.
+/// Provides helpers for member list query.
 [<RequireQualifiedAccess>]
 module MemberListQuery =
 
@@ -75,7 +75,9 @@ module MemberListQuery =
         interface IRequestHandler<IMemberListQuery, IMemberListQueryResult> with
 
             member this.Handle(message) =
-                assert (isNotNull (box message))
+#if DEBUG
+                assertWith (validateRequired message "message" "Message")
+#endif
 
                 let members =
                     this.Context.GetMembers()
@@ -90,5 +92,10 @@ module MemberListQuery =
                 |> makeSuccessResult
 
     let internal makeHandler context itemReadModelFactory readModelFactory =
+#if DEBUG
+        assertWith (validateRequired context "context" "Context")
+        assertWith (validateRequired itemReadModelFactory "itemReadModelFactory" "Item read model factory")
+        assertWith (validateRequired readModelFactory "readModelFactory" "Read model factory")
+#endif
         QueryHandler(context, itemReadModelFactory, readModelFactory) :>
             IRequestHandler<IMemberListQuery, IMemberListQueryResult>

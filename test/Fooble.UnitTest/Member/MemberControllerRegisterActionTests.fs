@@ -12,7 +12,7 @@ open Swensen.Unquote
 open System.Web.Mvc
 
 [<TestFixture>]
-module MemberControllerRegistrActionTests =
+module MemberControllerRegisterActionTests =
 
     [<Test>]
     let ``Calling register, returns expected result`` () =
@@ -850,7 +850,7 @@ module MemberControllerRegistrActionTests =
         let mediatorMock = Mock<IMediator>()
         mediatorMock.SetupFunc(fun x -> x.Send(any ())).Returns(commandResult).Verifiable()
 
-        let keyGenerator = makeTestKeyGenerator (Some expectedId)
+        let keyGenerator = makeTestKeyGenerator (Some(expectedId))
         let controller = new MemberController(mediatorMock.Object, keyGenerator)
 
         let password = Password.random 32

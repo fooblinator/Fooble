@@ -1,21 +1,43 @@
 ﻿namespace Fooble.Common
 
-open Fooble.Core
+open System.Diagnostics
 
 [<AutoOpen>]
 module internal ValidationHelpers =
 
-    let validate value paramName conditions =
+    (* Validate *)
+
+    let validateOn value paramName conditions =
         assert (String.isNotNullOrEmpty paramName)
         assert (List.isNotEmpty conditions)
-
-        let chooser (f, x) = if f value then None else Some x
-
-        match Seq.tryPick chooser conditions with
-        | None -> ValidationResult.valid
-        | Some x -> ValidationResult.makeInvalid paramName x
-
-    let enforce (result:IValidationResult) =
+        let result = Seq.tryPick (fun (f, x) -> if f value then None else Some(x)) conditions
         match result with
-        | x when x.IsInvalid -> invalidArg x.ParamName x.Message
-        | _ -> ()
+        | Some(x) -> Some(paramName, x)
+        | None -> None
+
+    let validateRequired value paramName messagePrefix =
+        validateOn value paramName [ (box >> isNotNull), sprintf "%s is required" messagePrefix ]
+
+    (* Ensure *)
+
+    let ensureWith result =
+        match result with
+        | Some(x, y) -> invalidArg x y
+        | None -> ()
+
+    let ensureOn value paramName conditions =
+        ensureWith (validateOn value paramName conditions)
+
+#if DEBUG
+
+    (* Assert *)
+
+    let assertWith result =
+        match result with
+        | Some(x, y) -> Debug.Fail(sprintf "[%s] %s" x y)
+        | None -> ()
+
+    let assertOn value paramName conditions =
+        assertWith (validateOn value paramName conditions)
+
+#endif
