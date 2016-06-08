@@ -29,12 +29,14 @@ namespace Fooble.Web
                 defaults: new { controller = "member", action = "detail" },
                 constraints: new { id = nonEmptyGuidPattern });
 
+            routes.IgnoreRoute("member/{*pathInfo}");
+
             routes.MapRoute(
                 name: "MemberList",
                 url: "members",
                 defaults: new { controller = "member", action = "list" });
 
-            routes.IgnoreRoute("member/{*pathInfo}");
+            routes.IgnoreRoute("members/{*pathInfo}");
 
             routes.MapRoute(
                 name: "Default",
