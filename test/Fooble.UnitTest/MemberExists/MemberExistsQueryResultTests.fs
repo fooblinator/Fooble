@@ -34,24 +34,34 @@ module MemberExistsQueryResultTests =
         queryResult.IsNotFound =! true
 
     [<Test>]
+    let ``Calling to message display read model, with null sub-heading, raises expected exception`` () =
+        let expectedParamName = "subHeading"
+        let expectedMessage = "Sub-heading is required"
+
+        let queryResult = MemberExistsQuery.successResult
+
+        testArgumentException expectedParamName expectedMessage
+            <@ MemberExistsQueryResult.toMessageDisplayReadModel queryResult null @>
+
+    [<Test>]
     let ``Calling to message display read model, as success result, raises expected exception`` () =
         let expectedMessage = "Result was not unsuccessful"
 
         let queryResult = MemberExistsQuery.successResult
 
         testInvalidOperationException expectedMessage
-            <@ MemberExistsQueryResult.toMessageDisplayReadModel queryResult @>
+            <@ MemberExistsQueryResult.toMessageDisplayReadModel queryResult (String.random 32) @>
 
     [<Test>]
     let ``Calling to message display read model, as not found result, returns expected read model`` () =
         let expectedHeading = "Member"
-        let expectedSubHeading = String.empty
+        let expectedSubHeading = "Change Password"
         let expectedStatusCode = 404
         let expectedSeverity = MessageDisplayReadModel.warningSeverity
         let expectedMessage = "No matching member could be found."
 
         let actualReadModel =
-            MemberExistsQuery.notFoundResult |> MemberExistsQueryResult.toMessageDisplayReadModel
+            MemberExistsQueryResult.toMessageDisplayReadModel MemberExistsQuery.notFoundResult expectedSubHeading
 
         testMessageDisplayReadModel actualReadModel expectedHeading expectedSubHeading expectedStatusCode
             expectedSeverity expectedMessage

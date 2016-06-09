@@ -33,7 +33,7 @@ namespace Fooble.Web.Controllers
             Debug.Assert(result != null, "Result parameter was null");
 
             if (result.IsNotFound)
-                return View("MessageDisplay", result.ToMessageDisplayReadModel());
+                return View("MessageDisplay", result.ToMessageDisplayReadModel("Change Password"));
 
             return View(MemberChangePasswordViewModel.Make(id));
         }
