@@ -225,13 +225,15 @@ module internal UnitTestHelpers =
     let makeTestMemberListItemReadModelFactory () =
         MemberListItemReadModelFactory(makeTestMemberListItemReadModel)
 
-    let makeTestMemberListReadModel members =
+    let makeTestMemberListReadModel members memberCount =
 #if DEBUG
         assertOn members "members" [ (Seq.isNotNullOrEmpty), "Members is required" ]
+        assertOn memberCount "memberCount" [ ((<=) 0), "Member count is less than zero" ]
 #endif
 
         { new IMemberListReadModel with
-              member __.Members with get() = members }
+              member __.Members with get() = members
+              member __.MemberCount with get() = memberCount }
 
     let makeTestMemberListReadModelFactory () =
         MemberListReadModelFactory(makeTestMemberListReadModel)
@@ -260,17 +262,23 @@ module internal UnitTestHelpers =
         actualRegistered.Date =! expectedRegistered.Date
         actualPasswordChanged.Date =! expectedPasswordChanged.Date
 
-    let testMemberListReadModel (actual:IMemberListReadModel) expectedMembers =
+    let testMemberListReadModel (actual:IMemberListReadModel) expectedMembers expectedMemberCount =
 
         Seq.length actual.Members =! Seq.length expectedMembers
+        Seq.length actual.Members =! expectedMemberCount
+        actual.MemberCount =! Seq.length expectedMembers
+        actual.MemberCount =! expectedMemberCount
         for actualMember in actual.Members do
             let findResult = Seq.tryFind (fun (existingMember:IMemberData) ->
                 existingMember.Id = actualMember.Id && existingMember.Nickname = actualMember.Nickname) expectedMembers
             findResult.IsSome =! true
 
-    let testMemberListReadModel2 (actual:IMemberListReadModel) expectedMembers =
+    let testMemberListReadModel2 (actual:IMemberListReadModel) expectedMembers expectedMemberCount =
 
         Seq.length actual.Members =! Seq.length expectedMembers
+        Seq.length actual.Members =! expectedMemberCount
+        actual.MemberCount =! Seq.length expectedMembers
+        actual.MemberCount =! expectedMemberCount
         for actualMember in actual.Members do
             let findResult = Seq.tryFind (fun (existingMember:IMemberListItemReadModel) ->
                 existingMember.Id = actualMember.Id && existingMember.Nickname = actualMember.Nickname) expectedMembers

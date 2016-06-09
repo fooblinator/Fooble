@@ -31,7 +31,7 @@ module internal MemberListReadModel =
 
     [<DefaultAugmentation(false)>]
     type private MemberListReadModelImpl =
-        | ReadModel of members:seq<IMemberListItemReadModel>
+        | ReadModel of members:seq<IMemberListItemReadModel> * memberCount:int
 
         interface IMemberListReadModel with
 
@@ -40,8 +40,14 @@ module internal MemberListReadModel =
                     match this with
                     | ReadModel(members = xs) -> xs
 
-    let make members =
+            member this.MemberCount
+                with get() =
+                    match this with
+                    | ReadModel(memberCount = x) -> x
+
+    let make members memberCount =
 #if DEBUG
         assertOn members "members" [ (Seq.isNotNullOrEmpty), "Members is required" ]
+        assertOn memberCount "memberCount" [ ((<=) 0), "Member count is less than zero" ]
 #endif
-        ReadModel(members) :> IMemberListReadModel
+        ReadModel(members, memberCount) :> IMemberListReadModel

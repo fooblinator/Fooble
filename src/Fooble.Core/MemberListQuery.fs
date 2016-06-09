@@ -87,8 +87,10 @@ module MemberListQuery =
                 | [] -> notFoundResult
                 | xs ->
 
+                let memberCount = Seq.length members
+
                 Seq.ofList xs
-                |> this.ReadModelFactory.Invoke
+                |> fun x -> this.ReadModelFactory.Invoke(x, memberCount)
                 |> makeSuccessResult
 
     let internal makeHandler context itemReadModelFactory readModelFactory =

@@ -139,9 +139,12 @@ module internal IntegrationTestHelpers =
         actualRegistered.Date =! expectedRegistered.Date
         actualPasswordChanged.Date =! expectedPasswordChanged.Date
 
-    let testMemberListReadModel (actual:IMemberListReadModel) expectedMembers =
+    let testMemberListReadModel (actual:IMemberListReadModel) expectedMembers expectedMemberCount =
 
         Seq.length actual.Members =! Seq.length expectedMembers
+        Seq.length actual.Members =! expectedMemberCount
+        actual.MemberCount =! Seq.length expectedMembers
+        actual.MemberCount =! expectedMemberCount
         for actualMember in actual.Members do
             let findResult = Seq.tryFind (fun (existingMember:IMemberData) ->
                 existingMember.Id = actualMember.Id && existingMember.Nickname = actualMember.Nickname) expectedMembers

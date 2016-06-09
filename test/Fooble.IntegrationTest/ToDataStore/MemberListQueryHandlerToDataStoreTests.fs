@@ -41,6 +41,8 @@ module MemberListQueryHandlerToDataStoreTests =
 
     [<Test>]
     let ``Calling handle, with members in data store, returns expected result`` () =
+        let expectedMemberCount = 5
+
         let connectionString = Settings.ConnectionStrings.FoobleContext
         let builder = ContainerBuilder()
         ignore (builder.RegisterModule(CoreRegistrations()))
@@ -57,7 +59,7 @@ module MemberListQueryHandlerToDataStoreTests =
 
         // add members to the data store
         let members =
-            List.init 5 (fun _ ->
+            List.init expectedMemberCount (fun _ ->
                 let passwordData = Crypto.hash (Password.random 32) 100
                 memberDataFactory.Invoke(Guid.random (), String.random 32, passwordData, EmailAddress.random 32,
                     String.random 64))
@@ -72,4 +74,4 @@ module MemberListQueryHandlerToDataStoreTests =
         queryResult.IsSuccess =! true
         queryResult.IsNotFound =! false
 
-        testMemberListReadModel queryResult.ReadModel members
+        testMemberListReadModel queryResult.ReadModel members expectedMemberCount

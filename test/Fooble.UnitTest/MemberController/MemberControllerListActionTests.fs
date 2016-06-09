@@ -17,11 +17,12 @@ module MemberControllerListActionTests =
 
     [<Test>]
     let ``Calling list, with matches in data store, returns expected result`` () =
-        let expectedMembers = List.init 5 (fun _ ->
+        let expectedMemberCount = 5
+        let expectedMembers = List.init expectedMemberCount (fun _ ->
             makeTestMemberListItemReadModel (Guid.random ()) (String.random 64))
 
         let queryResult =
-            makeTestMemberListReadModel <| Seq.ofList expectedMembers
+            makeTestMemberListReadModel (Seq.ofList expectedMembers) expectedMemberCount
             |> MemberListQuery.makeSuccessResult
         let mediatorMock = Mock<IMediator>()
         mediatorMock.SetupFunc(fun x -> x.Send(any ())).Returns(queryResult).Verifiable()
@@ -42,7 +43,7 @@ module MemberControllerListActionTests =
         viewResult.Model :? IMemberListReadModel =! true
 
         let actualReadModel = viewResult.Model :?> IMemberListReadModel
-        testMemberListReadModel2 actualReadModel expectedMembers
+        testMemberListReadModel2 actualReadModel expectedMembers expectedMemberCount
 
     [<Test>]
     let ``Calling list, with no matches in data store, returns expected result`` () =

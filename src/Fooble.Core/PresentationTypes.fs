@@ -82,7 +82,10 @@ type IMemberListItemReadModel =
 type IMemberListReadModel =
 
     /// The list of members' information.
-    abstract Members:seq<IMemberListItemReadModel>
+    abstract Members:seq<IMemberListItemReadModel> with get
+
+    /// The total number of members.
+    abstract MemberCount:int with get
 
 
 /// Contains a member's password change information to be submitted.
@@ -143,4 +146,4 @@ type MemberListItemReadModelFactory =
 
 /// Represents the function to invoke to construct a new IMemberListReadModel instance.
 type MemberListReadModelFactory =
-    delegate of members:seq<IMemberListItemReadModel> -> IMemberListReadModel
+    delegate of members:seq<IMemberListItemReadModel> * memberCount:int -> IMemberListReadModel

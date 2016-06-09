@@ -21,7 +21,7 @@ module MemberListQueryResultTests =
     let ``Calling read model, as success result, returns expected read model`` () =
         let members =
             Seq.init 5 (fun _ -> makeTestMemberListItemReadModel (Guid.random ()) (String.random 64))
-        let expectedReadModel = makeTestMemberListReadModel members
+        let expectedReadModel = makeTestMemberListReadModel members 5
 
         let queryResult = MemberListQuery.makeSuccessResult expectedReadModel
 
@@ -31,7 +31,7 @@ module MemberListQueryResultTests =
     let ``Calling is success, as success result, returns true`` () =
         let members =
             Seq.init 5 (fun _ -> makeTestMemberListItemReadModel (Guid.random ()) (String.random 64))
-        let readModel = makeTestMemberListReadModel members
+        let readModel = makeTestMemberListReadModel members 5
 
         let queryResult = MemberListQuery.makeSuccessResult readModel
 
@@ -47,7 +47,7 @@ module MemberListQueryResultTests =
     let ``Calling is not found, as success result, returns false`` () =
         let members =
             Seq.init 5 (fun _ -> makeTestMemberListItemReadModel (Guid.random ()) (String.random 64))
-        let readModel = makeTestMemberListReadModel members
+        let readModel = makeTestMemberListReadModel members 5
 
         let queryResult = MemberListQuery.makeSuccessResult readModel
 
@@ -66,7 +66,7 @@ module MemberListQueryResultTests =
         let queryResult =
             makeTestMemberListItemReadModel (Guid.random ()) (String.random 64)
             |> Seq.singleton
-            |> makeTestMemberListReadModel
+            |> fun x -> makeTestMemberListReadModel x 1
             |> MemberListQuery.makeSuccessResult
 
         testInvalidOperationException expectedMessage

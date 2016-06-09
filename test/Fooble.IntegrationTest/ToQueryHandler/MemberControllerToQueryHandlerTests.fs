@@ -180,8 +180,10 @@ module MemberControllerToQueryHandlerTests =
 
     [<Test>]
     let ``Calling list, with matches in data store, returns expected result`` () =
+        let expectedMemberCount = 5
+
         let members =
-            List.init 5 (fun _ ->
+            List.init expectedMemberCount (fun _ ->
                 let passwordData = Crypto.hash (Password.random 32) 100
                 makeTestMemberData2 (Guid.random ()) (String.random 32) passwordData (EmailAddress.random 32)
                     (String.random 64))
@@ -210,7 +212,7 @@ module MemberControllerToQueryHandlerTests =
         viewResult.Model :? IMemberListReadModel =! true
 
         let actualReadModel = viewResult.Model :?> IMemberListReadModel
-        testMemberListReadModel actualReadModel members
+        testMemberListReadModel actualReadModel members expectedMemberCount
 
     [<Test>]
     let ``Calling list, with no matches in data store, returns expected result`` () =

@@ -29,8 +29,10 @@ module MemberListQueryHandlerTests =
 
     [<Test>]
     let ``Calling handle, with members in data store, returns expected result`` () =
+        let expectedMemberCount = 5
+
         let members =
-            List.init 5 <| fun _ ->
+            List.init expectedMemberCount <| fun _ ->
                 let passwordData = Crypto.hash (Password.random 32) 100
                 makeTestMemberData2 (Guid.random ()) (String.random 32) passwordData (EmailAddress.random 32)
                     (String.random 64)
@@ -49,4 +51,4 @@ module MemberListQueryHandlerTests =
         queryResult.IsSuccess =! true
         queryResult.IsNotFound =! false
 
-        testMemberListReadModel queryResult.ReadModel members
+        testMemberListReadModel queryResult.ReadModel members expectedMemberCount
