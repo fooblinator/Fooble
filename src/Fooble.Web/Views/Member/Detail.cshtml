@@ -4,50 +4,65 @@
     ViewBag.DisplayName = "Detail";
 }
 
-<dl class="dl-horizontal">
-    <dt>
-        @Html.DisplayNameFor(model => model.Username)
-    </dt>
-
-    <dd>
-        @Html.DisplayFor(model => model.Username)
-    </dd>
-
-    <dt>Password</dt>
-    <dd>@Html.ActionLink("Change", "ChangePassword", new { id = Model.Id })</dd>
-
-    <dt>
-        @Html.DisplayNameFor(model => model.Email)
-    </dt>
-
-    <dd>
-        @Html.DisplayFor(model => model.Email)
-    </dd>
-
-    <dt>
-        @Html.DisplayNameFor(model => model.Nickname)
-    </dt>
-
-    <dd>
-        @Html.DisplayFor(model => model.Nickname)
-    </dd>
-
-    <dt>
-        @Html.DisplayNameFor(model => model.Registered)
-    </dt>
-
-    <dd>
-        @Html.DisplayFor(model => model.Registered)
-    </dd>
-
-    <dt>
-        @Html.DisplayNameFor(model => model.PasswordChanged)
-    </dt>
-
-    <dd>
-        @Html.DisplayFor(model => model.PasswordChanged)
-    </dd>
-
-</dl>
+<div class="row">
+    <div class="col-md-8">
+        <table class="table table-bordered table-striped table-condensed">
+            <thead>
+                <tr>
+                    <th colspan="2">Details</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>@Html.DisplayNameFor(model => model.Id)</td>
+                    <td>@Html.DisplayFor(model => model.Id)</td>
+                </tr>
+                <tr>
+                    <td>@Html.DisplayNameFor(model => model.Username)</td>
+                    <td>@Html.DisplayFor(model => model.Username)</td>
+                </tr>
+                <tr>
+                    <td>@Html.DisplayNameFor(model => model.Email)</td>
+                    <td>@Html.DisplayFor(model => model.Email)</td>
+                </tr>
+                <tr>
+                    <td>@Html.DisplayNameFor(model => model.Nickname)</td>
+                    <td>@Html.DisplayFor(model => model.Nickname)</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="col-md-4">
+        <table class="table table-bordered table-striped table-condensed">
+            <thead>
+                <tr>
+                    <th colspan="2">Statistics</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>@Html.DisplayNameFor(model => model.Registered)</td>
+                    <td>@Html.DisplayFor(model => model.Registered)</td>
+                </tr>
+                <tr>
+                    <td>@Html.DisplayNameFor(model => model.PasswordChanged)</td>
+                    <td>@Html.DisplayFor(model => model.PasswordChanged)</td>
+                </tr>
+            </tbody>
+        </table>
+        <table class="table table-bordered table-striped table-condensed">
+            <thead>
+                <tr>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>@Html.ActionLink("Change Password", "ChangePassword", new { id = Model.Id })</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
 
 <p>@Html.ActionLink("Back to List", "List")</p>
