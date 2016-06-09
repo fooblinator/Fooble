@@ -6,7 +6,6 @@ open Fooble.UnitTest
 open MediatR
 open NUnit.Framework
 open Swensen.Unquote
-open System
 
 [<TestFixture>]
 module MemberChangePasswordCommandTests =
@@ -16,45 +15,40 @@ module MemberChangePasswordCommandTests =
         let expectedParamName = "id"
         let expectedMessage = "Id is required"
 
-        raisesWith<ArgumentException>
+        testArgumentException expectedParamName expectedMessage
             <@ MemberChangePasswordCommand.make Guid.empty (Password.random 32) (Password.random 32) @>
-            (fun x -> <@ x.ParamName = expectedParamName && (fixInvalidArgMessage x.Message) = expectedMessage @>)
 
     [<Test>]
     let ``Calling make, with null new password, raises expected exception`` () =
         let expectedParamName = "newPassword"
         let expectedMessage = "New password is required"
 
-        raisesWith<ArgumentException>
+        testArgumentException expectedParamName expectedMessage
             <@ MemberChangePasswordCommand.make (Guid.random ()) (Password.random 32) null @>
-            (fun x -> <@ x.ParamName = expectedParamName && (fixInvalidArgMessage x.Message) = expectedMessage @>)
 
     [<Test>]
     let ``Calling make, with empty new password, raises expected exception`` () =
         let expectedParamName = "newPassword"
         let expectedMessage = "New password is required"
 
-        raisesWith<ArgumentException>
+        testArgumentException expectedParamName expectedMessage
             <@ MemberChangePasswordCommand.make (Guid.random ()) (Password.random 32) String.empty @>
-            (fun x -> <@ x.ParamName = expectedParamName && (fixInvalidArgMessage x.Message) = expectedMessage @>)
 
     [<Test>]
     let ``Calling make, with new password shorter than 8 characters, raises expected exception`` () =
         let expectedParamName = "newPassword"
         let expectedMessage = "New password is shorter than 8 characters"
 
-        raisesWith<ArgumentException>
+        testArgumentException expectedParamName expectedMessage
             <@ MemberChangePasswordCommand.make (Guid.random ()) (Password.random 32) (Password.random 7) @>
-            (fun x -> <@ x.ParamName = expectedParamName && (fixInvalidArgMessage x.Message) = expectedMessage @>)
 
     [<Test>]
     let ``Calling make, with new password longer than 32 characters, raises expected exception`` () =
         let expectedParamName = "newPassword"
         let expectedMessage = "New password is longer than 32 characters"
 
-        raisesWith<ArgumentException>
+        testArgumentException expectedParamName expectedMessage
             <@ MemberChangePasswordCommand.make (Guid.random ()) (Password.random 32) (Password.random 33) @>
-            (fun x -> <@ x.ParamName = expectedParamName && (fixInvalidArgMessage x.Message) = expectedMessage @>)
 
     [<Test>]
     let ``Calling make, with new password without digits, raises expected exception`` () =
@@ -62,9 +56,9 @@ module MemberChangePasswordCommandTests =
         let expectedMessage = "New password does not contain any numbers"
 
         let noDigitsNewPassword = makeBadPasswordWithoutDigits 32
-        raisesWith<ArgumentException>
+
+        testArgumentException expectedParamName expectedMessage
             <@ MemberChangePasswordCommand.make (Guid.random ()) (Password.random 32) noDigitsNewPassword @>
-            (fun x -> <@ x.ParamName = expectedParamName && (fixInvalidArgMessage x.Message) = expectedMessage @>)
 
     [<Test>]
     let ``Calling make, with new password without lower alphas, raises expected exception`` () =
@@ -72,9 +66,9 @@ module MemberChangePasswordCommandTests =
         let expectedMessage = "New password does not contain any lower-case letters"
 
         let noLowerAlphasNewPassword = makeBadPasswordWithoutLowerAlphas 32
-        raisesWith<ArgumentException>
+
+        testArgumentException expectedParamName expectedMessage
             <@ MemberChangePasswordCommand.make (Guid.random ()) (Password.random 32) noLowerAlphasNewPassword @>
-            (fun x -> <@ x.ParamName = expectedParamName && (fixInvalidArgMessage x.Message) = expectedMessage @>)
 
     [<Test>]
     let ``Calling make, with new password without upper alphas, raises expected exception`` () =
@@ -82,9 +76,9 @@ module MemberChangePasswordCommandTests =
         let expectedMessage = "New password does not contain any upper-case letters"
 
         let noUpperAlphasNewPassword = makeBadPasswordWithoutUpperAlphas 32
-        raisesWith<ArgumentException>
+
+        testArgumentException expectedParamName expectedMessage
             <@ MemberChangePasswordCommand.make (Guid.random ()) (Password.random 32) noUpperAlphasNewPassword @>
-            (fun x -> <@ x.ParamName = expectedParamName && (fixInvalidArgMessage x.Message) = expectedMessage @>)
 
     [<Test>]
     let ``Calling make, with new password without special chars, raises expected exception`` () =
@@ -92,9 +86,9 @@ module MemberChangePasswordCommandTests =
         let expectedMessage = "New password does not contain any special characters"
 
         let noSpecialCharsNewPassword = makeBadPasswordWithoutSpecialChars 32
-        raisesWith<ArgumentException>
+
+        testArgumentException expectedParamName expectedMessage
             <@ MemberChangePasswordCommand.make (Guid.random ()) (Password.random 32) noSpecialCharsNewPassword @>
-            (fun x -> <@ x.ParamName = expectedParamName && (fixInvalidArgMessage x.Message) = expectedMessage @>)
 
     [<Test>]
     let ``Calling make, with new password without invalid chars, raises expected exception`` () =
@@ -102,9 +96,9 @@ module MemberChangePasswordCommandTests =
         let expectedMessage = "New password contains invalid characters"
 
         let invalidCharsNewPassword = makeBadPasswordWithInvalidChars 32
-        raisesWith<ArgumentException>
+
+        testArgumentException expectedParamName expectedMessage
             <@ MemberChangePasswordCommand.make (Guid.random ()) (Password.random 32) invalidCharsNewPassword @>
-            (fun x -> <@ x.ParamName = expectedParamName && (fixInvalidArgMessage x.Message) = expectedMessage @>)
 
     [<Test>]
     let ``Calling make, with valid parameters, returns command`` () =

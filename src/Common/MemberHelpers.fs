@@ -28,7 +28,7 @@ module internal MemberHelpers =
           (String.isNotShorter 64), "Password data is shorter than 64 characters"
           (String.isNotLonger 128), "Password data is longer than 128 characters" ]
         |> validateOn passwordData "passwordData"
-    
+
     let validateMemberPasswordsWith password confirmPassword paramName messagePrefix =
         let initial =
             [ (String.isNotNullOrEmpty), sprintf "%s is required" messagePrefix

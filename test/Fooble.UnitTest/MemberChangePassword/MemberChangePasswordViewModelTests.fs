@@ -68,3 +68,33 @@ module MemberChangePasswordViewModelTests =
             bindMemberChangePasswordViewModel2 expectedId (Password.random 32) newPassword expectedConfirmPassword
 
         viewModel.ConfirmPassword =! expectedConfirmPassword
+
+    [<Test>]
+    let ``Calling clean, returns expected view model`` () =
+        let expectedId = Guid.random ()
+        let expectedCurrentPassword = Password.random 32
+        let expectedNewPassword = Password.random 32
+        let expectedConfirmPassword = expectedNewPassword
+
+        let viewModel =
+            bindMemberChangePasswordViewModel2 expectedId expectedCurrentPassword expectedNewPassword
+                expectedConfirmPassword
+
+        let actualViewModel = MemberChangePasswordViewModel.clean viewModel
+
+        testMemberChangePasswordViewModel actualViewModel expectedId String.empty String.empty String.empty
+
+    [<Test>]
+    let ``Calling to command, returns expected command`` () =
+        let expectedId = Guid.random ()
+        let expectedCurrentPassword = Password.random 32
+        let expectedNewPassword = Password.random 32
+        let expectedConfirmPassword = expectedNewPassword
+
+        let viewModel =
+            bindMemberChangePasswordViewModel2 expectedId expectedCurrentPassword expectedNewPassword
+                expectedConfirmPassword
+
+        let actualCommand = MemberChangePasswordViewModel.toCommand viewModel
+
+        testMemberChangePasswordCommand actualCommand expectedId expectedCurrentPassword expectedNewPassword

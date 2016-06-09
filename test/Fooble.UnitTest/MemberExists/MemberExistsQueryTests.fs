@@ -5,7 +5,6 @@ open Fooble.Core
 open MediatR
 open NUnit.Framework
 open Swensen.Unquote
-open System
 
 [<TestFixture>]
 module MemberExistsQueryTests =
@@ -15,9 +14,7 @@ module MemberExistsQueryTests =
         let expectedParamName = "id"
         let expectedMessage = "Id is required"
 
-        raisesWith<ArgumentException>
-            <@ MemberExistsQuery.make Guid.empty @>
-            (fun x -> <@ x.ParamName = expectedParamName && (fixInvalidArgMessage x.Message) = expectedMessage @>)
+        testArgumentException expectedParamName expectedMessage <@ MemberExistsQuery.make Guid.empty @>
 
     [<Test>]
     let ``Calling make, with valid parameters, returns query`` () =

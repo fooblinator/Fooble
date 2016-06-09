@@ -4,7 +4,6 @@ open Fooble.Common
 open Fooble.Core
 open Fooble.UnitTest
 open Fooble.Persistence
-open MediatR
 open Moq
 open Moq.FSharp.Extensions
 open NUnit.Framework

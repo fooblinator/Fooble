@@ -3,6 +3,7 @@
 open Fooble.Common
 open System.Web.Mvc
 
+/// Provides model binding for view models.
 type FoobleModelBinder() =
     inherit DefaultModelBinder()
 

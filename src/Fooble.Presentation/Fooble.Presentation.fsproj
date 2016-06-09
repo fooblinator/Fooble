@@ -66,10 +66,14 @@
     <Compile Include="MessageDisplayReadModel.fs" />
     <Compile Include="MemberChangePasswordViewModel.fs" />
     <Compile Include="MemberDetailReadModel.fs" />
-    <Compile Include="MemberExistsExtensions.fs" />
     <Compile Include="MemberListReadModel.fs" />
     <Compile Include="MemberRegisterViewModel.fs" />
     <Compile Include="FoobleModelBinder.fs" />
+    <Compile Include="Extensions\MemberChangePasswordCommandResult.fs" />
+    <Compile Include="Extensions\MemberDetailQueryResult.fs" />
+    <Compile Include="Extensions\MemberExistsQueryResult.fs" />
+    <Compile Include="Extensions\MemberListQueryResult.fs" />
+    <Compile Include="Extensions\MemberRegisterCommandResult.fs" />
     <Compile Include="Infrastructure\Registrations.fs" />
     <Content Include="App.config" />
     <Content Include="packages.config" />

@@ -74,10 +74,6 @@ module internal UnitTestHelpers =
     let bindMemberRegisterViewModel2 username password confirmPassword email nickname =
         fst (bindMemberRegisterViewModel username password confirmPassword email nickname)
 
-    let fixInvalidArgMessage (message:string) =
-        let i = message.IndexOf("Parameter name: ")
-        message.Remove(i).Trim()
-
     let private makeBadPasswordWith charset =
         let chars = Set.toList charset
         let charsLen = chars.Length
@@ -240,14 +236,15 @@ module internal UnitTestHelpers =
     let makeTestMemberListReadModelFactory () =
         MemberListReadModelFactory(makeTestMemberListReadModel)
 
-    let testMessageDisplayReadModel (actual:IMessageDisplayReadModel) expectedHeading expectedSubHeading
-        expectedStatusCode expectedSeverity expectedMessage =
+    let testArgumentException expectedParamName expectedMessage expression =
+        let fixMessage (x:string) =
+            let i = x.IndexOf("Parameter name: ")
+            x.Remove(i).Trim()
+        raisesWith<ArgumentException> expression
+            (fun x -> <@ x.ParamName = expectedParamName && (fixMessage x.Message) = expectedMessage @>)
 
-        actual.Heading =! expectedHeading
-        actual.SubHeading =! expectedSubHeading
-        actual.StatusCode =! expectedStatusCode
-        actual.Severity =! expectedSeverity
-        actual.Message =! expectedMessage
+    let testInvalidOperationException expectedMessage expression =
+        raisesWith<InvalidOperationException> expression (fun x -> <@ x.Message = expectedMessage @>)
 
     let testMemberDetailReadModel (actual:IMemberDetailReadModel) expectedId expectedUsername expectedEmail
         expectedNickname (expectedRegistered:DateTime) (expectedPasswordChanged:DateTime) =
@@ -311,6 +308,15 @@ module internal UnitTestHelpers =
         actual.ConfirmPassword =! expectedConfirmPassword
         actual.Email =! expectedEmail
         actual.Nickname =! expectedNickname
+
+    let testMessageDisplayReadModel (actual:IMessageDisplayReadModel) expectedHeading expectedSubHeading
+        expectedStatusCode expectedSeverity expectedMessage =
+
+        actual.Heading =! expectedHeading
+        actual.SubHeading =! expectedSubHeading
+        actual.StatusCode =! expectedStatusCode
+        actual.Severity =! expectedSeverity
+        actual.Message =! expectedMessage
 
     let testModelState (modelState:ModelStateDictionary) expectedKey expectedErrorMessage =
 

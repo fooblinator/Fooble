@@ -81,3 +81,37 @@ module MemberRegisterViewModelTests =
                 expectedNickname
 
         viewModel.Nickname =! expectedNickname
+
+    [<Test>]
+    let ``Calling to command, returns expected command`` () =
+        let expectedId = Guid.random ()
+        let expectedUsername = String.random 32
+        let expectedPassword = Password.random 32
+        let expectedEmail = EmailAddress.random 32
+        let expectedNickname = String.random 64
+
+        let viewModel =
+            bindMemberRegisterViewModel2 expectedUsername expectedPassword expectedPassword expectedEmail
+                expectedNickname
+
+        let actualCommand = MemberRegisterViewModel.toCommand viewModel expectedId
+
+        testMemberRegisterCommand actualCommand expectedId expectedUsername expectedPassword expectedEmail
+            expectedNickname
+
+    [<Test>]
+    let ``Calling clean, returns expected view model`` () =
+        let expectedUsername = String.random 32
+        let expectedPassword = Password.random 32
+        let expectedConfirmPassword = expectedPassword
+        let expectedEmail = EmailAddress.random 32
+        let expectedNickname = String.random 64
+
+        let viewModel =
+            bindMemberRegisterViewModel2 expectedUsername expectedPassword expectedConfirmPassword expectedEmail
+                expectedNickname
+
+        let actualViewModel = MemberRegisterViewModel.clean viewModel
+
+        testMemberRegisterViewModel actualViewModel expectedUsername String.empty String.empty expectedEmail
+            expectedNickname

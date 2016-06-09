@@ -125,15 +125,6 @@ module internal IntegrationTestHelpers =
     let makeTestMemberData2 id username passwordData email nickname =
         makeTestMemberData id username passwordData email nickname DateTime.UtcNow DateTime.UtcNow
 
-    let testMessageDisplayReadModel (actual:IMessageDisplayReadModel) expectedHeading expectedSubHeading
-        expectedStatusCode expectedSeverity expectedMessage =
-
-        actual.Heading =! expectedHeading
-        actual.SubHeading =! expectedSubHeading
-        actual.StatusCode =! expectedStatusCode
-        actual.Severity =! expectedSeverity
-        actual.Message =! expectedMessage
-
     let testMemberDetailReadModel (actual:IMemberDetailReadModel) expectedId expectedUsername expectedEmail
         expectedNickname (expectedRegistered:DateTime) (expectedPasswordChanged:DateTime) =
 
@@ -171,6 +162,15 @@ module internal IntegrationTestHelpers =
         actual.ConfirmPassword =! expectedConfirmPassword
         actual.Email =! expectedEmail
         actual.Nickname =! expectedNickname
+
+    let testMessageDisplayReadModel (actual:IMessageDisplayReadModel) expectedHeading expectedSubHeading
+        expectedStatusCode expectedSeverity expectedMessage =
+
+        actual.Heading =! expectedHeading
+        actual.SubHeading =! expectedSubHeading
+        actual.StatusCode =! expectedStatusCode
+        actual.Severity =! expectedSeverity
+        actual.Message =! expectedMessage
 
     let testModelState (modelState:ModelStateDictionary) expectedKey expectedErrorMessage =
 

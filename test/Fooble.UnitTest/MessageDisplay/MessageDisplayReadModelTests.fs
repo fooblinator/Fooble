@@ -5,7 +5,6 @@ open Fooble.Presentation
 open Fooble.UnitTest
 open NUnit.Framework
 open Swensen.Unquote
-open System
 
 [<TestFixture>]
 module MessageDisplayReadModelTests =
@@ -16,9 +15,8 @@ module MessageDisplayReadModelTests =
         let expectedMessage = "Heading is required"
 
         let severity = MessageDisplayReadModel.informationalSeverity
-        raisesWith<ArgumentException>
-            <@ MessageDisplayReadModel.make null (String.random 64) 200 severity (String.random 64) @> (fun x ->
-                <@ x.ParamName = expectedParamName && (fixInvalidArgMessage x.Message) = expectedMessage @>)
+        testArgumentException expectedParamName expectedMessage
+            <@ MessageDisplayReadModel.make null (String.random 64) 200 severity (String.random 64) @>
 
     [<Test>]
     let ``Calling make, with empty heading, raises expected exception`` () =
@@ -26,9 +24,8 @@ module MessageDisplayReadModelTests =
         let expectedMessage = "Heading is required"
 
         let severity = MessageDisplayReadModel.informationalSeverity
-        raisesWith<ArgumentException>
+        testArgumentException expectedParamName expectedMessage
             <@ MessageDisplayReadModel.make String.empty (String.random 64) 200 severity (String.random 64) @>
-                (fun x -> <@ x.ParamName = expectedParamName && (fixInvalidArgMessage x.Message) = expectedMessage @>)
 
     [<Test>]
     let ``Calling make, with null sub-heading, raises expected exception`` () =
@@ -36,9 +33,8 @@ module MessageDisplayReadModelTests =
         let expectedMessage = "Sub-heading is required"
 
         let severity = MessageDisplayReadModel.informationalSeverity
-        raisesWith<ArgumentException>
-            <@ MessageDisplayReadModel.make (String.random 64) null 200 severity (String.random 64) @> (fun x ->
-                <@ x.ParamName = expectedParamName && (fixInvalidArgMessage x.Message) = expectedMessage @>)
+        testArgumentException expectedParamName expectedMessage
+            <@ MessageDisplayReadModel.make (String.random 64) null 200 severity (String.random 64) @>
 
     [<Test>]
     let ``Calling make, with status code less than zero, raises expected exception`` () =
@@ -46,9 +42,8 @@ module MessageDisplayReadModelTests =
         let expectedMessage = "Status code parameter is less than zero"
 
         let severity = MessageDisplayReadModel.informationalSeverity
-        raisesWith<ArgumentException>
+        testArgumentException expectedParamName expectedMessage
             <@ MessageDisplayReadModel.make (String.random 64) (String.random 64) -1 severity (String.random 64) @>
-                (fun x -> <@ x.ParamName = expectedParamName && (fixInvalidArgMessage x.Message) = expectedMessage @>)
 
     [<Test>]
     let ``Calling make, with null message, raises expected exception`` () =
@@ -56,9 +51,8 @@ module MessageDisplayReadModelTests =
         let expectedMessage = "Message is required"
 
         let severity = MessageDisplayReadModel.informationalSeverity
-        raisesWith<ArgumentException>
-            <@ MessageDisplayReadModel.make (String.random 64) (String.random 64) 200 severity null @> (fun x ->
-                <@ x.ParamName = expectedParamName && (fixInvalidArgMessage x.Message) = expectedMessage @>)
+        testArgumentException expectedParamName expectedMessage
+            <@ MessageDisplayReadModel.make (String.random 64) (String.random 64) 200 severity null @>
 
     [<Test>]
     let ``Calling make, with empty message, raises expected exception`` () =
@@ -66,9 +60,8 @@ module MessageDisplayReadModelTests =
         let expectedMessage = "Message is required"
 
         let severity = MessageDisplayReadModel.informationalSeverity
-        raisesWith<ArgumentException>
+        testArgumentException expectedParamName expectedMessage
             <@ MessageDisplayReadModel.make (String.random 64) (String.random 64) 200 severity String.empty @>
-                (fun x -> <@ x.ParamName = expectedParamName && (fixInvalidArgMessage x.Message) = expectedMessage @>)
 
     [<Test>]
     let ``Calling heading, returns expected heading`` () =
