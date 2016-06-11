@@ -16,52 +16,52 @@ module MemberRegisterCommandResultTests =
         commandResult.IsSuccess =! true
 
     [<Test>]
-    let ``Calling is success, as username unavailable result, returns false`` () =
-        let commandResult = MemberRegisterCommand.usernameUnavailableResult
+    let ``Calling is success, as unavailable username result, returns false`` () =
+        let commandResult = MemberRegisterCommand.unavailableUsernameResult
 
         commandResult.IsSuccess =! false
 
     [<Test>]
-    let ``Calling is success, as email unavailable result, returns false`` () =
-        let commandResult = MemberRegisterCommand.emailUnavailableResult
+    let ``Calling is success, as unavailable email result, returns false`` () =
+        let commandResult = MemberRegisterCommand.unavailableEmailResult
 
         commandResult.IsSuccess =! false
 
     [<Test>]
-    let ``Calling is username unavailable, as success result, returns false`` () =
+    let ``Calling is unavailable username, as success result, returns false`` () =
         let commandResult = MemberRegisterCommand.successResult
 
-        commandResult.IsUsernameUnavailable =! false
+        commandResult.IsUnavailableUsername =! false
 
     [<Test>]
-    let ``Calling is username unavailable, as username unavailable result, returns true`` () =
-        let commandResult = MemberRegisterCommand.usernameUnavailableResult
+    let ``Calling is unavailable username, as unavailable username result, returns true`` () =
+        let commandResult = MemberRegisterCommand.unavailableUsernameResult
 
-        commandResult.IsUsernameUnavailable =! true
-
-    [<Test>]
-    let ``Calling is username unavailable, as email unavailable result, returns false`` () =
-        let commandResult = MemberRegisterCommand.emailUnavailableResult
-
-        commandResult.IsUsernameUnavailable =! false
+        commandResult.IsUnavailableUsername =! true
 
     [<Test>]
-    let ``Calling is email unavailable, as success result, returns false`` () =
+    let ``Calling is unavailable username, as unavailable email result, returns false`` () =
+        let commandResult = MemberRegisterCommand.unavailableEmailResult
+
+        commandResult.IsUnavailableUsername =! false
+
+    [<Test>]
+    let ``Calling is unavailable email, as success result, returns false`` () =
         let commandResult = MemberRegisterCommand.successResult
 
-        commandResult.IsEmailUnavailable =! false
+        commandResult.IsUnavailableEmail =! false
 
     [<Test>]
-    let ``Calling is email unavailable, as username unavailable result, returns false`` () =
-        let commandResult = MemberRegisterCommand.usernameUnavailableResult
+    let ``Calling is unavailable email, as unavailable username result, returns false`` () =
+        let commandResult = MemberRegisterCommand.unavailableUsernameResult
 
-        commandResult.IsEmailUnavailable =! false
+        commandResult.IsUnavailableEmail =! false
 
     [<Test>]
-    let ``Calling is email unavailable, as email unavailable result, returns true`` () =
-        let commandResult = MemberRegisterCommand.emailUnavailableResult
+    let ``Calling is unavailable email, as unavailable email result, returns true`` () =
+        let commandResult = MemberRegisterCommand.unavailableEmailResult
 
-        commandResult.IsEmailUnavailable =! true
+        commandResult.IsUnavailableEmail =! true
 
     [<Test>]
     let ``Calling add model error, as success result, returns expected read model`` () =
@@ -72,22 +72,22 @@ module MemberRegisterCommandResultTests =
         modelState.IsValid =! true
 
     [<Test>]
-    let ``Calling add model error, as username unavailable result, returns expected read model`` () =
+    let ``Calling add model error, as unavailable username result, returns expected read model`` () =
         let expectedKey = "username"
         let expectedException = "Username is unavailable"
 
-        let commandResult = MemberRegisterCommand.usernameUnavailableResult
+        let commandResult = MemberRegisterCommand.unavailableUsernameResult
         let modelState = ModelStateDictionary()
         MemberRegisterCommandResult.addModelErrors commandResult modelState
 
         testModelState modelState expectedKey expectedException
 
     [<Test>]
-    let ``Calling add model error, as email unavailable result, returns expected read model`` () =
+    let ``Calling add model error, as unavailable email result, returns expected read model`` () =
         let expectedKey = "email"
         let expectedException = "Email is already registered"
 
-        let commandResult = MemberRegisterCommand.emailUnavailableResult
+        let commandResult = MemberRegisterCommand.unavailableEmailResult
         let modelState = ModelStateDictionary()
         MemberRegisterCommandResult.addModelErrors commandResult modelState
 
@@ -103,7 +103,7 @@ module MemberRegisterCommandResultTests =
             <@ MemberRegisterCommandResult.toMessageDisplayReadModel commandResult @>
 
     [<Test>]
-    let ``Calling to message display read model, as username unavailable result, returns expected read model`` () =
+    let ``Calling to message display read model, as unavailable username result, returns expected read model`` () =
         let expectedHeading = "Member"
         let expectedSubHeading = "Register"
         let expectedStatusCode = 400
@@ -111,7 +111,7 @@ module MemberRegisterCommandResultTests =
         let expectedMessage = "Requested username is unavailable."
 
         let actualReadModel =
-            MemberRegisterCommand.usernameUnavailableResult
+            MemberRegisterCommand.unavailableUsernameResult
             |> MemberRegisterCommandResult.toMessageDisplayReadModel
 
         testMessageDisplayReadModel actualReadModel expectedHeading expectedSubHeading expectedStatusCode

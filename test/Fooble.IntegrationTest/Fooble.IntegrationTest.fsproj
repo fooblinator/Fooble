@@ -65,12 +65,21 @@
     </Compile>
     <Compile Include="IntegrationTestHelpers.fs" />
     <Compile Include="ToCommandHandler\MemberControllerToCommandHandlerTests.fs" />
-    <Compile Include="ToDataStore\MemberChangePasswordCommandHandlerToDataStoreTests.fs" />
-    <Compile Include="ToDataStore\MemberControllerToDataStoreTests.fs" />
-    <Compile Include="ToDataStore\MemberDetailQueryHandlerToDataStoreTests.fs" />
-    <Compile Include="ToDataStore\MemberExistsQueryHandlerToDataStoreTests.fs" />
-    <Compile Include="ToDataStore\MemberListQueryHandlerToDataStoreTests.fs" />
-    <Compile Include="ToDataStore\MemberRegisterCommandHandlerToDataStoreTests.fs" />
+    <Compile Include="ToDataStore\MemberChangeEmailCommandHandlerTests.fs" />
+    <Compile Include="ToDataStore\MemberChangeOtherCommandHandlerTests.fs" />
+    <Compile Include="ToDataStore\MemberChangePasswordCommandHandlerTests.fs" />
+    <Compile Include="ToDataStore\MemberChangeUsernameCommandHandlerTests.fs" />
+    <Compile Include="ToDataStore\MemberControllerChangeEmailActionTests.fs" />
+    <Compile Include="ToDataStore\MemberControllerChangeOtherActionTests.fs" />
+    <Compile Include="ToDataStore\MemberControllerChangePasswordActionTests.fs" />
+    <Compile Include="ToDataStore\MemberControllerChangeUsernameActionTests.fs" />
+    <Compile Include="ToDataStore\MemberControllerDetailActionTests.fs" />
+    <Compile Include="ToDataStore\MemberControllerListActionTests.fs" />
+    <Compile Include="ToDataStore\MemberControllerRegisterActionTests.fs" />
+    <Compile Include="ToDataStore\MemberDetailQueryHandlerTests.fs" />
+    <Compile Include="ToDataStore\MemberExistsQueryHandlerTests.fs" />
+    <Compile Include="ToDataStore\MemberListQueryHandlerTests.fs" />
+    <Compile Include="ToDataStore\MemberRegisterCommandHandlerTests.fs" />
     <Compile Include="ToQueryHandler\MemberControllerToQueryHandlerTests.fs" />
     <Compile Include="RegistrationTests.fs" />
     <Content Include="App.config" />

@@ -61,8 +61,8 @@ module MemberRegisterCommand =
     [<DefaultAugmentation(false)>]
     type private MemberRegisterCommandResultImpl =
         | Success
-        | UsernameUnavailable
-        | EmailUnavailable
+        | UnavailableUsername
+        | UnavailableEmail
 
         interface IMemberRegisterCommandResult with
 
@@ -72,21 +72,21 @@ module MemberRegisterCommand =
                     | Success _ -> true
                     | _ -> false
 
-            member this.IsUsernameUnavailable
+            member this.IsUnavailableUsername
                 with get() =
                     match this with
-                    | UsernameUnavailable -> true
+                    | UnavailableUsername -> true
                     | _ -> false
 
-            member this.IsEmailUnavailable
+            member this.IsUnavailableEmail
                 with get() =
                     match this with
-                    | EmailUnavailable -> true
+                    | UnavailableEmail -> true
                     | _ -> false
 
     let internal successResult = Success :> IMemberRegisterCommandResult
-    let internal usernameUnavailableResult = UsernameUnavailable :> IMemberRegisterCommandResult
-    let internal emailUnavailableResult = EmailUnavailable :> IMemberRegisterCommandResult
+    let internal unavailableUsernameResult = UnavailableUsername :> IMemberRegisterCommandResult
+    let internal unavailableEmailResult = UnavailableEmail :> IMemberRegisterCommandResult
 
     [<DefaultAugmentation(false)>]
     [<NoComparison>]
@@ -114,8 +114,8 @@ module MemberRegisterCommand =
                 let emailFound = this.Context.ExistsMemberEmail(message.Email)
 
                 match (usernameFound, emailFound) with
-                | (true, _) -> usernameUnavailableResult
-                | (_, true) -> emailUnavailableResult
+                | (true, _) -> unavailableUsernameResult
+                | (_, true) -> unavailableEmailResult
                 | _ ->
 
                 let iterations = Random().Next(100000, 101000)

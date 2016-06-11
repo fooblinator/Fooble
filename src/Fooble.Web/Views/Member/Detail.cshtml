@@ -58,7 +58,16 @@
             </thead>
             <tbody>
                 <tr>
+                    <td>@Html.ActionLink("Change Username", "ChangeUsername", new { id = Model.Id })</td>
+                </tr>
+                <tr>
                     <td>@Html.ActionLink("Change Password", "ChangePassword", new { id = Model.Id })</td>
+                </tr>
+                <tr>
+                    <td>@Html.ActionLink("Change Email", "ChangeEmail", new { id = Model.Id })</td>
+                </tr>
+                <tr>
+                    <td>@Html.ActionLink("Change Other", "ChangeOther", new { id = Model.Id })</td>
                 </tr>
             </tbody>
         </table>

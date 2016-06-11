@@ -2,7 +2,6 @@
 
 open Fooble.Common
 open Fooble.Presentation
-open Fooble.UnitTest
 open NUnit.Framework
 open Swensen.Unquote
 

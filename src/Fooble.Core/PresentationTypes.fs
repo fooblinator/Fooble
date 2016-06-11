@@ -42,6 +42,72 @@ type IMessageDisplayReadModel =
     abstract Message:string with get
 
 
+/// Contains a member's email change information to be submitted.
+type IMemberChangeEmailViewModel =
+
+    /// The id that represents the member.
+    abstract Id:Guid with get
+
+    /// The current password of the member.
+    [<DataType(DataType.Password)>]
+    [<DisplayName("Current Password")>]
+    abstract CurrentPassword:string with get
+
+    /// The new email of the member.
+    [<DataType(DataType.EmailAddress)>]
+    [<DisplayName("New Email")>]
+    abstract NewEmail:string with get
+
+
+/// Contains a member's other change information to be submitted.
+type IMemberChangeOtherViewModel =
+
+    /// The id that represents the member.
+    abstract Id:Guid with get
+
+    /// The new nickname of the member.
+    [<DisplayName("New Nickname")>]
+    abstract NewNickname:string with get
+
+
+/// Contains a member's password change information to be submitted.
+type IMemberChangePasswordViewModel =
+
+    /// The id that represents the member.
+    abstract Id:Guid with get
+
+    /// The current password of the member.
+    [<DataType(DataType.Password)>]
+    [<DisplayName("Current Password")>]
+    abstract CurrentPassword:string with get
+
+    /// The new password of the member.
+    [<DataType(DataType.Password)>]
+    [<DisplayName("New Password")>]
+    abstract NewPassword:string with get
+
+    /// The confirm password of the member.
+    [<DataType(DataType.Password)>]
+    [<DisplayName("Confirm Password")>]
+    abstract ConfirmPassword:string with get
+
+
+/// Contains a member's username change information to be submitted.
+type IMemberChangeUsernameViewModel =
+
+    /// The id that represents the member.
+    abstract Id:Guid with get
+
+    /// The current password of the member.
+    [<DataType(DataType.Password)>]
+    [<DisplayName("Current Password")>]
+    abstract CurrentPassword:string with get
+
+    /// The new username of the member.
+    [<DisplayName("New Username")>]
+    abstract NewUsername:string with get
+
+
 /// Contains a single member's detailed information, for the purpose of presentation.
 type IMemberDetailReadModel =
 
@@ -86,28 +152,6 @@ type IMemberListReadModel =
 
     /// The total number of members.
     abstract MemberCount:int with get
-
-
-/// Contains a member's password change information to be submitted.
-type IMemberChangePasswordViewModel =
-
-    /// The id that represents the member.
-    abstract Id:Guid with get
-
-    /// The current password of the member.
-    [<DataType(DataType.Password)>]
-    [<DisplayName("Current Password")>]
-    abstract CurrentPassword:string with get
-
-    /// The new password of the member.
-    [<DataType(DataType.Password)>]
-    [<DisplayName("New Password")>]
-    abstract NewPassword:string with get
-
-    /// The confirm password of the member.
-    [<DataType(DataType.Password)>]
-    [<DisplayName("Confirm Password")>]
-    abstract ConfirmPassword:string with get
 
 
 /// Contains a potential member's detailed information to be submitted.

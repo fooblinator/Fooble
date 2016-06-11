@@ -13,12 +13,47 @@ type FoobleModelBinder() =
         assertWith (validateRequired bindingContext "bindingContext" "Binding context")
 #endif
 
+        let routeData = controllerContext.RouteData
+        let form = controllerContext.HttpContext.Request.Form
+
         match bindingContext.ModelType with
 
-        | x when x = typeof<IMemberChangePasswordViewModel> ->
-              let routeData = controllerContext.RouteData
-              let form = controllerContext.HttpContext.Request.Form
+        | x when x = typeof<IMemberChangeEmailViewModel> ->
+              let id = routeData.GetRequiredString("id")
+              let currentPassword = form.Get("currentPassword")
+              let newEmail = form.Get("newEmail")
 
+#if DEBUG
+              assertWith (validateMemberIdString id)
+#endif
+              let id = Guid.parse id
+
+              let modelState = bindingContext.ModelState
+
+              match validateMemberEmailWith newEmail "newEmail" "New email" with
+              | Some(x, y) -> modelState.AddModelError(x, y)
+              | _ -> ()
+
+              box (MemberChangeEmailViewModel.make id currentPassword newEmail)
+
+        | x when x = typeof<IMemberChangeOtherViewModel> ->
+              let id = routeData.GetRequiredString("id")
+              let newNickname = form.Get("newNickname")
+
+#if DEBUG
+              assertWith (validateMemberIdString id)
+#endif
+              let id = Guid.parse id
+
+              let modelState = bindingContext.ModelState
+
+              match validateMemberNicknameWith newNickname "newNickname" "New nickname" with
+              | Some(x, y) -> modelState.AddModelError(x, y)
+              | _ -> ()
+
+              box (MemberChangeOtherViewModel.make id newNickname)
+
+        | x when x = typeof<IMemberChangePasswordViewModel> ->
               let id = routeData.GetRequiredString("id")
               let currentPassword = form.Get("currentPassword")
               let newPassword = form.Get("newPassword")
@@ -37,9 +72,25 @@ type FoobleModelBinder() =
 
               box (MemberChangePasswordViewModel.make id currentPassword newPassword confirmPassword)
 
-        | x when x = typeof<IMemberRegisterViewModel> ->
-              let form = controllerContext.HttpContext.Request.Form
+        | x when x = typeof<IMemberChangeUsernameViewModel> ->
+              let id = routeData.GetRequiredString("id")
+              let currentPassword = form.Get("currentPassword")
+              let newUsername = form.Get("newUsername")
 
+#if DEBUG
+              assertWith (validateMemberIdString id)
+#endif
+              let id = Guid.parse id
+
+              let modelState = bindingContext.ModelState
+
+              match validateMemberUsernameWith newUsername "newUsername" "New username" with
+              | Some(x, y) -> modelState.AddModelError(x, y)
+              | _ -> ()
+
+              box (MemberChangeUsernameViewModel.make id currentPassword newUsername)
+
+        | x when x = typeof<IMemberRegisterViewModel> ->
               let username = form.Get("username")
               let password = form.Get("password")
               let confirmPassword = form.Get("confirmPassword")

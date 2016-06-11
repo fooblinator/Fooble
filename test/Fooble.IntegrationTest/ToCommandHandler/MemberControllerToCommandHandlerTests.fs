@@ -29,8 +29,259 @@ module MemberControllerToCommandHandlerTests =
         ignore (new MemberController(mediator, keyGenerator))
 
     [<Test>]
+    let ``Calling change email post, with no matching member id in data store, returns expected result`` () =
+        let nonMatchingId = Guid.random ()
+        let expectedCurrentPassword = Password.random 32
+        let expectedNewEmail = EmailAddress.random 32
+        let expectedHeading = "Member"
+        let expectedSubHeading = "Change Email"
+        let expectedStatusCode = 404
+        let expectedSeverity = MessageDisplayReadModel.warningSeverity
+        let expectedMessage = "No matching member could be found."
+
+        let contextMock = Mock<IFoobleContext>()
+        contextMock.SetupFunc(fun x -> x.GetMember(any ())).Returns(None).Verifiable()
+
+        let builder = ContainerBuilder()
+        ignore (builder.RegisterModule(CoreRegistrations(contextMock.Object, mock ())))
+        ignore (builder.RegisterModule(PresentationRegistrations()))
+        use container = builder.Build()
+
+        let mediator = container.Resolve<IMediator>()
+        let keyGenerator = container.Resolve<KeyGenerator>()
+        use controller = new MemberController(mediator, keyGenerator)
+
+        let viewModel = bindMemberChangeEmailViewModel nonMatchingId expectedCurrentPassword expectedNewEmail
+        let result = controller.ChangeEmail(nonMatchingId, viewModel)
+
+        contextMock.Verify()
+
+        isNull result =! false
+        result :? ViewResult =! true
+
+        let viewResult = result :?> ViewResult
+
+        viewResult.ViewName =! "MessageDisplay"
+        isNull viewResult.Model =! false
+        viewResult.Model :? IMessageDisplayReadModel =! true
+
+        let actualReadModel = viewResult.Model :?> IMessageDisplayReadModel
+        testMessageDisplayReadModel actualReadModel expectedHeading expectedSubHeading expectedStatusCode
+            expectedSeverity expectedMessage
+
+    [<Test>]
+    let ``Calling change email post, with incorrect current password, returns expected result`` () =
+        let expectedId = Guid.random ()
+        let expectedCurrentPassword = Password.random 32
+        let expectedNewEmail = EmailAddress.random 32
+
+        let passwordData = Crypto.hash (Password.random 32) 100
+        let memberData =
+            makeTestMemberData2 expectedId (String.random 32) passwordData (EmailAddress.random 32) (String.random 64)
+        let contextMock = Mock<IFoobleContext>()
+        contextMock.SetupFunc(fun x -> x.GetMember(any ())).Returns(Some(memberData)).Verifiable()
+
+        let builder = ContainerBuilder()
+        ignore (builder.RegisterModule(CoreRegistrations(contextMock.Object, mock ())))
+        ignore (builder.RegisterModule(PresentationRegistrations()))
+        use container = builder.Build()
+
+        let mediator = container.Resolve<IMediator>()
+        let keyGenerator = container.Resolve<KeyGenerator>()
+        use controller = new MemberController(mediator, keyGenerator)
+
+        let viewModel = bindMemberChangeEmailViewModel expectedId expectedCurrentPassword expectedNewEmail
+        let result = controller.ChangeEmail(expectedId, viewModel)
+
+        contextMock.Verify()
+
+        isNull result =! false
+        result :? ViewResult =! true
+
+        let viewResult = result :?> ViewResult
+
+        String.isEmpty viewResult.ViewName =! true
+        isNull viewResult.Model =! false
+        viewResult.Model :? IMemberChangeEmailViewModel =! true
+
+        let actualViewModel = viewResult.Model :?> IMemberChangeEmailViewModel
+        testMemberChangeEmailViewModel actualViewModel expectedId String.empty expectedNewEmail
+
+        let actualModelState = viewResult.ViewData.ModelState
+        testModelState actualModelState "currentPassword" "Current password is incorrect"
+
+    [<Test>]
+    let ``Calling change email post, with unavailable email, returns expected result`` () =
+        let expectedId = Guid.random ()
+        let expectedCurrentPassword = Password.random 32
+        let expectedNewEmail = EmailAddress.random 32
+
+        let passwordData = Crypto.hash expectedCurrentPassword 100
+        let memberData =
+            makeTestMemberData2 expectedId (String.random 32) passwordData (EmailAddress.random 32) (String.random 64)
+        let contextMock = Mock<IFoobleContext>()
+        contextMock.SetupFunc(fun x -> x.GetMember(any ())).Returns(Some(memberData)).Verifiable()
+        contextMock.SetupFunc(fun x -> x.ExistsMemberEmail(any ())).Returns(true).Verifiable()
+
+        let builder = ContainerBuilder()
+        ignore (builder.RegisterModule(CoreRegistrations(contextMock.Object, mock ())))
+        ignore (builder.RegisterModule(PresentationRegistrations()))
+        use container = builder.Build()
+
+        let mediator = container.Resolve<IMediator>()
+        let keyGenerator = container.Resolve<KeyGenerator>()
+        use controller = new MemberController(mediator, keyGenerator)
+
+        let viewModel = bindMemberChangeEmailViewModel expectedId expectedCurrentPassword expectedNewEmail
+        let result = controller.ChangeEmail(expectedId, viewModel)
+
+        contextMock.Verify()
+
+        isNull result =! false
+        result :? ViewResult =! true
+
+        let viewResult = result :?> ViewResult
+
+        String.isEmpty viewResult.ViewName =! true
+        isNull viewResult.Model =! false
+        viewResult.Model :? IMemberChangeEmailViewModel =! true
+
+        let actualViewModel = viewResult.Model :?> IMemberChangeEmailViewModel
+        testMemberChangeEmailViewModel actualViewModel expectedId String.empty expectedNewEmail
+
+        let actualModelState = viewResult.ViewData.ModelState
+        testModelState actualModelState "newEmail" "Email is already registered"
+
+    [<Test>]
+    let ``Calling change email post, with successful parameters, returns expected result`` () =
+        let matchingId = Guid.random ()
+        let matchingIdString = String.ofGuid matchingId
+        let expectedCurrentPassword = Password.random 32
+        let expectedNewEmail = EmailAddress.random 32
+
+        let passwordData = Crypto.hash expectedCurrentPassword 100
+        let memberData =
+            makeTestMemberData2 matchingId (String.random 32) passwordData (EmailAddress.random 32) (String.random 64)
+        let contextMock = Mock<IFoobleContext>()
+        contextMock.SetupFunc(fun x -> x.GetMember(any ())).Returns(Some(memberData)).Verifiable()
+        contextMock.SetupFunc(fun x -> x.ExistsMemberEmail(any ())).Returns(false).Verifiable()
+
+        let builder = ContainerBuilder()
+        ignore (builder.RegisterModule(CoreRegistrations(contextMock.Object, mock ())))
+        ignore (builder.RegisterModule(PresentationRegistrations()))
+        use container = builder.Build()
+
+        let mediator = container.Resolve<IMediator>()
+        let keyGenerator = container.Resolve<KeyGenerator>()
+        use controller = new MemberController(mediator, keyGenerator)
+
+        let viewModel = bindMemberChangeEmailViewModel matchingId expectedCurrentPassword expectedNewEmail
+        let result = controller.ChangeEmail(matchingId, viewModel)
+
+        contextMock.Verify()
+
+        isNull result =! false
+        result :? RedirectToRouteResult =! true
+
+        let redirectResult = result :?> RedirectToRouteResult
+        let routeValues = redirectResult.RouteValues
+
+        routeValues.ContainsKey("controller") =! true
+        routeValues.["controller"].ToString().ToLowerInvariant() =! "member"
+
+        routeValues.ContainsKey("action") =! true
+        routeValues.["action"].ToString().ToLowerInvariant() =! "detail"
+
+        routeValues.ContainsKey("id") =! true
+        routeValues.["id"].ToString().ToLowerInvariant() =! matchingIdString
+
+    [<Test>]
+    let ``Calling change other post, with no matching member id in data store, returns expected result`` () =
+        let nonMatchingId = Guid.random ()
+        let expectedNickname = String.random 64
+        let expectedHeading = "Member"
+        let expectedSubHeading = "Change Other"
+        let expectedStatusCode = 404
+        let expectedSeverity = MessageDisplayReadModel.warningSeverity
+        let expectedMessage = "No matching member could be found."
+
+        let contextMock = Mock<IFoobleContext>()
+        contextMock.SetupFunc(fun x -> x.GetMember(any ())).Returns(None).Verifiable()
+
+        let builder = ContainerBuilder()
+        ignore (builder.RegisterModule(CoreRegistrations(contextMock.Object, mock ())))
+        ignore (builder.RegisterModule(PresentationRegistrations()))
+        use container = builder.Build()
+
+        let mediator = container.Resolve<IMediator>()
+        let keyGenerator = container.Resolve<KeyGenerator>()
+        use controller = new MemberController(mediator, keyGenerator)
+
+        let viewModel = bindMemberChangeOtherViewModel nonMatchingId expectedNickname
+        let result = controller.ChangeOther(nonMatchingId, viewModel)
+
+        contextMock.Verify()
+
+        isNull result =! false
+        result :? ViewResult =! true
+
+        let viewResult = result :?> ViewResult
+
+        viewResult.ViewName =! "MessageDisplay"
+        isNull viewResult.Model =! false
+        viewResult.Model :? IMessageDisplayReadModel =! true
+
+        let actualReadModel = viewResult.Model :?> IMessageDisplayReadModel
+        testMessageDisplayReadModel actualReadModel expectedHeading expectedSubHeading expectedStatusCode
+            expectedSeverity expectedMessage
+
+    [<Test>]
+    let ``Calling change other post, with successful parameters, returns expected result`` () =
+        let matchingId = Guid.random ()
+        let matchingIdString = String.ofGuid matchingId
+        let expectedNickname = String.random 64
+
+        let passwordData = Crypto.hash (Password.random 32) 100
+        let memberData =
+            makeTestMemberData2 matchingId (String.random 32) passwordData (EmailAddress.random 32) (String.random 64)
+        let contextMock = Mock<IFoobleContext>()
+        contextMock.SetupFunc(fun x -> x.GetMember(any ())).Returns(Some(memberData)).Verifiable()
+
+        let builder = ContainerBuilder()
+        ignore (builder.RegisterModule(CoreRegistrations(contextMock.Object, mock ())))
+        ignore (builder.RegisterModule(PresentationRegistrations()))
+        use container = builder.Build()
+
+        let mediator = container.Resolve<IMediator>()
+        let keyGenerator = container.Resolve<KeyGenerator>()
+        use controller = new MemberController(mediator, keyGenerator)
+
+        let viewModel = bindMemberChangeOtherViewModel matchingId expectedNickname
+        let result = controller.ChangeOther(matchingId, viewModel)
+
+        contextMock.Verify()
+
+        isNull result =! false
+        result :? RedirectToRouteResult =! true
+
+        let redirectResult = result :?> RedirectToRouteResult
+        let routeValues = redirectResult.RouteValues
+
+        routeValues.ContainsKey("controller") =! true
+        routeValues.["controller"].ToString().ToLowerInvariant() =! "member"
+
+        routeValues.ContainsKey("action") =! true
+        routeValues.["action"].ToString().ToLowerInvariant() =! "detail"
+
+        routeValues.ContainsKey("id") =! true
+        routeValues.["id"].ToString().ToLowerInvariant() =! matchingIdString
+
+    [<Test>]
     let ``Calling change password post, with no matching member id in data store, returns expected result`` () =
         let nonMatchingId = Guid.random ()
+        let expectedCurrentPassword = Password.random 32
+        let expectedNewPassword = Password.random 32
+        let expectedConfirmPassword = expectedNewPassword
         let expectedHeading = "Member"
         let expectedSubHeading = "Change Password"
         let expectedStatusCode = 404
@@ -49,10 +300,9 @@ module MemberControllerToCommandHandlerTests =
         let keyGenerator = container.Resolve<KeyGenerator>()
         use controller = new MemberController(mediator, keyGenerator)
 
-        let newPassword = Password.random 32
-        let confirmPassword = newPassword
         let viewModel =
-            bindMemberChangePasswordViewModel nonMatchingId (Password.random 32) newPassword confirmPassword
+            bindMemberChangePasswordViewModel nonMatchingId expectedCurrentPassword expectedNewPassword
+                expectedConfirmPassword
         let result = controller.ChangePassword(nonMatchingId, viewModel)
 
         contextMock.Verify()
@@ -74,6 +324,8 @@ module MemberControllerToCommandHandlerTests =
     let ``Calling change password post, with incorrect current password, returns expected result`` () =
         let expectedId = Guid.random ()
         let expectedCurrentPassword = Password.random 32
+        let expectedNewPassword = Password.random 32
+        let expectedConfirmPassword = expectedNewPassword
 
         let passwordData = Crypto.hash (Password.random 32) 100
         let memberData =
@@ -90,11 +342,12 @@ module MemberControllerToCommandHandlerTests =
         let keyGenerator = container.Resolve<KeyGenerator>()
         use controller = new MemberController(mediator, keyGenerator)
 
-        let newPassword = Password.random 32
-        let confirmPassword = newPassword
         let viewModel =
-            bindMemberChangePasswordViewModel expectedId expectedCurrentPassword newPassword confirmPassword
+            bindMemberChangePasswordViewModel expectedId expectedCurrentPassword expectedNewPassword
+                expectedConfirmPassword
         let result = controller.ChangePassword(expectedId, viewModel)
+
+        contextMock.Verify()
 
         isNull result =! false
         result :? ViewResult =! true
@@ -106,16 +359,18 @@ module MemberControllerToCommandHandlerTests =
         viewResult.Model :? IMemberChangePasswordViewModel =! true
 
         let actualViewModel = viewResult.Model :?> IMemberChangePasswordViewModel
-        testMemberChangePasswordViewModel actualViewModel String.empty String.empty String.empty
+        testMemberChangePasswordViewModel actualViewModel expectedId String.empty String.empty String.empty
 
         let actualModelState = viewResult.ViewData.ModelState
         testModelState actualModelState "currentPassword" "Current password is incorrect"
 
     [<Test>]
-    let ``Calling change password post, with matching member id in data store, and correct current password, returns expected result`` () =
+    let ``Calling change password post, with successful parameters, returns expected result`` () =
         let matchingId = Guid.random ()
         let matchingIdString = String.ofGuid matchingId
         let expectedCurrentPassword = Password.random 32
+        let expectedNewPassword = Password.random 32
+        let expectedConfirmPassword = expectedNewPassword
 
         let passwordData = Crypto.hash expectedCurrentPassword 100
         let memberData =
@@ -132,11 +387,177 @@ module MemberControllerToCommandHandlerTests =
         let keyGenerator = container.Resolve<KeyGenerator>()
         use controller = new MemberController(mediator, keyGenerator)
 
-        let newPassword = Password.random 32
-        let confirmPassword = newPassword
         let viewModel =
-            bindMemberChangePasswordViewModel matchingId expectedCurrentPassword newPassword confirmPassword
+            bindMemberChangePasswordViewModel matchingId expectedCurrentPassword expectedNewPassword
+                expectedConfirmPassword
         let result = controller.ChangePassword(matchingId, viewModel)
+
+        contextMock.Verify()
+
+        isNull result =! false
+        result :? RedirectToRouteResult =! true
+
+        let redirectResult = result :?> RedirectToRouteResult
+        let routeValues = redirectResult.RouteValues
+
+        routeValues.ContainsKey("controller") =! true
+        routeValues.["controller"].ToString().ToLowerInvariant() =! "member"
+
+        routeValues.ContainsKey("action") =! true
+        routeValues.["action"].ToString().ToLowerInvariant() =! "detail"
+
+        routeValues.ContainsKey("id") =! true
+        routeValues.["id"].ToString().ToLowerInvariant() =! matchingIdString
+
+    [<Test>]
+    let ``Calling change username post, with no matching member id in data store, returns expected result`` () =
+        let nonMatchingId = Guid.random ()
+        let expectedCurrentPassword = Password.random 32
+        let expectedNewUsername = String.random 32
+        let expectedHeading = "Member"
+        let expectedSubHeading = "Change Username"
+        let expectedStatusCode = 404
+        let expectedSeverity = MessageDisplayReadModel.warningSeverity
+        let expectedMessage = "No matching member could be found."
+
+        let contextMock = Mock<IFoobleContext>()
+        contextMock.SetupFunc(fun x -> x.GetMember(any ())).Returns(None).Verifiable()
+
+        let builder = ContainerBuilder()
+        ignore (builder.RegisterModule(CoreRegistrations(contextMock.Object, mock ())))
+        ignore (builder.RegisterModule(PresentationRegistrations()))
+        use container = builder.Build()
+
+        let mediator = container.Resolve<IMediator>()
+        let keyGenerator = container.Resolve<KeyGenerator>()
+        use controller = new MemberController(mediator, keyGenerator)
+
+        let viewModel = bindMemberChangeUsernameViewModel nonMatchingId expectedCurrentPassword expectedNewUsername
+        let result = controller.ChangeUsername(nonMatchingId, viewModel)
+
+        contextMock.Verify()
+
+        isNull result =! false
+        result :? ViewResult =! true
+
+        let viewResult = result :?> ViewResult
+
+        viewResult.ViewName =! "MessageDisplay"
+        isNull viewResult.Model =! false
+        viewResult.Model :? IMessageDisplayReadModel =! true
+
+        let actualReadModel = viewResult.Model :?> IMessageDisplayReadModel
+        testMessageDisplayReadModel actualReadModel expectedHeading expectedSubHeading expectedStatusCode
+            expectedSeverity expectedMessage
+
+    [<Test>]
+    let ``Calling change username post, with incorrect current password, returns expected result`` () =
+        let expectedId = Guid.random ()
+        let expectedCurrentPassword = Password.random 32
+        let expectedNewUsername = String.random 32
+
+        let passwordData = Crypto.hash (Password.random 32) 100
+        let memberData =
+            makeTestMemberData2 expectedId (String.random 32) passwordData (EmailAddress.random 32) (String.random 64)
+        let contextMock = Mock<IFoobleContext>()
+        contextMock.SetupFunc(fun x -> x.GetMember(any ())).Returns(Some(memberData)).Verifiable()
+
+        let builder = ContainerBuilder()
+        ignore (builder.RegisterModule(CoreRegistrations(contextMock.Object, mock ())))
+        ignore (builder.RegisterModule(PresentationRegistrations()))
+        use container = builder.Build()
+
+        let mediator = container.Resolve<IMediator>()
+        let keyGenerator = container.Resolve<KeyGenerator>()
+        use controller = new MemberController(mediator, keyGenerator)
+
+        let viewModel = bindMemberChangeUsernameViewModel expectedId expectedCurrentPassword expectedNewUsername
+        let result = controller.ChangeUsername(expectedId, viewModel)
+
+        contextMock.Verify()
+
+        isNull result =! false
+        result :? ViewResult =! true
+
+        let viewResult = result :?> ViewResult
+
+        String.isEmpty viewResult.ViewName =! true
+        isNull viewResult.Model =! false
+        viewResult.Model :? IMemberChangeUsernameViewModel =! true
+
+        let actualViewModel = viewResult.Model :?> IMemberChangeUsernameViewModel
+        testMemberChangeUsernameViewModel actualViewModel expectedId String.empty expectedNewUsername
+
+        let actualModelState = viewResult.ViewData.ModelState
+        testModelState actualModelState "currentPassword" "Current password is incorrect"
+
+    [<Test>]
+    let ``Calling change username post, with unavailable username, returns expected result`` () =
+        let expectedId = Guid.random ()
+        let expectedCurrentPassword = Password.random 32
+        let expectedNewUsername = String.random 32
+
+        let passwordData = Crypto.hash expectedCurrentPassword 100
+        let memberData =
+            makeTestMemberData2 expectedId (String.random 32) passwordData (EmailAddress.random 32) (String.random 64)
+        let contextMock = Mock<IFoobleContext>()
+        contextMock.SetupFunc(fun x -> x.GetMember(any ())).Returns(Some(memberData)).Verifiable()
+        contextMock.SetupFunc(fun x -> x.ExistsMemberUsername(any ())).Returns(true).Verifiable()
+
+        let builder = ContainerBuilder()
+        ignore (builder.RegisterModule(CoreRegistrations(contextMock.Object, mock ())))
+        ignore (builder.RegisterModule(PresentationRegistrations()))
+        use container = builder.Build()
+
+        let mediator = container.Resolve<IMediator>()
+        let keyGenerator = container.Resolve<KeyGenerator>()
+        use controller = new MemberController(mediator, keyGenerator)
+
+        let viewModel = bindMemberChangeUsernameViewModel expectedId expectedCurrentPassword expectedNewUsername
+        let result = controller.ChangeUsername(expectedId, viewModel)
+
+        contextMock.Verify()
+
+        isNull result =! false
+        result :? ViewResult =! true
+
+        let viewResult = result :?> ViewResult
+
+        String.isEmpty viewResult.ViewName =! true
+        isNull viewResult.Model =! false
+        viewResult.Model :? IMemberChangeUsernameViewModel =! true
+
+        let actualViewModel = viewResult.Model :?> IMemberChangeUsernameViewModel
+        testMemberChangeUsernameViewModel actualViewModel expectedId String.empty expectedNewUsername
+
+        let actualModelState = viewResult.ViewData.ModelState
+        testModelState actualModelState "newUsername" "Username is unavailable"
+
+    [<Test>]
+    let ``Calling change username post, with successful parameters, returns expected result`` () =
+        let matchingId = Guid.random ()
+        let matchingIdString = String.ofGuid matchingId
+        let expectedCurrentPassword = Password.random 32
+        let expectedNewUsername = String.random 32
+
+        let passwordData = Crypto.hash expectedCurrentPassword 100
+        let memberData =
+            makeTestMemberData2 matchingId (String.random 32) passwordData (EmailAddress.random 32) (String.random 64)
+        let contextMock = Mock<IFoobleContext>()
+        contextMock.SetupFunc(fun x -> x.GetMember(any ())).Returns(Some(memberData)).Verifiable()
+        contextMock.SetupFunc(fun x -> x.ExistsMemberUsername(any ())).Returns(false).Verifiable()
+
+        let builder = ContainerBuilder()
+        ignore (builder.RegisterModule(CoreRegistrations(contextMock.Object, mock ())))
+        ignore (builder.RegisterModule(PresentationRegistrations()))
+        use container = builder.Build()
+
+        let mediator = container.Resolve<IMediator>()
+        let keyGenerator = container.Resolve<KeyGenerator>()
+        use controller = new MemberController(mediator, keyGenerator)
+
+        let viewModel = bindMemberChangeUsernameViewModel matchingId expectedCurrentPassword expectedNewUsername
+        let result = controller.ChangeUsername(matchingId, viewModel)
 
         contextMock.Verify()
 
@@ -242,7 +663,7 @@ module MemberControllerToCommandHandlerTests =
         testModelState actualModelState "email" "Email is already registered"
 
     [<Test>]
-    let ``Calling register post, with no existing username or email in data store, returns expected result`` () =
+    let ``Calling register post, with successful parameters, returns expected result`` () =
         let expectedId = Guid.random ()
 
         let contextMock = Mock<IFoobleContext>()

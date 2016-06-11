@@ -188,6 +188,9 @@
     <Content Include="Views\Member\Register.cshtml" />
     <Content Include="Views\Shared\MessageDisplay.cshtml" />
     <Content Include="Views\Member\ChangePassword.cshtml" />
+    <Content Include="Views\Member\ChangeUsername.cshtml" />
+    <Content Include="Views\Member\ChangeEmail.cshtml" />
+    <Content Include="Views\Member\ChangeOther.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

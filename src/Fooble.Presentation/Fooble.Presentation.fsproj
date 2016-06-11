@@ -64,12 +64,18 @@
       <Link>MemberHelpers.fs</Link>
     </Compile>
     <Compile Include="MessageDisplayReadModel.fs" />
+    <Compile Include="MemberChangeEmailViewModel.fs" />
+    <Compile Include="MemberChangeOtherViewModel.fs" />
     <Compile Include="MemberChangePasswordViewModel.fs" />
+    <Compile Include="MemberChangeUsernameViewModel.fs" />
     <Compile Include="MemberDetailReadModel.fs" />
     <Compile Include="MemberListReadModel.fs" />
     <Compile Include="MemberRegisterViewModel.fs" />
     <Compile Include="FoobleModelBinder.fs" />
+    <Compile Include="Extensions\MemberChangeEmailCommandResult.fs" />
+    <Compile Include="Extensions\MemberChangeOtherCommandResult.fs" />
     <Compile Include="Extensions\MemberChangePasswordCommandResult.fs" />
+    <Compile Include="Extensions\MemberChangeUsernameCommandResult.fs" />
     <Compile Include="Extensions\MemberDetailQueryResult.fs" />
     <Compile Include="Extensions\MemberExistsQueryResult.fs" />
     <Compile Include="Extensions\MemberListQueryResult.fs" />

@@ -2,7 +2,6 @@
 
 open Fooble.Common
 open Fooble.Core
-open Fooble.UnitTest
 open Fooble.Persistence
 open Moq
 open Moq.FSharp.Extensions
@@ -31,9 +30,9 @@ module MemberListQueryHandlerTests =
     let ``Calling handle, with members in data store, returns expected result`` () =
         let expectedMemberCount = 5
 
+        let passwordData = Crypto.hash (Password.random 32) 100
         let members =
             List.init expectedMemberCount <| fun _ ->
-                let passwordData = Crypto.hash (Password.random 32) 100
                 makeTestMemberData2 (Guid.random ()) (String.random 32) passwordData (EmailAddress.random 32)
                     (String.random 64)
         let contextMock = Mock<IFoobleContext>()

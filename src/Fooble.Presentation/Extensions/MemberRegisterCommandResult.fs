@@ -23,8 +23,8 @@ module MemberRegisterCommandResult =
         ensureWith (validateRequired result "result" "Result")
         ensureWith (validateRequired modelState "modelState" "Model state")
         match result with
-        | x when x.IsUsernameUnavailable -> modelState.AddModelError("username", "Username is unavailable")
-        | x when x.IsEmailUnavailable -> modelState.AddModelError("email", "Email is already registered")
+        | x when x.IsUnavailableUsername -> modelState.AddModelError("username", "Username is unavailable")
+        | x when x.IsUnavailableEmail -> modelState.AddModelError("email", "Email is already registered")
         | _ -> ()
 
     /// <summary>
@@ -39,10 +39,10 @@ module MemberRegisterCommandResult =
     let toMessageDisplayReadModel (result:IMemberRegisterCommandResult) =
         ensureWith (validateRequired result "result" "Result")
         match result with
-        | x when x.IsUsernameUnavailable ->
+        | x when x.IsUnavailableUsername ->
               MessageDisplayReadModel.make "Member" "Register" 400 MessageDisplayReadModel.warningSeverity
                   "Requested username is unavailable."
-        | x when x.IsEmailUnavailable ->
+        | x when x.IsUnavailableEmail ->
               MessageDisplayReadModel.make "Member" "Register" 400 MessageDisplayReadModel.warningSeverity
                   "Supplied email is already registered."
         | _ -> invalidOp "Result was not unsuccessful"

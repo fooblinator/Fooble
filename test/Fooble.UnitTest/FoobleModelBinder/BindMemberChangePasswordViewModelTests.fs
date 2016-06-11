@@ -5,7 +5,7 @@ open NUnit.Framework
 open Swensen.Unquote
 
 [<TestFixture>]
-module BindMemberChangePasswordViewModel =
+module BindMemberChangePasswordViewModelTests =
 
     [<Test>]
     let ``Binding to a member change password view model, with null new password, adds expected model state error`` () =

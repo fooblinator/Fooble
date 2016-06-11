@@ -1,7 +1,6 @@
 ﻿namespace Fooble.UnitTest
 
 open Fooble.Common
-open Fooble.Presentation
 open NUnit.Framework
 open Swensen.Unquote
 

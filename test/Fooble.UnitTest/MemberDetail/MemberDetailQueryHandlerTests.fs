@@ -13,13 +13,15 @@ open System
 module MemberDetailQueryHandlerTests =
 
     [<Test>]
-    let ``Calling handle, with no matching member in data store, returns expected result`` () =
+    let ``Calling handle, with id not found in data store, returns expected result`` () =
+        let id = Guid.random ()
+
         let contextMock = Mock<IFoobleContext>()
         contextMock.SetupFunc(fun x -> x.GetMember(any ())).Returns(None).Verifiable()
 
         let handler = MemberDetailQuery.makeHandler contextMock.Object (mock ())
 
-        let query = MemberDetailQuery.make (Guid.random ())
+        let query = MemberDetailQuery.make id
         let queryResult = handler.Handle(query)
 
         contextMock.Verify()
@@ -28,23 +30,23 @@ module MemberDetailQueryHandlerTests =
         queryResult.IsSuccess =! false
 
     [<Test>]
-    let ``Calling handle, with matching member in data store, returns expected result`` () =
-        let expectedId = Guid.random ()
-        let expectedUsername = String.random 32
-        let expectedEmail = EmailAddress.random 32
-        let expectedNickname = String.random 64
-        let expectedRegistered = DateTime.UtcNow
-        let expectedPasswordChanged = DateTime.UtcNow
+    let ``Calling handle, with successful parameters, returns expected result`` () =
+        let id = Guid.random ()
+        let username = String.random 32
+        let email = EmailAddress.random 32
+        let nickname = String.random 64
+        let registered = DateTime.UtcNow
+        let passwordChanged = DateTime.UtcNow
 
         let passwordData = Crypto.hash (Password.random 32) 100
         let memberData =
-            makeTestMemberData2 expectedId expectedUsername passwordData expectedEmail expectedNickname
+            makeTestMemberData2 id username passwordData email nickname
         let contextMock = Mock<IFoobleContext>()
         contextMock.SetupFunc(fun x -> x.GetMember(any ())).Returns(Some(memberData)).Verifiable()
 
         let handler = MemberDetailQuery.makeHandler contextMock.Object (makeTestMemberDetailReadModelFactory ())
 
-        let query = MemberDetailQuery.make expectedId
+        let query = MemberDetailQuery.make id
         let queryResult = handler.Handle(query)
 
         contextMock.Verify()
@@ -53,5 +55,4 @@ module MemberDetailQueryHandlerTests =
         queryResult.IsNotFound =! false
 
         let actualReadModel = queryResult.ReadModel
-        testMemberDetailReadModel actualReadModel expectedId expectedUsername expectedEmail expectedNickname
-            expectedRegistered expectedPasswordChanged
+        testMemberDetailReadModel actualReadModel id username email nickname registered passwordChanged

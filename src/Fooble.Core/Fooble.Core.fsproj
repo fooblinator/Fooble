@@ -68,7 +68,10 @@
       <Link>MemberHelpers.fs</Link>
     </Compile>
     <Compile Include="CryptoHelpers.fs" />
+    <Compile Include="MemberChangeEmailCommand.fs" />
+    <Compile Include="MemberChangeOtherCommand.fs" />
     <Compile Include="MemberChangePasswordCommand.fs" />
+    <Compile Include="MemberChangeUsernameCommand.fs" />
     <Compile Include="MemberDetailQuery.fs" />
     <Compile Include="MemberExistsQuery.fs" />
     <Compile Include="MemberListQuery.fs" />

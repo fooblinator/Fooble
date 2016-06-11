@@ -42,6 +42,35 @@ module internal UnitTestHelpers =
 
         (FoobleModelBinder().BindModel(controllerContext, bindingContext) :?> 'T, bindingContext.ModelState)
 
+    let bindMemberChangeEmailViewModel id currentPassword newEmail =
+        let routeValues =
+            Map.empty
+                .Add("Id", String.ofGuid id)
+
+        let formValues =
+            Map.empty
+                .Add("CurrentPassword", currentPassword)
+                .Add("NewEmail", newEmail)
+
+        bindModel<IMemberChangeEmailViewModel> routeValues formValues
+
+    let bindMemberChangeEmailViewModel2 id currentPassword newEmail =
+        fst (bindMemberChangeEmailViewModel id currentPassword newEmail)
+
+    let bindMemberChangeOtherViewModel id newNickname =
+        let routeValues =
+            Map.empty
+                .Add("Id", String.ofGuid id)
+
+        let formValues =
+            Map.empty
+                .Add("NewNickname", newNickname)
+
+        bindModel<IMemberChangeOtherViewModel> routeValues formValues
+
+    let bindMemberChangeOtherViewModel2 id newNickname =
+        fst (bindMemberChangeOtherViewModel id newNickname)
+
     let bindMemberChangePasswordViewModel id currentPassword newPassword confirmPassword =
         let routeValues =
             Map.empty
@@ -57,6 +86,21 @@ module internal UnitTestHelpers =
 
     let bindMemberChangePasswordViewModel2 id currentPassword newPassword confirmPassword =
         fst (bindMemberChangePasswordViewModel id currentPassword newPassword confirmPassword)
+
+    let bindMemberChangeUsernameViewModel id currentPassword newUsername =
+        let routeValues =
+            Map.empty
+                .Add("Id", String.ofGuid id)
+
+        let formValues =
+            Map.empty
+                .Add("CurrentPassword", currentPassword)
+                .Add("NewUsername", newUsername)
+
+        bindModel<IMemberChangeUsernameViewModel> routeValues formValues
+
+    let bindMemberChangeUsernameViewModel2 id currentPassword newUsername =
+        fst (bindMemberChangeUsernameViewModel id currentPassword newUsername)
 
     let bindMemberRegisterViewModel username password confirmPassword email nickname =
         let routeValues = Map.empty
@@ -248,6 +292,24 @@ module internal UnitTestHelpers =
     let testInvalidOperationException expectedMessage expression =
         raisesWith<InvalidOperationException> expression (fun x -> <@ x.Message = expectedMessage @>)
 
+    let testMemberData (actual:IMemberData) expectedId expectedUsername expectedPassword expectedEmail
+        expectedNickname (expectedRegistered:DateTime) (expectedPasswordChanged:DateTime) =
+
+        actual.Id =! expectedId
+        actual.Username =! expectedUsername
+
+        let isPasswordVerified = Crypto.verify actual.PasswordData expectedPassword
+        isPasswordVerified =! true
+
+        actual.Email =! expectedEmail
+        actual.Nickname =! expectedNickname
+
+        let actualRegistered = actual.Registered
+        let actualPasswordChanged = actual.PasswordChanged
+
+        actualRegistered.Date =! expectedRegistered.Date
+        actualPasswordChanged.Date =! expectedPasswordChanged.Date
+
     let testMemberDetailReadModel (actual:IMemberDetailReadModel) expectedId expectedUsername expectedEmail
         expectedNickname (expectedRegistered:DateTime) (expectedPasswordChanged:DateTime) =
 
@@ -284,6 +346,28 @@ module internal UnitTestHelpers =
                 existingMember.Id = actualMember.Id && existingMember.Nickname = actualMember.Nickname) expectedMembers
             findResult.IsSome =! true
 
+    let testMemberChangeEmailCommand (actual:IMemberChangeEmailCommand) expectedId expectedCurrentPassword
+        expectedNewEmail =
+
+        actual.Id =! expectedId
+        actual.CurrentPassword =! expectedCurrentPassword
+        actual.NewEmail =! expectedNewEmail
+
+    let testMemberChangeEmailViewModel (actual:IMemberChangeEmailViewModel) expectedId expectedCurrentPassword
+        expectedNewEmail =
+
+        actual.Id =! expectedId
+        actual.CurrentPassword =! expectedCurrentPassword
+        actual.NewEmail =! expectedNewEmail
+
+    let testMemberChangeOtherCommand (actual:IMemberChangeOtherCommand) expectedId expectedNewNickname =
+        actual.Id =! expectedId
+        actual.NewNickname =! expectedNewNickname
+
+    let testMemberChangeOtherViewModel (actual:IMemberChangeOtherViewModel) expectedId expectedNewNickname =
+        actual.Id =! expectedId
+        actual.NewNickname =! expectedNewNickname
+
     let testMemberChangePasswordCommand (actual:IMemberChangePasswordCommand) expectedId
         expectedCurrentPassword expectedNewPassword =
 
@@ -298,6 +382,20 @@ module internal UnitTestHelpers =
         actual.CurrentPassword =! expectedCurrentPassword
         actual.NewPassword =! expectedNewPassword
         actual.ConfirmPassword =! expectedConfirmPassword
+
+    let testMemberChangeUsernameCommand (actual:IMemberChangeUsernameCommand) expectedId expectedCurrentPassword
+        expectedNewUsername =
+
+        actual.Id =! expectedId
+        actual.CurrentPassword =! expectedCurrentPassword
+        actual.NewUsername =! expectedNewUsername
+
+    let testMemberChangeUsernameViewModel (actual:IMemberChangeUsernameViewModel) expectedId expectedCurrentPassword
+        expectedNewUsername =
+
+        actual.Id =! expectedId
+        actual.CurrentPassword =! expectedCurrentPassword
+        actual.NewUsername =! expectedNewUsername
 
     let testMemberRegisterCommand (actual:IMemberRegisterCommand) expectedId expectedUsername
         expectedPassword expectedEmail expectedNickname =

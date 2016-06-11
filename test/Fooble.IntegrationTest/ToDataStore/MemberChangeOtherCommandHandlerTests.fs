@@ -4,18 +4,20 @@ open Autofac
 open Fooble.Common
 open Fooble.Core
 open Fooble.Core.Infrastructure
-open Fooble.IntegrationTest
 open Fooble.Persistence
 open Fooble.Persistence.Infrastructure
-open MediatR
 open NUnit.Framework
 open Swensen.Unquote
+open System
 
 [<TestFixture>]
-module MemberExistsQueryHandlerToDataStoreTests =
+module MemberChangeOtherCommandHandlerTests =
 
     [<Test>]
-    let ``Calling handle, with no matching member in data store, returns expected result`` () =
+    let ``Calling handle, with id not found in data store, returns expected result`` () =
+        let id = Guid.random ()
+        let newNickname = String.random 64
+
         let connectionString = Settings.ConnectionStrings.FoobleContext
         let builder = ContainerBuilder()
         ignore (builder.RegisterModule(CoreRegistrations()))
@@ -23,23 +25,18 @@ module MemberExistsQueryHandlerToDataStoreTests =
         use container = builder.Build()
 
         let context = container.Resolve<IFoobleContext>()
-        let handler = container.Resolve<IRequestHandler<IMemberExistsQuery, IMemberExistsQueryResult>>()
+        let handler = MemberChangeOtherCommand.makeHandler context
 
-        // remove all existing members from the data store
-        List.iter (fun x -> context.DeleteMember(x)) (context.GetMembers())
+        let command = MemberChangeOtherCommand.make id newNickname
+        let commandResult = handler.Handle(command)
 
-        // persist changes to the data store
-        context.SaveChanges()
-
-        let query = MemberExistsQuery.make (Guid.random ())
-        let queryResult = handler.Handle(query)
-
-        queryResult.IsNotFound =! true
-        queryResult.IsSuccess =! false
+        commandResult.IsNotFound =! true
+        commandResult.IsSuccess =! false
 
     [<Test>]
-    let ``Calling handle, with matching member in data store, returns expected result`` () =
-        let expectedId = Guid.random ()
+    let ``Calling handle, with successful parameters, returns expected result`` () =
+        let id = Guid.random ()
+        let newNickname = String.random 64
 
         let connectionString = Settings.ConnectionStrings.FoobleContext
         let builder = ContainerBuilder()
@@ -49,7 +46,7 @@ module MemberExistsQueryHandlerToDataStoreTests =
 
         let context = container.Resolve<IFoobleContext>()
         let memberDataFactory = container.Resolve<MemberDataFactory>()
-        let handler = container.Resolve<IRequestHandler<IMemberExistsQuery, IMemberExistsQueryResult>>()
+        let handler = MemberChangeOtherCommand.makeHandler context
 
         // remove all existing members from the data store
         List.iter (fun x -> context.DeleteMember(x)) (context.GetMembers())
@@ -57,15 +54,17 @@ module MemberExistsQueryHandlerToDataStoreTests =
         // add matching member to the data store
         let passwordData = Crypto.hash (Password.random 32) 100
         let memberData =
-            memberDataFactory.Invoke(expectedId, String.random 32, passwordData, EmailAddress.random 32,
-                String.random 64)
+            memberDataFactory.Invoke(id, String.random 32, passwordData, EmailAddress.random 32, String.random 64)
+        memberData.Registered <- DateTime(2001, 1, 1)
+        memberData.PasswordChanged <- DateTime(2001, 1, 1)
         context.AddMember(memberData)
 
         // persist changes to the data store
         context.SaveChanges()
 
-        let query = MemberExistsQuery.make expectedId
-        let queryResult = handler.Handle(query)
+        let command = MemberChangeOtherCommand.make id newNickname
+        let commandResult = handler.Handle(command)
 
-        queryResult.IsSuccess =! true
-        queryResult.IsNotFound =! false
+        commandResult.IsSuccess =! true
+        commandResult.IsNotFound =! false
+

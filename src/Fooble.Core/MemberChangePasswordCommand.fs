@@ -40,7 +40,6 @@ module MemberChangePasswordCommand =
     [<CompiledName("Make")>]
     let make id currentPassword newPassword =
         ensureWith (validateMemberId id)
-        ensureWith (validateMemberPasswordsWith currentPassword None "currentPassword" "Current password")
         ensureWith (validateMemberPasswordsWith newPassword None "newPassword" "New password")
         Command(id, currentPassword, newPassword) :> IMemberChangePasswordCommand
 

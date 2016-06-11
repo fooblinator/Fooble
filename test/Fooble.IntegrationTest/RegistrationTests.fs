@@ -21,6 +21,22 @@ module RegistrationsTests =
         ignore (builder.RegisterModule(PresentationRegistrations()))
         use container = builder.Build()
 
+        let memberChangeEmailCommandHandler =
+            container.Resolve<IRequestHandler<IMemberChangeEmailCommand, IMemberChangeEmailCommandResult>>()
+        isNull memberChangeEmailCommandHandler =! false
+
+        let memberChangeOtherCommandHandler =
+            container.Resolve<IRequestHandler<IMemberChangeOtherCommand, IMemberChangeOtherCommandResult>>()
+        isNull memberChangeOtherCommandHandler =! false
+
+        let memberChangePasswordCommandHandler =
+            container.Resolve<IRequestHandler<IMemberChangePasswordCommand, IMemberChangePasswordCommandResult>>()
+        isNull memberChangePasswordCommandHandler =! false
+
+        let memberChangeUsernameCommandHandler =
+            container.Resolve<IRequestHandler<IMemberChangeUsernameCommand, IMemberChangeUsernameCommandResult>>()
+        isNull memberChangeUsernameCommandHandler =! false
+
         let memberDetailQueryHandler =
             container.Resolve<IRequestHandler<IMemberDetailQuery, IMemberDetailQueryResult>>()
         isNull memberDetailQueryHandler =! false
@@ -49,6 +65,30 @@ module RegistrationsTests =
         isNull singleInstanceFactory =! false
 
         (* test resolution of known request handler types using the factory *)
+
+        let result =
+            singleInstanceFactory
+                .Invoke(typeof<IRequestHandler<IMemberChangeEmailCommand, IMemberChangeEmailCommandResult>>)
+        isNull result =! false
+        result :? IRequestHandler<IMemberChangeEmailCommand, IMemberChangeEmailCommandResult> =! true
+
+        let result =
+            singleInstanceFactory
+                .Invoke(typeof<IRequestHandler<IMemberChangeOtherCommand, IMemberChangeOtherCommandResult>>)
+        isNull result =! false
+        result :? IRequestHandler<IMemberChangeOtherCommand, IMemberChangeOtherCommandResult> =! true
+
+        let result =
+            singleInstanceFactory
+                .Invoke(typeof<IRequestHandler<IMemberChangePasswordCommand, IMemberChangePasswordCommandResult>>)
+        isNull result =! false
+        result :? IRequestHandler<IMemberChangePasswordCommand, IMemberChangePasswordCommandResult> =! true
+
+        let result =
+            singleInstanceFactory
+                .Invoke(typeof<IRequestHandler<IMemberChangeUsernameCommand, IMemberChangeUsernameCommandResult>>)
+        isNull result =! false
+        result :? IRequestHandler<IMemberChangeUsernameCommand, IMemberChangeUsernameCommandResult> =! true
 
         let result =
             singleInstanceFactory.Invoke(typeof<IRequestHandler<IMemberDetailQuery, IMemberDetailQueryResult>>)
@@ -83,6 +123,38 @@ module RegistrationsTests =
         isNull multiInstanceFactory =! false
 
         (* test resolution of known request handler types using the factory *)
+
+        let result =
+            multiInstanceFactory
+                .Invoke(typeof<IRequestHandler<IMemberChangeEmailCommand, IMemberChangeEmailCommandResult>>)
+        isNull result =! false
+        Seq.length result =! 1
+        let actualResult = (Seq.head result)
+        actualResult :? IRequestHandler<IMemberChangeEmailCommand, IMemberChangeEmailCommandResult> =! true
+
+        let result =
+            multiInstanceFactory
+                .Invoke(typeof<IRequestHandler<IMemberChangeOtherCommand, IMemberChangeOtherCommandResult>>)
+        isNull result =! false
+        Seq.length result =! 1
+        let actualResult = (Seq.head result)
+        actualResult :? IRequestHandler<IMemberChangeOtherCommand, IMemberChangeOtherCommandResult> =! true
+
+        let result =
+            multiInstanceFactory
+                .Invoke(typeof<IRequestHandler<IMemberChangePasswordCommand, IMemberChangePasswordCommandResult>>)
+        isNull result =! false
+        Seq.length result =! 1
+        let actualResult = (Seq.head result)
+        actualResult :? IRequestHandler<IMemberChangePasswordCommand, IMemberChangePasswordCommandResult> =! true
+
+        let result =
+            multiInstanceFactory
+                .Invoke(typeof<IRequestHandler<IMemberChangeUsernameCommand, IMemberChangeUsernameCommandResult>>)
+        isNull result =! false
+        Seq.length result =! 1
+        let actualResult = (Seq.head result)
+        actualResult :? IRequestHandler<IMemberChangeUsernameCommand, IMemberChangeUsernameCommandResult> =! true
 
         let result =
             multiInstanceFactory.Invoke(typeof<IRequestHandler<IMemberDetailQuery, IMemberDetailQueryResult>>)

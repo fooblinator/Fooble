@@ -4,7 +4,6 @@ open Autofac
 open Fooble.Common
 open Fooble.Core
 open Fooble.Core.Infrastructure
-open Fooble.IntegrationTest
 open Fooble.Persistence
 open Fooble.Persistence.Infrastructure
 open Fooble.Presentation.Infrastructure
@@ -14,10 +13,12 @@ open Swensen.Unquote
 open System
 
 [<TestFixture>]
-module MemberDetailQueryHandlerToDataStoreTests =
+module MemberDetailQueryHandlerTests =
 
     [<Test>]
     let ``Calling handle, with no matching member in data store, returns expected result`` () =
+        let id = Guid.random ()
+
         let connectionString = Settings.ConnectionStrings.FoobleContext
         let builder = ContainerBuilder()
         ignore (builder.RegisterModule(CoreRegistrations()))
@@ -34,7 +35,7 @@ module MemberDetailQueryHandlerToDataStoreTests =
         // persist changes to the data store
         context.SaveChanges()
 
-        let query = MemberDetailQuery.make (Guid.random ())
+        let query = MemberDetailQuery.make id
         let queryResult = handler.Handle(query)
 
         queryResult.IsNotFound =! true
@@ -42,12 +43,12 @@ module MemberDetailQueryHandlerToDataStoreTests =
 
     [<Test>]
     let ``Calling handle, with matching member in data store, returns expected result`` () =
-        let expectedId = Guid.random ()
-        let expectedUsername = String.random 32
-        let expectedEmail = EmailAddress.random 32
-        let expectedNickname = String.random 64
-        let expectedRegistered = DateTime(2001, 1, 1)
-        let expectedPasswordChanged = DateTime(2001, 1, 1)
+        let id = Guid.random ()
+        let username = String.random 32
+        let email = EmailAddress.random 32
+        let nickname = String.random 64
+        let registered = DateTime.UtcNow
+        let passwordChanged = DateTime.UtcNow
 
         let connectionString = Settings.ConnectionStrings.FoobleContext
         let builder = ContainerBuilder()
@@ -65,21 +66,19 @@ module MemberDetailQueryHandlerToDataStoreTests =
 
         // add matching member to the data store
         let passwordData = Crypto.hash (Password.random 32) 100
-        let memberData =
-            memberDataFactory.Invoke(expectedId, expectedUsername, passwordData, expectedEmail, expectedNickname)
-        memberData.Registered <- expectedRegistered
-        memberData.PasswordChanged <- expectedPasswordChanged
+        let memberData = memberDataFactory.Invoke(id, username, passwordData, email, nickname)
+        memberData.Registered <- registered
+        memberData.PasswordChanged <- passwordChanged
         context.AddMember(memberData)
 
         // persist changes to the data store
         context.SaveChanges()
 
-        let query = MemberDetailQuery.make expectedId
+        let query = MemberDetailQuery.make id
         let queryResult = handler.Handle(query)
 
         queryResult.IsSuccess =! true
         queryResult.IsNotFound =! false
 
         let actualReadModel = queryResult.ReadModel
-        testMemberDetailReadModel actualReadModel expectedId expectedUsername expectedEmail expectedNickname
-            expectedRegistered expectedPasswordChanged
+        testMemberDetailReadModel actualReadModel id username email nickname registered passwordChanged

@@ -65,13 +65,31 @@
       <Link>MemberHelpers.fs</Link>
     </Compile>
     <Compile Include="UnitTestHelpers.fs" />
-    <Compile Include="FoobleModelBinder\BindMemberChangePasswordViewModel.fs" />
-    <Compile Include="FoobleModelBinder\BindMemberRegisterViewModel.fs" />
+    <Compile Include="FoobleModelBinder\BindMemberChangeEmailViewModelTests.fs" />
+    <Compile Include="FoobleModelBinder\BindMemberChangeOtherViewModelTests.fs" />
+    <Compile Include="FoobleModelBinder\BindMemberChangePasswordViewModelTests.fs" />
+    <Compile Include="FoobleModelBinder\BindMemberChangeUsernameViewModelTests.fs" />
+    <Compile Include="FoobleModelBinder\BindMemberRegisterViewModelTests.fs" />
+    <Compile Include="MemberChangeEmail\MemberChangeEmailCommandHandlerTests.fs" />
+    <Compile Include="MemberChangeEmail\MemberChangeEmailCommandResultTests.fs" />
+    <Compile Include="MemberChangeEmail\MemberChangeEmailCommandTests.fs" />
+    <Compile Include="MemberChangeEmail\MemberChangeEmailViewModelTests.fs" />
+    <Compile Include="MemberChangeOther\MemberChangeOtherCommandHandlerTests.fs" />
+    <Compile Include="MemberChangeOther\MemberChangeOtherCommandResultTests.fs" />
+    <Compile Include="MemberChangeOther\MemberChangeOtherCommandTests.fs" />
+    <Compile Include="MemberChangeOther\MemberChangeOtherViewModelTests.fs" />
     <Compile Include="MemberChangePassword\MemberChangePasswordCommandHandlerTests.fs" />
     <Compile Include="MemberChangePassword\MemberChangePasswordCommandResultTests.fs" />
     <Compile Include="MemberChangePassword\MemberChangePasswordCommandTests.fs" />
     <Compile Include="MemberChangePassword\MemberChangePasswordViewModelTests.fs" />
+    <Compile Include="MemberChangeUsername\MemberChangeUsernameCommandHandlerTests.fs" />
+    <Compile Include="MemberChangeUsername\MemberChangeUsernameCommandResultTests.fs" />
+    <Compile Include="MemberChangeUsername\MemberChangeUsernameCommandTests.fs" />
+    <Compile Include="MemberChangeUsername\MemberChangeUsernameViewModelTests.fs" />
+    <Compile Include="MemberController\MemberControllerChangeEmailActionTests.fs" />
+    <Compile Include="MemberController\MemberControllerChangeOtherActionTests.fs" />
     <Compile Include="MemberController\MemberControllerChangePasswordActionTests.fs" />
+    <Compile Include="MemberController\MemberControllerChangeUsernameActionTests.fs" />
     <Compile Include="MemberController\MemberControllerDetailActionTests.fs" />
     <Compile Include="MemberController\MemberControllerListActionTests.fs" />
     <Compile Include="MemberController\MemberControllerRegisterActionTests.fs" />

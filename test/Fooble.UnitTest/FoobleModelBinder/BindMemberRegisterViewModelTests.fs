@@ -5,7 +5,7 @@ open NUnit.Framework
 open Swensen.Unquote
 
 [<TestFixture>]
-module BindMemberRegisterViewModel =
+module BindMemberRegisterViewModelTests =
 
     [<Test>]
     let ``Binding to a member register view model, with null username, adds expected model state error`` () =

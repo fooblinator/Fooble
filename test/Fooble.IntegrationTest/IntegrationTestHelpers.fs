@@ -45,6 +45,29 @@ module internal IntegrationTestHelpers =
 
         FoobleModelBinder().BindModel(controllerContext, bindingContext) :?> 'T
 
+    let bindMemberChangeEmailViewModel id currentPassword newEmail =
+        let routeValues =
+            Map.empty
+                .Add("Id", String.ofGuid id)
+
+        let formValues =
+            Map.empty
+                .Add("CurrentPassword", currentPassword)
+                .Add("NewEmail", newEmail)
+
+        bindModel<IMemberChangeEmailViewModel> routeValues formValues
+
+    let bindMemberChangeOtherViewModel id newNickname =
+        let routeValues =
+            Map.empty
+                .Add("Id", String.ofGuid id)
+
+        let formValues =
+            Map.empty
+                .Add("NewNickname", newNickname)
+
+        bindModel<IMemberChangeOtherViewModel> routeValues formValues
+
     let bindMemberChangePasswordViewModel id currentPassword newPassword confirmPassword =
         let routeValues =
             Map.empty
@@ -57,6 +80,18 @@ module internal IntegrationTestHelpers =
                 .Add("ConfirmPassword", confirmPassword)
 
         bindModel<IMemberChangePasswordViewModel> routeValues formValues
+
+    let bindMemberChangeUsernameViewModel id currentPassword newUsername =
+        let routeValues =
+            Map.empty
+                .Add("Id", String.ofGuid id)
+
+        let formValues =
+            Map.empty
+                .Add("CurrentPassword", currentPassword)
+                .Add("NewUsername", newUsername)
+
+        bindModel<IMemberChangeUsernameViewModel> routeValues formValues
 
     let bindMemberRegisterViewModel username password confirmPassword email nickname =
         let routeValues = Map.empty
@@ -125,6 +160,32 @@ module internal IntegrationTestHelpers =
     let makeTestMemberData2 id username passwordData email nickname =
         makeTestMemberData id username passwordData email nickname DateTime.UtcNow DateTime.UtcNow
 
+    let testMemberChangeEmailViewModel (actual:IMemberChangeEmailViewModel) expectedId expectedCurrentPassword
+        expectedNewEmail =
+
+        actual.Id =! expectedId
+        actual.CurrentPassword =! expectedCurrentPassword
+        actual.NewEmail =! expectedNewEmail
+
+    let testMemberChangeOtherViewModel (actual:IMemberChangeOtherViewModel) expectedId expectedNewNickname =
+        actual.Id =! expectedId
+        actual.NewNickname =! expectedNewNickname
+
+    let testMemberChangePasswordViewModel (actual:IMemberChangePasswordViewModel) expectedId expectedCurrentPassword
+        expectedNewPassword expectedConfirmPassword =
+
+        actual.Id =! expectedId
+        actual.CurrentPassword =! expectedCurrentPassword
+        actual.NewPassword =! expectedNewPassword
+        actual.ConfirmPassword =! expectedConfirmPassword
+
+    let testMemberChangeUsernameViewModel (actual:IMemberChangeUsernameViewModel) expectedId expectedCurrentPassword
+        expectedNewUsername =
+
+        actual.Id =! expectedId
+        actual.CurrentPassword =! expectedCurrentPassword
+        actual.NewUsername =! expectedNewUsername
+
     let testMemberDetailReadModel (actual:IMemberDetailReadModel) expectedId expectedUsername expectedEmail
         expectedNickname (expectedRegistered:DateTime) (expectedPasswordChanged:DateTime) =
 
@@ -149,13 +210,6 @@ module internal IntegrationTestHelpers =
             let findResult = Seq.tryFind (fun (existingMember:IMemberData) ->
                 existingMember.Id = actualMember.Id && existingMember.Nickname = actualMember.Nickname) expectedMembers
             findResult.IsSome =! true
-
-    let testMemberChangePasswordViewModel (actual:IMemberChangePasswordViewModel) expectedCurrentPassword
-        expectedNewPassword expectedConfirmPassword =
-
-        actual.CurrentPassword =! expectedCurrentPassword
-        actual.NewPassword =! expectedNewPassword
-        actual.ConfirmPassword =! expectedConfirmPassword
 
     let testMemberRegisterViewModel (actual:IMemberRegisterViewModel) expectedUsername expectedPassword
         expectedConfirmPassword expectedEmail expectedNickname =

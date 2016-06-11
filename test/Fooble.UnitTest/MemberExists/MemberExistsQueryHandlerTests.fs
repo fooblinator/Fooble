@@ -13,12 +13,14 @@ module MemberExistsQueryHandlerTests =
 
     [<Test>]
     let ``Calling handle, with no matching member in data store, returns expected result`` () =
+        let id = Guid.random ()
+
         let contextMock = Mock<IFoobleContext>()
         contextMock.SetupFunc(fun x -> x.ExistsMemberId(any ())).Returns(false).Verifiable()
 
         let handler = MemberExistsQuery.makeHandler contextMock.Object
 
-        let query = MemberExistsQuery.make (Guid.random ())
+        let query = MemberExistsQuery.make id
         let queryResult = handler.Handle(query)
 
         contextMock.Verify()
@@ -28,14 +30,14 @@ module MemberExistsQueryHandlerTests =
 
     [<Test>]
     let ``Calling handle, with matching member in data store, returns expected result`` () =
-        let expectedId = Guid.random ()
+        let id = Guid.random ()
 
         let contextMock = Mock<IFoobleContext>()
         contextMock.SetupFunc(fun x -> x.ExistsMemberId(any ())).Returns(true).Verifiable()
 
         let handler = MemberExistsQuery.makeHandler contextMock.Object
 
-        let query = MemberExistsQuery.make expectedId
+        let query = MemberExistsQuery.make id
         let queryResult = handler.Handle(query)
 
         contextMock.Verify()

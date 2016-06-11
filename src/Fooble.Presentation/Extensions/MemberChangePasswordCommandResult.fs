@@ -43,5 +43,5 @@ module MemberChangePasswordCommandResult =
                   "No matching member could be found."
         | x when x.IsIncorrectPassword ->
               MessageDisplayReadModel.make "Member" "Change Password" 400 MessageDisplayReadModel.warningSeverity
-                  "Supplied password is invalid."
+                  "Supplied password is incorrect."
         | _ -> invalidOp "Result was not unsuccessful"

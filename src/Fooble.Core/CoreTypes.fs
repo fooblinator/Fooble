@@ -71,6 +71,61 @@ type IMemberListQuery =
 
 
 /// <summary>
+/// Represents the status of a member change email command.
+/// </summary>
+/// <remarks>The result is only one of "success", "not found", "incorrect password" or "unavailable email".</remarks>
+type IMemberChangeEmailCommandResult =
+    /// Whether the result is "success" (or not).
+    abstract IsSuccess:bool with get
+
+    /// Whether the result is "not found" (or not).
+    abstract IsNotFound:bool with get
+
+    /// Whether the result is "incorrect password" (or not).
+    abstract IsIncorrectPassword:bool with get
+
+    /// Whether the result is "unavailable email" (or not).
+    abstract IsUnavailableEmail:bool with get
+
+
+/// Represents the member change email command.
+type IMemberChangeEmailCommand =
+    inherit IRequest<IMemberChangeEmailCommandResult>
+
+    /// The id that represents the member.
+    abstract Id:Guid with get
+
+    /// The current password of the member.
+    abstract CurrentPassword:string with get
+
+    /// The new email of the member.
+    abstract NewEmail:string with get
+
+
+/// <summary>
+/// Represents the status of a member change other command.
+/// </summary>
+/// <remarks>The result is only one of "success" or "not found".</remarks>
+type IMemberChangeOtherCommandResult =
+    /// Whether the result is "success" (or not).
+    abstract IsSuccess:bool with get
+
+    /// Whether the result is "not found" (or not).
+    abstract IsNotFound:bool with get
+
+
+/// Represents the member change other command.
+type IMemberChangeOtherCommand =
+    inherit IRequest<IMemberChangeOtherCommandResult>
+
+    /// The id that represents the member.
+    abstract Id:Guid with get
+
+    /// The new nickname of the member.
+    abstract NewNickname:string with get
+
+
+/// <summary>
 /// Represents the status of a member change password command.
 /// </summary>
 /// <remarks>The result is only one of "success", "not found" or "incorrect password".</remarks>
@@ -100,18 +155,51 @@ type IMemberChangePasswordCommand =
 
 
 /// <summary>
+/// Represents the status of a member change username command.
+/// </summary>
+/// <remarks>The result is only one of "success", "not found", "incorrect password" or "unavailable
+/// username".</remarks>
+type IMemberChangeUsernameCommandResult =
+    /// Whether the result is "success" (or not).
+    abstract IsSuccess:bool with get
+
+    /// Whether the result is "not found" (or not).
+    abstract IsNotFound:bool with get
+
+    /// Whether the result is "incorrect password" (or not).
+    abstract IsIncorrectPassword:bool with get
+
+    /// Whether the result is "unavailable username" (or not).
+    abstract IsUnavailableUsername:bool with get
+
+
+/// Represents the member change username command.
+type IMemberChangeUsernameCommand =
+    inherit IRequest<IMemberChangeUsernameCommandResult>
+
+    /// The id that represents the member.
+    abstract Id:Guid with get
+
+    /// The current password of the member.
+    abstract CurrentPassword:string with get
+
+    /// The new username of the member.
+    abstract NewUsername:string with get
+
+
+/// <summary>
 /// Represents the status of a member register command.
 /// </summary>
-/// <remarks>The result is only one of "success", "username unavailable" or "email unavailable".</remarks>
+/// <remarks>The result is only one of "success", "unavailable username" or "unavailable email".</remarks>
 type IMemberRegisterCommandResult =
     /// Whether the result is "success" (or not).
     abstract IsSuccess:bool with get
 
-    /// Whether the result is "username unavailable" (or not).
-    abstract IsUsernameUnavailable:bool with get
+    /// Whether the result is "unavailable username" (or not).
+    abstract IsUnavailableUsername:bool with get
 
-    /// Whether the result is "email unavailable" (or not).
-    abstract IsEmailUnavailable:bool with get
+    /// Whether the result is "unavailable email" (or not).
+    abstract IsUnavailableEmail:bool with get
 
 
 /// Represents the member register command.

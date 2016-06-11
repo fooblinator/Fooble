@@ -18,9 +18,27 @@ namespace Fooble.Web
                 defaults: new { controller = "member", action = "register" });
 
             routes.MapRoute(
+                name: "MemberChangeEmail",
+                url: "member/{id}/changeemail",
+                defaults: new { controller = "member", action = "changeemail" },
+                constraints: new { id = nonEmptyGuidPattern });
+
+            routes.MapRoute(
+                name: "MemberChangeOther",
+                url: "member/{id}/changeother",
+                defaults: new { controller = "member", action = "changeother" },
+                constraints: new { id = nonEmptyGuidPattern });
+
+            routes.MapRoute(
                 name: "MemberChangePassword",
                 url: "member/{id}/changepassword",
                 defaults: new { controller = "member", action = "changepassword" },
+                constraints: new { id = nonEmptyGuidPattern });
+
+            routes.MapRoute(
+                name: "MemberChangeUsername",
+                url: "member/{id}/changeusername",
+                defaults: new { controller = "member", action = "changeusername" },
                 constraints: new { id = nonEmptyGuidPattern });
 
             routes.MapRoute(

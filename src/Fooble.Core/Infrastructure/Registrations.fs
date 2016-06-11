@@ -59,8 +59,10 @@ type CoreRegistrations =
             ignore (builder.RegisterInstance(this.MemberDataFactory.Value).ExternallyOwned())
 
         ignore (builder.Register(fun _ -> KeyGenerator(fun () -> Guid.random ())))
-
+        ignore (builder.Register(fun x -> MemberChangeEmailCommand.makeHandler (x.Resolve<IFoobleContext>())))
+        ignore (builder.Register(fun x -> MemberChangeOtherCommand.makeHandler (x.Resolve<IFoobleContext>())))
         ignore (builder.Register(fun x -> MemberChangePasswordCommand.makeHandler (x.Resolve<IFoobleContext>())))
+        ignore (builder.Register(fun x -> MemberChangeUsernameCommand.makeHandler (x.Resolve<IFoobleContext>())))
 
         ignore (builder.Register(fun x ->
             MemberDetailQuery.makeHandler (x.Resolve<IFoobleContext>()) (x.Resolve<MemberDetailReadModelFactory>())))

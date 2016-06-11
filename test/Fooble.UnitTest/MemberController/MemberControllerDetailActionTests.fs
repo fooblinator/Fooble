@@ -16,48 +16,13 @@ open System.Web.Mvc
 module MemberControllerDetailActionTests =
 
     [<Test>]
-    let ``Calling detail, with matches in data store, returns expected result`` () =
-        let matchingId = Guid.random ()
-        let expectedUsername = String.random 32
-        let expectedEmail = EmailAddress.random 32
-        let expectedNickname = String.random 64
-        let expectedRegistered = DateTime.UtcNow
-        let expectedPasswordChanged = DateTime.UtcNow
-
-        let queryResult =
-            makeTestMemberDetailReadModel matchingId expectedUsername expectedEmail expectedNickname DateTime.UtcNow
-                DateTime.UtcNow
-            |> MemberDetailQuery.makeSuccessResult
-        let mediatorMock = Mock<IMediator>()
-        mediatorMock.SetupFunc(fun x -> x.Send(any ())).Returns(queryResult).Verifiable()
-
-        let keyGenerator = makeTestKeyGenerator None
-        let controller = new MemberController(mediatorMock.Object, keyGenerator)
-        let result = controller.Detail(matchingId)
-
-        mediatorMock.Verify()
-
-        isNull result =! false
-        result :? ViewResult =! true
-
-        let viewResult = result :?> ViewResult
-
-        String.isEmpty viewResult.ViewName =! true
-        isNull viewResult.Model =! false
-        viewResult.Model :? IMemberDetailReadModel =! true
-
-        let actualReadModel = viewResult.Model :?> IMemberDetailReadModel
-        testMemberDetailReadModel actualReadModel matchingId expectedUsername expectedEmail expectedNickname
-            expectedRegistered expectedPasswordChanged
-
-    [<Test>]
-    let ``Calling detail, with no matches in data store, returns expected result`` () =
-        let nonMatchingId = Guid.random ()
-        let expectedHeading = "Member"
-        let expectedSubHeading = "Detail"
-        let expectedStatusCode = 404
-        let expectedSeverity = MessageDisplayReadModel.warningSeverity
-        let expectedMessage = "No matching member could be found."
+    let ``Calling detail, with id not found in data store, returns expected result`` () =
+        let notFoundId = Guid.random ()
+        let heading = "Member"
+        let subHeading = "Detail"
+        let statusCode = 404
+        let severity = MessageDisplayReadModel.warningSeverity
+        let message = "No matching member could be found."
 
         let queryResult = MemberDetailQuery.notFoundResult
         let mediatorMock = Mock<IMediator>()
@@ -65,7 +30,7 @@ module MemberControllerDetailActionTests =
 
         let keyGenerator = makeTestKeyGenerator None
         let controller = new MemberController(mediatorMock.Object, keyGenerator)
-        let result = controller.Detail(nonMatchingId)
+        let result = controller.Detail(notFoundId)
 
         mediatorMock.Verify()
 
@@ -79,5 +44,37 @@ module MemberControllerDetailActionTests =
         viewResult.Model :? IMessageDisplayReadModel =! true
 
         let actualReadModel = viewResult.Model :?> IMessageDisplayReadModel
-        testMessageDisplayReadModel actualReadModel expectedHeading expectedSubHeading expectedStatusCode
-            expectedSeverity expectedMessage
+        testMessageDisplayReadModel actualReadModel heading subHeading statusCode severity message
+
+    [<Test>]
+    let ``Calling detail, with successful parameters, returns expected result`` () =
+        let id = Guid.random ()
+        let username = String.random 32
+        let email = EmailAddress.random 32
+        let nickname = String.random 64
+        let registered = DateTime.UtcNow
+        let passwordChanged = DateTime.UtcNow
+
+        let queryResult =
+            makeTestMemberDetailReadModel id username email nickname registered passwordChanged
+            |> MemberDetailQuery.makeSuccessResult
+        let mediatorMock = Mock<IMediator>()
+        mediatorMock.SetupFunc(fun x -> x.Send(any ())).Returns(queryResult).Verifiable()
+
+        let keyGenerator = makeTestKeyGenerator None
+        let controller = new MemberController(mediatorMock.Object, keyGenerator)
+        let result = controller.Detail(id)
+
+        mediatorMock.Verify()
+
+        isNull result =! false
+        result :? ViewResult =! true
+
+        let viewResult = result :?> ViewResult
+
+        String.isEmpty viewResult.ViewName =! true
+        isNull viewResult.Model =! false
+        viewResult.Model :? IMemberDetailReadModel =! true
+
+        let actualReadModel = viewResult.Model :?> IMemberDetailReadModel
+        testMemberDetailReadModel actualReadModel id username email nickname registered passwordChanged

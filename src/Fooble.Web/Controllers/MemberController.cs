@@ -25,6 +25,78 @@ namespace Fooble.Web.Controllers
         }
 
         [HttpGet]
+        public ActionResult ChangeEmail(Guid id)
+        {
+            var query = MemberExistsQuery.Make(id);
+            var result = _mediator.Send(query);
+
+            Debug.Assert(result != null, "Result parameter was null");
+
+            if (result.IsNotFound)
+                return View("MessageDisplay", result.ToMessageDisplayReadModel("Change Email"));
+
+            return View(MemberChangeEmailViewModel.Make(id));
+        }
+
+        [HttpPost]
+        public ActionResult ChangeEmail(Guid id,
+            [ModelBinder(typeof(FoobleModelBinder))] IMemberChangeEmailViewModel viewModel)
+        {
+            Debug.Assert(viewModel != null, "View model is required");
+
+            if (!ModelState.IsValid) return View(viewModel.Clean());
+
+            var command = viewModel.ToCommand();
+            var result = _mediator.Send(command);
+
+            Debug.Assert(result != null, "Result was null");
+
+            if (result.IsNotFound)
+                return View("MessageDisplay", result.ToMessageDisplayReadModel());
+
+            result.AddModelErrors(ModelState);
+
+            if (!ModelState.IsValid) return View(viewModel.Clean());
+
+            return RedirectToAction("Detail", "Member", new { id = id });
+        }
+
+        [HttpGet]
+        public ActionResult ChangeOther(Guid id)
+        {
+            var query = MemberExistsQuery.Make(id);
+            var result = _mediator.Send(query);
+
+            Debug.Assert(result != null, "Result parameter was null");
+
+            if (result.IsNotFound)
+                return View("MessageDisplay", result.ToMessageDisplayReadModel("Change Other"));
+
+            return View(MemberChangeOtherViewModel.Make(id));
+        }
+
+        [HttpPost]
+        public ActionResult ChangeOther(Guid id,
+            [ModelBinder(typeof(FoobleModelBinder))] IMemberChangeOtherViewModel viewModel)
+        {
+            Debug.Assert(viewModel != null, "View model is required");
+
+            if (!ModelState.IsValid) return View(viewModel);
+
+            var command = viewModel.ToCommand();
+            var result = _mediator.Send(command);
+
+            Debug.Assert(result != null, "Result was null");
+
+            if (result.IsNotFound)
+                return View("MessageDisplay", result.ToMessageDisplayReadModel());
+
+            if (!ModelState.IsValid) return View(viewModel);
+
+            return RedirectToAction("Detail", "Member", new { id = id });
+        }
+
+        [HttpGet]
         public ActionResult ChangePassword(Guid id)
         {
             var query = MemberExistsQuery.Make(id);
@@ -41,6 +113,43 @@ namespace Fooble.Web.Controllers
         [HttpPost]
         public ActionResult ChangePassword(Guid id,
             [ModelBinder(typeof(FoobleModelBinder))] IMemberChangePasswordViewModel viewModel)
+        {
+            Debug.Assert(viewModel != null, "View model is required");
+
+            if (!ModelState.IsValid) return View(viewModel.Clean());
+
+            var command = viewModel.ToCommand();
+            var result = _mediator.Send(command);
+
+            Debug.Assert(result != null, "Result was null");
+
+            if (result.IsNotFound)
+                return View("MessageDisplay", result.ToMessageDisplayReadModel());
+
+            result.AddModelErrors(ModelState);
+
+            if (!ModelState.IsValid) return View(viewModel.Clean());
+
+            return RedirectToAction("Detail", "Member", new { id = id });
+        }
+
+        [HttpGet]
+        public ActionResult ChangeUsername(Guid id)
+        {
+            var query = MemberExistsQuery.Make(id);
+            var result = _mediator.Send(query);
+
+            Debug.Assert(result != null, "Result parameter was null");
+
+            if (result.IsNotFound)
+                return View("MessageDisplay", result.ToMessageDisplayReadModel("Change Username"));
+
+            return View(MemberChangeUsernameViewModel.Make(id));
+        }
+
+        [HttpPost]
+        public ActionResult ChangeUsername(Guid id,
+            [ModelBinder(typeof(FoobleModelBinder))] IMemberChangeUsernameViewModel viewModel)
         {
             Debug.Assert(viewModel != null, "View model is required");
 

@@ -112,7 +112,7 @@ module MemberChangePasswordCommandResultTests =
         let expectedSubHeading = "Change Password"
         let expectedStatusCode = 400
         let expectedSeverity = MessageDisplayReadModel.warningSeverity
-        let expectedMessage = "Supplied password is invalid."
+        let expectedMessage = "Supplied password is incorrect."
 
         let actualReadModel =
             MemberChangePasswordCommand.incorrectPasswordResult

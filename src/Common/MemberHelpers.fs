@@ -3,11 +3,14 @@
 [<AutoOpen>]
 module internal MemberHelpers =
 
+    let validateMemberEmailWith email paraName messagePrefix =
+        [ (String.isNotNullOrEmpty), sprintf "%s is required" messagePrefix
+          (String.isNotLonger 254), sprintf "%s is longer than 254 characters" messagePrefix
+          (String.isEmail), sprintf "%s is not in the correct format" messagePrefix ]
+        |> validateOn email paraName
+
     let validateMemberEmail email =
-        [ (String.isNotNullOrEmpty), "Email is required"
-          (String.isNotLonger 254), "Email is longer than 254 characters"
-          (String.isEmail), "Email is not in the correct format" ]
-        |> validateOn email "email"
+        validateMemberEmailWith email "email" "Email"
 
     let validateMemberId id =
         [ (Guid.isNotEmpty), "Id is required" ]
@@ -18,10 +21,13 @@ module internal MemberHelpers =
           (String.isGuid), "Id is not in the correct format (GUID)" ]
         |> validateOn id "id"
 
+    let validateMemberNicknameWith nickname paramName messagePrefix =
+        [ (String.isNotNullOrEmpty), sprintf "%s is required" messagePrefix
+          (String.isNotLonger 64), sprintf "%s is longer than 64 characters" messagePrefix ]
+        |> validateOn nickname paramName
+
     let validateMemberNickname nickname =
-        [ (String.isNotNullOrEmpty), "Nickname is required"
-          (String.isNotLonger 64), "Nickname is longer than 64 characters" ]
-        |> validateOn nickname "nickname"
+        validateMemberNicknameWith nickname "nickname" "Nickname"
 
     let validateMemberPasswordData passwordData =
         [ (String.isNotNullOrEmpty), "Password data is required"
@@ -50,9 +56,13 @@ module internal MemberHelpers =
     let validateMemberPasswords password confirmPassword =
         validateMemberPasswordsWith password confirmPassword "password" "Password"
 
+    let validateMemberUsernameWith username paraName messagePrefix =
+        [ (String.isNotNullOrEmpty), sprintf "%s is required" messagePrefix
+          (String.isNotShorter 3), sprintf "%s is shorter than 3 characters" messagePrefix
+          (String.isNotLonger 32), sprintf "%s is longer than 32 characters" messagePrefix
+          ((String.isMatch "^[a-z0-9]+$"),
+              sprintf "%s is not in the correct format (lowercase alphanumeric)" messagePrefix) ]
+        |> validateOn username paraName
+
     let validateMemberUsername username =
-        [ (String.isNotNullOrEmpty), "Username is required"
-          (String.isNotShorter 3), "Username is shorter than 3 characters"
-          (String.isNotLonger 32), "Username is longer than 32 characters"
-          (String.isMatch "^[a-z0-9]+$"), "Username is not in the correct format (lowercase alphanumeric)" ]
-        |> validateOn username "username"
+        validateMemberUsernameWith username "username" "Username"
