@@ -185,7 +185,7 @@ module internal UnitTestHelpers =
         | Some(x) -> KeyGenerator(fun () -> x)
         | None -> KeyGenerator(fun () -> Guid.random ())
 
-    let makeTestMemberData id username passwordData email nickname registered passwordChanged =
+    let makeTestMemberData id username passwordData email nickname registered passwordChanged isDeactivated =
 #if DEBUG
         assertWith (validateMemberId id)
         assertWith (validateMemberUsername username)
@@ -200,6 +200,7 @@ module internal UnitTestHelpers =
         let mutable nickname = nickname
         let mutable registered = registered
         let mutable passwordChanged = passwordChanged
+        let mutable isDeactivated = isDeactivated
 
         { new IMemberData with
 
@@ -229,10 +230,14 @@ module internal UnitTestHelpers =
 
               member __.PasswordChanged
                   with get() = passwordChanged
-                  and set (x) = passwordChanged <- x }
+                  and set (x) = passwordChanged <- x
+
+              member __.IsDeactivated
+                  with get() = isDeactivated
+                  and set (x) = isDeactivated <- x }
 
     let makeTestMemberData2 id username passwordData email nickname =
-        makeTestMemberData id username passwordData email nickname DateTime.UtcNow DateTime.UtcNow
+        makeTestMemberData id username passwordData email nickname DateTime.UtcNow DateTime.UtcNow false
 
     let makeTestMemberDataFactory () =
         MemberDataFactory(makeTestMemberData2)

@@ -18,7 +18,7 @@ module MemberChangeEmailCommandHandlerTests =
         let newEmail = EmailAddress.random 32
 
         let contextMock = Mock<IFoobleContext>()
-        contextMock.SetupFunc(fun x -> x.GetMember(any ())).Returns(None).Verifiable()
+        contextMock.SetupFunc(fun x -> x.GetMember(any (), considerDeactivated = false)).Returns(None).Verifiable()
 
         let handler = MemberChangeEmailCommand.makeHandler contextMock.Object
 
@@ -42,7 +42,8 @@ module MemberChangeEmailCommandHandlerTests =
         let memberData =
             makeTestMemberData2 id (String.random 32) passwordData (EmailAddress.random 32) (String.random 64)
         let contextMock = Mock<IFoobleContext>()
-        contextMock.SetupFunc(fun x -> x.GetMember(any ())).Returns(Some(memberData)).Verifiable()
+        contextMock.SetupFunc(fun x ->
+            x.GetMember(any (), considerDeactivated = false)).Returns(Some(memberData)).Verifiable()
 
         let handler = MemberChangeEmailCommand.makeHandler contextMock.Object
 
@@ -66,8 +67,10 @@ module MemberChangeEmailCommandHandlerTests =
         let memberData =
             makeTestMemberData2 id (String.random 32) passwordData unavailableEmail (String.random 64)
         let contextMock = Mock<IFoobleContext>()
-        contextMock.SetupFunc(fun x -> x.GetMember(any ())).Returns(Some(memberData)).Verifiable()
-        contextMock.SetupFunc(fun x -> x.ExistsMemberEmail(any ())).Returns(true).Verifiable()
+        contextMock.SetupFunc(fun x ->
+            x.GetMember(any (), considerDeactivated = false)).Returns(Some(memberData)).Verifiable()
+        contextMock.SetupFunc(fun x ->
+            x.ExistsMemberEmail(any (), considerDeactivated = true)).Returns(true).Verifiable()
 
         let handler = MemberChangeEmailCommand.makeHandler contextMock.Object
 
@@ -91,8 +94,10 @@ module MemberChangeEmailCommandHandlerTests =
         let memberData =
             makeTestMemberData2 id (String.random 32) passwordData (EmailAddress.random 32) (String.random 64)
         let contextMock = Mock<IFoobleContext>()
-        contextMock.SetupFunc(fun x -> x.GetMember(any ())).Returns(Some(memberData)).Verifiable()
-        contextMock.SetupFunc(fun x -> x.ExistsMemberEmail(any ())).Returns(false).Verifiable()
+        contextMock.SetupFunc(fun x ->
+            x.GetMember(any (), considerDeactivated = false)).Returns(Some(memberData)).Verifiable()
+        contextMock.SetupFunc(fun x ->
+            x.ExistsMemberEmail(any (), considerDeactivated = true)).Returns(false).Verifiable()
 
         let handler = MemberChangeEmailCommand.makeHandler contextMock.Object
 

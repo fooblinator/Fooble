@@ -39,7 +39,7 @@ module MemberControllerDetailActionTests =
         let keyGenerator = container.Resolve<KeyGenerator>()
 
         // remove all existing members from the data store
-        List.iter (fun x -> context.DeleteMember(x)) (context.GetMembers())
+        List.iter (fun x -> context.DeleteMember(x)) (context.GetMembers(considerDeactivated = true))
 
         // persist changes to the data store
         context.SaveChanges()
@@ -81,7 +81,7 @@ module MemberControllerDetailActionTests =
         let keyGenerator = container.Resolve<KeyGenerator>()
 
         // remove all existing members from the data store
-        List.iter (fun x -> context.DeleteMember(x)) (context.GetMembers())
+        List.iter (fun x -> context.DeleteMember(x)) (context.GetMembers(considerDeactivated = true))
 
         // add matching member to the data store
         let passwordData = Crypto.hash (Password.random 32) 100

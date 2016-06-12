@@ -83,7 +83,7 @@ module MemberDetailQuery =
 #endif
 
                 let readModel =
-                    this.Context.GetMember(message.Id)
+                    this.Context.GetMember(message.Id, considerDeactivated = false)
                     |> Option.map (fun x ->
                            this.ReadModelFactory.Invoke(message.Id, x.Username, x.Email, x.Nickname, x.Registered,
                                x.PasswordChanged))

@@ -14,7 +14,7 @@ module MemberListQueryHandlerTests =
     [<Test>]
     let ``Calling handle, with no members in data store, returns expected result`` () =
         let contextMock = Mock<IFoobleContext>()
-        contextMock.SetupFunc(fun x -> x.GetMembers()).Returns([]).Verifiable()
+        contextMock.SetupFunc(fun x -> x.GetMembers(considerDeactivated = false)).Returns([]).Verifiable()
 
         let handler = MemberListQuery.makeHandler contextMock.Object (mock ()) (mock ())
 
@@ -36,7 +36,7 @@ module MemberListQueryHandlerTests =
                 makeTestMemberData2 (Guid.random ()) (String.random 32) passwordData (EmailAddress.random 32)
                     (String.random 64)
         let contextMock = Mock<IFoobleContext>()
-        contextMock.SetupFunc(fun x -> x.GetMembers()).Returns(members).Verifiable()
+        contextMock.SetupFunc(fun x -> x.GetMembers(considerDeactivated = false)).Returns(members).Verifiable()
 
         let handler =
             MemberListQuery.makeHandler contextMock.Object (makeTestMemberListItemReadModelFactory ())

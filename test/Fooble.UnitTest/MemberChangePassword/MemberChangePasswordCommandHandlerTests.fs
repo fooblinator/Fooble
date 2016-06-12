@@ -19,7 +19,7 @@ module MemberChangePasswordCommandHandlerTests =
         let newPassword = Password.random 32
 
         let contextMock = Mock<IFoobleContext>()
-        contextMock.SetupFunc(fun x -> x.GetMember(any ())).Returns(None).Verifiable()
+        contextMock.SetupFunc(fun x -> x.GetMember(any (), considerDeactivated = false)).Returns(None).Verifiable()
 
         let handler = MemberChangePasswordCommand.makeHandler contextMock.Object
 
@@ -42,7 +42,8 @@ module MemberChangePasswordCommandHandlerTests =
         let memberData =
             makeTestMemberData2 id (String.random 32) passwordData (EmailAddress.random 32) (String.random 64)
         let contextMock = Mock<IFoobleContext>()
-        contextMock.SetupFunc(fun x -> x.GetMember(any ())).Returns(Some(memberData)).Verifiable()
+        contextMock.SetupFunc(fun x ->
+            x.GetMember(any (), considerDeactivated = false)).Returns(Some(memberData)).Verifiable()
 
         let handler = MemberChangePasswordCommand.makeHandler contextMock.Object
 
@@ -64,10 +65,11 @@ module MemberChangePasswordCommandHandlerTests =
         let passwordChanged = DateTime.UtcNow
 
         let memberData =
-            makeTestMemberData id (String.random 32) currentPasswordData (EmailAddress.random 32)
-                (String.random 64) (DateTime(2001, 01, 01)) (DateTime(2001, 01, 01))
+            makeTestMemberData id (String.random 32) currentPasswordData (EmailAddress.random 32) (String.random 64) 
+                (DateTime(2001, 01, 01)) (DateTime(2001, 01, 01)) false
         let contextMock = Mock<IFoobleContext>()
-        contextMock.SetupFunc(fun x -> x.GetMember(any ())).Returns(Some(memberData)).Verifiable()
+        contextMock.SetupFunc(fun x ->
+            x.GetMember(any (), considerDeactivated = false)).Returns(Some(memberData)).Verifiable()
 
         let handler = MemberChangePasswordCommand.makeHandler contextMock.Object
 

@@ -47,6 +47,10 @@ module internal PersistenceHelpers =
                   with get() = memberData.PasswordChanged
                   and set(x) = memberData.PasswordChanged <- x
 
+              member __.IsDeactivated
+                  with get() = memberData.IsDeactivated
+                  and set(x) = memberData.IsDeactivated <- x
+
           interface IExposeWrapped<MemberData> with
 
               member __.Inner
@@ -65,47 +69,73 @@ module internal PersistenceHelpers =
 
         { new IFoobleContext with
 
-            member __.GetMember(id) =
+            member __.GetMember(id, considerDeactivated) =
 #if DEBUG
                 assertWith (validateMemberId id)
 #endif
-                query { for x in context.MemberData do
-                        where (x.Id = id)
-                        select x
-                        exactlyOneOrDefault }
+                if considerDeactivated
+                    then query { for x in context.MemberData do
+                                 where (x.Id = id)
+                                 select x
+                                 exactlyOneOrDefault }
+                    else query { for x in context.MemberData do
+                                 where (not x.IsDeactivated)
+                                 where (x.Id = id)
+                                 select x
+                                 exactlyOneOrDefault }
                 |> Option.ofObj
                 |> Option.map wrapMemberData
 
-            member __.GetMembers() =
-                query { for x in context.MemberData do
-                        sortBy x.Nickname
-                        select x }
+            member __.GetMembers(considerDeactivated) =
+                if considerDeactivated
+                    then query { for x in context.MemberData do
+                                 sortBy x.Nickname
+                                 select x }
+                    else query { for x in context.MemberData do
+                                 where (not x.IsDeactivated)
+                                 sortBy x.Nickname
+                                 select x }
                 |> Seq.map wrapMemberData
                 |> List.ofSeq
 
-            member __.ExistsMemberId(id) =
+            member __.ExistsMemberId(id, considerDeactivated) =
 #if DEBUG
                 assertWith (validateMemberId id)
 #endif
-                query { for x in context.MemberData do
-                        select x.Id
-                        contains id }
+                if considerDeactivated
+                    then query { for x in context.MemberData do
+                                 select x.Id
+                                 contains id }
+                    else query { for x in context.MemberData do
+                                 where (not x.IsDeactivated)
+                                 select x.Id
+                                 contains id }
 
-            member __.ExistsMemberUsername(username) =
+            member __.ExistsMemberUsername(username, considerDeactivated) =
 #if DEBUG
                 assertWith (validateMemberUsername username)
 #endif
-                query { for x in context.MemberData do
-                        select x.Username
-                        contains username }
+                if considerDeactivated
+                    then query { for x in context.MemberData do
+                                 select x.Username
+                                 contains username }
+                    else query { for x in context.MemberData do
+                                 where (not x.IsDeactivated)
+                                 select x.Username
+                                 contains username }
 
-            member __.ExistsMemberEmail(email) =
+            member __.ExistsMemberEmail(email, considerDeactivated) =
 #if DEBUG
                 assertWith (validateMemberEmail email)
 #endif
-                query { for x in context.MemberData do
-                        select x.Email
-                        contains email }
+                if considerDeactivated
+                    then query { for x in context.MemberData do
+                                 select x.Email
+                                 contains email }
+                    else query { for x in context.MemberData do
+                                 where (not x.IsDeactivated)
+                                 select x.Email
+                                 contains email }
 
             member __.AddMember(memberData) =
 #if DEBUG

@@ -27,7 +27,7 @@ module MemberListQueryHandlerTests =
         let handler = container.Resolve<IRequestHandler<IMemberListQuery, IMemberListQueryResult>>()
 
         // remove all existing members from the data store
-        List.iter (fun x -> context.DeleteMember(x)) (context.GetMembers())
+        List.iter (fun x -> context.DeleteMember(x)) (context.GetMembers(considerDeactivated = true))
 
         // persist changes to the data store
         context.SaveChanges()
@@ -54,7 +54,7 @@ module MemberListQueryHandlerTests =
         let handler = container.Resolve<IRequestHandler<IMemberListQuery, IMemberListQueryResult>>()
 
         // remove all existing members from the data store
-        List.iter (fun x -> context.DeleteMember(x)) (context.GetMembers())
+        List.iter (fun x -> context.DeleteMember(x)) (context.GetMembers(considerDeactivated = true))
 
         // add members to the data store
         let members =

@@ -17,7 +17,7 @@ module MemberChangeOtherCommandHandlerTests =
         let newNickname = String.random 64
 
         let contextMock = Mock<IFoobleContext>()
-        contextMock.SetupFunc(fun x -> x.GetMember(any ())).Returns(None).Verifiable()
+        contextMock.SetupFunc(fun x -> x.GetMember(any (), considerDeactivated = false)).Returns(None).Verifiable()
 
         let handler = MemberChangeOtherCommand.makeHandler contextMock.Object
 
@@ -38,7 +38,8 @@ module MemberChangeOtherCommandHandlerTests =
         let memberData =
             makeTestMemberData2 id (String.random 32) passwordData (EmailAddress.random 32) (String.random 64)
         let contextMock = Mock<IFoobleContext>()
-        contextMock.SetupFunc(fun x -> x.GetMember(any ())).Returns(Some(memberData)).Verifiable()
+        contextMock.SetupFunc(fun x ->
+            x.GetMember(any (), considerDeactivated = false)).Returns(Some(memberData)).Verifiable()
 
         let handler = MemberChangeOtherCommand.makeHandler contextMock.Object
 

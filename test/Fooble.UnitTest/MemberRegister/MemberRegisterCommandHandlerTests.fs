@@ -21,7 +21,7 @@ module MemberRegisterCommandHandlerTests =
         let nickname = String.random 64
 
         let contextMock = Mock<IFoobleContext>()
-        contextMock.SetupFunc(fun x -> x.ExistsMemberUsername(any ())).Returns(true).Verifiable()
+        contextMock.SetupFunc(fun x -> x.ExistsMemberUsername(any (), considerDeactivated = true)).Returns(true).Verifiable()
 
         let handler = MemberRegisterCommand.makeHandler contextMock.Object (mock ())
 
@@ -43,7 +43,8 @@ module MemberRegisterCommandHandlerTests =
         let nickname = String.random 64
 
         let contextMock = Mock<IFoobleContext>()
-        contextMock.SetupFunc(fun x -> x.ExistsMemberEmail(any ())).Returns(true).Verifiable()
+        contextMock.SetupFunc(fun x ->
+            x.ExistsMemberEmail(any (), considerDeactivated = true)).Returns(true).Verifiable()
 
         let handler = MemberRegisterCommand.makeHandler contextMock.Object (mock ())
 
@@ -69,8 +70,10 @@ module MemberRegisterCommandHandlerTests =
         let capturedMemberData = ref null
 
         let contextMock = Mock<IFoobleContext>()
-        contextMock.SetupFunc(fun x -> x.ExistsMemberUsername(any ())).Returns(false).Verifiable()
-        contextMock.SetupFunc(fun x -> x.ExistsMemberEmail(any ())).Returns(false).Verifiable()
+        contextMock.SetupFunc(fun x ->
+            x.ExistsMemberUsername(any (), considerDeactivated = true)).Returns(false).Verifiable()
+        contextMock.SetupFunc(fun x ->
+            x.ExistsMemberEmail(any (), considerDeactivated = true)).Returns(false).Verifiable()
         contextMock.SetupAction(fun x -> x.AddMember(any ()))
             .Callback<IMemberData>(fun x -> capturedMemberData := box x).Verifiable()
 

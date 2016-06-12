@@ -17,7 +17,7 @@ module MemberDetailQueryHandlerTests =
         let id = Guid.random ()
 
         let contextMock = Mock<IFoobleContext>()
-        contextMock.SetupFunc(fun x -> x.GetMember(any ())).Returns(None).Verifiable()
+        contextMock.SetupFunc(fun x -> x.GetMember(any (), considerDeactivated = false)).Returns(None).Verifiable()
 
         let handler = MemberDetailQuery.makeHandler contextMock.Object (mock ())
 
@@ -42,7 +42,8 @@ module MemberDetailQueryHandlerTests =
         let memberData =
             makeTestMemberData2 id username passwordData email nickname
         let contextMock = Mock<IFoobleContext>()
-        contextMock.SetupFunc(fun x -> x.GetMember(any ())).Returns(Some(memberData)).Verifiable()
+        contextMock.SetupFunc(fun x ->
+            x.GetMember(any (), considerDeactivated = false)).Returns(Some(memberData)).Verifiable()
 
         let handler = MemberDetailQuery.makeHandler contextMock.Object (makeTestMemberDetailReadModelFactory ())
 

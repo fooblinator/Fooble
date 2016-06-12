@@ -90,7 +90,7 @@ module MemberChangePasswordCommand =
                 assertWith (validateRequired message "message" "Message")
 #endif
 
-                match this.Context.GetMember(message.Id) with
+                match this.Context.GetMember(message.Id, considerDeactivated = false) with
                 | None -> notFoundResult
                 | Some(x) ->
 

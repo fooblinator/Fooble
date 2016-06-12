@@ -98,7 +98,7 @@ module MemberChangeEmailCommand =
                 assertWith (validateRequired message "message" "Message")
 #endif
 
-                match this.Context.GetMember(message.Id) with
+                match this.Context.GetMember(message.Id, considerDeactivated = false) with
                 | None -> notFoundResult
                 | Some(x) ->
 
@@ -106,7 +106,7 @@ module MemberChangeEmailCommand =
                 | false -> incorrectPasswordResult
                 | _ ->
 
-                let emailFound = this.Context.ExistsMemberEmail(message.NewEmail)
+                let emailFound = this.Context.ExistsMemberEmail(message.NewEmail, considerDeactivated = true)
 
                 match emailFound with
                 | true -> unavailableEmailResult
