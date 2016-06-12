@@ -37,6 +37,10 @@ module RegistrationsTests =
             container.Resolve<IRequestHandler<IMemberChangeUsernameCommand, IMemberChangeUsernameCommandResult>>()
         isNull memberChangeUsernameCommandHandler =! false
 
+        let memberDeactivateCommandHandler =
+            container.Resolve<IRequestHandler<IMemberDeactivateCommand, IMemberDeactivateCommandResult>>()
+        isNull memberDeactivateCommandHandler =! false
+
         let memberDetailQueryHandler =
             container.Resolve<IRequestHandler<IMemberDetailQuery, IMemberDetailQueryResult>>()
         isNull memberDetailQueryHandler =! false
@@ -89,6 +93,12 @@ module RegistrationsTests =
                 .Invoke(typeof<IRequestHandler<IMemberChangeUsernameCommand, IMemberChangeUsernameCommandResult>>)
         isNull result =! false
         result :? IRequestHandler<IMemberChangeUsernameCommand, IMemberChangeUsernameCommandResult> =! true
+
+        let result =
+            singleInstanceFactory
+                .Invoke(typeof<IRequestHandler<IMemberDeactivateCommand, IMemberDeactivateCommandResult>>)
+        isNull result =! false
+        result :? IRequestHandler<IMemberDeactivateCommand, IMemberDeactivateCommandResult> =! true
 
         let result =
             singleInstanceFactory.Invoke(typeof<IRequestHandler<IMemberDetailQuery, IMemberDetailQueryResult>>)
@@ -155,6 +165,14 @@ module RegistrationsTests =
         Seq.length result =! 1
         let actualResult = (Seq.head result)
         actualResult :? IRequestHandler<IMemberChangeUsernameCommand, IMemberChangeUsernameCommandResult> =! true
+
+        let result =
+            multiInstanceFactory
+                .Invoke(typeof<IRequestHandler<IMemberDeactivateCommand, IMemberDeactivateCommandResult>>)
+        isNull result =! false
+        Seq.length result =! 1
+        let actualResult = (Seq.head result)
+        actualResult :? IRequestHandler<IMemberDeactivateCommand, IMemberDeactivateCommandResult> =! true
 
         let result =
             multiInstanceFactory.Invoke(typeof<IRequestHandler<IMemberDetailQuery, IMemberDetailQueryResult>>)

@@ -288,6 +288,73 @@ module MemberControllerToQueryHandlerTests =
         testMemberChangeUsernameViewModel actualViewModel id String.empty String.empty
 
     [<Test>]
+    let ``Calling deactivate, with id not found in data store, returns expected result`` () =
+        let notFoundId = Guid.random ()
+        let heading = "Member"
+        let subHeading = "Deactivate"
+        let statusCode = 404
+        let severity = MessageDisplayReadModel.warningSeverity
+        let message = "No matching member could be found."
+
+        let contextMock = Mock<IFoobleContext>()
+        contextMock.SetupFunc(fun x ->
+            x.ExistsMemberId(any (), considerDeactivated = false)).Returns(false).Verifiable()
+
+        let builder = ContainerBuilder()
+        ignore (builder.RegisterModule(CoreRegistrations(contextMock.Object, mock ())))
+        ignore (builder.RegisterModule(PresentationRegistrations()))
+        use container = builder.Build()
+
+        let mediator = container.Resolve<IMediator>()
+        let keyGenerator = container.Resolve<KeyGenerator>()
+        use controller = new MemberController(mediator, keyGenerator)
+
+        let result = controller.Deactivate(notFoundId)
+
+        isNull result =! false
+        result :? ViewResult =! true
+
+        let viewResult = result :?> ViewResult
+
+        viewResult.ViewName =! "MessageDisplay"
+        isNull viewResult.Model =! false
+        viewResult.Model :? IMessageDisplayReadModel =! true
+
+        let actualReadModel = viewResult.Model :?> IMessageDisplayReadModel
+        testMessageDisplayReadModel actualReadModel heading subHeading statusCode severity message
+
+    [<Test>]
+    let ``Calling deactivate, with successful parameters, returns expected result`` () =
+        let id = Guid.random ()
+
+        let contextMock = Mock<IFoobleContext>()
+        contextMock.SetupFunc(fun x ->
+            x.ExistsMemberId(any (), considerDeactivated = false)).Returns(true).Verifiable()
+
+        let builder = ContainerBuilder()
+        ignore (builder.RegisterModule(CoreRegistrations(contextMock.Object, mock ())))
+        ignore (builder.RegisterModule(PresentationRegistrations()))
+        use container = builder.Build()
+
+        let mediator = container.Resolve<IMediator>()
+        let keyGenerator = container.Resolve<KeyGenerator>()
+        use controller = new MemberController(mediator, keyGenerator)
+
+        let result = controller.Deactivate(id)
+
+        isNull result =! false
+        result :? ViewResult =! true
+
+        let viewResult = result :?> ViewResult
+
+        String.isEmpty viewResult.ViewName =! true
+        isNull viewResult.Model =! false
+        viewResult.Model :? IMemberDeactivateViewModel =! true
+
+        let actualViewModel = viewResult.Model :?> IMemberDeactivateViewModel
+        testMemberDeactivateViewModel actualViewModel id String.empty
+
+    [<Test>]
     let ``Calling detail, with id not found in data store, returns expected result`` () =
         let notFoundId = Guid.random ()
         let heading = "Member"

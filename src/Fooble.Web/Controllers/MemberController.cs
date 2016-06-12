@@ -171,6 +171,43 @@ namespace Fooble.Web.Controllers
         }
 
         [HttpGet]
+        public ActionResult Deactivate(Guid id)
+        {
+            var query = MemberExistsQuery.Make(id);
+            var result = _mediator.Send(query);
+
+            Debug.Assert(result != null, "Result parameter was null");
+
+            if (result.IsNotFound)
+                return View("MessageDisplay", result.ToMessageDisplayReadModel("Deactivate"));
+
+            return View(MemberDeactivateViewModel.Make(id));
+        }
+
+        [HttpPost]
+        public ActionResult Deactivate(Guid id,
+            [ModelBinder(typeof(FoobleModelBinder))] IMemberDeactivateViewModel viewModel)
+        {
+            Debug.Assert(viewModel != null, "View model is required");
+
+            if (!ModelState.IsValid) return View(viewModel.Clean());
+
+            var command = viewModel.ToCommand();
+            var result = _mediator.Send(command);
+
+            Debug.Assert(result != null, "Result was null");
+
+            if (result.IsNotFound)
+                return View("MessageDisplay", result.ToMessageDisplayReadModel());
+
+            result.AddModelErrors(ModelState);
+
+            if (!ModelState.IsValid) return View(viewModel.Clean());
+
+            return RedirectToAction("Index", "Home");
+        }
+
+        [HttpGet]
         public ActionResult Detail(Guid id)
         {
             var query = MemberDetailQuery.Make(id);

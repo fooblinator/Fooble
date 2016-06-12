@@ -72,6 +72,7 @@
     <Compile Include="MemberChangeOtherCommand.fs" />
     <Compile Include="MemberChangePasswordCommand.fs" />
     <Compile Include="MemberChangeUsernameCommand.fs" />
+    <Compile Include="MemberDeactivateCommand.fs" />
     <Compile Include="MemberDetailQuery.fs" />
     <Compile Include="MemberExistsQuery.fs" />
     <Compile Include="MemberListQuery.fs" />

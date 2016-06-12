@@ -73,9 +73,11 @@
     <Compile Include="ToDataStore\MemberControllerChangeOtherActionTests.fs" />
     <Compile Include="ToDataStore\MemberControllerChangePasswordActionTests.fs" />
     <Compile Include="ToDataStore\MemberControllerChangeUsernameActionTests.fs" />
+    <Compile Include="ToDataStore\MemberControllerDeactivateActionTests.fs" />
     <Compile Include="ToDataStore\MemberControllerDetailActionTests.fs" />
     <Compile Include="ToDataStore\MemberControllerListActionTests.fs" />
     <Compile Include="ToDataStore\MemberControllerRegisterActionTests.fs" />
+    <Compile Include="ToDataStore\MemberDeactivateCommandHandlerTests.fs" />
     <Compile Include="ToDataStore\MemberDetailQueryHandlerTests.fs" />
     <Compile Include="ToDataStore\MemberExistsQueryHandlerTests.fs" />
     <Compile Include="ToDataStore\MemberListQueryHandlerTests.fs" />

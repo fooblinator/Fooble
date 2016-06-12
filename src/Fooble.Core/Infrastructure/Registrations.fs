@@ -63,6 +63,7 @@ type CoreRegistrations =
         ignore (builder.Register(fun x -> MemberChangeOtherCommand.makeHandler (x.Resolve<IFoobleContext>())))
         ignore (builder.Register(fun x -> MemberChangePasswordCommand.makeHandler (x.Resolve<IFoobleContext>())))
         ignore (builder.Register(fun x -> MemberChangeUsernameCommand.makeHandler (x.Resolve<IFoobleContext>())))
+        ignore (builder.Register(fun x -> MemberDeactivateCommand.makeHandler (x.Resolve<IFoobleContext>())))
 
         ignore (builder.Register(fun x ->
             MemberDetailQuery.makeHandler (x.Resolve<IFoobleContext>()) (x.Resolve<MemberDetailReadModelFactory>())))

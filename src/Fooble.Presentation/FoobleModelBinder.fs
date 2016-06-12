@@ -90,6 +90,17 @@ type FoobleModelBinder() =
 
               box (MemberChangeUsernameViewModel.make id currentPassword newUsername)
 
+        | x when x = typeof<IMemberDeactivateViewModel> ->
+              let id = routeData.GetRequiredString("id")
+              let currentPassword = form.Get("currentPassword")
+
+#if DEBUG
+              assertWith (validateMemberIdString id)
+#endif
+              let id = Guid.parse id
+
+              box (MemberDeactivateViewModel.make id currentPassword)
+
         | x when x = typeof<IMemberRegisterViewModel> ->
               let username = form.Get("username")
               let password = form.Get("password")

@@ -102,6 +102,20 @@ module internal UnitTestHelpers =
     let bindMemberChangeUsernameViewModel2 id currentPassword newUsername =
         fst (bindMemberChangeUsernameViewModel id currentPassword newUsername)
 
+    let bindMemberDeactivateViewModel id currentPassword =
+        let routeValues =
+            Map.empty
+                .Add("Id", String.ofGuid id)
+
+        let formValues =
+            Map.empty
+                .Add("CurrentPassword", currentPassword)
+
+        bindModel<IMemberDeactivateViewModel> routeValues formValues
+
+    let bindMemberDeactivateViewModel2 id currentPassword =
+        fst (bindMemberDeactivateViewModel id currentPassword)
+
     let bindMemberRegisterViewModel username password confirmPassword email nickname =
         let routeValues = Map.empty
 
@@ -297,6 +311,53 @@ module internal UnitTestHelpers =
     let testInvalidOperationException expectedMessage expression =
         raisesWith<InvalidOperationException> expression (fun x -> <@ x.Message = expectedMessage @>)
 
+    let testMemberChangeEmailCommand (actual:IMemberChangeEmailCommand) expectedId expectedCurrentPassword
+        expectedNewEmail =
+
+        actual.Id =! expectedId
+        actual.CurrentPassword =! expectedCurrentPassword
+        actual.NewEmail =! expectedNewEmail
+
+    let testMemberChangeEmailViewModel (actual:IMemberChangeEmailViewModel) expectedId expectedCurrentPassword
+        expectedNewEmail =
+
+        actual.Id =! expectedId
+        actual.CurrentPassword =! expectedCurrentPassword
+        actual.NewEmail =! expectedNewEmail
+
+    let testMemberChangeOtherViewModel (actual:IMemberChangeOtherViewModel) expectedId expectedNewNickname =
+        actual.Id =! expectedId
+        actual.NewNickname =! expectedNewNickname
+
+    let testMemberChangePasswordCommand (actual:IMemberChangePasswordCommand) expectedId
+        expectedCurrentPassword expectedNewPassword =
+
+        actual.Id =! expectedId
+        actual.CurrentPassword =! expectedCurrentPassword
+        actual.NewPassword =! expectedNewPassword
+
+    let testMemberChangePasswordViewModel (actual:IMemberChangePasswordViewModel) expectedId expectedCurrentPassword
+        expectedNewPassword expectedConfirmPassword =
+
+        actual.Id =! expectedId
+        actual.CurrentPassword =! expectedCurrentPassword
+        actual.NewPassword =! expectedNewPassword
+        actual.ConfirmPassword =! expectedConfirmPassword
+
+    let testMemberChangeUsernameCommand (actual:IMemberChangeUsernameCommand) expectedId expectedCurrentPassword
+        expectedNewUsername =
+
+        actual.Id =! expectedId
+        actual.CurrentPassword =! expectedCurrentPassword
+        actual.NewUsername =! expectedNewUsername
+
+    let testMemberChangeUsernameViewModel (actual:IMemberChangeUsernameViewModel) expectedId expectedCurrentPassword
+        expectedNewUsername =
+
+        actual.Id =! expectedId
+        actual.CurrentPassword =! expectedCurrentPassword
+        actual.NewUsername =! expectedNewUsername
+
     let testMemberData (actual:IMemberData) expectedId expectedUsername expectedPassword expectedEmail
         expectedNickname (expectedRegistered:DateTime) (expectedPasswordChanged:DateTime) =
 
@@ -314,6 +375,16 @@ module internal UnitTestHelpers =
 
         actualRegistered.Date =! expectedRegistered.Date
         actualPasswordChanged.Date =! expectedPasswordChanged.Date
+
+    let testMemberDeactivateCommand (actual:IMemberDeactivateCommand) expectedId expectedCurrentPassword =
+
+        actual.Id =! expectedId
+        actual.CurrentPassword =! expectedCurrentPassword
+
+    let testMemberDeactivateViewModel (actual:IMemberDeactivateViewModel) expectedId expectedCurrentPassword =
+
+        actual.Id =! expectedId
+        actual.CurrentPassword =! expectedCurrentPassword
 
     let testMemberDetailReadModel (actual:IMemberDetailReadModel) expectedId expectedUsername expectedEmail
         expectedNickname (expectedRegistered:DateTime) (expectedPasswordChanged:DateTime) =
@@ -350,57 +421,6 @@ module internal UnitTestHelpers =
             let findResult = Seq.tryFind (fun (existingMember:IMemberListItemReadModel) ->
                 existingMember.Id = actualMember.Id && existingMember.Nickname = actualMember.Nickname) expectedMembers
             findResult.IsSome =! true
-
-    let testMemberChangeEmailCommand (actual:IMemberChangeEmailCommand) expectedId expectedCurrentPassword
-        expectedNewEmail =
-
-        actual.Id =! expectedId
-        actual.CurrentPassword =! expectedCurrentPassword
-        actual.NewEmail =! expectedNewEmail
-
-    let testMemberChangeEmailViewModel (actual:IMemberChangeEmailViewModel) expectedId expectedCurrentPassword
-        expectedNewEmail =
-
-        actual.Id =! expectedId
-        actual.CurrentPassword =! expectedCurrentPassword
-        actual.NewEmail =! expectedNewEmail
-
-    let testMemberChangeOtherCommand (actual:IMemberChangeOtherCommand) expectedId expectedNewNickname =
-        actual.Id =! expectedId
-        actual.NewNickname =! expectedNewNickname
-
-    let testMemberChangeOtherViewModel (actual:IMemberChangeOtherViewModel) expectedId expectedNewNickname =
-        actual.Id =! expectedId
-        actual.NewNickname =! expectedNewNickname
-
-    let testMemberChangePasswordCommand (actual:IMemberChangePasswordCommand) expectedId
-        expectedCurrentPassword expectedNewPassword =
-
-        actual.Id =! expectedId
-        actual.CurrentPassword =! expectedCurrentPassword
-        actual.NewPassword =! expectedNewPassword
-
-    let testMemberChangePasswordViewModel (actual:IMemberChangePasswordViewModel) expectedId expectedCurrentPassword
-        expectedNewPassword expectedConfirmPassword =
-
-        actual.Id =! expectedId
-        actual.CurrentPassword =! expectedCurrentPassword
-        actual.NewPassword =! expectedNewPassword
-        actual.ConfirmPassword =! expectedConfirmPassword
-
-    let testMemberChangeUsernameCommand (actual:IMemberChangeUsernameCommand) expectedId expectedCurrentPassword
-        expectedNewUsername =
-
-        actual.Id =! expectedId
-        actual.CurrentPassword =! expectedCurrentPassword
-        actual.NewUsername =! expectedNewUsername
-
-    let testMemberChangeUsernameViewModel (actual:IMemberChangeUsernameViewModel) expectedId expectedCurrentPassword
-        expectedNewUsername =
-
-        actual.Id =! expectedId
-        actual.CurrentPassword =! expectedCurrentPassword
-        actual.NewUsername =! expectedNewUsername
 
     let testMemberRegisterCommand (actual:IMemberRegisterCommand) expectedId expectedUsername
         expectedPassword expectedEmail expectedNickname =

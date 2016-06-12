@@ -90,6 +90,7 @@
     <Compile Include="MemberController\MemberControllerChangeOtherActionTests.fs" />
     <Compile Include="MemberController\MemberControllerChangePasswordActionTests.fs" />
     <Compile Include="MemberController\MemberControllerChangeUsernameActionTests.fs" />
+    <Compile Include="MemberController\MemberControllerDeactivateActionTests.fs" />
     <Compile Include="MemberController\MemberControllerDetailActionTests.fs" />
     <Compile Include="MemberController\MemberControllerListActionTests.fs" />
     <Compile Include="MemberController\MemberControllerRegisterActionTests.fs" />
@@ -114,6 +115,10 @@
     <Compile Include="MessageDisplay\MessageDisplaySeverityTests.fs" />
     <Content Include="App.config" />
     <Content Include="packages.config" />
+    <Compile Include="MemberDeactivate\MemberDeactivateCommandHandlerTests.fs" />
+    <Compile Include="MemberDeactivate\MemberDeactivateCommandResultTests.fs" />
+    <Compile Include="MemberDeactivate\MemberDeactivateCommandTests.fs" />
+    <Compile Include="MemberDeactivate\MemberDeactivateViewModel.fs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\Fooble.Persistence\Fooble.Persistence.fsproj">

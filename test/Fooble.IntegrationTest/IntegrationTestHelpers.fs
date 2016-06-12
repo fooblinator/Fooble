@@ -93,6 +93,17 @@ module internal IntegrationTestHelpers =
 
         bindModel<IMemberChangeUsernameViewModel> routeValues formValues
 
+    let bindMemberDeactivateViewModel id currentPassword =
+        let routeValues =
+            Map.empty
+                .Add("Id", String.ofGuid id)
+
+        let formValues =
+            Map.empty
+                .Add("CurrentPassword", currentPassword)
+
+        bindModel<IMemberDeactivateViewModel> routeValues formValues
+
     let bindMemberRegisterViewModel username password confirmPassword email nickname =
         let routeValues = Map.empty
 
@@ -190,6 +201,11 @@ module internal IntegrationTestHelpers =
         actual.Id =! expectedId
         actual.CurrentPassword =! expectedCurrentPassword
         actual.NewUsername =! expectedNewUsername
+
+    let testMemberDeactivateViewModel (actual:IMemberDeactivateViewModel) expectedId expectedCurrentPassword =
+
+        actual.Id =! expectedId
+        actual.CurrentPassword =! expectedCurrentPassword
 
     let testMemberDetailReadModel (actual:IMemberDetailReadModel) expectedId expectedUsername expectedEmail
         expectedNickname (expectedRegistered:DateTime) (expectedPasswordChanged:DateTime) =

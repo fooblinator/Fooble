@@ -191,6 +191,7 @@
     <Content Include="Views\Member\ChangeUsername.cshtml" />
     <Content Include="Views\Member\ChangeEmail.cshtml" />
     <Content Include="Views\Member\ChangeOther.cshtml" />
+    <Content Include="Views\Member\Deactivate.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

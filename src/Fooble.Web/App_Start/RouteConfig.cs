@@ -42,6 +42,12 @@ namespace Fooble.Web
                 constraints: new { id = nonEmptyGuidPattern });
 
             routes.MapRoute(
+                name: "MemberDeactivate",
+                url: "member/{id}/deactivate",
+                defaults: new { controller = "member", action = "deactivate" },
+                constraints: new { id = nonEmptyGuidPattern });
+
+            routes.MapRoute(
                 name: "MemberDetail",
                 url: "member/{id}",
                 defaults: new { controller = "member", action = "detail" },

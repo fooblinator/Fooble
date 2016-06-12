@@ -68,6 +68,7 @@
     <Compile Include="MemberChangeOtherViewModel.fs" />
     <Compile Include="MemberChangePasswordViewModel.fs" />
     <Compile Include="MemberChangeUsernameViewModel.fs" />
+    <Compile Include="MemberDeactivateViewModel.fs" />
     <Compile Include="MemberDetailReadModel.fs" />
     <Compile Include="MemberListReadModel.fs" />
     <Compile Include="MemberRegisterViewModel.fs" />
@@ -76,6 +77,7 @@
     <Compile Include="Extensions\MemberChangeOtherCommandResult.fs" />
     <Compile Include="Extensions\MemberChangePasswordCommandResult.fs" />
     <Compile Include="Extensions\MemberChangeUsernameCommandResult.fs" />
+    <Compile Include="Extensions\MemberDeactivateCommandResult.fs" />
     <Compile Include="Extensions\MemberDetailQueryResult.fs" />
     <Compile Include="Extensions\MemberExistsQueryResult.fs" />
     <Compile Include="Extensions\MemberListQueryResult.fs" />
