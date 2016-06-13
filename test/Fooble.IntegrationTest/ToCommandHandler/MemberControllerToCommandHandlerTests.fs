@@ -40,7 +40,7 @@ module MemberControllerToCommandHandlerTests =
         let expectedMessage = "No matching member could be found."
 
         let contextMock = Mock<IFoobleContext>()
-        contextMock.SetupFunc(fun x -> x.GetMember(any (), considerDeactivated = false)).Returns(None).Verifiable()
+        contextMock.SetupFunc(fun x -> x.GetMember(any (), includeDeactivated = false)).Returns(None).Verifiable()
 
         let builder = ContainerBuilder()
         ignore (builder.RegisterModule(CoreRegistrations(contextMock.Object, mock ())))
@@ -78,10 +78,10 @@ module MemberControllerToCommandHandlerTests =
         let passwordData = Crypto.hash (Password.random 32) 100
         let memberData =
             makeTestMemberData2 expectedId (String.random 32) passwordData (EmailAddress.random 32) (String.random 64)
-                false
+                None
         let contextMock = Mock<IFoobleContext>()
         contextMock.SetupFunc(fun x ->
-            x.GetMember(any (), considerDeactivated = false)).Returns(Some(memberData)).Verifiable()
+            x.GetMember(any (), includeDeactivated = false)).Returns(Some(memberData)).Verifiable()
 
         let builder = ContainerBuilder()
         ignore (builder.RegisterModule(CoreRegistrations(contextMock.Object, mock ())))
@@ -121,12 +121,12 @@ module MemberControllerToCommandHandlerTests =
         let passwordData = Crypto.hash expectedCurrentPassword 100
         let memberData =
             makeTestMemberData2 expectedId (String.random 32) passwordData (EmailAddress.random 32) (String.random 64)
-                false
+                None
         let contextMock = Mock<IFoobleContext>()
         contextMock.SetupFunc(fun x ->
-            x.GetMember(any (), considerDeactivated = false)).Returns(Some(memberData)).Verifiable()
+            x.GetMember(any (), includeDeactivated = false)).Returns(Some(memberData)).Verifiable()
         contextMock.SetupFunc(fun x ->
-            x.ExistsMemberEmail(any (), considerDeactivated = true)).Returns(true).Verifiable()
+            x.ExistsMemberEmail(any (), includeDeactivated = true)).Returns(true).Verifiable()
 
         let builder = ContainerBuilder()
         ignore (builder.RegisterModule(CoreRegistrations(contextMock.Object, mock ())))
@@ -167,12 +167,12 @@ module MemberControllerToCommandHandlerTests =
         let passwordData = Crypto.hash expectedCurrentPassword 100
         let memberData =
             makeTestMemberData2 matchingId (String.random 32) passwordData (EmailAddress.random 32) (String.random 64)
-                false
+                None
         let contextMock = Mock<IFoobleContext>()
         contextMock.SetupFunc(fun x ->
-            x.GetMember(any (), considerDeactivated = false)).Returns(Some(memberData)).Verifiable()
+            x.GetMember(any (), includeDeactivated = false)).Returns(Some(memberData)).Verifiable()
         contextMock.SetupFunc(fun x ->
-            x.ExistsMemberEmail(any (), considerDeactivated = true)).Returns(false).Verifiable()
+            x.ExistsMemberEmail(any (), includeDeactivated = true)).Returns(false).Verifiable()
 
         let builder = ContainerBuilder()
         ignore (builder.RegisterModule(CoreRegistrations(contextMock.Object, mock ())))
@@ -215,7 +215,7 @@ module MemberControllerToCommandHandlerTests =
 
         let contextMock = Mock<IFoobleContext>()
         contextMock.SetupFunc(fun x ->
-            x.GetMember(any (), considerDeactivated = false)).Returns(None).Verifiable()
+            x.GetMember(any (), includeDeactivated = false)).Returns(None).Verifiable()
 
         let builder = ContainerBuilder()
         ignore (builder.RegisterModule(CoreRegistrations(contextMock.Object, mock ())))
@@ -253,10 +253,10 @@ module MemberControllerToCommandHandlerTests =
         let passwordData = Crypto.hash (Password.random 32) 100
         let memberData =
             makeTestMemberData2 matchingId (String.random 32) passwordData (EmailAddress.random 32) (String.random 64)
-                false
+                None
         let contextMock = Mock<IFoobleContext>()
         contextMock.SetupFunc(fun x ->
-            x.GetMember(any (), considerDeactivated = false)).Returns(Some(memberData)).Verifiable()
+            x.GetMember(any (), includeDeactivated = false)).Returns(Some(memberData)).Verifiable()
 
         let builder = ContainerBuilder()
         ignore (builder.RegisterModule(CoreRegistrations(contextMock.Object, mock ())))
@@ -300,7 +300,7 @@ module MemberControllerToCommandHandlerTests =
         let expectedMessage = "No matching member could be found."
 
         let contextMock = Mock<IFoobleContext>()
-        contextMock.SetupFunc(fun x -> x.GetMember(any (), considerDeactivated = false)).Returns(None).Verifiable()
+        contextMock.SetupFunc(fun x -> x.GetMember(any (), includeDeactivated = false)).Returns(None).Verifiable()
 
         let builder = ContainerBuilder()
         ignore (builder.RegisterModule(CoreRegistrations(contextMock.Object, mock ())))
@@ -341,10 +341,10 @@ module MemberControllerToCommandHandlerTests =
         let passwordData = Crypto.hash (Password.random 32) 100
         let memberData =
             makeTestMemberData2 expectedId (String.random 32) passwordData (EmailAddress.random 32) (String.random 64)
-                false
+                None
         let contextMock = Mock<IFoobleContext>()
         contextMock.SetupFunc(fun x ->
-            x.GetMember(any (), considerDeactivated = false)).Returns(Some(memberData)).Verifiable()
+            x.GetMember(any (), includeDeactivated = false)).Returns(Some(memberData)).Verifiable()
 
         let builder = ContainerBuilder()
         ignore (builder.RegisterModule(CoreRegistrations(contextMock.Object, mock ())))
@@ -388,10 +388,10 @@ module MemberControllerToCommandHandlerTests =
         let passwordData = Crypto.hash expectedCurrentPassword 100
         let memberData =
             makeTestMemberData2 matchingId (String.random 32) passwordData (EmailAddress.random 32) (String.random 64)
-                false
+                None
         let contextMock = Mock<IFoobleContext>()
         contextMock.SetupFunc(fun x ->
-            x.GetMember(any (), considerDeactivated = false)).Returns(Some(memberData)).Verifiable()
+            x.GetMember(any (), includeDeactivated = false)).Returns(Some(memberData)).Verifiable()
 
         let builder = ContainerBuilder()
         ignore (builder.RegisterModule(CoreRegistrations(contextMock.Object, mock ())))
@@ -436,7 +436,7 @@ module MemberControllerToCommandHandlerTests =
         let expectedMessage = "No matching member could be found."
 
         let contextMock = Mock<IFoobleContext>()
-        contextMock.SetupFunc(fun x -> x.GetMember(any (), considerDeactivated = false)).Returns(None).Verifiable()
+        contextMock.SetupFunc(fun x -> x.GetMember(any (), includeDeactivated = false)).Returns(None).Verifiable()
 
         let builder = ContainerBuilder()
         ignore (builder.RegisterModule(CoreRegistrations(contextMock.Object, mock ())))
@@ -474,10 +474,10 @@ module MemberControllerToCommandHandlerTests =
         let passwordData = Crypto.hash (Password.random 32) 100
         let memberData =
             makeTestMemberData2 expectedId (String.random 32) passwordData (EmailAddress.random 32) (String.random 64)
-                false
+                None
         let contextMock = Mock<IFoobleContext>()
         contextMock.SetupFunc(fun x ->
-            x.GetMember(any (), considerDeactivated = false)).Returns(Some(memberData)).Verifiable()
+            x.GetMember(any (), includeDeactivated = false)).Returns(Some(memberData)).Verifiable()
 
         let builder = ContainerBuilder()
         ignore (builder.RegisterModule(CoreRegistrations(contextMock.Object, mock ())))
@@ -517,12 +517,12 @@ module MemberControllerToCommandHandlerTests =
         let passwordData = Crypto.hash expectedCurrentPassword 100
         let memberData =
             makeTestMemberData2 expectedId (String.random 32) passwordData (EmailAddress.random 32) (String.random 64)
-                false
+                None
         let contextMock = Mock<IFoobleContext>()
         contextMock.SetupFunc(fun x ->
-            x.GetMember(any (), considerDeactivated = false)).Returns(Some(memberData)).Verifiable()
+            x.GetMember(any (), includeDeactivated = false)).Returns(Some(memberData)).Verifiable()
         contextMock.SetupFunc(fun x ->
-            x.ExistsMemberUsername(any (), considerDeactivated = true)).Returns(true).Verifiable()
+            x.ExistsMemberUsername(any (), includeDeactivated = true)).Returns(true).Verifiable()
 
         let builder = ContainerBuilder()
         ignore (builder.RegisterModule(CoreRegistrations(contextMock.Object, mock ())))
@@ -563,12 +563,12 @@ module MemberControllerToCommandHandlerTests =
         let passwordData = Crypto.hash expectedCurrentPassword 100
         let memberData =
             makeTestMemberData2 matchingId (String.random 32) passwordData (EmailAddress.random 32) (String.random 64)
-                false
+                None
         let contextMock = Mock<IFoobleContext>()
         contextMock.SetupFunc(fun x ->
-            x.GetMember(any (), considerDeactivated = false)).Returns(Some(memberData)).Verifiable()
+            x.GetMember(any (), includeDeactivated = false)).Returns(Some(memberData)).Verifiable()
         contextMock.SetupFunc(fun x ->
-            x.ExistsMemberUsername(any (), considerDeactivated = true)).Returns(false).Verifiable()
+            x.ExistsMemberUsername(any (), includeDeactivated = true)).Returns(false).Verifiable()
 
         let builder = ContainerBuilder()
         ignore (builder.RegisterModule(CoreRegistrations(contextMock.Object, mock ())))
@@ -610,7 +610,7 @@ module MemberControllerToCommandHandlerTests =
         let expectedMessage = "No matching member could be found."
 
         let contextMock = Mock<IFoobleContext>()
-        contextMock.SetupFunc(fun x -> x.GetMember(any (), considerDeactivated = false)).Returns(None).Verifiable()
+        contextMock.SetupFunc(fun x -> x.GetMember(any (), includeDeactivated = false)).Returns(None).Verifiable()
 
         let builder = ContainerBuilder()
         ignore (builder.RegisterModule(CoreRegistrations(contextMock.Object, mock ())))
@@ -647,10 +647,10 @@ module MemberControllerToCommandHandlerTests =
         let passwordData = Crypto.hash (Password.random 32) 100
         let memberData =
             makeTestMemberData2 expectedId (String.random 32) passwordData (EmailAddress.random 32) (String.random 64)
-                false
+                None
         let contextMock = Mock<IFoobleContext>()
         contextMock.SetupFunc(fun x ->
-            x.GetMember(any (), considerDeactivated = false)).Returns(Some(memberData)).Verifiable()
+            x.GetMember(any (), includeDeactivated = false)).Returns(Some(memberData)).Verifiable()
 
         let builder = ContainerBuilder()
         ignore (builder.RegisterModule(CoreRegistrations(contextMock.Object, mock ())))
@@ -689,10 +689,10 @@ module MemberControllerToCommandHandlerTests =
         let passwordData = Crypto.hash expectedCurrentPassword 100
         let memberData =
             makeTestMemberData2 matchingId (String.random 32) passwordData (EmailAddress.random 32) (String.random 64)
-                false
+                None
         let contextMock = Mock<IFoobleContext>()
         contextMock.SetupFunc(fun x ->
-            x.GetMember(any (), considerDeactivated = false)).Returns(Some(memberData)).Verifiable()
+            x.GetMember(any (), includeDeactivated = false)).Returns(Some(memberData)).Verifiable()
 
         let builder = ContainerBuilder()
         ignore (builder.RegisterModule(CoreRegistrations(contextMock.Object, mock ())))
@@ -729,7 +729,7 @@ module MemberControllerToCommandHandlerTests =
         let expectedNickname = String.random 64
 
         let contextMock = Mock<IFoobleContext>()
-        contextMock.SetupFunc(fun x -> x.ExistsMemberUsername(any (), considerDeactivated = true)).Returns(true).Verifiable()
+        contextMock.SetupFunc(fun x -> x.ExistsMemberUsername(any (), includeDeactivated = true)).Returns(true).Verifiable()
 
         let builder = ContainerBuilder()
         ignore (builder.RegisterModule(CoreRegistrations(contextMock.Object, mock ())))
@@ -772,7 +772,7 @@ module MemberControllerToCommandHandlerTests =
         let expectedNickname = String.random 64
 
         let contextMock = Mock<IFoobleContext>()
-        contextMock.SetupFunc(fun x -> x.ExistsMemberEmail(any (), considerDeactivated = true)).Returns(true).Verifiable()
+        contextMock.SetupFunc(fun x -> x.ExistsMemberEmail(any (), includeDeactivated = true)).Returns(true).Verifiable()
 
         let builder = ContainerBuilder()
         ignore (builder.RegisterModule(CoreRegistrations(contextMock.Object, mock ())))
@@ -812,9 +812,9 @@ module MemberControllerToCommandHandlerTests =
 
         let contextMock = Mock<IFoobleContext>()
         contextMock.SetupFunc(fun x ->
-            x.ExistsMemberUsername(any (), considerDeactivated = true)).Returns(false).Verifiable()
+            x.ExistsMemberUsername(any (), includeDeactivated = true)).Returns(false).Verifiable()
         contextMock.SetupFunc(fun x ->
-            x.ExistsMemberEmail(any (), considerDeactivated = true)).Returns(false).Verifiable()
+            x.ExistsMemberEmail(any (), includeDeactivated = true)).Returns(false).Verifiable()
 
         let builder = ContainerBuilder()
         ignore (builder.RegisterModule(CoreRegistrations(contextMock.Object, mock ())))

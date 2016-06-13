@@ -98,7 +98,7 @@ module MemberChangeUsernameCommand =
                 assertWith (validateRequired message "message" "Message")
 #endif
 
-                match this.Context.GetMember(message.Id, considerDeactivated = false) with
+                match this.Context.GetMember(message.Id, includeDeactivated = false) with
                 | None -> notFoundResult
                 | Some(x) ->
 
@@ -106,7 +106,7 @@ module MemberChangeUsernameCommand =
                 | false -> incorrectPasswordResult
                 | _ ->
 
-                let usernameFound = this.Context.ExistsMemberUsername(message.NewUsername, considerDeactivated = true)
+                let usernameFound = this.Context.ExistsMemberUsername(message.NewUsername, includeDeactivated = true)
 
                 match usernameFound with
                 | true -> unavailableUsernameResult

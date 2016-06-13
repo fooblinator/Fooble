@@ -21,13 +21,13 @@ type IMemberData =
     abstract Nickname:string with get, set
 
     /// The date the member data was registered.
-    abstract Registered:DateTime with get, set
+    abstract RegisteredOn:DateTime with get, set
 
     /// The date the password was last changed.
-    abstract PasswordChanged:DateTime with get, set
+    abstract PasswordChangedOn:DateTime with get, set
 
-    /// Whether the member account is deactivated (or not).
-    abstract IsDeactivated:bool with get, set
+    /// The date the account was deactivated (if deactivated).
+    abstract DeactivatedOn:DateTime option with get, set
 
 
 /// Represents the data context for the Fooble application.
@@ -38,36 +38,36 @@ type IFoobleContext =
     /// Retrieves the member data matching the specified id from the data store.
     /// </summary>
     /// <param name="id">The id of the member to retrieve.</param>
-    /// <param name="considerDeactivated">Whether to also consider deactivated member accounts (or not).</param>
+    /// <param name="includeDeactivated">Whether to also include deactivated member accounts (or not).</param>
     /// <remarks>Returns none if no matching member id was found.</remarks>
-    abstract GetMember : id:Guid * considerDeactivated:bool -> IMemberData option
+    abstract GetMember : id:Guid * includeDeactivated:bool -> IMemberData option
 
     /// <summary>
     /// Retrieves all of the member data from the data store.
     /// </summary>
-    /// <param name="considerDeactivated">Whether to also consider deactivated member accounts (or not).</param>
-    abstract GetMembers : considerDeactivated:bool -> IMemberData list
+    /// <param name="includeDeactivated">Whether to also include deactivated member accounts (or not).</param>
+    abstract GetMembers : includeDeactivated:bool -> IMemberData list
 
     /// <summary>
     /// Determines whether or not the specified member id exists in the data store.
     /// </summary>
     /// <param name="username">The username to search for.</param>
-    /// <param name="considerDeactivated">Whether to also consider deactivated member accounts (or not).</param>
-    abstract ExistsMemberId : id:Guid * considerDeactivated:bool -> bool
+    /// <param name="includeDeactivated">Whether to also include deactivated member accounts (or not).</param>
+    abstract ExistsMemberId : id:Guid * includeDeactivated:bool -> bool
 
     /// <summary>
     /// Determines whether or not the specified member username exists in the data store.
     /// </summary>
     /// <param name="username">The username to search for.</param>
-    /// <param name="considerDeactivated">Whether to also consider deactivated member accounts (or not).</param>
-    abstract ExistsMemberUsername : username:string * considerDeactivated:bool -> bool
+    /// <param name="includeDeactivated">Whether to also include deactivated member accounts (or not).</param>
+    abstract ExistsMemberUsername : username:string * includeDeactivated:bool -> bool
 
     /// <summary>
     /// Determines whether or not the specified member email exists in the data store.
     /// </summary>
     /// <param name="username">The email to search for.</param>
-    /// <param name="considerDeactivated">Whether to also consider deactivated member accounts (or not).</param>
-    abstract ExistsMemberEmail : email:string * considerDeactivated:bool -> bool
+    /// <param name="includeDeactivated">Whether to also include deactivated member accounts (or not).</param>
+    abstract ExistsMemberEmail : email:string * includeDeactivated:bool -> bool
 
     /// <summary>
     /// Adds the supplied member data to the data store.

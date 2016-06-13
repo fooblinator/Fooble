@@ -32,13 +32,13 @@ module MemberRegisterCommandHandlerTests =
         let handler = MemberRegisterCommand.makeHandler context memberDataFactory
 
         // remove all existing members from the data store
-        List.iter (fun x -> context.DeleteMember(x)) (context.GetMembers(considerDeactivated = true))
+        List.iter (fun x -> context.DeleteMember(x)) (context.GetMembers(includeDeactivated = true))
 
         // add matching member to the data store
         let passwordData = Crypto.hash password 100
         let memberData = memberDataFactory.Invoke(id, username, passwordData, EmailAddress.random 32, String.random 64)
-        memberData.Registered <- DateTime(2001, 1, 1)
-        memberData.PasswordChanged <- DateTime(2001, 1, 1)
+        memberData.RegisteredOn <- DateTime(2001, 1, 1)
+        memberData.PasswordChangedOn <- DateTime(2001, 1, 1)
         context.AddMember(memberData)
 
         // persist changes to the data store
@@ -70,13 +70,13 @@ module MemberRegisterCommandHandlerTests =
         let handler = MemberRegisterCommand.makeHandler context memberDataFactory
 
         // remove all existing members from the data store
-        List.iter (fun x -> context.DeleteMember(x)) (context.GetMembers(considerDeactivated = true))
+        List.iter (fun x -> context.DeleteMember(x)) (context.GetMembers(includeDeactivated = true))
 
         // add matching member to the data store
         let passwordData = Crypto.hash password 100
         let memberData = memberDataFactory.Invoke(id, String.random 32, passwordData, email, String.random 64)
-        memberData.Registered <- DateTime(2001, 1, 1)
-        memberData.PasswordChanged <- DateTime(2001, 1, 1)
+        memberData.RegisteredOn <- DateTime(2001, 1, 1)
+        memberData.PasswordChangedOn <- DateTime(2001, 1, 1)
         context.AddMember(memberData)
 
         // persist changes to the data store
@@ -108,7 +108,7 @@ module MemberRegisterCommandHandlerTests =
         let handler = MemberRegisterCommand.makeHandler context memberDataFactory
 
         // remove all existing members from the data store
-        List.iter (fun x -> context.DeleteMember(x)) (context.GetMembers(considerDeactivated = true))
+        List.iter (fun x -> context.DeleteMember(x)) (context.GetMembers(includeDeactivated = true))
 
         // persist changes to the data store
         context.SaveChanges()

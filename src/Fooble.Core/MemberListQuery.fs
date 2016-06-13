@@ -80,7 +80,7 @@ module MemberListQuery =
 #endif
 
                 let members =
-                    this.Context.GetMembers(considerDeactivated = false)
+                    this.Context.GetMembers(includeDeactivated = false)
                     |> List.map (fun x -> this.ItemReadModelFactory.Invoke(x.Id, x.Nickname))
 
                 match members with

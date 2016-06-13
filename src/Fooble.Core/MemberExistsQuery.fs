@@ -70,7 +70,7 @@ module MemberExistsQuery =
                 assertWith (validateRequired message "message" "Message")
 #endif
 
-                match this.Context.ExistsMemberId(message.Id, considerDeactivated = false) with
+                match this.Context.ExistsMemberId(message.Id, includeDeactivated = false) with
                 | true -> successResult
                 | false -> notFoundResult
 

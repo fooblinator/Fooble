@@ -2,6 +2,7 @@
 
 open Fooble.Common
 open Fooble.Persistence
+open FSharp.Linq
 open MediatR
 open System
 
@@ -83,7 +84,7 @@ module MemberDeactivateCommand =
                 assertWith (validateRequired message "message" "Message")
 #endif
 
-                match this.Context.GetMember(message.Id, considerDeactivated = false) with
+                match this.Context.GetMember(message.Id, includeDeactivated = false) with
                 | None -> notFoundResult
                 | Some(x) ->
 
@@ -91,7 +92,7 @@ module MemberDeactivateCommand =
                 | false -> incorrectPasswordResult
                 | _ ->
 
-                x.IsDeactivated <- true
+                x.DeactivatedOn <- Some(DateTime.UtcNow)
 
                 this.Context.SaveChanges()
                 successResult

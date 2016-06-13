@@ -52,7 +52,7 @@ module MemberChangePasswordCommandHandlerTests =
         let handler = MemberChangePasswordCommand.makeHandler context
 
         // remove all existing members from the data store
-        List.iter (fun x -> context.DeleteMember(x)) (context.GetMembers(considerDeactivated = true))
+        List.iter (fun x -> context.DeleteMember(x)) (context.GetMembers(includeDeactivated = true))
 
         // add matching member to the data store
         let passwordData = Crypto.hash (Password.random 32) 100
@@ -89,14 +89,14 @@ module MemberChangePasswordCommandHandlerTests =
         let handler = MemberChangePasswordCommand.makeHandler context
 
         // remove all existing members from the data store
-        List.iter (fun x -> context.DeleteMember(x)) (context.GetMembers(considerDeactivated = true))
+        List.iter (fun x -> context.DeleteMember(x)) (context.GetMembers(includeDeactivated = true))
 
         // add matching member to the data store
         let passwordData = Crypto.hash currentPassword 100
         let memberData =
             memberDataFactory.Invoke(id, String.random 32, passwordData, EmailAddress.random 32, String.random 64)
-        memberData.Registered <- DateTime(2001, 1, 1)
-        memberData.PasswordChanged <- DateTime(2001, 1, 1)
+        memberData.RegisteredOn <- DateTime(2001, 1, 1)
+        memberData.PasswordChangedOn <- DateTime(2001, 1, 1)
         context.AddMember(memberData)
 
         // persist changes to the data store
@@ -111,5 +111,5 @@ module MemberChangePasswordCommandHandlerTests =
 
         memberData.PasswordData <>! currentPasswordData
 
-        let actualPasswordChanged = memberData.PasswordChanged
+        let actualPasswordChanged = memberData.PasswordChangedOn
         actualPasswordChanged.Date =! passwordChanged.Date

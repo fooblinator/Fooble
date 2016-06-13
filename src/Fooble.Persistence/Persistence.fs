@@ -2,6 +2,7 @@
 
 open Fooble.Common
 open FSharp.Data.TypeProviders
+open System
 
 type internal EntityConnection = SqlEntityConnection<ConnectionStringName = "FoobleContext">
 type internal FoobleContext = EntityConnection.ServiceTypes.EntityContainer
@@ -39,17 +40,17 @@ module internal PersistenceHelpers =
                   with get() = memberData.Nickname
                   and set(x) = memberData.Nickname <- x
 
-              member __.Registered
-                  with get() = memberData.Registered
-                  and set(x) = memberData.Registered <- x
+              member __.RegisteredOn
+                  with get() = memberData.RegisteredOn
+                  and set(x) = memberData.RegisteredOn <- x
 
-              member __.PasswordChanged
-                  with get() = memberData.PasswordChanged
-                  and set(x) = memberData.PasswordChanged <- x
+              member __.PasswordChangedOn
+                  with get() = memberData.PasswordChangedOn
+                  and set(x) = memberData.PasswordChangedOn <- x
 
-              member __.IsDeactivated
-                  with get() = memberData.IsDeactivated
-                  and set(x) = memberData.IsDeactivated <- x
+              member __.DeactivatedOn
+                  with get() = Option.ofNullable memberData.DeactivatedOn
+                  and set(x) = memberData.DeactivatedOn <- Option.toNullable x
 
           interface IExposeWrapped<MemberData> with
 
@@ -69,71 +70,71 @@ module internal PersistenceHelpers =
 
         { new IFoobleContext with
 
-            member __.GetMember(id, considerDeactivated) =
+            member __.GetMember(id, includeDeactivated) =
 #if DEBUG
                 assertWith (validateMemberId id)
 #endif
-                if considerDeactivated
+                if includeDeactivated
                     then query { for x in context.MemberData do
                                  where (x.Id = id)
                                  select x
                                  exactlyOneOrDefault }
                     else query { for x in context.MemberData do
-                                 where (not x.IsDeactivated)
+                                 where (x.DeactivatedOn = Nullable())
                                  where (x.Id = id)
                                  select x
                                  exactlyOneOrDefault }
                 |> Option.ofObj
                 |> Option.map wrapMemberData
 
-            member __.GetMembers(considerDeactivated) =
-                if considerDeactivated
+            member __.GetMembers(includeDeactivated) =
+                if includeDeactivated
                     then query { for x in context.MemberData do
                                  sortBy x.Nickname
                                  select x }
                     else query { for x in context.MemberData do
-                                 where (not x.IsDeactivated)
+                                 where (x.DeactivatedOn = Nullable())
                                  sortBy x.Nickname
                                  select x }
                 |> Seq.map wrapMemberData
                 |> List.ofSeq
 
-            member __.ExistsMemberId(id, considerDeactivated) =
+            member __.ExistsMemberId(id, includeDeactivated) =
 #if DEBUG
                 assertWith (validateMemberId id)
 #endif
-                if considerDeactivated
+                if includeDeactivated
                     then query { for x in context.MemberData do
                                  select x.Id
                                  contains id }
                     else query { for x in context.MemberData do
-                                 where (not x.IsDeactivated)
+                                 where (x.DeactivatedOn = Nullable())
                                  select x.Id
                                  contains id }
 
-            member __.ExistsMemberUsername(username, considerDeactivated) =
+            member __.ExistsMemberUsername(username, includeDeactivated) =
 #if DEBUG
                 assertWith (validateMemberUsername username)
 #endif
-                if considerDeactivated
+                if includeDeactivated
                     then query { for x in context.MemberData do
                                  select x.Username
                                  contains username }
                     else query { for x in context.MemberData do
-                                 where (not x.IsDeactivated)
+                                 where (x.DeactivatedOn = Nullable())
                                  select x.Username
                                  contains username }
 
-            member __.ExistsMemberEmail(email, considerDeactivated) =
+            member __.ExistsMemberEmail(email, includeDeactivated) =
 #if DEBUG
                 assertWith (validateMemberEmail email)
 #endif
-                if considerDeactivated
+                if includeDeactivated
                     then query { for x in context.MemberData do
                                  select x.Email
                                  contains email }
                     else query { for x in context.MemberData do
-                                 where (not x.IsDeactivated)
+                                 where (x.DeactivatedOn = Nullable())
                                  select x.Email
                                  contains email }
 

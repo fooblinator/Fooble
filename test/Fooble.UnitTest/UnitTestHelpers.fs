@@ -238,20 +238,20 @@ module internal UnitTestHelpers =
                   with get () = nickname
                   and set (x) = nickname <- x
 
-              member __.Registered
+              member __.RegisteredOn
                   with get() = registered
                   and set (x) = registered <- x
 
-              member __.PasswordChanged
+              member __.PasswordChangedOn
                   with get() = passwordChanged
                   and set (x) = passwordChanged <- x
 
-              member __.IsDeactivated
+              member __.DeactivatedOn
                   with get() = isDeactivated
                   and set (x) = isDeactivated <- x }
 
     let makeTestMemberData2 id username passwordData email nickname =
-        makeTestMemberData id username passwordData email nickname DateTime.UtcNow DateTime.UtcNow false
+        makeTestMemberData id username passwordData email nickname DateTime.UtcNow DateTime.UtcNow None
 
     let makeTestMemberDataFactory () =
         MemberDataFactory(makeTestMemberData2)
@@ -370,8 +370,8 @@ module internal UnitTestHelpers =
         actual.Email =! expectedEmail
         actual.Nickname =! expectedNickname
 
-        let actualRegistered = actual.Registered
-        let actualPasswordChanged = actual.PasswordChanged
+        let actualRegistered = actual.RegisteredOn
+        let actualPasswordChanged = actual.PasswordChangedOn
 
         actualRegistered.Date =! expectedRegistered.Date
         actualPasswordChanged.Date =! expectedPasswordChanged.Date

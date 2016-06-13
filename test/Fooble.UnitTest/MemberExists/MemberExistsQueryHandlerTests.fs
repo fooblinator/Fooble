@@ -17,7 +17,7 @@ module MemberExistsQueryHandlerTests =
 
         let contextMock = Mock<IFoobleContext>()
         contextMock.SetupFunc(fun x ->
-            x.ExistsMemberId(any (), considerDeactivated = false)).Returns(false).Verifiable()
+            x.ExistsMemberId(any (), includeDeactivated = false)).Returns(false).Verifiable()
 
         let handler = MemberExistsQuery.makeHandler contextMock.Object
 
@@ -35,7 +35,7 @@ module MemberExistsQueryHandlerTests =
 
         let contextMock = Mock<IFoobleContext>()
         contextMock.SetupFunc(fun x ->
-            x.ExistsMemberId(any (), considerDeactivated = false)).Returns(true).Verifiable()
+            x.ExistsMemberId(any (), includeDeactivated = false)).Returns(true).Verifiable()
 
         let handler = MemberExistsQuery.makeHandler contextMock.Object
 

@@ -110,8 +110,8 @@ module MemberRegisterCommand =
                 assertWith (validateRequired message "message" "Message")
 #endif
 
-                let usernameFound = this.Context.ExistsMemberUsername(message.Username, considerDeactivated = true)
-                let emailFound = this.Context.ExistsMemberEmail(message.Email, considerDeactivated = true)
+                let usernameFound = this.Context.ExistsMemberUsername(message.Username, includeDeactivated = true)
+                let emailFound = this.Context.ExistsMemberEmail(message.Email, includeDeactivated = true)
 
                 match (usernameFound, emailFound) with
                 | (true, _) -> unavailableUsernameResult

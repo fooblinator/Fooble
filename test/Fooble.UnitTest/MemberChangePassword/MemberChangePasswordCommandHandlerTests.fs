@@ -19,7 +19,7 @@ module MemberChangePasswordCommandHandlerTests =
         let newPassword = Password.random 32
 
         let contextMock = Mock<IFoobleContext>()
-        contextMock.SetupFunc(fun x -> x.GetMember(any (), considerDeactivated = false)).Returns(None).Verifiable()
+        contextMock.SetupFunc(fun x -> x.GetMember(any (), includeDeactivated = false)).Returns(None).Verifiable()
 
         let handler = MemberChangePasswordCommand.makeHandler contextMock.Object
 
@@ -43,7 +43,7 @@ module MemberChangePasswordCommandHandlerTests =
             makeTestMemberData2 id (String.random 32) passwordData (EmailAddress.random 32) (String.random 64)
         let contextMock = Mock<IFoobleContext>()
         contextMock.SetupFunc(fun x ->
-            x.GetMember(any (), considerDeactivated = false)).Returns(Some(memberData)).Verifiable()
+            x.GetMember(any (), includeDeactivated = false)).Returns(Some(memberData)).Verifiable()
 
         let handler = MemberChangePasswordCommand.makeHandler contextMock.Object
 
@@ -66,10 +66,10 @@ module MemberChangePasswordCommandHandlerTests =
 
         let memberData =
             makeTestMemberData id (String.random 32) currentPasswordData (EmailAddress.random 32) (String.random 64) 
-                (DateTime(2001, 01, 01)) (DateTime(2001, 01, 01)) false
+                (DateTime(2001, 01, 01)) (DateTime(2001, 01, 01)) None
         let contextMock = Mock<IFoobleContext>()
         contextMock.SetupFunc(fun x ->
-            x.GetMember(any (), considerDeactivated = false)).Returns(Some(memberData)).Verifiable()
+            x.GetMember(any (), includeDeactivated = false)).Returns(Some(memberData)).Verifiable()
 
         let handler = MemberChangePasswordCommand.makeHandler contextMock.Object
 
@@ -84,5 +84,5 @@ module MemberChangePasswordCommandHandlerTests =
 
         memberData.PasswordData <>! currentPasswordData
 
-        let actualPasswordChanged = memberData.PasswordChanged
+        let actualPasswordChanged = memberData.PasswordChangedOn
         actualPasswordChanged.Date =! passwordChanged.Date

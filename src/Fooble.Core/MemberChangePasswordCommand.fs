@@ -90,7 +90,7 @@ module MemberChangePasswordCommand =
                 assertWith (validateRequired message "message" "Message")
 #endif
 
-                match this.Context.GetMember(message.Id, considerDeactivated = false) with
+                match this.Context.GetMember(message.Id, includeDeactivated = false) with
                 | None -> notFoundResult
                 | Some(x) ->
 
@@ -100,7 +100,7 @@ module MemberChangePasswordCommand =
 
                 let iterations = Random().Next(100000, 101000)
                 x.PasswordData <- Crypto.hash message.NewPassword iterations
-                x.PasswordChanged <- DateTime.UtcNow
+                x.PasswordChangedOn <- DateTime.UtcNow
 
                 this.Context.SaveChanges()
                 successResult

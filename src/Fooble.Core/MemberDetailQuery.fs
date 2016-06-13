@@ -83,10 +83,10 @@ module MemberDetailQuery =
 #endif
 
                 let readModel =
-                    this.Context.GetMember(message.Id, considerDeactivated = false)
+                    this.Context.GetMember(message.Id, includeDeactivated = false)
                     |> Option.map (fun x ->
-                           this.ReadModelFactory.Invoke(message.Id, x.Username, x.Email, x.Nickname, x.Registered,
-                               x.PasswordChanged))
+                           this.ReadModelFactory.Invoke(message.Id, x.Username, x.Email, x.Nickname, x.RegisteredOn,
+                               x.PasswordChangedOn))
 
                 match readModel with
                 | Some(x) -> makeSuccessResult x

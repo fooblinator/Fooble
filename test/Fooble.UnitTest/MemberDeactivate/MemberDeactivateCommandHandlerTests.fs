@@ -17,7 +17,7 @@ module MemberDeactivateCommandHandlerTests =
         let currentPassword = Password.random 32
 
         let contextMock = Mock<IFoobleContext>()
-        contextMock.SetupFunc(fun x -> x.GetMember(any (), considerDeactivated = false)).Returns(None).Verifiable()
+        contextMock.SetupFunc(fun x -> x.GetMember(any (), includeDeactivated = false)).Returns(None).Verifiable()
 
         let handler = MemberDeactivateCommand.makeHandler contextMock.Object
 
@@ -40,7 +40,7 @@ module MemberDeactivateCommandHandlerTests =
             makeTestMemberData2 id (String.random 32) passwordData (EmailAddress.random 32) (String.random 64)
         let contextMock = Mock<IFoobleContext>()
         contextMock.SetupFunc(fun x ->
-            x.GetMember(any (), considerDeactivated = false)).Returns(Some(memberData)).Verifiable()
+            x.GetMember(any (), includeDeactivated = false)).Returns(Some(memberData)).Verifiable()
 
         let handler = MemberDeactivateCommand.makeHandler contextMock.Object
 
@@ -63,7 +63,7 @@ module MemberDeactivateCommandHandlerTests =
             makeTestMemberData2 id (String.random 32) passwordData (EmailAddress.random 32) (String.random 64)
         let contextMock = Mock<IFoobleContext>()
         contextMock.SetupFunc(fun x ->
-            x.GetMember(any (), considerDeactivated = false)).Returns(Some(memberData)).Verifiable()
+            x.GetMember(any (), includeDeactivated = false)).Returns(Some(memberData)).Verifiable()
 
         let handler = MemberDeactivateCommand.makeHandler contextMock.Object
 
