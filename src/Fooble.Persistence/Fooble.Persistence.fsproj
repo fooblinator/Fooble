@@ -50,21 +50,18 @@
   </Choose>
   <Import Project="$(FSharpTargetsPath)" />
   <ItemGroup>
-    <Compile Include="Properties\AssemblyInfo.fs" />
     <Compile Include="..\Common\GlobalAssemblyInfo.fs">
-      <Link>Properties\GlobalAssemblyInfo.fs</Link>
+      <Link>GlobalAssemblyInfo.fs</Link>
     </Compile>
+    <Compile Include="AssemblyInfo.fs" />
     <Compile Include="..\Common\CommonHelpers.fs">
-      <Link>CommonHelpers.fs</Link>
-    </Compile>
-    <Compile Include="..\Common\ValidationHelpers.fs">
-      <Link>ValidationHelpers.fs</Link>
+      <Link>Helpers\CommonHelpers.fs</Link>
     </Compile>
     <Compile Include="..\Common\MemberHelpers.fs">
-      <Link>MemberHelpers.fs</Link>
+      <Link>Helpers\MemberHelpers.fs</Link>
     </Compile>
     <Compile Include="Persistence.fs" />
-    <Compile Include="Infrastructure\Registrations.fs" />
+    <Compile Include="Infrastructure\PersistenceRegistrations.fs" />
     <Content Include="App.config" />
     <Content Include="packages.config" />
   </ItemGroup>

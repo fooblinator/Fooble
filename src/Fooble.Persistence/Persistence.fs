@@ -22,23 +22,51 @@ module internal PersistenceHelpers =
 
               member __.Id
                   with get() = memberData.Id
-                  and set(x) = memberData.Id <- x
+                  and set(x) =
+#if DEBUG
+                      assertWith (validateMemberId x);
+#endif
+                      memberData.Id <- x
 
               member __.Username
                   with get() = memberData.Username
-                  and set(x) = memberData.Username <- x
+                  and set(x) =
+#if DEBUG
+                      assertWith (validateMemberUsername x)
+#endif
+                      memberData.Username <- x
 
               member __.PasswordData
                   with get() = memberData.PasswordData
-                  and set(x) = memberData.PasswordData <- x
+                  and set(x) =
+#if DEBUG
+                      assertWith (validateMemberPasswordData x)
+#endif
+                      memberData.PasswordData <- x
 
               member __.Email
                   with get() = memberData.Email
-                  and set(x) = memberData.Email <- x
+                  and set(x) =
+#if DEBUG
+                      assertWith (validateMemberEmail x)
+#endif
+                      memberData.Email <- x
 
               member __.Nickname
                   with get() = memberData.Nickname
-                  and set(x) = memberData.Nickname <- x
+                  and set(x) =
+#if DEBUG
+                      assertWith (validateMemberNickname x)
+#endif
+                      memberData.Nickname <- x
+
+              member __.AvatarData
+                  with get() = memberData.AvatarData
+                  and set(x) =
+#if DEBUG
+                      assertWith (validateMemberAvatarData x)
+#endif
+                      memberData.AvatarData <- x
 
               member __.RegisteredOn
                   with get() = memberData.RegisteredOn

@@ -29,6 +29,10 @@
                     <td>@Html.DisplayNameFor(model => model.Nickname)</td>
                     <td>@Html.DisplayFor(model => model.Nickname)</td>
                 </tr>
+                <tr>
+                    <td>Avatar</td>
+                    <td><canvas width="80" height="80" data-jdenticon-hash="@Model.AvatarData"></canvas></td>
+                </tr>
             </tbody>
         </table>
     </div>
@@ -78,3 +82,7 @@
 </div>
 
 <p>@Html.ActionLink("Back to List", "List")</p>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jdenticon")
+}

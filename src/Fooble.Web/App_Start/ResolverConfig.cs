@@ -19,6 +19,7 @@ namespace Fooble.Web
             builder.RegisterModule(new PersistenceRegistrations(connectionString));
             builder.RegisterModule(new PresentationRegistrations());
             builder.RegisterControllers(typeof(MvcApplication).Assembly);
+            builder.RegisterModelBinderProvider();
             var container = builder.Build();
 
             DependencyResolver.SetResolver(new AutofacDependencyResolver(container));

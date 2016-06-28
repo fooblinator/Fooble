@@ -50,40 +50,43 @@
   </Choose>
   <Import Project="$(FSharpTargetsPath)" />
   <ItemGroup>
-    <Compile Include="Properties\AssemblyInfo.fs" />
     <Compile Include="..\..\src\Common\GlobalAssemblyInfo.fs">
-      <Link>Properties\GlobalAssemblyInfo.fs</Link>
+      <Link>GlobalAssemblyInfo.fs</Link>
     </Compile>
+    <Compile Include="AssemblyInfo.fs" />
     <Compile Include="..\..\src\Common\CommonHelpers.fs">
-      <Link>CommonHelpers.fs</Link>
-    </Compile>
-    <Compile Include="..\..\src\Common\ValidationHelpers.fs">
-      <Link>ValidationHelpers.fs</Link>
+      <Link>Helpers\CommonHelpers.fs</Link>
     </Compile>
     <Compile Include="..\..\src\Common\MemberHelpers.fs">
-      <Link>MemberHelpers.fs</Link>
+      <Link>Helpers\MemberHelpers.fs</Link>
     </Compile>
-    <Compile Include="IntegrationTestHelpers.fs" />
-    <Compile Include="ToCommandHandler\MemberControllerToCommandHandlerTests.fs" />
-    <Compile Include="ToDataStore\MemberChangeEmailCommandHandlerTests.fs" />
-    <Compile Include="ToDataStore\MemberChangeOtherCommandHandlerTests.fs" />
-    <Compile Include="ToDataStore\MemberChangePasswordCommandHandlerTests.fs" />
-    <Compile Include="ToDataStore\MemberChangeUsernameCommandHandlerTests.fs" />
-    <Compile Include="ToDataStore\MemberControllerChangeEmailActionTests.fs" />
-    <Compile Include="ToDataStore\MemberControllerChangeOtherActionTests.fs" />
-    <Compile Include="ToDataStore\MemberControllerChangePasswordActionTests.fs" />
-    <Compile Include="ToDataStore\MemberControllerChangeUsernameActionTests.fs" />
-    <Compile Include="ToDataStore\MemberControllerDeactivateActionTests.fs" />
-    <Compile Include="ToDataStore\MemberControllerDetailActionTests.fs" />
-    <Compile Include="ToDataStore\MemberControllerListActionTests.fs" />
-    <Compile Include="ToDataStore\MemberControllerRegisterActionTests.fs" />
-    <Compile Include="ToDataStore\MemberDeactivateCommandHandlerTests.fs" />
-    <Compile Include="ToDataStore\MemberDetailQueryHandlerTests.fs" />
-    <Compile Include="ToDataStore\MemberExistsQueryHandlerTests.fs" />
-    <Compile Include="ToDataStore\MemberListQueryHandlerTests.fs" />
-    <Compile Include="ToDataStore\MemberRegisterCommandHandlerTests.fs" />
-    <Compile Include="ToQueryHandler\MemberControllerToQueryHandlerTests.fs" />
-    <Compile Include="RegistrationTests.fs" />
+    <Compile Include="..\..\src\Common\TestHelpers.fs">
+      <Link>Helpers\TestHelpers.fs</Link>
+    </Compile>
+    <Compile Include="Helpers\IntegrationTestHelpers.fs" />
+    <Compile Include="CommandHandlers\MemberChangeEmailCommandHandlerTests.fs" />
+    <Compile Include="CommandHandlers\MemberChangeOtherCommandHandlerTests.fs" />
+    <Compile Include="CommandHandlers\MemberChangePasswordCommandHandlerTests.fs" />
+    <Compile Include="CommandHandlers\MemberChangeUsernameCommandHandlerTests.fs" />
+    <Compile Include="CommandHandlers\MemberDeactivateCommandHandlerTests.fs" />
+    <Compile Include="CommandHandlers\MemberRegisterCommandHandlerTests.fs" />
+    <Compile Include="QueryHandlers\MemberDetailQueryHandlerTests.fs" />
+    <Compile Include="QueryHandlers\MemberEmailQueryHandlerTests.fs" />
+    <Compile Include="QueryHandlers\MemberExistsQueryHandlerTests.fs" />
+    <Compile Include="QueryHandlers\MemberListQueryHandlerTests.fs" />
+    <Compile Include="QueryHandlers\MemberOtherQueryHandlerTests.fs" />
+    <Compile Include="QueryHandlers\MemberUsernameQueryHandlerTests.fs" />
+    <Compile Include="ControllerActions\MemberControllerChangeEmailActionTests.fs" />
+    <Compile Include="ControllerActions\MemberControllerChangeOtherActionTests.fs" />
+    <Compile Include="ControllerActions\MemberControllerChangePasswordActionTests.fs" />
+    <Compile Include="ControllerActions\MemberControllerChangeUsernameActionTests.fs" />
+    <Compile Include="ControllerActions\MemberControllerDeactivateActionTests.fs" />
+    <Compile Include="ControllerActions\MemberControllerDetailActionTests.fs" />
+    <Compile Include="ControllerActions\MemberControllerListActionTests.fs" />
+    <Compile Include="ControllerActions\MemberControllerRegisterActionTests.fs" />
+    <Compile Include="Infrastructure\CoreRegistrationsTests.fs" />
+    <Compile Include="Infrastructure\PersistenceRegistrationsTests.fs" />
+    <Compile Include="Infrastructure\PresentationRegistrationsTests.fs" />
     <Content Include="App.config" />
     <Content Include="packages.config" />
   </ItemGroup>
@@ -102,12 +105,16 @@
       <HintPath>..\..\packages\Autofac.3.5.2\lib\net40\Autofac.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Autofac.Integration.Mvc">
+      <HintPath>..\..\packages\Autofac.Mvc5.3.3.4\lib\net45\Autofac.Integration.Mvc.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Castle.Core">
       <HintPath>..\..\packages\Castle.Core.3.3.3\lib\net45\Castle.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="FSharp.Configuration">
-      <HintPath>..\..\packages\FSharp.Configuration.0.6.0\lib\net40\FSharp.Configuration.dll</HintPath>
+      <HintPath>..\..\packages\FSharp.Configuration.0.6.1\lib\net40\FSharp.Configuration.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="FSharp.Core, Version=$(TargetFSharpCoreVersion), Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
@@ -121,7 +128,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Moq">
-      <HintPath>..\..\packages\Moq.4.5.8\lib\net45\Moq.dll</HintPath>
+      <HintPath>..\..\packages\Moq.4.5.10\lib\net45\Moq.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Moq.FSharp.Extensions">
@@ -134,7 +141,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="SharpYaml">
-      <HintPath>..\..\packages\FSharp.Configuration.0.6.0\lib\net40\SharpYaml.dll</HintPath>
+      <HintPath>..\..\packages\FSharp.Configuration.0.6.1\lib\net40\SharpYaml.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />

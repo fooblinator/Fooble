@@ -50,45 +50,33 @@
   </Choose>
   <Import Project="$(FSharpTargetsPath)" />
   <ItemGroup>
-    <Compile Include="Properties\AssemblyInfo.fs" />
     <Compile Include="..\Common\GlobalAssemblyInfo.fs">
-      <Link>Properties\GlobalAssemblyInfo.fs</Link>
+      <Link>GlobalAssemblyInfo.fs</Link>
     </Compile>
+    <Compile Include="AssemblyInfo.fs" />
     <Compile Include="..\Common\CommonHelpers.fs">
-      <Link>CommonHelpers.fs</Link>
-    </Compile>
-    <Compile Include="..\Common\ValidationHelpers.fs">
-      <Link>ValidationHelpers.fs</Link>
+      <Link>Helpers\CommonHelpers.fs</Link>
     </Compile>
     <Compile Include="..\Common\MemberHelpers.fs">
-      <Link>MemberHelpers.fs</Link>
+      <Link>Helpers\MemberHelpers.fs</Link>
     </Compile>
-    <Compile Include="MessageDisplayReadModel.fs" />
-    <Compile Include="MemberChangeEmailViewModel.fs" />
-    <Compile Include="MemberChangeOtherViewModel.fs" />
-    <Compile Include="MemberChangePasswordViewModel.fs" />
-    <Compile Include="MemberChangeUsernameViewModel.fs" />
-    <Compile Include="MemberDeactivateViewModel.fs" />
-    <Compile Include="MemberDetailReadModel.fs" />
-    <Compile Include="MemberListReadModel.fs" />
-    <Compile Include="MemberRegisterViewModel.fs" />
-    <Compile Include="FoobleModelBinder.fs" />
-    <Compile Include="Extensions\MemberChangeEmailCommandResult.fs" />
-    <Compile Include="Extensions\MemberChangeOtherCommandResult.fs" />
-    <Compile Include="Extensions\MemberChangePasswordCommandResult.fs" />
-    <Compile Include="Extensions\MemberChangeUsernameCommandResult.fs" />
-    <Compile Include="Extensions\MemberDeactivateCommandResult.fs" />
-    <Compile Include="Extensions\MemberDetailQueryResult.fs" />
-    <Compile Include="Extensions\MemberExistsQueryResult.fs" />
-    <Compile Include="Extensions\MemberListQueryResult.fs" />
-    <Compile Include="Extensions\MemberRegisterCommandResult.fs" />
-    <Compile Include="Infrastructure\Registrations.fs" />
-    <Content Include="App.config" />
+    <Compile Include="ModelBinders\MemberChangeEmailViewModelBinder.fs" />
+    <Compile Include="ModelBinders\MemberChangeOtherViewModelBinder.fs" />
+    <Compile Include="ModelBinders\MemberChangePasswordViewModelBinder.fs" />
+    <Compile Include="ModelBinders\MemberChangeUsernameViewModelBinder.fs" />
+    <Compile Include="ModelBinders\MemberDeactivateViewModelBinder.fs" />
+    <Compile Include="ModelBinders\MemberRegisterViewModelBinder.fs" />
+    <Compile Include="Extensions\CommandResultExtensions.fs" />
+    <Compile Include="Infrastructure\PresentationRegistrations.fs" />
     <Content Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Autofac">
       <HintPath>..\..\packages\Autofac.3.5.2\lib\net40\Autofac.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Autofac.Integration.Mvc">
+      <HintPath>..\..\packages\Autofac.Mvc5.3.3.4\lib\net45\Autofac.Integration.Mvc.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.Web.Infrastructure">

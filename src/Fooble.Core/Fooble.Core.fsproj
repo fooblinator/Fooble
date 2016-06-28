@@ -51,34 +51,45 @@
   </Choose>
   <Import Project="$(FSharpTargetsPath)" />
   <ItemGroup>
-    <Compile Include="Properties\AssemblyInfo.fs" />
-    <Compile Include="..\Common\GlobalAssemblyInfo.fs">
-      <Link>Properties\GlobalAssemblyInfo.fs</Link>
+    <Compile Include="..\..\src\Common\GlobalAssemblyInfo.fs">
+      <Link>GlobalAssemblyInfo.fs</Link>
     </Compile>
-    <Compile Include="PersistenceTypes.fs" />
-    <Compile Include="PresentationTypes.fs" />
-    <Compile Include="CoreTypes.fs" />
+    <Compile Include="AssemblyInfo.fs" />
+    <Compile Include="Types\PersistenceTypes.fs" />
+    <Compile Include="Types\PresentationTypes.fs" />
+    <Compile Include="Types\CoreTypes.fs" />
     <Compile Include="..\Common\CommonHelpers.fs">
-      <Link>CommonHelpers.fs</Link>
-    </Compile>
-    <Compile Include="..\Common\ValidationHelpers.fs">
-      <Link>ValidationHelpers.fs</Link>
+      <Link>Helpers\CommonHelpers.fs</Link>
     </Compile>
     <Compile Include="..\Common\MemberHelpers.fs">
-      <Link>MemberHelpers.fs</Link>
+      <Link>Helpers\MemberHelpers.fs</Link>
     </Compile>
-    <Compile Include="CryptoHelpers.fs" />
-    <Compile Include="MemberChangeEmailCommand.fs" />
-    <Compile Include="MemberChangeOtherCommand.fs" />
-    <Compile Include="MemberChangePasswordCommand.fs" />
-    <Compile Include="MemberChangeUsernameCommand.fs" />
-    <Compile Include="MemberDeactivateCommand.fs" />
-    <Compile Include="MemberDetailQuery.fs" />
-    <Compile Include="MemberExistsQuery.fs" />
-    <Compile Include="MemberListQuery.fs" />
-    <Compile Include="MemberRegisterCommand.fs" />
-    <Compile Include="Infrastructure\Registrations.fs" />
-    <Content Include="App.config" />
+    <Compile Include="Helpers\CryptoHelpers.fs" />
+    <Compile Include="ReadModels\MemberDetailReadModel.fs" />
+    <Compile Include="ReadModels\MemberListReadModel.fs" />
+    <Compile Include="ReadModels\MessageDisplayReadModel.fs" />
+    <Compile Include="ViewModels\MemberChangeEmailViewModel.fs" />
+    <Compile Include="ViewModels\MemberChangeOtherViewModel.fs" />
+    <Compile Include="ViewModels\MemberChangePasswordViewModel.fs" />
+    <Compile Include="ViewModels\MemberChangeUsernameViewModel.fs" />
+    <Compile Include="ViewModels\MemberDeactivateViewModel.fs" />
+    <Compile Include="ViewModels\MemberRegisterViewModel.fs" />
+    <Compile Include="Queries\MemberDetailQuery.fs" />
+    <Compile Include="Queries\MemberEmailQuery.fs" />
+    <Compile Include="Queries\MemberExistsQuery.fs" />
+    <Compile Include="Queries\MemberListQuery.fs" />
+    <Compile Include="Queries\MemberOtherQuery.fs" />
+    <Compile Include="Queries\MemberUsernameQuery.fs" />
+    <Compile Include="Commands\MemberChangeEmailCommand.fs" />
+    <Compile Include="Commands\MemberChangeOtherCommand.fs" />
+    <Compile Include="Commands\MemberChangePasswordCommand.fs" />
+    <Compile Include="Commands\MemberChangeUsernameCommand.fs" />
+    <Compile Include="Commands\MemberDeactivateCommand.fs" />
+    <Compile Include="Commands\MemberRegisterCommand.fs" />
+    <Compile Include="Extensions\CommandResultExtensions.fs" />
+    <Compile Include="Extensions\QueryResultExtensions.fs" />
+    <Compile Include="Extensions\ViewModelExtensions.fs" />
+    <Compile Include="Infrastructure\CoreRegistrations.fs" />
     <Content Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

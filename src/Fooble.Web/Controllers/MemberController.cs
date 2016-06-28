@@ -10,49 +10,115 @@ namespace Fooble.Web.Controllers
     public class MemberController : Controller
     {
         readonly IMediator _mediator;
-        readonly KeyGenerator _keyGenerator;
+        readonly IdGenerator _idGenerator;
+        readonly InitialMemberChangePasswordViewModelFactory _memberChangePasswordViewModelFactory;
+        readonly InitialMemberDeactivateViewModelFactory _memberDeactivateViewModelFactory;
+        readonly MemberDetailQueryFactory _memberDetailQueryFactory;
+        readonly MemberEmailQueryFactory _memberEmailQueryFactory;
+        readonly MemberExistsQueryFactory _memberExistsQueryFactory;
+        readonly MemberListQueryFactory _memberListQueryFactory;
+        readonly MemberOtherQueryFactory _memberOtherQueryFactory;
+        readonly InitialMemberRegisterViewModelFactory _memberRegisterViewModelFactory;
+        readonly MemberUsernameQueryFactory _memberUsernameQueryFactory;
 
-        public MemberController(IMediator mediator, KeyGenerator keyGenerator)
+        public MemberController(
+            IMediator mediator,
+            IdGenerator idGenerator,
+            InitialMemberChangePasswordViewModelFactory memberChangePasswordViewModelFactory,
+            InitialMemberDeactivateViewModelFactory memberDeactivateViewModelFactory,
+            MemberDetailQueryFactory memberDetailQueryFactory,
+            MemberEmailQueryFactory memberEmailQueryFactory,
+            MemberExistsQueryFactory memberExistsQueryFactory,
+            MemberListQueryFactory memberListQueryFactory,
+            MemberOtherQueryFactory memberOtherQueryFactory,
+            InitialMemberRegisterViewModelFactory memberRegisterViewModelFactory,
+            MemberUsernameQueryFactory memberUsernameQueryFactory)
         {
             if (mediator == null)
-                throw new ArgumentNullException(nameof(mediator), "Mediator is required");
+                throw new ArgumentNullException(nameof(mediator),
+                    "Mediator is required");
 
-            if (keyGenerator == null)
-                throw new ArgumentNullException(nameof(keyGenerator), "Key generator is required");
+            if (idGenerator == null)
+                throw new ArgumentNullException(nameof(idGenerator),
+                    "Id generator is required");
+
+            if (memberChangePasswordViewModelFactory == null)
+                throw new ArgumentNullException(nameof(memberChangePasswordViewModelFactory),
+                    "Member change password view model factory is required");
+
+            if (memberDeactivateViewModelFactory == null)
+                throw new ArgumentNullException(nameof(memberDeactivateViewModelFactory),
+                    "Member deactivate view model factory is required");
+
+            if (memberDetailQueryFactory == null)
+                throw new ArgumentNullException(nameof(memberDetailQueryFactory),
+                    "Member detail query factory is required");
+
+            if (memberEmailQueryFactory == null)
+                throw new ArgumentNullException(nameof(memberEmailQueryFactory),
+                    "Member email query factory is required");
+
+            if (memberExistsQueryFactory == null)
+                throw new ArgumentNullException(nameof(memberExistsQueryFactory),
+                    "Member exists query factory is required");
+
+            if (memberListQueryFactory == null)
+                throw new ArgumentNullException(nameof(memberListQueryFactory),
+                    "Member list query factory is required");
+
+            if (memberOtherQueryFactory == null)
+                throw new ArgumentNullException(nameof(memberOtherQueryFactory),
+                    "Member other query factory is required");
+
+            if (memberRegisterViewModelFactory == null)
+                throw new ArgumentNullException(nameof(memberRegisterViewModelFactory),
+                    "Member register view model factory is required");
+
+            if (memberUsernameQueryFactory == null)
+                throw new ArgumentNullException(nameof(memberUsernameQueryFactory),
+                    "Member username query factory is required");
 
             _mediator = mediator;
-            _keyGenerator = keyGenerator;
+            _idGenerator = idGenerator;
+            _memberChangePasswordViewModelFactory = memberChangePasswordViewModelFactory;
+            _memberDeactivateViewModelFactory = memberDeactivateViewModelFactory;
+            _memberDetailQueryFactory = memberDetailQueryFactory;
+            _memberEmailQueryFactory = memberEmailQueryFactory;
+            _memberExistsQueryFactory = memberExistsQueryFactory;
+            _memberListQueryFactory = memberListQueryFactory;
+            _memberOtherQueryFactory = memberOtherQueryFactory;
+            _memberRegisterViewModelFactory = memberRegisterViewModelFactory;
+            _memberUsernameQueryFactory = memberUsernameQueryFactory;
         }
 
         [HttpGet]
         public ActionResult ChangeEmail(Guid id)
         {
-            var query = MemberExistsQuery.Make(id);
+            var query = _memberEmailQueryFactory(id);
             var result = _mediator.Send(query);
 
             Debug.Assert(result != null, "Result parameter was null");
 
             if (result.IsNotFound)
-                return View("MessageDisplay", result.ToMessageDisplayReadModel("Change Email"));
+                return View("MessageDisplay", result.MapMessageDisplayReadModel());
 
-            return View(MemberChangeEmailViewModel.Make(id));
+            return View(result.ViewModel);
         }
 
         [HttpPost]
-        public ActionResult ChangeEmail(Guid id,
-            [ModelBinder(typeof(FoobleModelBinder))] IMemberChangeEmailViewModel viewModel)
+        public ActionResult ChangeEmail(Guid id, IMemberChangeEmailViewModel viewModel)
         {
             Debug.Assert(viewModel != null, "View model is required");
 
             if (!ModelState.IsValid) return View(viewModel.Clean());
 
-            var command = viewModel.ToCommand();
+            var command = viewModel.MapCommand();
             var result = _mediator.Send(command);
 
             Debug.Assert(result != null, "Result was null");
 
             if (result.IsNotFound)
-                return View("MessageDisplay", result.ToMessageDisplayReadModel());
+                return View("MessageDisplay", result.MapMessageDisplayReadModel());
 
             result.AddModelErrors(ModelState);
 
@@ -64,32 +130,34 @@ namespace Fooble.Web.Controllers
         [HttpGet]
         public ActionResult ChangeOther(Guid id)
         {
-            var query = MemberExistsQuery.Make(id);
+            var query = _memberOtherQueryFactory(id);
             var result = _mediator.Send(query);
 
             Debug.Assert(result != null, "Result parameter was null");
 
             if (result.IsNotFound)
-                return View("MessageDisplay", result.ToMessageDisplayReadModel("Change Other"));
+                return View("MessageDisplay", result.MapMessageDisplayReadModel());
 
-            return View(MemberChangeOtherViewModel.Make(id));
+            return View(result.ViewModel);
         }
 
         [HttpPost]
-        public ActionResult ChangeOther(Guid id,
-            [ModelBinder(typeof(FoobleModelBinder))] IMemberChangeOtherViewModel viewModel)
+        public ActionResult ChangeOther(Guid id, IMemberChangeOtherViewModel viewModel, string submit)
         {
             Debug.Assert(viewModel != null, "View model is required");
+            Debug.Assert(submit == "default" || submit == "random", "Submit is unexpected");
+
+            if (submit == "random") return View(viewModel.RandomizeAvatarData());
 
             if (!ModelState.IsValid) return View(viewModel);
 
-            var command = viewModel.ToCommand();
+            var command = viewModel.MapCommand();
             var result = _mediator.Send(command);
 
             Debug.Assert(result != null, "Result was null");
 
             if (result.IsNotFound)
-                return View("MessageDisplay", result.ToMessageDisplayReadModel());
+                return View("MessageDisplay", result.MapMessageDisplayReadModel());
 
             if (!ModelState.IsValid) return View(viewModel);
 
@@ -99,32 +167,31 @@ namespace Fooble.Web.Controllers
         [HttpGet]
         public ActionResult ChangePassword(Guid id)
         {
-            var query = MemberExistsQuery.Make(id);
+            var query = _memberExistsQueryFactory(id);
             var result = _mediator.Send(query);
 
             Debug.Assert(result != null, "Result parameter was null");
 
             if (result.IsNotFound)
-                return View("MessageDisplay", result.ToMessageDisplayReadModel("Change Password"));
+                return View("MessageDisplay", result.MapMessageDisplayReadModel("Change Password"));
 
-            return View(MemberChangePasswordViewModel.Make(id));
+            return View(_memberChangePasswordViewModelFactory(id));
         }
 
         [HttpPost]
-        public ActionResult ChangePassword(Guid id,
-            [ModelBinder(typeof(FoobleModelBinder))] IMemberChangePasswordViewModel viewModel)
+        public ActionResult ChangePassword(Guid id, IMemberChangePasswordViewModel viewModel)
         {
             Debug.Assert(viewModel != null, "View model is required");
 
             if (!ModelState.IsValid) return View(viewModel.Clean());
 
-            var command = viewModel.ToCommand();
+            var command = viewModel.MapCommand();
             var result = _mediator.Send(command);
 
             Debug.Assert(result != null, "Result was null");
 
             if (result.IsNotFound)
-                return View("MessageDisplay", result.ToMessageDisplayReadModel());
+                return View("MessageDisplay", result.MapMessageDisplayReadModel());
 
             result.AddModelErrors(ModelState);
 
@@ -136,32 +203,31 @@ namespace Fooble.Web.Controllers
         [HttpGet]
         public ActionResult ChangeUsername(Guid id)
         {
-            var query = MemberExistsQuery.Make(id);
+            var query = _memberUsernameQueryFactory(id);
             var result = _mediator.Send(query);
 
             Debug.Assert(result != null, "Result parameter was null");
 
             if (result.IsNotFound)
-                return View("MessageDisplay", result.ToMessageDisplayReadModel("Change Username"));
+                return View("MessageDisplay", result.MapMessageDisplayReadModel());
 
-            return View(MemberChangeUsernameViewModel.Make(id));
+            return View(result.ViewModel);
         }
 
         [HttpPost]
-        public ActionResult ChangeUsername(Guid id,
-            [ModelBinder(typeof(FoobleModelBinder))] IMemberChangeUsernameViewModel viewModel)
+        public ActionResult ChangeUsername(Guid id, IMemberChangeUsernameViewModel viewModel)
         {
             Debug.Assert(viewModel != null, "View model is required");
 
             if (!ModelState.IsValid) return View(viewModel.Clean());
 
-            var command = viewModel.ToCommand();
+            var command = viewModel.MapCommand();
             var result = _mediator.Send(command);
 
             Debug.Assert(result != null, "Result was null");
 
             if (result.IsNotFound)
-                return View("MessageDisplay", result.ToMessageDisplayReadModel());
+                return View("MessageDisplay", result.MapMessageDisplayReadModel());
 
             result.AddModelErrors(ModelState);
 
@@ -173,32 +239,31 @@ namespace Fooble.Web.Controllers
         [HttpGet]
         public ActionResult Deactivate(Guid id)
         {
-            var query = MemberExistsQuery.Make(id);
+            var query = _memberExistsQueryFactory(id);
             var result = _mediator.Send(query);
 
             Debug.Assert(result != null, "Result parameter was null");
 
             if (result.IsNotFound)
-                return View("MessageDisplay", result.ToMessageDisplayReadModel("Deactivate"));
+                return View("MessageDisplay", result.MapMessageDisplayReadModel("Deactivate"));
 
-            return View(MemberDeactivateViewModel.Make(id));
+            return View(_memberDeactivateViewModelFactory(id));
         }
 
         [HttpPost]
-        public ActionResult Deactivate(Guid id,
-            [ModelBinder(typeof(FoobleModelBinder))] IMemberDeactivateViewModel viewModel)
+        public ActionResult Deactivate(Guid id, IMemberDeactivateViewModel viewModel)
         {
             Debug.Assert(viewModel != null, "View model is required");
 
             if (!ModelState.IsValid) return View(viewModel.Clean());
 
-            var command = viewModel.ToCommand();
+            var command = viewModel.MapCommand();
             var result = _mediator.Send(command);
 
             Debug.Assert(result != null, "Result was null");
 
             if (result.IsNotFound)
-                return View("MessageDisplay", result.ToMessageDisplayReadModel());
+                return View("MessageDisplay", result.MapMessageDisplayReadModel());
 
             result.AddModelErrors(ModelState);
 
@@ -210,13 +275,13 @@ namespace Fooble.Web.Controllers
         [HttpGet]
         public ActionResult Detail(Guid id)
         {
-            var query = MemberDetailQuery.Make(id);
+            var query = _memberDetailQueryFactory(id);
             var result = _mediator.Send(query);
 
             Debug.Assert(result != null, "Result parameter was null");
 
             if (result.IsNotFound)
-                return View("MessageDisplay", result.ToMessageDisplayReadModel());
+                return View("MessageDisplay", result.MapMessageDisplayReadModel());
 
             return View(result.ReadModel);
         }
@@ -224,13 +289,13 @@ namespace Fooble.Web.Controllers
         [HttpGet]
         public ActionResult List()
         {
-            var query = MemberListQuery.Make();
+            var query = _memberListQueryFactory();
             var result = _mediator.Send(query);
 
             Debug.Assert(result != null, "Result parameter was null");
 
             if (result.IsNotFound)
-                return View("MessageDisplay", result.ToMessageDisplayReadModel());
+                return View("MessageDisplay", result.MapMessageDisplayReadModel());
 
             return View(result.ReadModel);
         }
@@ -238,18 +303,21 @@ namespace Fooble.Web.Controllers
         [HttpGet]
         public ActionResult Register()
         {
-            return View(MemberRegisterViewModel.Empty);
+            return View(_memberRegisterViewModelFactory());
         }
 
         [HttpPost]
-        public ActionResult Register([ModelBinder(typeof(FoobleModelBinder))] IMemberRegisterViewModel viewModel)
+        public ActionResult Register(IMemberRegisterViewModel viewModel, string submit)
         {
             Debug.Assert(viewModel != null, "View model is required");
+            Debug.Assert(submit == "default" || submit == "random", "Submit is unexpected");
+
+            if (submit == "random") return View(viewModel.RandomizeAvatarData());
 
             if (!ModelState.IsValid) return View(viewModel.Clean());
 
-            var id = _keyGenerator.Invoke();
-            var command = viewModel.ToCommand(id);
+            var id = _idGenerator();
+            var command = viewModel.MapCommand(id);
             var result = _mediator.Send(command);
 
             Debug.Assert(result != null, "Result was null");

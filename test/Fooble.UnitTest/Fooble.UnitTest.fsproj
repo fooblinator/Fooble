@@ -51,74 +51,59 @@
   </Choose>
   <Import Project="$(FSharpTargetsPath)" />
   <ItemGroup>
-    <Compile Include="Properties\AssemblyInfo.fs" />
     <Compile Include="..\..\src\Common\GlobalAssemblyInfo.fs">
-      <Link>Properties\GlobalAssemblyInfo.fs</Link>
+      <Link>GlobalAssemblyInfo.fs</Link>
     </Compile>
+    <Compile Include="AssemblyInfo.fs" />
     <Compile Include="..\..\src\Common\CommonHelpers.fs">
-      <Link>CommonHelpers.fs</Link>
-    </Compile>
-    <Compile Include="..\..\src\Common\ValidationHelpers.fs">
-      <Link>ValidationHelpers.fs</Link>
+      <Link>Helpers\CommonHelpers.fs</Link>
     </Compile>
     <Compile Include="..\..\src\Common\MemberHelpers.fs">
-      <Link>MemberHelpers.fs</Link>
+      <Link>Helpers\MemberHelpers.fs</Link>
     </Compile>
-    <Compile Include="UnitTestHelpers.fs" />
-    <Compile Include="FoobleModelBinder\BindMemberChangeEmailViewModelTests.fs" />
-    <Compile Include="FoobleModelBinder\BindMemberChangeOtherViewModelTests.fs" />
-    <Compile Include="FoobleModelBinder\BindMemberChangePasswordViewModelTests.fs" />
-    <Compile Include="FoobleModelBinder\BindMemberChangeUsernameViewModelTests.fs" />
-    <Compile Include="FoobleModelBinder\BindMemberRegisterViewModelTests.fs" />
-    <Compile Include="MemberChangeEmail\MemberChangeEmailCommandHandlerTests.fs" />
-    <Compile Include="MemberChangeEmail\MemberChangeEmailCommandResultTests.fs" />
-    <Compile Include="MemberChangeEmail\MemberChangeEmailCommandTests.fs" />
-    <Compile Include="MemberChangeEmail\MemberChangeEmailViewModelTests.fs" />
-    <Compile Include="MemberChangeOther\MemberChangeOtherCommandHandlerTests.fs" />
-    <Compile Include="MemberChangeOther\MemberChangeOtherCommandResultTests.fs" />
-    <Compile Include="MemberChangeOther\MemberChangeOtherCommandTests.fs" />
-    <Compile Include="MemberChangeOther\MemberChangeOtherViewModelTests.fs" />
-    <Compile Include="MemberChangePassword\MemberChangePasswordCommandHandlerTests.fs" />
-    <Compile Include="MemberChangePassword\MemberChangePasswordCommandResultTests.fs" />
-    <Compile Include="MemberChangePassword\MemberChangePasswordCommandTests.fs" />
-    <Compile Include="MemberChangePassword\MemberChangePasswordViewModelTests.fs" />
-    <Compile Include="MemberChangeUsername\MemberChangeUsernameCommandHandlerTests.fs" />
-    <Compile Include="MemberChangeUsername\MemberChangeUsernameCommandResultTests.fs" />
-    <Compile Include="MemberChangeUsername\MemberChangeUsernameCommandTests.fs" />
-    <Compile Include="MemberChangeUsername\MemberChangeUsernameViewModelTests.fs" />
-    <Compile Include="MemberController\MemberControllerChangeEmailActionTests.fs" />
-    <Compile Include="MemberController\MemberControllerChangeOtherActionTests.fs" />
-    <Compile Include="MemberController\MemberControllerChangePasswordActionTests.fs" />
-    <Compile Include="MemberController\MemberControllerChangeUsernameActionTests.fs" />
-    <Compile Include="MemberController\MemberControllerDeactivateActionTests.fs" />
-    <Compile Include="MemberController\MemberControllerDetailActionTests.fs" />
-    <Compile Include="MemberController\MemberControllerListActionTests.fs" />
-    <Compile Include="MemberController\MemberControllerRegisterActionTests.fs" />
-    <Compile Include="MemberController\MemberControllerTests.fs" />
-    <Compile Include="MemberDetail\MemberDetailQueryHandlerTests.fs" />
-    <Compile Include="MemberDetail\MemberDetailQueryResultTests.fs" />
-    <Compile Include="MemberDetail\MemberDetailQueryTests.fs" />
-    <Compile Include="MemberDetail\MemberDetailReadModelTests.fs" />
-    <Compile Include="MemberExists\MemberExistsQueryHandlerTests.fs" />
-    <Compile Include="MemberExists\MemberExistsQueryResultTests.fs" />
-    <Compile Include="MemberExists\MemberExistsQueryTests.fs" />
-    <Compile Include="MemberList\MemberListItemReadModelTests.fs" />
-    <Compile Include="MemberList\MemberListQueryHandlerTests.fs" />
-    <Compile Include="MemberList\MemberListQueryResultTests.fs" />
-    <Compile Include="MemberList\MemberListQueryTests.fs" />
-    <Compile Include="MemberList\MemberListReadModelTests.fs" />
-    <Compile Include="MemberRegister\MemberRegisterCommandHandlerTests.fs" />
-    <Compile Include="MemberRegister\MemberRegisterCommandResultTests.fs" />
-    <Compile Include="MemberRegister\MemberRegisterCommandTests.fs" />
-    <Compile Include="MemberRegister\MemberRegisterViewModelTests.fs" />
-    <Compile Include="MessageDisplay\MessageDisplayReadModelTests.fs" />
-    <Compile Include="MessageDisplay\MessageDisplaySeverityTests.fs" />
+    <Compile Include="..\..\src\Common\TestHelpers.fs">
+      <Link>Helpers\TestHelpers.fs</Link>
+    </Compile>
+    <Compile Include="Helpers\UnitTestHelpers.fs" />
+    <Compile Include="Queries\MemberDetailQueryTests.fs" />
+    <Compile Include="Queries\MemberEmailQueryTests.fs" />
+    <Compile Include="Queries\MemberExistsQueryTests.fs" />
+    <Compile Include="Queries\MemberListQueryTests.fs" />
+    <Compile Include="Queries\MemberOtherQueryTests.fs" />
+    <Compile Include="Queries\MemberUsernameQueryTests.fs" />
+    <Compile Include="Commands\MemberChangeEmailCommandTests.fs" />
+    <Compile Include="Commands\MemberChangeOtherCommandTests.fs" />
+    <Compile Include="Commands\MemberChangePasswordCommandTests.fs" />
+    <Compile Include="Commands\MemberChangeUsernameCommandTests.fs" />
+    <Compile Include="Commands\MemberDeactivateCommandTests.fs" />
+    <Compile Include="Commands\MemberRegisterCommandTests.fs" />
+    <Compile Include="ReadModels\MemberDetailReadModelTests.fs" />
+    <Compile Include="ReadModels\MemberListItemReadModelTests.fs" />
+    <Compile Include="ReadModels\MemberListReadModelTests.fs" />
+    <Compile Include="ReadModels\MessageDisplayReadModelTests.fs" />
+    <Compile Include="ViewModels\MemberChangeEmailViewModelTests.fs" />
+    <Compile Include="ViewModels\MemberChangeOtherViewModelTests.fs" />
+    <Compile Include="ViewModels\MemberChangePasswordViewModelTests.fs" />
+    <Compile Include="ViewModels\MemberChangeUsernameViewModelTests.fs" />
+    <Compile Include="ViewModels\MemberDeactivateViewModelTests.fs" />
+    <Compile Include="ViewModels\MemberRegisterViewModelTests.fs" />
+    <Compile Include="ModelBinders\MemberChangeEmailViewModelBinderTests.fs" />
+    <Compile Include="ModelBinders\MemberChangeOtherViewModelBinderTests.fs" />
+    <Compile Include="ModelBinders\MemberChangePasswordViewModelBinderTests.fs" />
+    <Compile Include="ModelBinders\MemberChangeUsernameViewModelBinderTests.fs" />
+    <Compile Include="ModelBinders\MemberDeactivateViewModelBinderTests.fs" />
+    <Compile Include="ModelBinders\MemberRegisterViewModelBinderTests.fs" />
+    <Compile Include="Controllers\MemberControllerTests.fs" />
+    <Compile Include="ControllerActions\MemberControllerChangeEmailActionTests.fs" />
+    <Compile Include="ControllerActions\MemberControllerChangeOtherActionTests.fs" />
+    <Compile Include="ControllerActions\MemberControllerChangePasswordActionTests.fs" />
+    <Compile Include="ControllerActions\MemberControllerChangeUsernameActionTests.fs" />
+    <Compile Include="ControllerActions\MemberControllerDeactivateActionTests.fs" />
+    <Compile Include="ControllerActions\MemberControllerDetailActionTests.fs" />
+    <Compile Include="ControllerActions\MemberControllerListActionTests.fs" />
+    <Compile Include="ControllerActions\MemberControllerRegisterActionTests.fs" />
     <Content Include="App.config" />
     <Content Include="packages.config" />
-    <Compile Include="MemberDeactivate\MemberDeactivateCommandHandlerTests.fs" />
-    <Compile Include="MemberDeactivate\MemberDeactivateCommandResultTests.fs" />
-    <Compile Include="MemberDeactivate\MemberDeactivateCommandTests.fs" />
-    <Compile Include="MemberDeactivate\MemberDeactivateViewModel.fs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\Fooble.Persistence\Fooble.Persistence.fsproj">
@@ -151,7 +136,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Moq">
-      <HintPath>..\..\packages\Moq.4.5.8\lib\net45\Moq.dll</HintPath>
+      <HintPath>..\..\packages\Moq.4.5.10\lib\net45\Moq.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Moq.FSharp.Extensions">
@@ -166,6 +151,7 @@
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Data.Entity" />
     <Reference Include="System.Numerics" />
     <ProjectReference Include="..\..\src\Fooble.Core\Fooble.Core.fsproj">
       <Name>Fooble.Core</Name>

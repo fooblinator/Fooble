@@ -2,144 +2,54 @@
 
 open System
 open System.Diagnostics
-open System.Net.Mail
-open System.Text.RegularExpressions
 
 [<DebuggerStepThrough>]
 [<AutoOpen>]
 module internal CommonHelpers =
 
-    let isNotNull x = not <| isNull x
+    (* Validate *)
 
-[<DebuggerStepThrough>]
-[<RequireQualifiedAccess>]
-module internal Guid =
+    let validateOn value paramName conditions =
+        assert (not (String.IsNullOrEmpty(paramName)))
+        assert (not (List.isEmpty conditions))
+        let result = Seq.tryPick (fun (f, x) -> if f value then None else Some(x)) conditions
+        match result with
+        | Some(x) -> Some(paramName, x)
+        | None -> None
 
-    let empty = Guid.Empty
+    let validateRequired value paramName messagePrefix =
+        validateOn value paramName [ (box >> isNull >> not), sprintf "%s is required" messagePrefix ]
 
-    let isEmpty x = x = empty
-    let isNotEmpty x = not <| isEmpty x
+    (* Ensure *)
 
-    let parse x =
-        assert (isNotNull x)
-        Guid.Parse(x)
+    let ensureWith result =
+        match result with
+        | Some(x, y) -> invalidArg x y
+        | None -> ()
 
-    let tryParse x =
-        match Guid.TryParse(x) with
-        | (true, x) -> Some(x)
-        | _ -> None
+    let ensureOn value paramName conditions =
+        ensureWith (validateOn value paramName conditions)
 
-    let random () = Guid.NewGuid()
+#if DEBUG
 
-    let toString (x:Guid) = x.ToString()
+    (* Assert *)
 
-[<DebuggerStepThrough>]
-[<RequireQualifiedAccess>]
-module internal String =
+    let assertWith result =
+        match result with
+        | Some(x, y) -> Debug.Fail(sprintf "[%s] %s" x y)
+        | None -> ()
 
-    let empty = String.Empty
+    let assertOn value paramName conditions =
+        assertWith (validateOn value paramName conditions)
 
-    let isEmpty x = x = empty
-    let isNotEmpty x = not <| isEmpty x
+#endif
 
-    let isNullOrEmpty x = isNull x || isEmpty x
-    let isNotNullOrEmpty x = not <| isNullOrEmpty x
+    (* Other *)
 
-    let isGuid x = Guid.tryParse x |> Option.isSome
-    let isNotGuid x = not <| isGuid x
-
-    let isLonger max x = String.length x > max
-    let isNotLonger max x = not <| isLonger max x
-
-    let isShorter min x = String.length x < min
-    let isNotShorter min x = not <| isShorter min x
-
-    let isMatch pattern x =
-        assert (isNotNull pattern)
-        assert (isNotNull x)
-        Regex.IsMatch(x, pattern)
-
-    let isNotMatch pattern x = not <| isMatch pattern x
-
-    let isEmail x =
-        assert (isNotNull x)
-        try
-            ignore (MailAddress(x))
-            true
-        with :? FormatException -> false
-
-    let isNotEmail x = not <| isEmail x
-
-    let ofArray (x:char[]) = String(x)
-    let ofGuid x = Guid.toString x
-
-    let toArray (x:string) = x.ToCharArray()
-    let toGuid x = Guid.parse x
-
-    let random len =
+    let randomString len =
         assert (len > 0)
-        Seq.init (len / 32 + 1) (fun _ -> Guid.random () |> ofGuid |> toArray)
+        Seq.init (len / 32 + 1) (fun _ -> Guid.NewGuid() |> string |> fun x -> x.ToCharArray())
         |> Array.concat
-        |> Array.filter (fun x -> x <> '-')
+        |> Array.filter ((<>) '-')
         |> Array.take len
-        |> ofArray
-
-[<DebuggerStepThrough>]
-[<RequireQualifiedAccess>]
-module internal Password =
-
-    let specialCharsPattern = """ ~!@#$%\^&*_\-+=`|\\(){}[\]:;"'<>,.?/"""
-
-    let hasDigits x = String.isMatch "[0-9]" x
-    let hasLowerAlphas x = String.isMatch "[a-z]" x
-    let hasUpperAlphas x = String.isMatch "[A-Z]" x
-    let hasSpecialChars x = String.isMatch (sprintf "[%s]" specialCharsPattern) x
-
-    let isMatch x = String.isMatch (sprintf "^[0-9a-zA-Z%s]+$" specialCharsPattern) x
-    let isNotMatch x = not (isMatch x)
-
-    let charset =
-        Array.concat [ [| '0' .. '9' |]; [| 'a' .. 'z' |]; [| 'A' .. 'Z' |] ]
-        |> Array.append (String.toArray specialCharsPattern)
-        |> Set.ofArray
-
-    let random =
-        let chars = Set.toList charset
-        let charsLen = chars.Length
-        let random = Random()
-        let rec generate len =
-            let res = [| for _ in 0..len-1 -> chars.[random.Next(charsLen)] |] |> String
-            match (hasDigits res, hasLowerAlphas res, hasUpperAlphas res, hasSpecialChars res) with
-            | (true, true, true, true) -> res
-            | _ -> generate len
-        fun len -> assert (len > 0); generate len
-
-[<DebuggerStepThrough>]
-[<RequireQualifiedAccess>]
-module internal EmailAddress =
-
-    let random len =
-        assert (len > 3)
-        match len with
-        | 3 -> sprintf "%s@%s" (String.random 1) (String.random 1)
-        | 4 -> sprintf "%s@%s" (String.random 1) (String.random 2)
-        | 5 -> sprintf "%s@%s.%s" (String.random 1) (String.random 1) (String.random 1)
-        | _ ->
-        let ext = 2 + ((len - 4) % 2)
-        let len = (len - 4) / 2
-        sprintf "%s@%s.%s" (String.random len) (String.random len) (String.random ext)
-
-[<DebuggerStepThrough>]
-[<RequireQualifiedAccess>]
-module internal Seq =
-
-    let isNotEmpty x = not <| Seq.isEmpty x
-
-    let isNullOrEmpty x = isNull x || Seq.isEmpty x
-    let isNotNullOrEmpty x = not <| isNullOrEmpty x
-
-[<DebuggerStepThrough>]
-[<RequireQualifiedAccess>]
-module internal List =
-
-    let isNotEmpty x = not <| List.isEmpty x
+        |> String
